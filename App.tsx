@@ -1,69 +1,123 @@
 /**
- * Foundation Mobile — Phase 0 placeholder.
+ * Foundation Mobile — Phase 0 demo gate.
  *
- * MD3 theme via react-native-paper. Sign-in and ring-tier display are wired in
- * Phase 0 once Firebase config is in place. Phase 1 adds App Attest + Play
- * Integrity; then NFC+ZK (Phase 3) via the Self SDK.
+ * Routes:
+ *  - not signed in → SignInScreen (sends an email-link)
+ *  - signed in     → HomeScreen (shows ring tier from Firebase custom claims)
+ *
+ * Phase 1 adds App Attest + Play Integrity ahead of NFC+ZK (Phase 3 via
+ * the Self SDK). Nothing identifying ever leaves the device — the only
+ * outbound payloads are the enclave-signed attestation blob and the
+ * Solana commitment hash.
  */
 
-import React from 'react';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Linking,
+  StatusBar,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import {
+  ActivityIndicator,
   MD3DarkTheme,
   MD3LightTheme,
   PaperProvider,
-  Text,
   Surface,
+  Text,
 } from 'react-native-paper';
+import {
+  completeSignInFromLink,
+  isSignInLink,
+  onAuthChange,
+  type Claims,
+} from './src/lib/auth';
+import { SignInScreen } from './src/screens/SignInScreen';
+import { HomeScreen } from './src/screens/HomeScreen';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-  const theme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
-
+  const isDark = useColorScheme() === 'dark';
+  const theme = isDark ? MD3DarkTheme : MD3LightTheme;
   return (
     <PaperProvider theme={theme}>
       <SafeAreaProvider>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <AppContent />
       </SafeAreaProvider>
     </PaperProvider>
   );
 }
 
+type AuthState =
+  | { status: 'loading' }
+  | { status: 'signed-out' }
+  | { status: 'signed-in'; claims: Claims };
+
 function AppContent() {
   const insets = useSafeAreaInsets();
+  const [state, setState] = useState<AuthState>({ status: 'loading' });
 
-  return (
-    <Surface style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.body}>
-        <Text variant="headlineMedium">Foundation</Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>
-          Phase 0 — sign-in + ring tier (coming next).
-        </Text>
-      </View>
-    </Surface>
-  );
+  useEffect(() => {
+    return onAuthChange((claims) => {
+      setState(
+        claims
+          ? { status: 'signed-in', claims }
+          : { status: 'signed-out' },
+      );
+    });
+  }, []);
+
+  // Email-link completion: when the app opens via its universal/app link,
+  // finish the sign-in with the email we asked for on the sign-in screen.
+  useEffect(() => {
+    async function tryComplete(url: string | null) {
+      if (!url) return;
+      const isLink = await isSignInLink(url);
+      if (!isLink) return;
+      // TODO: persist the pending email between send + deep-link return
+      // (AsyncStorage). Phase 0 placeholder: no-op until wired.
+      console.warn(
+        '[auth] Sign-in deep-link received; wire AsyncStorage to complete.',
+        url,
+      );
+    }
+    Linking.getInitialURL().then(tryComplete);
+    const sub = Linking.addEventListener('url', ({ url }) => tryComplete(url));
+    return () => sub.remove();
+  }, []);
+
+  if (state.status === 'loading') {
+    return (
+      <Surface style={[styles.root, { paddingTop: insets.top }]}>
+        <View style={styles.center}>
+          <ActivityIndicator />
+          <Text variant="bodyMedium" style={styles.sub}>
+            Checking sign-in…
+          </Text>
+        </View>
+      </Surface>
+    );
+  }
+
+  if (state.status === 'signed-out') {
+    return <SignInScreen />;
+  }
+
+  return <HomeScreen claims={state.claims} />;
 }
 
+// Re-export to avoid an unused-import warning until Phase 0 wiring lands.
+export const _phase0Completer = completeSignInFromLink;
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  body: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  subtitle: {
-    marginTop: 8,
-    textAlign: 'center',
-    opacity: 0.7,
-  },
+  root: { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  sub: { marginTop: 12, opacity: 0.7 },
 });
 
 export default App;
