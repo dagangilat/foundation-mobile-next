@@ -22,6 +22,12 @@ struct RecordAttestationResult: Decodable, Sendable {
     let commitment: String?
 }
 
+struct ResendInviteLinkResult: Decodable, Sendable {
+    let status: String
+    let sent: Bool
+    let reason: String?
+}
+
 enum FunctionsError: Error {
     case malformedResponse
 }
@@ -29,7 +35,10 @@ enum FunctionsError: Error {
 actor FunctionsService {
     static let shared = FunctionsService()
 
-    private let functions = Functions.functions()
+    // All Foundation callables are deployed to us-east1. Firebase's default
+    // region is us-central1, so passing the region explicitly is required
+    // or the SDK routes to a nonexistent function URL.
+    private let functions = Functions.functions(region: "us-east1")
 
     func issueAttestationNonce() async throws -> AttestationNonce {
         let result = try await functions.httpsCallable("issueAttestationNonce").call([:])
@@ -40,6 +49,14 @@ actor FunctionsService {
         let payload = try encodeToDict(req)
         let result = try await functions.httpsCallable("recordMobileAttestation").call(payload)
         return try decode(RecordAttestationResult.self, from: result.data)
+    }
+
+    func resendInviteLink(email: String) async throws -> ResendInviteLinkResult {
+        let result = try await functions.httpsCallable("resendInviteLink").call([
+            "email": email,
+            "platform": "ios",
+        ])
+        return try decode(ResendInviteLinkResult.self, from: result.data)
     }
 
     private func decode<T: Decodable>(_: T.Type, from raw: Any) throws -> T {
