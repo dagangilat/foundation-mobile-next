@@ -19,8 +19,14 @@ additions = {
 }
 
 additions.each do |basename, kind|
-  existing = group.files.find { |f| f.path == basename }
-  ref = existing || group.new_reference(basename)
+  relative_path = "FoundationMobile/#{basename}"
+  existing = group.files.find { |f| f.path == relative_path || f.path == basename }
+  ref = existing || group.new_reference(relative_path)
+  # The group has no `path` of its own, so store paths relative to the project
+  # root and use `name` for display. Matches how Xcode's Add Files dialog
+  # stores refs for files under the FoundationMobile/ folder.
+  ref.path = relative_path
+  ref.name = basename
 
   already_built = target.source_build_phase.files_references.include?(ref) ||
     target.resources_build_phase.files_references.include?(ref)
