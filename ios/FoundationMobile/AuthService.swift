@@ -1,0 +1,100 @@
+import Foundation
+import FirebaseAuth
+
+struct Claims: Equatable, Sendable {
+    let uid: String
+    let email: String?
+    let ring: Int?
+    let role: String?
+    let issuedAt: Date
+    let expiresAt: Date
+}
+
+@MainActor
+final class AuthService: ObservableObject {
+    static let shared = AuthService()
+
+    enum State: Equatable {
+        case loading
+        case signedOut
+        case signedIn(Claims)
+    }
+
+    @Published private(set) var state: State = .loading
+
+    private var handle: AuthStateDidChangeListenerHandle?
+
+    private init() {
+        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            Task { @MainActor in
+                await self?.apply(user: user)
+            }
+        }
+    }
+
+    private func apply(user: User?) async {
+        guard let user else {
+            state = .signedOut
+            return
+        }
+        do {
+            let token = try await user.getIDTokenResult(forcingRefresh: false)
+            let raw = token.claims
+            let ring: Int? = (raw["ring"] as? Int) ?? (raw["ring"] as? NSNumber)?.intValue
+            let role = raw["role"] as? String
+            state = .signedIn(
+                Claims(
+                    uid: user.uid,
+                    email: user.email,
+                    ring: ring,
+                    role: role,
+                    issuedAt: token.issuedAtDate,
+                    expiresAt: token.expirationDate
+                )
+            )
+        } catch {
+            state = .signedOut
+        }
+    }
+
+    // MARK: - Email-link sign in
+
+    private static let actionCodeSettings: ActionCodeSettings = {
+        let s = ActionCodeSettings()
+        s.url = URL(string: "https://foundation-global.com/mobile-signin")
+        s.handleCodeInApp = true
+        s.setIOSBundleID(Bundle.main.bundleIdentifier ?? "com.foundationglobal.mobile")
+        return s
+    }()
+
+    func sendSignInLink(email: String) async throws {
+        try await Auth.auth().sendSignInLink(
+            toEmail: email,
+            actionCodeSettings: Self.actionCodeSettings
+        )
+        Keychain.setPendingEmail(email)
+    }
+
+    enum CompleteResult: Sendable {
+        case signedIn
+        case noPendingEmail
+        case notASignInLink
+    }
+
+    @discardableResult
+    func completeSignIn(url: URL) async throws -> CompleteResult {
+        guard Auth.auth().isSignIn(withEmailLink: url.absoluteString) else {
+            return .notASignInLink
+        }
+        guard let email = Keychain.getPendingEmail() else {
+            return .noPendingEmail
+        }
+        _ = try await Auth.auth().signIn(withEmail: email, link: url.absoluteString)
+        Keychain.clearPendingEmail()
+        return .signedIn
+    }
+
+    func signOut() throws {
+        try Auth.auth().signOut()
+    }
+}

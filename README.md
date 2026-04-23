@@ -1,23 +1,23 @@
 # foundation-mobile
 
-Native iOS + Android app for Foundation (Pillar 1 — *Your Voice*). Persona-smooth identity + humanity verification, with zero server-side retention.
+Native iOS Swift app for Foundation (Pillar 1 — *Your Voice*). Persona-smooth identity + humanity verification, with zero server-side retention.
 
 > **Canonical plan:** `foundation-global/docs/architecture_identity-humanity-mobile-app-2026-04-23.md`
 
-## Stack decisions (2026-04-23)
+## Stack decisions (2026-04-23 PM — amended from AM RN decision)
 
-- **React Native 0.85 + TypeScript**, `react-native-paper` (MD3 theme) — iOS and Android share one codebase, thin native modules per capability.
-- **Consume `@selfxyz/*` SDK + Circom circuits under MIT / ISC.** The BSL-licensed `app/` directory in `selfxyz/self` is **not** forked or vendored.
-- **App Attest + Play Integrity is Phase 1**, before NFC+ZK — deepfake camera injection is the dominant 2025–2026 attack class and platform attestation is the only thing that stops it.
-- **Standalone repo**, sibling to `foundation-global` (not a subdirectory).
-- RN Community CLI, not Expo — full control over every native module.
-- Minimum iOS 16 (App Attest prereq), minimum Android 10 / API 29 (Play Integrity prereq).
+- **Native iOS Swift + SwiftUI.** Minimum iOS 16 (App Attest prereq). No React Native, no JS runtime, no RN bridge.
+- **Android deferred post-YC-demo.** When picked up, Android will be a separate Kotlin / native track, not a revived RN codebase. Pre-pivot RN scaffold preserved at git tag `archive/rn-scaffold`.
+- **Firebase via Swift Package Manager** — `FirebaseAuth`, `FirebaseFirestore`, `FirebaseFunctions`, `FirebaseAppCheck`.
+- **Solana writes stay server-side** via `foundation-global/functions/lib/solana.js` (`anchorCommitment` callable). Mobile never holds a Solana keypair. Optional read-only `SolanaRPC` actor for on-chain status display.
+- **NFC + ZK path:** Self Protocol's Circom circuits consumed via **MOPRO** (`zkmopro/mopro`) → UniFFI-generated Swift `.xcframework`. The BSL-licensed `selfxyz/self` `app/` directory is **not** forked or vendored.
+- **App Attest is Phase 1** before NFC+ZK — deepfake camera injection is the dominant 2025–2026 attack class and platform attestation is the only thing that stops it. Play Integrity deferred to the Android track.
 
 ## Hard invariant
 
 Nothing identifying leaves the device. The only outbound payloads are:
 
-1. The enclave / keystore-signed attestation blob (hashes only — no raw images, no MRZ, no DG2).
+1. The enclave-signed attestation blob (hashes only — no raw images, no MRZ, no DG2).
 2. The Solana commitment hash.
 
 Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biometrics is a regression on the core claim and requires explicit sign-off.
@@ -26,77 +26,54 @@ Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biomet
 
 | Phase | Summary | Status |
 |---|---|---|
-| 0 | Scaffolding, RN + MD3, Firebase sign-in, ring-tier display | In progress (creds pending) |
-| 1 | App Attest + Play Integrity (first real integration) | Scaffold landed (backend verifier pending) |
+| 0 | SwiftUI app shell, Firebase sign-in, ring-tier display | In progress (Swift pivot 2026-04-23 PM) |
+| 1 | App Attest (first real integration) | Swift `AttestationService` landed; backend verifier pending |
 | 2 | Solana Groth16 verifier (backend Anchor program) | Pending |
-| 3 | Integrate Self SDK + circuits (NFC + ZK) | Pending |
-| 4 | Active liveness + nonce binding | Pending |
-| 5 | Passive anti-spoof | Pending |
-| 6 | Face match DG2 ↔ selfie | Pending |
-| 7 | Enclave / Keystore seal | Pending |
+| 3 | NFC + ZK via MOPRO-bound Self circuits | Pending |
+| 4 | Active liveness + nonce binding (MediaPipe via XCFramework) | Pending |
+| 5 | Passive anti-spoof (Silent-Face-Anti-Spoofing, Core ML) | Pending |
+| 6 | Face match DG2 ↔ selfie (ArcFace, Core ML) | Pending |
+| 7 | Secure Enclave seal (biometric-gated) | Pending |
 | 8 | Ring-tier uplift + UX polish | Pending |
 | 9 | YC demo recording | Pending |
-| 10 | Store submission + production hardening | Pending |
+| 10 | TestFlight → App Store submission | Pending |
 | 11 | Threshold tuning + telemetry | Pending |
 
-Phase detail lives in the canonical architecture doc.
+Phase detail lives in the canonical architecture doc. Android track will be planned after the iOS demo lands.
 
 ## Getting started
 
 ```sh
-# First time only
-bundle install
+# Open the project in Xcode (SPM — no .xcworkspace, no CocoaPods)
+open ios/FoundationMobile.xcodeproj
 
-# Install JS deps
-npm install
-
-# iOS native deps
-cd ios && bundle exec pod install && cd ..
-
-# Run (Metro auto-starts)
-npm run ios
-npm run android
+# First build resolves Firebase via SPM (~5 min clone).
+# Subsequent builds use the SPM cache at DerivedData/.../SourcePackages/.
+# Minimum iOS target: 16.0. Signing team: F9F26FQW95.
+# Simulator uses Firebase App Check debug provider; device uses real App Attest.
 ```
 
-## Next up (Phase 0 remainder)
+CI/CD: Xcode Cloud. Hooks live at `ios/ci_scripts/`. See memory `project_xcode_cloud.md` for the workflow plan (currently scaffolded; full setup lands with Phase 8).
 
-1. **Register Firebase apps** in the `solanavote-devnet` Firebase project and standardize bundle IDs to `com.foundationglobal.mobile`:
-   - iOS: change `PRODUCT_BUNDLE_IDENTIFIER` in `ios/FoundationMobile.xcodeproj/project.pbxproj` (2 occurrences).
-   - Android: change `namespace` + `applicationId` in `android/app/build.gradle` and move Kotlin files from `android/app/src/main/java/com/foundationmobile/**` to `.../com/foundationglobal/mobile/**` (update `package` headers in both `MainActivity.kt` and `MainApplication.kt`).
-   - Update `ACTION_CODE_SETTINGS` in `src/lib/auth.ts` once the rename lands.
-2. Drop `GoogleService-Info.plist` (iOS, into `ios/FoundationMobile/`) and `google-services.json` (Android, into `android/app/`) from the Firebase project.
-3. Configure Universal Links (iOS associated domains) + App Links (Android asset links) for `foundation-global.com/mobile-signin` so the email-link reopens the app.
-4. **Demo gate:** empty app on both platforms, signed in via email-link, renders ring tier from Firebase custom claims.
+## Phase 0 remainder
 
-Already wired:
-- `ios/FoundationMobile/AppDelegate.swift` calls `FirebaseApp.configure()` at startup.
-- `ios/Podfile` has `use_modular_headers!` for the Firebase Swift pods; 92 pods integrated.
-- `android/build.gradle` classpaths `com.google.gms:google-services:4.4.2`; `android/app/build.gradle` applies the plugin.
-- `AsyncStorage` persists the pending email across the send-link / deep-link-return boundary; `completeSignInFromDeepLink(url)` runs on cold start and `Linking` events.
+1. **Standardize bundle id to `com.foundationglobal.mobile`** — change `PRODUCT_BUNDLE_IDENTIFIER` in `ios/FoundationMobile.xcodeproj/project.pbxproj` (Debug + Release).
+2. **Apple Developer portal:** enable "App Attest" + "Associated Domains" capabilities on the app identifier.
+3. **Associated Domains:** configure `applinks:foundation-global.com` for Universal Links so the email sign-in link reopens the app (`/mobile-signin` path).
+4. `GoogleService-Info.plist` is already in `ios/FoundationMobile/` (untracked — add to repo or ignore per release policy).
+5. **Demo gate:** empty app, signed in via email-link, renders ring tier from Firebase custom claims.
 
-## Phase 1 — Platform attestation (scaffold)
+## Phase 1 — Platform attestation (Swift)
 
-iOS `DCAppAttestService` and Android Play Integrity are both wrapped behind a single TS surface (`src/lib/attestation.ts`):
-
-```ts
-const attestation = await attestDevice(challengeB64);
-// iOS:     { platform: 'ios', keyId, attestation }
-// Android: { platform: 'android', token }
-```
-
-Native module inventory:
-- iOS: `ios/FoundationMobile/AppAttestModule.swift` + `AppAttestModule.m` (registered with the `FoundationMobile` target via `ios/scripts/add-phase1-sources.rb` — idempotent, rerun after `pod install` if needed).
-- Android: `android/app/src/main/java/com/foundationmobile/attestation/{PlayIntegrityModule,AttestationPackage}.kt`, package registered in `MainApplication.kt`; `com.google.android.play:integrity:1.4.0` dep added.
-- Entitlements: `ios/FoundationMobile/FoundationMobile.entitlements` (`com.apple.developer.devicecheck.appattest-environment = development`); wired via `CODE_SIGN_ENTITLEMENTS` in both Debug + Release pbxproj build configs.
+`DCAppAttestService` is exposed via a plain Swift `AttestationService` (`ios/FoundationMobile/Services/AttestationService.swift` after Phase A lands). No RN bridge.
 
 Two layers — don't conflate them:
 
-- **Coarse request gating: Firebase App Check** (delegates DeviceCheck / App Attest on iOS, Play Integrity on Android to Firebase, which auto-verifies against Apple/Google public keys). Wired in `src/lib/appCheck.ts`; `initializeAppCheck()` runs at app startup. Backend enforcement already plumbed in `foundation-global/functions/lib/app-check.js` — flip `ENFORCE_APP_CHECK=true` in the functions env to reject unattested requests across the whole callable surface.
-- **Fine-grained attestation payload** (for the Phase 7 enclave-seal hash): our own `AppAttestModule` / `PlayIntegrityModule` (`src/lib/attestation.ts`) produces the raw attestation blob that gets hashed + signed by the Secure Enclave / Keystore. App Check's opaque token isn't suitable for that.
+- **Coarse request gating: Firebase App Check** (delegates App Attest to Firebase, which verifies against Apple public keys). Wired via `AppCheck.setAppCheckProviderFactory(...)` *before* `FirebaseApp.configure()` in `AppDelegate`. Backend enforcement already plumbed in `foundation-global/functions/lib/app-check.js` — flip `ENFORCE_APP_CHECK=true` in the functions env to reject unattested requests.
+- **Fine-grained attestation payload** (for the Phase 7 enclave-seal hash): `AttestationService` exposes `attestDeviceEndToEnd()` which runs `issueAttestationNonce` → `DCAppAttestService.generateKey` / `attestKey(clientDataHash:)` → `recordMobileAttestation`. App Check's opaque token isn't suitable for that payload.
 
 Phase 1 remainder (deployment + config):
-1. Apple Developer portal: enable "App Attest" capability on the app identifier (requires the standardized bundle id from the Phase 0 remainder above). Also add "DeviceCheck" capability if we keep the `__DEV__ ? 'debug' : 'appAttest'` fallback.
-2. Play Console: enable Play Integrity, register the app's SHA-256 fingerprint.
-3. Firebase console → App Check: register the iOS app (App Attest provider) and Android app (Play Integrity provider); generate a debug token for simulators and non-Play builds.
-4. Functions env: set `ENFORCE_APP_CHECK=true` once mobile clients are attaching tokens reliably (flipping before they do 401s every caller).
-5. Wire a `foundation-global/functions/` callable — e.g. `recordMobileAttestation` — that accepts the raw attestation blob from `attestation.ts` and stores `{ platform, keyId | token }` on the user's identity-proofs doc. This is what feeds into the Phase 7 enclave seal; App Check doesn't expose the raw blob.
+1. Apple Developer portal: enable "App Attest" on the standardized bundle id.
+2. Firebase console → App Check: register the iOS app (App Attest provider); generate a debug token for the simulator.
+3. Functions env: set `ENFORCE_APP_CHECK=true` once the Swift client reliably attaches tokens.
+4. `recordMobileAttestation` callable in `foundation-global/functions/` accepts `{ platform: 'ios', keyId, attestation }` and writes to the user's `identity_proofs` doc — feeds the Phase 7 enclave seal.
