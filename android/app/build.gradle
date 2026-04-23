@@ -119,4 +119,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // Play Integrity — Phase 1 platform attestation on Android.
+    implementation("com.google.android.play:integrity:1.4.0")
 }

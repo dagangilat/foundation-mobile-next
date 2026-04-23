@@ -26,8 +26,8 @@ Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biomet
 
 | Phase | Summary | Status |
 |---|---|---|
-| 0 | Scaffolding, RN + MD3, Firebase sign-in, ring-tier display | In progress |
-| 1 | App Attest + Play Integrity (first real integration) | Pending |
+| 0 | Scaffolding, RN + MD3, Firebase sign-in, ring-tier display | In progress (creds pending) |
+| 1 | App Attest + Play Integrity (first real integration) | Scaffold landed (backend verifier pending) |
 | 2 | Solana Groth16 verifier (backend Anchor program) | Pending |
 | 3 | Integrate Self SDK + circuits (NFC + ZK) | Pending |
 | 4 | Active liveness + nonce binding | Pending |
@@ -73,3 +73,27 @@ Already wired:
 - `ios/Podfile` has `use_modular_headers!` for the Firebase Swift pods; 92 pods integrated.
 - `android/build.gradle` classpaths `com.google.gms:google-services:4.4.2`; `android/app/build.gradle` applies the plugin.
 - `AsyncStorage` persists the pending email across the send-link / deep-link-return boundary; `completeSignInFromDeepLink(url)` runs on cold start and `Linking` events.
+
+## Phase 1 — Platform attestation (scaffold)
+
+iOS `DCAppAttestService` and Android Play Integrity are both wrapped behind a single TS surface (`src/lib/attestation.ts`):
+
+```ts
+const attestation = await attestDevice(challengeB64);
+// iOS:     { platform: 'ios', keyId, attestation }
+// Android: { platform: 'android', token }
+```
+
+Native module inventory:
+- iOS: `ios/FoundationMobile/AppAttestModule.swift` + `AppAttestModule.m` (registered with the `FoundationMobile` target via `ios/scripts/add-phase1-sources.rb` — idempotent, rerun after `pod install` if needed).
+- Android: `android/app/src/main/java/com/foundationmobile/attestation/{PlayIntegrityModule,AttestationPackage}.kt`, package registered in `MainApplication.kt`; `com.google.android.play:integrity:1.4.0` dep added.
+- Entitlements: `ios/FoundationMobile/FoundationMobile.entitlements` (`com.apple.developer.devicecheck.appattest-environment = development`); wired via `CODE_SIGN_ENTITLEMENTS` in both Debug + Release pbxproj build configs.
+
+Phase 1 remainder (backend + integration):
+1. Cloud Functions: add `issueAttestationNonce` (server-issued random nonce, 15-minute TTL, stored in Firestore or memory cache) + `verifyAppAttestation` + `verifyPlayIntegrity` in `foundation-global/functions/`.
+2. Implement Apple App Attest verification (parse CBOR attestation, verify against Apple's App Attest root + key id + nonce binding); prior art: `node-app-attest` / roll our own against Apple's published format.
+3. Implement Google Play Integrity verification (Play Integrity JWS decode, verify against Google public keys, check nonce + app verdict `MEETS_DEVICE_INTEGRITY`).
+4. Persist attested key id (iOS) or verdict (Android) on the user's Firestore doc so subsequent assertions can be re-verified.
+5. Gate all ring-uplift-adjacent callables on a valid attestation token via middleware.
+6. Apple Developer portal: enable "App Attest" capability on the app identifier (requires standardized bundle id from the Phase 0 remainder above).
+7. Play Console: enable Play Integrity, fetch the decryption key (if using classic verdict) or the public key (if using standard verdict).

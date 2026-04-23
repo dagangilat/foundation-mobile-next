@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Phase 1: App Attest (DCAppAttestService). Development-signed builds
+	     use `development`; App Store builds use `production`. -->
+	<key>com.apple.developer.devicecheck.appattest-environment</key>
+	<string>development</string>
+	<!-- Phase 0 remainder: Universal Links for email-link deep-link return. -->
+	<!--
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:foundation-global.com</string>
+	</array>
+	-->
+</dict>
+</plist>
