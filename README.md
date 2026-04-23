@@ -1,97 +1,65 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# foundation-mobile
 
-# Getting Started
+Native iOS + Android app for Foundation (Pillar 1 — *Your Voice*). Persona-smooth identity + humanity verification, with zero server-side retention.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+> **Canonical plan:** `foundation-global/docs/architecture_identity-humanity-mobile-app-2026-04-23.md`
 
-## Step 1: Start Metro
+## Stack decisions (2026-04-23)
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- **React Native 0.85 + TypeScript**, `react-native-paper` (MD3 theme) — iOS and Android share one codebase, thin native modules per capability.
+- **Consume `@selfxyz/*` SDK + Circom circuits under MIT / ISC.** The BSL-licensed `app/` directory in `selfxyz/self` is **not** forked or vendored.
+- **App Attest + Play Integrity is Phase 1**, before NFC+ZK — deepfake camera injection is the dominant 2025–2026 attack class and platform attestation is the only thing that stops it.
+- **Standalone repo**, sibling to `foundation-global` (not a subdirectory).
+- RN Community CLI, not Expo — full control over every native module.
+- Minimum iOS 16 (App Attest prereq), minimum Android 10 / API 29 (Play Integrity prereq).
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Hard invariant
+
+Nothing identifying leaves the device. The only outbound payloads are:
+
+1. The enclave / keystore-signed attestation blob (hashes only — no raw images, no MRZ, no DG2).
+2. The Solana commitment hash.
+
+Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biometrics is a regression on the core claim and requires explicit sign-off.
+
+## Phase status
+
+| Phase | Summary | Status |
+|---|---|---|
+| 0 | Scaffolding, RN + MD3, Firebase sign-in, ring-tier display | In progress |
+| 1 | App Attest + Play Integrity (first real integration) | Pending |
+| 2 | Solana Groth16 verifier (backend Anchor program) | Pending |
+| 3 | Integrate Self SDK + circuits (NFC + ZK) | Pending |
+| 4 | Active liveness + nonce binding | Pending |
+| 5 | Passive anti-spoof | Pending |
+| 6 | Face match DG2 ↔ selfie | Pending |
+| 7 | Enclave / Keystore seal | Pending |
+| 8 | Ring-tier uplift + UX polish | Pending |
+| 9 | YC demo recording | Pending |
+| 10 | Store submission + production hardening | Pending |
+| 11 | Threshold tuning + telemetry | Pending |
+
+Phase detail lives in the canonical architecture doc.
+
+## Getting started
 
 ```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
+# First time only
 bundle install
-```
 
-Then, and every time you update your native dependencies, run:
+# Install JS deps
+npm install
 
-```sh
-bundle exec pod install
-```
+# iOS native deps
+cd ios && bundle exec pod install && cd ..
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# Run (Metro auto-starts)
 npm run ios
-
-# OR using Yarn
-yarn ios
+npm run android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Next up (Phase 0 remainder)
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+1. Drop `GoogleService-Info.plist` (iOS) and `google-services.json` (Android) from the `solanavote-devnet` Firebase project.
+2. Implement email-link sign-in mirroring `evoting-frontend`'s flow.
+3. Render ring tier from Firebase custom claims (empty-app demo gate).
