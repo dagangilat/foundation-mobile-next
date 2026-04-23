@@ -9,9 +9,23 @@
  * Why it comes before NFC+ZK: deepfake camera injection is the dominant
  * 2025–2026 attack class; platform attestation is the only layer that stops
  * it, and it's cheap to gate every Cloud Function callable on a valid token.
+ *
+ * Backend wire-up:
+ *  - `issueAttestationNonce` (callable) — request a fresh nonce
+ *  - `recordMobileAttestation` (callable) — submit the attestation blob
+ * Both live in foundation-global/functions/; shapes come from
+ * @plantagoai/attestation so the packet format stays in sync.
  */
 
 import { NativeModules, Platform } from 'react-native';
+import { httpsCallable } from 'firebase/functions';
+import type {
+  Attestation as AttestationPayload,
+  RecordAttestationRequest,
+  RecordAttestationResult,
+} from '@plantagoai/attestation';
+import { submitAttestation } from '@plantagoai/attestation/client';
+import { functions } from './firebase';
 
 interface IosAppAttest {
   isSupported(): Promise<boolean>;
@@ -90,4 +104,33 @@ export async function assertIos(
     throw new Error('generateAssertion only available on iOS');
   }
   return AppAttestNative.generateAssertion(keyId, payloadB64);
+}
+
+// ─── End-to-end flow ─────────────────────────────────────────────────
+
+/**
+ * Full nonce → attest → submit round-trip.
+ *
+ * 1. Request a fresh nonce from `issueAttestationNonce`.
+ * 2. Run `attestDevice(nonce)` on the platform native module.
+ * 3. POST `{nonce, attestation}` to `recordMobileAttestation`.
+ *
+ * Returns the backend's `RecordAttestationResult` on success. Throws a
+ * `functions/unimplemented` error until the Phase 1b verifiers land in
+ * `@plantagoai/attestation`; that's the signal the backend isn't yet
+ * producing cryptographically verified attestations.
+ */
+export async function attestDeviceEndToEnd(): Promise<RecordAttestationResult> {
+  const issueNonce = httpsCallable<
+    Record<string, never>,
+    { nonce: string; expiresAtMs: number }
+  >(functions, 'issueAttestationNonce');
+  const record = httpsCallable<
+    RecordAttestationRequest,
+    RecordAttestationResult
+  >(functions, 'recordMobileAttestation');
+
+  const { data: { nonce } } = await issueNonce({});
+  const attestation: AttestationPayload = await attestDevice(nonce);
+  return submitAttestation(record, nonce, attestation);
 }

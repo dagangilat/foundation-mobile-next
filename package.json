@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@plantagoai/attestation": "file:../../shared/packages/attestation",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native/new-app-screen": "0.85.2",
     "firebase": "^10.14.1",
