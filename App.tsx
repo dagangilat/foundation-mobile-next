@@ -32,8 +32,7 @@ import {
   Text,
 } from 'react-native-paper';
 import {
-  completeSignInFromLink,
-  isSignInLink,
+  completeSignInFromDeepLink,
   onAuthChange,
   type Claims,
 } from './src/lib/auth';
@@ -73,18 +72,16 @@ function AppContent() {
   }, []);
 
   // Email-link completion: when the app opens via its universal/app link,
-  // finish the sign-in with the email we asked for on the sign-in screen.
+  // look up the pending email (persisted at send time) and complete sign-in.
   useEffect(() => {
     async function tryComplete(url: string | null) {
       if (!url) return;
-      const isLink = await isSignInLink(url);
-      if (!isLink) return;
-      // TODO: persist the pending email between send + deep-link return
-      // (AsyncStorage). Phase 0 placeholder: no-op until wired.
-      console.warn(
-        '[auth] Sign-in deep-link received; wire AsyncStorage to complete.',
-        url,
-      );
+      const result = await completeSignInFromDeepLink(url);
+      if (result === 'no-pending-email') {
+        console.warn(
+          '[auth] Sign-in deep-link received but no pending email stored.',
+        );
+      }
     }
     Linking.getInitialURL().then(tryComplete);
     const sub = Linking.addEventListener('url', ({ url }) => tryComplete(url));
@@ -110,9 +107,6 @@ function AppContent() {
 
   return <HomeScreen claims={state.claims} />;
 }
-
-// Re-export to avoid an unused-import warning until Phase 0 wiring lands.
-export const _phase0Completer = completeSignInFromLink;
 
 const styles = StyleSheet.create({
   root: { flex: 1 },

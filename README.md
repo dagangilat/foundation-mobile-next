@@ -65,10 +65,11 @@ npm run android
    - Android: change `namespace` + `applicationId` in `android/app/build.gradle` and move Kotlin files from `android/app/src/main/java/com/foundationmobile/**` to `.../com/foundationglobal/mobile/**` (update `package` headers in both `MainActivity.kt` and `MainApplication.kt`).
    - Update `ACTION_CODE_SETTINGS` in `src/lib/auth.ts` once the rename lands.
 2. Drop `GoogleService-Info.plist` (iOS, into `ios/FoundationMobile/`) and `google-services.json` (Android, into `android/app/`) from the Firebase project.
-3. Configure Universal Links (iOS associated domains) + App Links (Android asset links) for `foundation-global.com/mobile-signin` so the email-link reopens the app. Wire `AsyncStorage` to persist the pending email between send + deep-link return, and replace the `console.warn` in `App.tsx` with `completeSignInFromLink(email, url)`.
+3. Configure Universal Links (iOS associated domains) + App Links (Android asset links) for `foundation-global.com/mobile-signin` so the email-link reopens the app.
 4. **Demo gate:** empty app on both platforms, signed in via email-link, renders ring tier from Firebase custom claims.
 
 Already wired:
 - `ios/FoundationMobile/AppDelegate.swift` calls `FirebaseApp.configure()` at startup.
-- `ios/Podfile` has `use_modular_headers!` for the Firebase Swift pods.
+- `ios/Podfile` has `use_modular_headers!` for the Firebase Swift pods; 92 pods integrated.
 - `android/build.gradle` classpaths `com.google.gms:google-services:4.4.2`; `android/app/build.gradle` applies the plugin.
+- `AsyncStorage` persists the pending email across the send-link / deep-link-return boundary; `completeSignInFromDeepLink(url)` runs on cold start and `Linking` events.

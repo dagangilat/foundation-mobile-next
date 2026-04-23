@@ -8,6 +8,9 @@
 import auth, {
   FirebaseAuthTypes,
 } from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const PENDING_EMAIL_KEY = '@foundation/auth/pendingEmail';
 
 export interface Claims {
   sub: string;
@@ -71,15 +74,22 @@ const ACTION_CODE_SETTINGS: FirebaseAuthTypes.ActionCodeSettings = {
 
 export async function sendSignInLink(email: string): Promise<void> {
   await auth().sendSignInLinkToEmail(email, ACTION_CODE_SETTINGS);
+  // Persist so we can complete sign-in when the deep link reopens the app.
+  await AsyncStorage.setItem(PENDING_EMAIL_KEY, email);
 }
 
 export async function isSignInLink(link: string): Promise<boolean> {
   return auth().isSignInWithEmailLink(link);
 }
 
-export async function completeSignInFromLink(
-  email: string,
+export async function completeSignInFromDeepLink(
   link: string,
-): Promise<void> {
+): Promise<'signed-in' | 'no-pending-email' | 'not-a-sign-in-link'> {
+  const isLink = await auth().isSignInWithEmailLink(link);
+  if (!isLink) return 'not-a-sign-in-link';
+  const email = await AsyncStorage.getItem(PENDING_EMAIL_KEY);
+  if (!email) return 'no-pending-email';
   await auth().signInWithEmailLink(email, link);
+  await AsyncStorage.removeItem(PENDING_EMAIL_KEY);
+  return 'signed-in';
 }
