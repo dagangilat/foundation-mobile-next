@@ -59,19 +59,17 @@ final class AuthService: ObservableObject {
 
     // MARK: - Email-link sign in
 
-    private static let actionCodeSettings: ActionCodeSettings = {
-        let s = ActionCodeSettings()
-        s.url = URL(string: "https://foundation-global.com/mobile-signin")
-        s.handleCodeInApp = true
-        s.setIOSBundleID(Bundle.main.bundleIdentifier ?? "com.foundationglobal.mobile")
-        return s
-    }()
-
+    // Routes through the `resendInviteLink` callable in foundation-global so
+    // users get the Foundation-branded Resend email instead of Firebase Auth's
+    // unbranded default. The callable also enforces rate limiting + invite
+    // gating server-side — properties the client SDK's sendSignInLinkToEmail
+    // does not have. Anti-enumeration: the callable returns `sent: false`
+    // (not an error) for emails without access, so we surface the same
+    // "check your inbox" UI either way. `pendingEmail` still gets stashed in
+    // Keychain either way — if the email really has no access, there's no
+    // link to consume later, so the stashed value just ages out harmlessly.
     func sendSignInLink(email: String) async throws {
-        try await Auth.auth().sendSignInLink(
-            toEmail: email,
-            actionCodeSettings: Self.actionCodeSettings
-        )
+        _ = try await FunctionsService.shared.resendInviteLink(email: email)
         Keychain.setPendingEmail(email)
     }
 
