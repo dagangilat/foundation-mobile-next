@@ -1,0 +1,62 @@
+default_platform(:ios)
+
+# App Store Connect API key auth. Requires these env vars (never commit):
+#   APP_STORE_CONNECT_API_KEY_KEY_ID     — 10-char key id from ASC → Users and Access → Integrations
+#   APP_STORE_CONNECT_API_KEY_ISSUER_ID  — issuer id from the same page
+#   APP_STORE_CONNECT_API_KEY_KEY_CONTENT — contents of the downloaded AuthKey_<ID>.p8 file
+#                                           (raw text including the BEGIN/END lines)
+def asc_api_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch('APP_STORE_CONNECT_API_KEY_KEY_ID'),
+    issuer_id: ENV.fetch('APP_STORE_CONNECT_API_KEY_ISSUER_ID'),
+    key_content: ENV.fetch('APP_STORE_CONNECT_API_KEY_KEY_CONTENT'),
+    is_key_content_base64: false,
+    in_house: false
+  )
+end
+
+platform :ios do
+  desc "Create the App Store Connect app entry (one-time)."
+  lane :produce_app do
+    produce(
+      api_key: asc_api_key,
+      app_identifier: "com.foundationglobal.mobile",
+      app_name: "Foundation",
+      language: "en-US",
+      app_version: "0.1",
+      sku: "foundation-mobile-v1",
+      platform: "ios"
+    )
+  end
+
+  desc "Push metadata (description, privacy URL, keywords, icon, screenshots) to ASC."
+  desc "Does NOT upload a binary — use :beta or :release for that."
+  lane :deliver_metadata do
+    deliver(
+      api_key: asc_api_key,
+      submit_for_review: false,
+      automatic_release: false,
+      skip_binary_upload: true,
+      skip_screenshots: false,
+      skip_metadata: false,
+      force: true,
+      precheck_include_in_app_purchases: false
+    )
+  end
+
+  desc "Build a signed IPA and upload to TestFlight."
+  desc "Intended to run from Xcode Cloud or locally with a dev cert configured."
+  lane :beta do
+    build_app(
+      project: "FoundationMobile.xcodeproj",
+      scheme: "FoundationMobile",
+      export_method: "app-store",
+      clean: true
+    )
+    upload_to_testflight(
+      api_key: asc_api_key,
+      skip_waiting_for_build_processing: true,
+      changelog: "Phase 1 scaffold — sign-in, App Attest, Firestore."
+    )
+  end
+end

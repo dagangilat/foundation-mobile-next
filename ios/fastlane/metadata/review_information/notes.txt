@@ -1,0 +1,5 @@
+Foundation uses passwordless email-link sign-in gated by an invited allowlist; reviewers should be provisioned an invite to test. Contact the support email above to receive a sign-in link for the build under review.
+
+No PII leaves the device. The only outbound payloads are (1) a hash of the Secure-Enclave-signed attestation and (2) a Solana commitment hash. App Attest gates every backend callable to block camera-injection / deepfake attacks.
+
+NFC-based passport verification requires a real device (App Attest prereq); the simulator uses Firebase App Check's debug provider only.

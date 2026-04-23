@@ -1,0 +1,1 @@
+identity,humanity,zero knowledge,NFC,passport,privacy,Solana,verification,no KYC retention,Secure Enclave

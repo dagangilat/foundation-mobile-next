@@ -1,0 +1,5 @@
+app_identifier("com.foundationglobal.mobile")
+apple_id("dagan.gilat@gmail.com")
+team_id("F9F26FQW95")
+
+# App Store Connect API auth is passed per-lane via env vars — see Fastfile.

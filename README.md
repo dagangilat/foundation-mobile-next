@@ -44,16 +44,17 @@ Phase detail lives in the canonical architecture doc. Android track will be plan
 ## Getting started
 
 ```sh
-# Open the project in Xcode (SPM — no .xcworkspace, no CocoaPods)
-open ios/FoundationMobile.xcodeproj
+# First time only — install CocoaPods deps
+(cd ios && pod install)
 
-# First build resolves Firebase via SPM (~5 min clone).
-# Subsequent builds use the SPM cache at DerivedData/.../SourcePackages/.
+# Open the workspace in Xcode (not .xcodeproj — CocoaPods requires .xcworkspace)
+open ios/FoundationMobile.xcworkspace
+
 # Minimum iOS target: 16.0. Signing team: F9F26FQW95.
 # Simulator uses Firebase App Check debug provider; device uses real App Attest.
 ```
 
-CI/CD: Xcode Cloud. Hooks live at `ios/ci_scripts/`. See memory `project_xcode_cloud.md` for the workflow plan (currently scaffolded; full setup lands with Phase 8).
+CI/CD: Xcode Cloud, running `ios/ci_scripts/ci_post_clone.sh` (`pod install`) before each build. See memory `project_xcode_cloud.md` and `project_spm_migration.md` for why we're on CocoaPods (SPM was tried + reverted due to Xcode Cloud's per-org GitHub App install requirement).
 
 ## Phase 0 remainder
 

@@ -1,0 +1,1 @@
+Phase 1 scaffold — email-link sign-in, App Attest, Firestore ring-tier display. Next up: NFC + zero-knowledge proof of ID authenticity, on-device liveness, and Solana anchoring.

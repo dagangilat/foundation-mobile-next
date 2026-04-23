@@ -1,9 +1,11 @@
 #!/bin/sh
-# Xcode Cloud — runs after `git clone`, before SPM resolution + xcodebuild.
-# foundation-mobile is pure-SPM (see memory: project_spm_migration). Nothing
-# to install here; placeholder for future environment-variable sanity checks
-# (e.g. "fail fast if FIREBASE_APP_CHECK_DEBUG_TOKEN is empty in CI-Debug").
+# Xcode Cloud hook — runs after `git clone`, before xcodebuild.
+# foundation-mobile uses CocoaPods for Firebase (SPM + Xcode Cloud's per-org
+# GitHub App install requirement is incompatible with consuming public SDKs
+# owned by orgs we don't control). Xcode Cloud ships with CocoaPods preinstalled.
 
 set -e
 
-echo "foundation-mobile: ci_post_clone.sh — SPM-only project, no external installers to run."
+echo "foundation-mobile: ci_post_clone.sh — installing CocoaPods dependencies"
+cd "$CI_WORKSPACE/ios"
+pod install --verbose

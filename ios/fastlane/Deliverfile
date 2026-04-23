@@ -1,0 +1,5 @@
+app_identifier("com.foundationglobal.mobile")
+team_id("F9F26FQW95")
+
+# Metadata source dir (defaults to ./metadata relative to the Fastfile).
+# metadata_path("./metadata")
