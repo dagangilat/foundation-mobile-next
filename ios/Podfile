@@ -14,10 +14,6 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-# @react-native-firebase requires modular headers for Swift pods (FirebaseAuth,
-# FirebaseCoreInternal, FirebaseFunctions) to integrate as static libraries.
-use_modular_headers!
-
 target 'FoundationMobile' do
   config = use_native_modules!
 

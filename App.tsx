@@ -1,24 +1,18 @@
 /**
- * Foundation Mobile — Phase 0 demo gate.
+ * Foundation Mobile — root.
  *
  * Routes:
- *  - not signed in → SignInScreen (sends an email-link)
- *  - signed in     → HomeScreen (shows ring tier from Firebase custom claims)
+ *  - loading        → spinner
+ *  - not signed in  → SignInScreen
+ *  - signed in      → HomeScreen (Foundation branded, ring tier, three pillars)
  *
- * Phase 1 adds App Attest + Play Integrity ahead of NFC+ZK (Phase 3 via
- * the Self SDK). Nothing identifying ever leaves the device — the only
- * outbound payloads are the enclave-signed attestation blob and the
- * Solana commitment hash.
+ * Phase 1 adds App Attest + Play Integrity ahead of NFC+ZK (Phase 3 via Self
+ * SDK). Nothing identifying ever leaves the device — the only outbound
+ * payloads are the enclave-signed attestation blob and the Solana commitment.
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  Linking,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { Linking, StatusBar, StyleSheet, View } from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -26,7 +20,6 @@ import {
 import {
   ActivityIndicator,
   MD3DarkTheme,
-  MD3LightTheme,
   PaperProvider,
   Surface,
   Text,
@@ -36,24 +29,30 @@ import {
   onAuthChange,
   type Claims,
 } from './src/lib/auth';
-import { initializeAppCheck } from './src/lib/appCheck';
 import { SignInScreen } from './src/screens/SignInScreen';
-import { HomeScreen } from './src/screens/HomeScreen';
+import { FOUNDATION_COLORS, HomeScreen } from './src/screens/HomeScreen';
 
-// Fire-and-forget: initialize App Check before any Firestore/CF call goes out.
-// Any error is non-fatal for the UI; backend gating (ENFORCE_APP_CHECK) will
-// reject subsequent calls if attestation fails, which surfaces per-callable.
-initializeAppCheck().catch((err) => {
-  console.warn('[appCheck] initialization failed', err);
-});
+const foundationTheme = {
+  ...MD3DarkTheme,
+  roundness: 3,
+  colors: {
+    ...MD3DarkTheme.colors,
+    primary: FOUNDATION_COLORS.brandGreen,
+    onPrimary: FOUNDATION_COLORS.bg,
+    background: FOUNDATION_COLORS.bg,
+    surface: FOUNDATION_COLORS.bg,
+    surfaceVariant: FOUNDATION_COLORS.surface,
+    onSurface: FOUNDATION_COLORS.white,
+    onSurfaceVariant: FOUNDATION_COLORS.muted,
+    outline: FOUNDATION_COLORS.border,
+  },
+};
 
 function App() {
-  const isDark = useColorScheme() === 'dark';
-  const theme = isDark ? MD3DarkTheme : MD3LightTheme;
   return (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={foundationTheme}>
       <SafeAreaProvider>
-        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+        <StatusBar barStyle="light-content" />
         <AppContent />
       </SafeAreaProvider>
     </PaperProvider>
@@ -72,15 +71,11 @@ function AppContent() {
   useEffect(() => {
     return onAuthChange((claims) => {
       setState(
-        claims
-          ? { status: 'signed-in', claims }
-          : { status: 'signed-out' },
+        claims ? { status: 'signed-in', claims } : { status: 'signed-out' },
       );
     });
   }, []);
 
-  // Email-link completion: when the app opens via its universal/app link,
-  // look up the pending email (persisted at send time) and complete sign-in.
   useEffect(() => {
     async function tryComplete(url: string | null) {
       if (!url) return;
@@ -100,10 +95,8 @@ function AppContent() {
     return (
       <Surface style={[styles.root, { paddingTop: insets.top }]}>
         <View style={styles.center}>
-          <ActivityIndicator />
-          <Text variant="bodyMedium" style={styles.sub}>
-            Checking sign-in…
-          </Text>
+          <ActivityIndicator color={FOUNDATION_COLORS.brandGreen} />
+          <Text style={styles.sub}>Checking sign-in…</Text>
         </View>
       </Surface>
     );
@@ -117,9 +110,9 @@ function AppContent() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: FOUNDATION_COLORS.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  sub: { marginTop: 12, opacity: 0.7 },
+  sub: { color: FOUNDATION_COLORS.muted, marginTop: 12 },
 });
 
 export default App;

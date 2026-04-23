@@ -2,7 +2,6 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
-import FirebaseCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,11 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    // Firebase init — requires GoogleService-Info.plist in the app bundle
-    // (drop from the solanavote-devnet Firebase project; tracked in README
-    // as a Phase 0 remainder).
-    FirebaseApp.configure()
-
+    // Firebase is initialized from JS via the modular `firebase` SDK
+    // (see src/lib/firebase.ts). No FirebaseApp.configure() call needed.
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()

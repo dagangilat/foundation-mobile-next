@@ -1,14 +1,22 @@
 /**
- * Auth module — mirrors evoting-frontend/src/lib/auth.ts, but on top of
- * @react-native-firebase/auth. Identity is Firebase Auth only (Phase 4
- * cutover); sign-in is the email-link flow gated by an admin-approved
+ * Auth module — mirrors evoting-frontend/src/lib/auth.ts, using the Firebase
+ * JS SDK (firebase@10) on top of React Native. Identity is Firebase Auth only
+ * (Phase 4 cutover); sign-in is the email-link flow gated by an admin-approved
  * invite. Ring tier comes from Firebase custom claims.
  */
 
-import auth, {
-  FirebaseAuthTypes,
-} from '@react-native-firebase/auth';
+import {
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+  sendSignInLinkToEmail,
+  signInWithEmailLink,
+  isSignInWithEmailLink,
+  type IdTokenResult,
+  type User,
+  type ActionCodeSettings,
+} from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from './firebase';
 
 const PENDING_EMAIL_KEY = '@foundation/auth/pendingEmail';
 
@@ -22,10 +30,7 @@ export interface Claims {
   iat: number;
 }
 
-function fromIdToken(
-  t: FirebaseAuthTypes.IdTokenResult,
-  user: FirebaseAuthTypes.User,
-): Claims {
+function fromIdToken(t: IdTokenResult, user: User): Claims {
   const c = t.claims as Record<string, unknown>;
   return {
     sub: user.uid,
@@ -37,10 +42,8 @@ function fromIdToken(
   };
 }
 
-export function onAuthChange(
-  cb: (claims: Claims | null) => void,
-): () => void {
-  return auth().onAuthStateChanged(async (user) => {
+export function onAuthChange(cb: (claims: Claims | null) => void): () => void {
+  return onAuthStateChanged(auth, async (user) => {
     if (!user) {
       cb(null);
       return;
@@ -51,20 +54,20 @@ export function onAuthChange(
 }
 
 export async function signOut(): Promise<void> {
-  await auth().signOut();
+  await firebaseSignOut(auth);
 }
 
 // ─── Email-link sign-in ──────────────────────────────────────────────
 
-// NOTE: bundle IDs are the RN-CLI defaults. Standardize to
-// `com.foundationglobal.mobile` at Firebase-app registration time (requires
-// moving android/.../java/com/foundationmobile/** and editing the iOS pbxproj).
-const ACTION_CODE_SETTINGS: FirebaseAuthTypes.ActionCodeSettings = {
+// Android package still matches the RN-CLI default; rename pending
+// (move android/.../java/com/foundationmobile/** to .../com/foundationglobal/mobile/**).
+const ACTION_CODE_SETTINGS: ActionCodeSettings = {
   // Universal Link / App Link that reopens the app with the sign-in link.
-  // Configured per-environment in Phase 0 step 4.
+  // Configure Associated Domains on iOS + an /.well-known/assetlinks.json on
+  // Android before this actually round-trips the app.
   url: 'https://foundation-global.com/mobile-signin',
   handleCodeInApp: true,
-  iOS: { bundleId: 'org.reactjs.native.example.FoundationMobile' },
+  iOS: { bundleId: 'com.foundationglobal.mobile' },
   android: {
     packageName: 'com.foundationmobile',
     installApp: true,
@@ -73,23 +76,17 @@ const ACTION_CODE_SETTINGS: FirebaseAuthTypes.ActionCodeSettings = {
 };
 
 export async function sendSignInLink(email: string): Promise<void> {
-  await auth().sendSignInLinkToEmail(email, ACTION_CODE_SETTINGS);
-  // Persist so we can complete sign-in when the deep link reopens the app.
+  await sendSignInLinkToEmail(auth, email, ACTION_CODE_SETTINGS);
   await AsyncStorage.setItem(PENDING_EMAIL_KEY, email);
-}
-
-export async function isSignInLink(link: string): Promise<boolean> {
-  return auth().isSignInWithEmailLink(link);
 }
 
 export async function completeSignInFromDeepLink(
   link: string,
 ): Promise<'signed-in' | 'no-pending-email' | 'not-a-sign-in-link'> {
-  const isLink = await auth().isSignInWithEmailLink(link);
-  if (!isLink) return 'not-a-sign-in-link';
+  if (!isSignInWithEmailLink(auth, link)) return 'not-a-sign-in-link';
   const email = await AsyncStorage.getItem(PENDING_EMAIL_KEY);
   if (!email) return 'no-pending-email';
-  await auth().signInWithEmailLink(email, link);
+  await signInWithEmailLink(auth, email, link);
   await AsyncStorage.removeItem(PENDING_EMAIL_KEY);
   return 'signed-in';
 }
