@@ -89,11 +89,14 @@ Native module inventory:
 - Android: `android/app/src/main/java/com/foundationmobile/attestation/{PlayIntegrityModule,AttestationPackage}.kt`, package registered in `MainApplication.kt`; `com.google.android.play:integrity:1.4.0` dep added.
 - Entitlements: `ios/FoundationMobile/FoundationMobile.entitlements` (`com.apple.developer.devicecheck.appattest-environment = development`); wired via `CODE_SIGN_ENTITLEMENTS` in both Debug + Release pbxproj build configs.
 
-Phase 1 remainder (backend + integration):
-1. Cloud Functions: add `issueAttestationNonce` (server-issued random nonce, 15-minute TTL, stored in Firestore or memory cache) + `verifyAppAttestation` + `verifyPlayIntegrity` in `foundation-global/functions/`.
-2. Implement Apple App Attest verification (parse CBOR attestation, verify against Apple's App Attest root + key id + nonce binding); prior art: `node-app-attest` / roll our own against Apple's published format.
-3. Implement Google Play Integrity verification (Play Integrity JWS decode, verify against Google public keys, check nonce + app verdict `MEETS_DEVICE_INTEGRITY`).
-4. Persist attested key id (iOS) or verdict (Android) on the user's Firestore doc so subsequent assertions can be re-verified.
-5. Gate all ring-uplift-adjacent callables on a valid attestation token via middleware.
-6. Apple Developer portal: enable "App Attest" capability on the app identifier (requires standardized bundle id from the Phase 0 remainder above).
-7. Play Console: enable Play Integrity, fetch the decryption key (if using classic verdict) or the public key (if using standard verdict).
+Two layers — don't conflate them:
+
+- **Coarse request gating: Firebase App Check** (delegates DeviceCheck / App Attest on iOS, Play Integrity on Android to Firebase, which auto-verifies against Apple/Google public keys). Wired in `src/lib/appCheck.ts`; `initializeAppCheck()` runs at app startup. Backend enforcement already plumbed in `foundation-global/functions/lib/app-check.js` — flip `ENFORCE_APP_CHECK=true` in the functions env to reject unattested requests across the whole callable surface.
+- **Fine-grained attestation payload** (for the Phase 7 enclave-seal hash): our own `AppAttestModule` / `PlayIntegrityModule` (`src/lib/attestation.ts`) produces the raw attestation blob that gets hashed + signed by the Secure Enclave / Keystore. App Check's opaque token isn't suitable for that.
+
+Phase 1 remainder (deployment + config):
+1. Apple Developer portal: enable "App Attest" capability on the app identifier (requires the standardized bundle id from the Phase 0 remainder above). Also add "DeviceCheck" capability if we keep the `__DEV__ ? 'debug' : 'appAttest'` fallback.
+2. Play Console: enable Play Integrity, register the app's SHA-256 fingerprint.
+3. Firebase console → App Check: register the iOS app (App Attest provider) and Android app (Play Integrity provider); generate a debug token for simulators and non-Play builds.
+4. Functions env: set `ENFORCE_APP_CHECK=true` once mobile clients are attaching tokens reliably (flipping before they do 401s every caller).
+5. Wire a `foundation-global/functions/` callable — e.g. `recordMobileAttestation` — that accepts the raw attestation blob from `attestation.ts` and stores `{ platform, keyId | token }` on the user's identity-proofs doc. This is what feeds into the Phase 7 enclave seal; App Check doesn't expose the raw blob.

@@ -36,8 +36,16 @@ import {
   onAuthChange,
   type Claims,
 } from './src/lib/auth';
+import { initializeAppCheck } from './src/lib/appCheck';
 import { SignInScreen } from './src/screens/SignInScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
+
+// Fire-and-forget: initialize App Check before any Firestore/CF call goes out.
+// Any error is non-fatal for the UI; backend gating (ENFORCE_APP_CHECK) will
+// reject subsequent calls if attestation fails, which surfaces per-callable.
+initializeAppCheck().catch((err) => {
+  console.warn('[appCheck] initialization failed', err);
+});
 
 function App() {
   const isDark = useColorScheme() === 'dark';
