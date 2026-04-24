@@ -162,6 +162,8 @@ final class AuthService: ObservableObject {
                 deepLinkError = "This link was sent from another device or install. Request a new link here to sign in on this device."
             }
         } catch {
+            // Most common: invalid-action-code (link expired >6h or already
+            // redeemed).
             deepLinkError = AuthCopy.friendly(error)
         }
     }

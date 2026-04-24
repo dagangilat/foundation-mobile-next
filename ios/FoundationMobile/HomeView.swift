@@ -43,11 +43,14 @@ struct HomeView: View {
                 Image(systemName: "shield.lefthalf.filled")
                     .font(.system(size: 24, weight: .semibold))
                     .foregroundStyle(Theme.brandGreen)
+                    .accessibilityHidden(true)
                 HStack(spacing: 0) {
                     Text("Found").foregroundStyle(.white)
                     Text("ation").foregroundStyle(Theme.brandGreen)
                 }
                 .font(.system(size: 22, weight: .bold))
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Foundation")
             }
             Spacer()
             Button {
@@ -56,12 +59,14 @@ struct HomeView: View {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .foregroundStyle(Theme.muted)
             }
+            .accessibilityLabel("Sign out")
         }
     }
 
     private var solanaPill: some View {
         HStack(spacing: 8) {
             Circle().fill(Theme.brandGreen).frame(width: 8, height: 8)
+                .accessibilityHidden(true)
             Text("Powered by Solana Blockchain")
                 .font(.callout)
                 .foregroundStyle(Theme.brandGreen)
@@ -81,11 +86,14 @@ struct HomeView: View {
             pillar(icon: "square.and.arrow.up", label: "Share.", color: Theme.share)
             pillar(icon: "chart.line.uptrend.xyaxis", label: "Market.", color: Theme.market)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Your Voice, Share, and Market")
     }
 
     private func pillar(icon: String, label: String, color: Color) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon).font(.system(size: 32)).foregroundStyle(color)
+                .accessibilityHidden(true)
             Text(label).font(.system(size: 48, weight: .bold)).foregroundStyle(color)
         }
     }

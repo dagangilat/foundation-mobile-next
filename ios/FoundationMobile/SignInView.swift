@@ -30,17 +30,21 @@ struct SignInView: View {
             Image(systemName: "shield.lefthalf.filled")
                 .font(.system(size: 24, weight: .semibold))
                 .foregroundStyle(Theme.brandGreen)
+                .accessibilityHidden(true)
             HStack(spacing: 0) {
                 Text("Found").foregroundStyle(.white)
                 Text("ation").foregroundStyle(Theme.brandGreen)
             }
             .font(.system(size: 22, weight: .bold))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Foundation")
         }
     }
 
     private var solanaPill: some View {
         HStack(spacing: 8) {
             Circle().fill(Theme.brandGreen).frame(width: 8, height: 8)
+                .accessibilityHidden(true)
             Text("Powered by Solana Blockchain")
                 .font(.callout)
                 .foregroundStyle(Theme.brandGreen)
