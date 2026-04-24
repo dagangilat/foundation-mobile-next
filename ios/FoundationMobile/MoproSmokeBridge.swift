@@ -1,9 +1,5 @@
 import Foundation
 
-#if MOPRO_LINKED
-import MoproSmoke
-#endif
-
 // Thin wrapper around the Sprint-0 MOPRO smoke test so the host app compiles
 // whether the xcframework has been built yet or not. The real call only
 // switches on when Dagan has:
@@ -18,7 +14,7 @@ import MoproSmoke
 enum MoproSmokeBridge {
     static func hello() -> String {
         #if MOPRO_LINKED
-        return mopro_smoke_hello()
+        return moproSmokeHello()
         #else
         return "mopro-smoke: xcframework not linked yet — run mopro-smoke/build-xcframework.sh on macOS, then follow mopro-smoke/README.md."
         #endif

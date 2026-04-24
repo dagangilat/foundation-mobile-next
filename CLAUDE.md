@@ -17,7 +17,7 @@ Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biomet
 ## Current branch state (as of 2026-04-24)
 
 - **Phase 0 — done.** Email-link sign-in + Universal Links + Ring 0 render verified on device.
-- **Phase 1 — mobile-side done.** `AttestationService`, `AttestationCoordinator`, `AppCheckFactory` wired. Still needs: Apple portal config, Firebase console config, `recordMobileAttestation` CBOR verifier in `foundation-global/functions/`.
+- **Phase 1 — mobile-side done.** `AttestationService`, `AttestationCoordinator`, `AppCheckFactory` wired. Apple CBOR verifier landed in `@plantagoai/attestation/server` (2026-04-23 PM, 11 tests green). Still needs: Apple portal "App Attest" capability + Firebase console App Attest provider registration, and an eventual `ENFORCE_APP_CHECK=true` flip on the mobile callables once the client reliably attaches App Check tokens.
 - **Sprint 0 — scaffolded.** `ProofArtifact` contract frozen, `CameraSession` shared pipeline written, `EnclaveSeal` skeleton in place, `mopro-smoke/` toolchain smoke test ready to run on macOS.
 
 ## Frozen contract — `ProofArtifact` is load-bearing
@@ -119,6 +119,6 @@ rustup target add aarch64-apple-ios aarch64-apple-ios-sim x86_64-apple-ios
 ## Immediate next actions (in priority order)
 
 1. **macOS:** run `./mopro-smoke/build-xcframework.sh`, integrate the xcframework + binding, add `-D MOPRO_LINKED`, verify HomeView's MOPRO row shows the version string on device. If green → swap `uniffi` for `mopro-ffi` in `mopro-smoke/Cargo.toml`. If red → implement WASM-in-JavaScriptCore Phase 3 producer instead.
-2. **foundation-global repo (separate):** ship `recordMobileAttestation` CBOR verifier; Apple portal + Firebase console config.
+2. **foundation-global repo (separate):** Apple portal "App Attest" capability on `com.foundationglobal.mobile`, Firebase console App Attest provider registration. Apple CBOR verifier already shipped in `@plantagoai/attestation/server`. Play Integrity verifier still stubbed (Phase 1c, Android — not demo-critical).
 3. **Parallel:** implement mock `ProofProducer`s for kinds 3/4/5/6 so Phase 7 integration can start now behind feature flags.
 4. **Parallel:** Core ML smoke — load Silent-Face-Anti-Spoofing + ArcFace in a throwaway Playground; confirm iOS 16 compatibility.

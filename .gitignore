@@ -78,4 +78,5 @@ yarn-error.log
 target/
 **/target/
 ios/Frameworks/
+ios/*.xcframework/
 ios/FoundationMobile/Generated/

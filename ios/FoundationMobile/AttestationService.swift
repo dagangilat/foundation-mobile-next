@@ -32,12 +32,13 @@ actor AttestationService {
         }
     }
 
-    /// Returns base64-encoded CBOR attestation for the given base64 challenge.
-    func attestKey(keyId: String, challengeBase64: String) async throws -> String {
-        guard let challenge = Data(base64Encoded: challengeBase64) else {
-            throw AttestationError.invalidChallenge
-        }
-        let clientDataHash = Data(SHA256.hash(data: challenge))
+    /// Returns base64-encoded CBOR attestation. Nonce is treated as an opaque
+    /// UTF-8 string: clientDataHash = SHA-256(utf8(nonce)). Matches the server
+    /// verifier in @plantagoai/attestation which does `Buffer.from(req.nonce)`
+    /// (UTF-8) before hashing. The server emits base64url-encoded nonces so
+    /// base64-decoding them on the client would mostly fail anyway.
+    func attestKey(keyId: String, nonce: String) async throws -> String {
+        let clientDataHash = Data(SHA256.hash(data: Data(nonce.utf8)))
         return try await withCheckedThrowingContinuation { cont in
             service.attestKey(keyId, clientDataHash: clientDataHash) { attestation, error in
                 if let error { cont.resume(throwing: error); return }
@@ -68,7 +69,7 @@ actor AttestationService {
     func attestDeviceEndToEnd() async throws -> RecordAttestationResult {
         let nonce = try await FunctionsService.shared.issueAttestationNonce()
         let keyId = try await generateKey()
-        let attestation = try await attestKey(keyId: keyId, challengeBase64: nonce.nonce)
+        let attestation = try await attestKey(keyId: keyId, nonce: nonce.nonce)
         let result = try await FunctionsService.shared.recordMobileAttestation(
             RecordAttestationRequest(
                 nonce: nonce.nonce,

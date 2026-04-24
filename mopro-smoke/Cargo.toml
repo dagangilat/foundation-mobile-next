@@ -15,3 +15,4 @@ path = "src/bin/uniffi-bindgen.rs"
 
 [dependencies]
 uniffi = { version = "0.28", features = ["cli"] }
+mopro-ffi = { version = "0.3", features = ["uniffi"] }
