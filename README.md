@@ -26,8 +26,8 @@ Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biomet
 
 | Phase | Summary | Status |
 |---|---|---|
-| 0 | SwiftUI app shell, Firebase sign-in, ring-tier display | In progress (Swift pivot 2026-04-23 PM) |
-| 1 | App Attest (first real integration) | Swift `AttestationService` landed; backend verifier pending |
+| 0 | SwiftUI app shell, Firebase sign-in, ring-tier display | ✅ Done (2026-04-24) — email-link sign-in + Ring 0 render verified on device |
+| 1 | App Attest (first real integration) | In progress — Swift `AttestationService` landed; backend verifier pending |
 | 2 | Solana Groth16 verifier (backend Anchor program) | Pending |
 | 3 | NFC + ZK via MOPRO-bound Self circuits | Pending |
 | 4 | Active liveness + nonce binding (MediaPipe via XCFramework) | Pending |
@@ -56,13 +56,17 @@ open ios/FoundationMobile.xcworkspace
 
 CI/CD: Xcode Cloud, running `ios/ci_scripts/ci_post_clone.sh` (`pod install`) before each build. See memory `project_xcode_cloud.md` and `project_spm_migration.md` for why we're on CocoaPods (SPM was tried + reverted due to Xcode Cloud's per-org GitHub App install requirement).
 
-## Phase 0 remainder
+## Phase 0 — done (2026-04-24)
 
-1. **Standardize bundle id to `com.foundationglobal.mobile`** — change `PRODUCT_BUNDLE_IDENTIFIER` in `ios/FoundationMobile.xcodeproj/project.pbxproj` (Debug + Release).
-2. **Apple Developer portal:** enable "App Attest" + "Associated Domains" capabilities on the app identifier.
-3. **Associated Domains:** configure `applinks:foundation-global.com` for Universal Links so the email sign-in link reopens the app (`/mobile-signin` path).
-4. `GoogleService-Info.plist` is already in `ios/FoundationMobile/` (untracked — add to repo or ignore per release policy).
-5. **Demo gate:** empty app, signed in via email-link, renders ring tier from Firebase custom claims.
+Verified on device:
+- Email-link sign-in (Firebase Auth) round-trips: request link → Gmail receipt → tap → app reopens signed in.
+- Universal Links / Associated Domains (`applinks:foundation-global.com` → `/mobile-signin`) handing back to the app.
+- Ring tier renders from Firebase custom claims ("Ring 0 — Operator") on the signed-in home screen.
+- App Check debug provider wired on simulator; real App Attest wiring for device lands in Phase 1.
+
+Open Phase 0 housekeeping (not blocking Phase 1):
+- Confirm `PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile` in `ios/FoundationMobile.xcodeproj/project.pbxproj` (Debug + Release) matches the Apple Developer portal identifier used for App Attest.
+- Finalize `GoogleService-Info.plist` policy (commit vs. `.gitignore` + CI-injected).
 
 ## Phase 1 — Platform attestation (Swift)
 
