@@ -63,7 +63,7 @@ struct NFCScanView: View {
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
             }
-        case .passportReady(let result):
+        case .passportReady(_, let result):
             HStack(spacing: 12) {
                 Image(systemName: "checkmark.seal.fill")
                     .foregroundStyle(Theme.brandGreen)
