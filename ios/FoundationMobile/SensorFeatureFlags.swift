@@ -7,7 +7,7 @@ import Foundation
 
 enum SensorFeatureFlags {
     static let nfcZk: Bool = false       // Phase 3 — MOPRO-bound Self circuit
-    static let liveness: Bool = false    // Phase 4 — MediaPipe active liveness
+    static let liveness: Bool = true     // Phase 4 — single-frame stand-in (MediaPipe lands later)
     static let antiSpoof: Bool = false   // Phase 5 — Silent-Face-Anti-Spoofing
     static let faceMatch: Bool = false   // Phase 6 — ArcFace DG2 ↔ selfie match
 
