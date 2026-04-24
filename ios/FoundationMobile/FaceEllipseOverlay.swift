@@ -59,12 +59,16 @@ struct FaceEllipseOverlay: View {
     private func guideEllipse(in size: CGSize) -> some View {
         let w = size.width * 0.6
         let h = size.height * 0.75
+        // Explicit .position at geo center: a bare .frame inside a ZStack
+        // inside a GeometryReader anchors to topLeading (SwiftUI quirk),
+        // which manifested on device as an oval floating left-of-center.
         return Ellipse()
             .strokeBorder(
                 Theme.muted.opacity(0.25),
                 style: StrokeStyle(lineWidth: 2, dash: [6, 6])
             )
             .frame(width: w, height: h)
+            .position(x: size.width / 2, y: size.height / 2)
     }
 
     private var accessibilityLabel: String {

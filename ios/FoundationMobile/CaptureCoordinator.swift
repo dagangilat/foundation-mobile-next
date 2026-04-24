@@ -68,29 +68,22 @@ final class CaptureCoordinator: ObservableObject {
     let faceTracker = FaceTracker()
 
     // Pose-hold debounce: how long the user must continuously match the
-    // target pose before we auto-capture. 500ms is snappy enough to feel
-    // responsive while rejecting momentary noise in the angle signal.
-    // Easy to tune post-merge.
-    static let poseHoldDuration: Duration = .milliseconds(500)
+    // target pose before we auto-capture. 250ms is responsive enough for
+    // demo pacing while still rejecting a one-frame noise spike.
+    static let poseHoldDuration: Duration = .milliseconds(250)
 
-    // Timeout per pose. If the user doesn't hold the target pose for
-    // poseHoldDuration within this window, we count it as a failed
-    // attempt and either retry the same pose or fail the whole run.
-    // 15s is generous — a cooperative user nails each pose in <3s; the
-    // overage exists for first-time users fumbling with "turn up".
-    static let posePoseTimeout: Duration = .seconds(15)
-
-    // Retry budget across the whole capture run. Incremented on each
-    // per-pose timeout; exceeded → .failed.
-    static let maxRetries: Int = 3
-    private var retryCount: Int = 0
+    // Total scan budget across the whole pose loop. When this fires we
+    // auto-advance to .readyForPassport with whatever poses were captured
+    // (or an emergency one-frame capture if none). This is the "seal with
+    // face fingerprint even if not every pose was hit" fallback — users
+    // aren't blocked from reaching the MRZ/NFC step by a flaky yaw signal.
+    static let scanBudget: Duration = .seconds(15)
 
     // Countdown task that fires capturePose() after the user holds the
     // pose for poseHoldDuration. Cancelled whenever the pose match drops.
     private var poseHoldTask: Task<Void, Never>?
-    // Per-pose timeout task. Cancelled on successful capture / pose
-    // advance / flow reset.
-    private var poseTimeoutTask: Task<Void, Never>?
+    // Single total-scan deadline; cancelled when all poses captured.
+    private var scanBudgetTask: Task<Void, Never>?
     // Subscribes to faceTracker.$status and drives the auto-capture
     // countdown. One subscription per pose; torn down on stop.
     private var faceTrackerCancellable: AnyCancellable?
@@ -107,9 +100,10 @@ final class CaptureCoordinator: ObservableObject {
         lastFramesCount = 0
         anchorStatus = .notAttempted
 
-        // Phase 4 — reset retry budget + tracker state for the new run.
-        retryCount = 0
+        // Phase 4 — reset tracker state for the new run.
         tearDownPoseWatchers()
+        scanBudgetTask?.cancel()
+        scanBudgetTask = nil
         faceTracker.stop()
 
         guard DCAppAttestService.shared.isSupported else {
@@ -120,13 +114,14 @@ final class CaptureCoordinator: ObservableObject {
             state = .needsAttestation
             return
         }
-        let firstPose = LivenessPose.allCases[0]
+        let firstPose = LivenessPose.active[0]
         state = .readyForPose(
             pose: firstPose,
             captured: 0,
-            total: LivenessPose.allCases.count
+            total: LivenessPose.active.count
         )
         startTracking(pose: firstPose)
+        armScanBudget()
     }
 
     // Grab one frame for the current pose, then advance to the next pose
@@ -151,7 +146,7 @@ final class CaptureCoordinator: ObservableObject {
 
                 let next = captured + 1
                 if next < total {
-                    let nextPose = LivenessPose.allCases[next]
+                    let nextPose = LivenessPose.active[next]
                     self.state = .readyForPose(
                         pose: nextPose,
                         captured: next,
@@ -160,6 +155,10 @@ final class CaptureCoordinator: ObservableObject {
                     // Restart tracker for the next pose.
                     self.startTracking(pose: nextPose)
                 } else {
+                    // All poses captured — cancel the scan budget so its
+                    // expiry doesn't fire after we've already advanced.
+                    self.scanBudgetTask?.cancel()
+                    self.scanBudgetTask = nil
                     self.lastFramesCount = next
                     self.state = .readyForPassport(framesCount: next)
                 }
@@ -172,7 +171,8 @@ final class CaptureCoordinator: ObservableObject {
     // MARK: — Phase 4 auto-capture helpers
 
     // Start the face tracker for this pose and wire the status stream
-    // into the pose-hold countdown + per-pose timeout.
+    // into the pose-hold countdown. Scan budget is armed once in begin()
+    // and runs across all poses; no per-pose timeout here.
     private func startTracking(pose: LivenessPose) {
         tearDownPoseWatchers()
         faceTracker.start(targetPose: pose)
@@ -185,15 +185,50 @@ final class CaptureCoordinator: ObservableObject {
                 guard let self else { return }
                 self.handleTrackerUpdate(status: status, currentPose: pose)
             }
+    }
 
-        // Arm the per-pose timeout. If poseHoldDuration doesn't fire
-        // within this window, we treat it as a missed attempt.
-        poseTimeoutTask = Task { [weak self] in
-            try? await Task.sleep(for: Self.posePoseTimeout)
+    // Arm the single total-scan deadline. Called once from begin() after
+    // the first pose's tracker starts. On expiry we stop pose tracking
+    // and advance with whatever we've captured (emergency one-frame
+    // capture if nothing got through) so the NFC step is always reachable.
+    private func armScanBudget() {
+        scanBudgetTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.scanBudget)
             if Task.isCancelled { return }
             await MainActor.run {
-                self?.handlePoseTimeout()
+                self?.handleScanBudgetExpiry()
             }
+        }
+    }
+
+    private func handleScanBudgetExpiry() {
+        // Only act if we're still in the pose-capture phase. A successful
+        // last-pose capture cancels the budget; a failure already moved
+        // us elsewhere.
+        guard case .readyForPose = state else { return }
+
+        tearDownPoseWatchers()
+        faceTracker.stop()
+
+        if capturedJpegs.isEmpty {
+            // Zero poses captured in 15s — grab one emergency frame so the
+            // liveness artifact still has something to hash. Better than
+            // blocking the user out of the NFC step entirely.
+            task = Task { [weak self] in
+                guard let self else { return }
+                do {
+                    let frame = try await CameraSession.shared.captureOneFrame()
+                    let jpeg = try LivenessFrameEncoder.encodeJpeg(frame)
+                    self.capturedJpegs.append(jpeg)
+                    self.lastFramesCount = 1
+                    self.state = .readyForPassport(framesCount: 1)
+                } catch {
+                    self.state = .failed("Liveness scan timed out and emergency capture failed: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            lastFramesCount = capturedJpegs.count
+            state = .readyForPassport(framesCount: lastFramesCount)
         }
     }
 
@@ -224,31 +259,9 @@ final class CaptureCoordinator: ObservableObject {
         }
     }
 
-    private func handlePoseTimeout() {
-        // Only count the timeout if we're actually still waiting on a
-        // pose — a successful capture between arming and firing leaves
-        // us in a different state.
-        guard case .readyForPose(let pose, let captured, let total) = state else { return }
-
-        tearDownPoseWatchers()
-        faceTracker.stop()
-
-        retryCount += 1
-        if retryCount >= Self.maxRetries {
-            state = .failed("Liveness detection failed after \(Self.maxRetries) attempts")
-            return
-        }
-        // Reset to the CURRENT pose so the user gets another shot at
-        // the same ask without replaying earlier poses.
-        state = .readyForPose(pose: pose, captured: captured, total: total)
-        startTracking(pose: pose)
-    }
-
     private func tearDownPoseWatchers() {
         poseHoldTask?.cancel()
         poseHoldTask = nil
-        poseTimeoutTask?.cancel()
-        poseTimeoutTask = nil
         faceTrackerCancellable?.cancel()
         faceTrackerCancellable = nil
     }
@@ -387,21 +400,18 @@ final class CaptureCoordinator: ObservableObject {
         task?.cancel()
         anchorTask?.cancel()
         passportScanTask?.cancel()
+        scanBudgetTask?.cancel()
         task = nil
         anchorTask = nil
         passportScanTask = nil
+        scanBudgetTask = nil
         capturedJpegs.removeAll()
         lastFramesCount = 0
         anchorStatus = .notAttempted
-        retryCount = 0
         tearDownPoseWatchers()
         faceTracker.stop()
         state = .idle
     }
-
-    // How many retry attempts remain for the current run. Surfaced to
-    // the view so the UI can show "1 of 3 left" style copy.
-    var retriesRemaining: Int { max(0, Self.maxRetries - retryCount) }
 
     // Helper for the view layer: distinguishes a scan-stage failure (where
     // lastFramesCount > 0 and the user is in the passport funnel) from a
@@ -448,6 +458,14 @@ enum LivenessPose: String, CaseIterable, Equatable {
     case right
     case up
     case down
+
+    // Active poses driven by the scan loop. Up/down pitch detection proved
+    // unreliable on iPhone 13 at arm's length — VNFaceObservation.pitch's
+    // dynamic range and sign convention don't match user expectations as
+    // cleanly as yaw. Keep the cases defined (thresholds below) so a future
+    // Vision revision or MediaPipe drop-in can re-enable them by adding to
+    // this array; the rest of the coordinator iterates `active` not `allCases`.
+    static let active: [LivenessPose] = [.straight, .left, .right]
 
     var prompt: String {
         switch self {
