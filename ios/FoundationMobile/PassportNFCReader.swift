@@ -47,12 +47,32 @@ final class PassportNFCReader {
 
     private let reader: PassportReader
 
+    // Bundle-lookup for a CSCA masterlist PEM. If the file
+    // `csca-masterlist.pem` is present in the app bundle, chain-to-CSCA
+    // verification activates and `passport.passportCorrectlySigned`
+    // becomes meaningful. If absent (default today), the library simply
+    // skips the chain check and we still enforce SOD→DG1 hash integrity.
+    //
+    // Drop-in sources:
+    //   • BSI German masterlist — free, CMS SignedData at
+    //     https://www.bsi.bund.de/dok/masterlist (cert bundle, includes most
+    //     EU + many non-EU CSCAs). Extract to PEM via the openssl cms /
+    //     pkcs7 -print_certs pipeline or the BSI extraction scripts.
+    //   • ICAO PKD masterlist — gold standard, application-gated at
+    //     https://pkddownloadsg.icao.int/
+    //   • Per-country CSCA certs — published by each issuing authority
+    //     (IL: MoFa, PT: AMA). Concatenate BEGIN/END CERTIFICATE blocks
+    //     into one PEM file.
+    //
+    // To add one: drop the file at ios/FoundationMobile/Resources/csca-masterlist.pem
+    // (register in pbxproj as a Copy Bundle Resource), rebuild — no code change.
+    private static let masterListURL: URL? = Bundle.main.url(
+        forResource: "csca-masterlist",
+        withExtension: "pem"
+    )
+
     private init() {
-        // masterListURL left nil on purpose — see file header (#3). Without
-        // a real CSCA PEM the library would throw on chain verification,
-        // but without masterListURL it simply skips that check. The
-        // SOD→DG1 hash integrity check STILL runs.
-        self.reader = PassportReader(masterListURL: nil)
+        self.reader = PassportReader(masterListURL: Self.masterListURL)
     }
 
     // One-shot NFC scan. Presents the system NFC modal; resolves when the
@@ -74,12 +94,20 @@ final class PassportNFCReader {
         }
 
         // verifyPassport(masterListURL:) runs both validateAndExtractSigningCertificates
-        // (which is a no-op when masterListURL is nil) and ensureReadDataNotBeenTamperedWith
-        // (the SOD→DG1 hash match). We want the second one; the first we
-        // accept as not-yet-wired.
-        passport.verifyPassport(masterListURL: nil, useCMSVerification: false)
+        // (chain-to-CSCA — only meaningful when masterListURL is non-nil) and
+        // ensureReadDataNotBeenTamperedWith (SOD→DG1 hash match, independent
+        // of the masterlist). We gate on the hash-integrity check; the chain
+        // check is a soft signal — log-only today since the bundled masterlist
+        // is optional. Flip this to a gate once BSI / ICAO PKD is bundled.
+        passport.verifyPassport(masterListURL: Self.masterListURL, useCMSVerification: false)
         guard passport.passportDataNotTampered else {
             throw PassportNFCReaderError.dg1HashMismatch
+        }
+        if Self.masterListURL != nil && !passport.passportCorrectlySigned {
+            // Chain check ran but failed — surface so the user knows the
+            // masterlist is present but doesn't cover this passport's CSCA.
+            // Still accept the scan (DG1 integrity holds); demo-grade posture.
+            print("[PassportNFCReader] chain-to-CSCA verification failed for \(passport.issuingAuthority); accepting DG1-integrity only.")
         }
 
         // Extract DG1 raw bytes for hashing. NFCPassportModel.getDataGroup
