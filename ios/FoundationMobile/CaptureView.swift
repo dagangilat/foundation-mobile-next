@@ -72,9 +72,14 @@ struct CaptureView: View {
             failedBanner(msg)
         default:
             // Once we leave the pose-capture phase the live camera
-            // preview isn't useful — swap to the NFC host view.
+            // preview isn't useful — swap to the NFC host view, passing
+            // the MRZ-sheet trigger closure so the "Scan passport" CTA
+            // and the retry path can open MRZScanView without CaptureView
+            // knowing the NFC panel's internal state machine.
             if shouldShowNFCPanel {
-                NFCScanView(coordinator: coordinator)
+                NFCScanView(coordinator: coordinator) {
+                    isShowingMRZScan = true
+                }
             } else {
                 liveCapturePanel
             }
