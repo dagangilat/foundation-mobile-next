@@ -162,7 +162,7 @@ struct HomeView: View {
         case .idle: return "camera"
         case .unsupported: return "iphone.slash"
         case .needsAttestation: return "hourglass"
-        case .capturing, .signing, .sealing: return "hourglass"
+        case .readyForPose, .readyToVerify, .verifying: return "hourglass"
         case .sealed: return "checkmark.seal.fill"
         case .failed: return "exclamationmark.triangle.fill"
         }
@@ -181,9 +181,11 @@ struct HomeView: View {
         case .idle: return "Humanity — not yet verified"
         case .unsupported: return "Humanity — requires real device"
         case .needsAttestation: return "Humanity — App Attest pending"
-        case .capturing: return "Humanity — capturing frame…"
-        case .signing: return "Humanity — signing…"
-        case .sealing: return "Humanity — sealing…"
+        case .readyForPose(_, let captured, let total):
+            return "Humanity — capturing poses (\(captured)/\(total))"
+        case .readyToVerify: return "Humanity — ready to verify"
+        case .verifying(let phase):
+            return phase == .signing ? "Humanity — signing…" : "Humanity — sealing…"
         case .sealed: return "Humanity — sealed"
         case .failed(let msg): return "Humanity — failed: \(msg)"
         }

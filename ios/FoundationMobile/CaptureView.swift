@@ -6,17 +6,19 @@ struct CaptureView: View {
     @StateObject private var camera = CameraSession.shared
     @StateObject private var coordinator = CaptureCoordinator.shared
     @State private var warmupTask: Task<Void, Never>?
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {
             Theme.bg.ignoresSafeArea()
             content
                 .padding(.horizontal, 20)
-                .padding(.vertical, 24)
+                .padding(.vertical, 16)
         }
         .navigationTitle("Verify humanity")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            coordinator.begin()
             #if !targetEnvironment(simulator)
             // Hold an open subscription so the AVCaptureSession starts and the
             // preview layer has frames to render. Cancelling on disappear lets
@@ -31,6 +33,18 @@ struct CaptureView: View {
         .onDisappear {
             warmupTask?.cancel()
             warmupTask = nil
+        }
+        .onChange(of: coordinator.state) { newValue in
+            // Auto-dismiss back to HomeView on success so the sealed
+            // commitment row is the next thing the user sees. iOS-16-style
+            // single-parameter onChange — iOS 17's (initial, _, _) would
+            // fail the deployment target check.
+            if case .sealed = newValue {
+                Task {
+                    try? await Task.sleep(for: .milliseconds(900))
+                    dismiss()
+                }
+            }
         }
     }
 
@@ -51,94 +65,188 @@ struct CaptureView: View {
     }
 
     private var liveCapturePanel: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(spacing: 16) {
             CameraPreview(session: CameraSession.shared.underlyingSession)
                 .frame(maxWidth: .infinity)
                 .aspectRatio(3.0/4.0, contentMode: .fit)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.border))
 
-            statusLine
+            progressDots
 
-            Button(action: { coordinator.captureAndSeal() }) {
-                Text(buttonLabel)
-                    .font(.headline)
-                    .foregroundStyle(.black)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Theme.brandGreen)
-                    .cornerRadius(12)
-                    .opacity(buttonEnabled ? 1.0 : 0.5)
-            }
-            .disabled(!buttonEnabled)
+            promptBlock
 
-            Spacer()
+            primaryButton
+
+            Spacer(minLength: 0)
         }
     }
 
-    private var statusLine: some View {
-        HStack(spacing: 8) {
-            Image(systemName: statusIcon)
+    // Three dots tracking pose progress. Filled = captured, empty = pending,
+    // filled-with-halo = current pose.
+    @ViewBuilder
+    private var progressDots: some View {
+        let total = LivenessPose.allCases.count
+        let captured = currentCapturedCount
+        HStack(spacing: 10) {
+            ForEach(0..<total, id: \.self) { i in
+                let isCaptured = i < captured
+                let isCurrent = i == captured && activePoseIndex == i
+                Circle()
+                    .fill(isCaptured ? Theme.brandGreen : Theme.muted.opacity(0.3))
+                    .frame(width: isCurrent ? 14 : 10, height: isCurrent ? 14 : 10)
+                    .overlay(
+                        Circle()
+                            .stroke(Theme.brandGreen, lineWidth: isCurrent ? 2 : 0)
+                            .frame(width: 22, height: 22)
+                    )
+                    .animation(.easeInOut(duration: 0.2), value: captured)
+            }
+            Spacer()
+            Text(progressSummary)
                 .font(.caption)
-                .foregroundStyle(statusColor)
-            Text(statusLabel)
-                .font(.caption)
+                .foregroundStyle(Theme.muted)
+        }
+        .padding(.horizontal, 4)
+    }
+
+    // Main instruction to the user — big, high-contrast.
+    @ViewBuilder
+    private var promptBlock: some View {
+        switch coordinator.state {
+        case .readyForPose(let pose, _, _):
+            HStack(spacing: 12) {
+                Image(systemName: pose.sfSymbol)
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text(pose.prompt)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+            }
+        case .readyToVerify(let n):
+            HStack(spacing: 12) {
+                Image(systemName: "checkmark.seal")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("\(n) frames captured — ready to verify")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .verifying(let phase):
+            HStack(spacing: 12) {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .tint(Theme.brandGreen)
+                Text(phase == .signing ? "Signing with App Attest…" : "Sealing commitment…")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .sealed(let c):
+            HStack(spacing: 12) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("Sealed — \(shortHash(c.commitmentHashHex))")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .failed(let msg):
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                Text(msg)
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+                    .multilineTextAlignment(.leading)
+                Spacer()
+            }
+        case .needsAttestation:
+            Text("App Attest not completed — return home and wait for it to finish, then come back.")
+                .font(.callout)
+                .foregroundStyle(Theme.muted)
+        case .unsupported:
+            Text("App Attest is unsupported on this device.")
+                .font(.callout)
+                .foregroundStyle(.orange)
+        case .idle:
+            Text("Starting…")
+                .font(.callout)
                 .foregroundStyle(Theme.muted)
         }
     }
 
-    private var statusIcon: String {
+    @ViewBuilder
+    private var primaryButton: some View {
         switch coordinator.state {
-        case .idle: return "camera"
-        case .unsupported, .needsAttestation: return "exclamationmark.triangle.fill"
-        case .capturing, .signing, .sealing: return "hourglass"
-        case .sealed: return "checkmark.seal.fill"
-        case .failed: return "exclamationmark.triangle.fill"
+        case .readyForPose:
+            bigGreenButton(title: "Capture") { coordinator.capturePose() }
+        case .readyToVerify:
+            bigGreenButton(title: "Verify") { coordinator.verify() }
+        case .verifying:
+            bigGreenButton(title: verifyButtonLabel, enabled: false) { }
+        case .failed:
+            bigGreenButton(title: "Retry") { coordinator.begin() }
+        case .sealed:
+            bigGreenButton(title: "Done", enabled: false) { }
+        case .idle, .needsAttestation, .unsupported:
+            EmptyView()
         }
     }
 
-    private var statusColor: Color {
+    private func bigGreenButton(title: String, enabled: Bool = true, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                .foregroundStyle(.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Theme.brandGreen)
+                .cornerRadius(12)
+                .opacity(enabled ? 1.0 : 0.5)
+        }
+        .disabled(!enabled)
+    }
+
+    // MARK: — derived values
+
+    private var currentCapturedCount: Int {
         switch coordinator.state {
-        case .sealed: return Theme.brandGreen
-        case .failed, .unsupported, .needsAttestation: return .orange
-        default: return Theme.muted
+        case .readyForPose(_, let captured, _): return captured
+        case .readyToVerify(let n): return n
+        case .verifying, .sealed: return LivenessPose.allCases.count
+        default: return 0
         }
     }
 
-    private var statusLabel: String {
+    private var activePoseIndex: Int {
+        if case .readyForPose(_, let captured, _) = coordinator.state { return captured }
+        return -1
+    }
+
+    private var progressSummary: String {
+        let total = LivenessPose.allCases.count
         switch coordinator.state {
-        case .idle: return "Tap capture to start"
-        case .unsupported: return "App Attest unsupported on this device"
-        case .needsAttestation: return "App Attest not completed — return home and wait"
-        case .capturing: return "Capturing frame…"
-        case .signing: return "Signing with App Attest…"
-        case .sealing: return "Sealing commitment…"
-        case .sealed(let c): return "Sealed — \(shortHash(c.commitmentHashHex))"
-        case .failed(let msg): return "Failed: \(msg)"
+        case .readyForPose(_, let captured, _): return "\(captured) of \(total)"
+        case .readyToVerify: return "\(total) of \(total)"
+        case .verifying, .sealed: return "done"
+        default: return ""
         }
     }
 
-    private var buttonLabel: String {
-        switch coordinator.state {
-        case .capturing: return "Capturing…"
-        case .signing: return "Signing…"
-        case .sealing: return "Sealing…"
-        case .sealed: return "Capture again"
-        default: return "Capture"
+    private var verifyButtonLabel: String {
+        if case .verifying(let phase) = coordinator.state {
+            return phase == .signing ? "Signing…" : "Sealing…"
         }
+        return "Working…"
     }
 
-    private var buttonEnabled: Bool {
-        switch coordinator.state {
-        case .capturing, .signing, .sealing: return false
-        case .unsupported, .needsAttestation: return false
-        default: break
-        }
-        switch camera.state {
-        case .authorizing, .unauthorized, .failed: return false
-        default: return true
-        }
-    }
+    // MARK: — error banners (unchanged)
 
     private var unauthorizedBanner: some View {
         VStack(alignment: .leading, spacing: 12) {
