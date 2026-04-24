@@ -58,7 +58,7 @@ struct AnchorCommitmentRequest: Encodable, Sendable {
     }
 }
 
-struct AnchorCommitmentResult: Decodable, Sendable {
+struct AnchorCommitmentResult: Decodable, Sendable, Equatable {
     let accepted: Bool
     let slot: Int64?
     let txSignature: String?

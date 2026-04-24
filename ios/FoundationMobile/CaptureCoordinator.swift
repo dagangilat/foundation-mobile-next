@@ -36,17 +36,27 @@ final class CaptureCoordinator: ObservableObject {
 
     @Published private(set) var state: State = .idle
 
+    // Server-audit status for the most recently sealed commitment. Tracked
+    // separately from `state` so CaptureView can auto-dismiss on `.sealed`
+    // and HomeView can keep rendering the anchor status live as the server
+    // round-trip completes (or fails). Reset to `.notAttempted` on begin().
+    @Published private(set) var anchorStatus: AnchorStatus = .notAttempted
+
     // In-memory only. Dropped as soon as the combined hash is computed in
     // `verify()`; never written to disk, never uploaded. Honors the
     // "nothing identifying leaves this device" invariant.
     private var capturedJpegs: [Data] = []
     private var task: Task<Void, Never>?
+    private var anchorTask: Task<Void, Never>?
 
     // Begin a fresh capture run. Call from CaptureView.onAppear.
     func begin() {
         task?.cancel()
+        anchorTask?.cancel()
         task = nil
+        anchorTask = nil
         capturedJpegs.removeAll()
+        anchorStatus = .notAttempted
 
         guard DCAppAttestService.shared.isSupported else {
             state = .unsupported
@@ -141,22 +151,69 @@ final class CaptureCoordinator: ObservableObject {
                 self.state = .verifying(phase: .sealing)
                 let commitment = EnclaveSeal.seal(artifacts: artifacts)
                 self.state = .sealed(commitment)
+                self.submitAnchor(commitment: commitment, artifacts: artifacts)
             } catch {
                 self.state = .failed(String(describing: error))
             }
         }
     }
 
+    // Fire-and-forget the server audit call. Runs alongside the auto-dismiss
+    // in CaptureView so HomeView is already visible when the anchor result
+    // arrives — @Published anchorStatus drives live HomeView updates without
+    // blocking the user's return-home transition.
+    private func submitAnchor(commitment: EnclaveSeal.Commitment, artifacts: [ProofArtifact]) {
+        anchorStatus = .pending
+        anchorTask = Task { [weak self] in
+            let req = AnchorCommitmentRequest(
+                commitment: .init(
+                    hashHex: commitment.commitmentHashHex,
+                    producedAtMs: commitment.producedAtMs,
+                    kinds: commitment.artifactKinds.map { $0.rawValue }
+                ),
+                artifacts: artifacts.map {
+                    .init(
+                        kind: $0.kind.rawValue,
+                        producedAtMs: $0.producedAtMs,
+                        payloadHashHex: $0.payloadHashHex,
+                        signatureBase64: $0.signatureBase64
+                    )
+                }
+            )
+            do {
+                let result = try await FunctionsService.shared.anchorCommitment(req)
+                self?.anchorStatus = .completed(result)
+            } catch {
+                self?.anchorStatus = .failed(String(describing: error))
+            }
+        }
+    }
+
     func reset() {
         task?.cancel()
+        anchorTask?.cancel()
         task = nil
+        anchorTask = nil
         capturedJpegs.removeAll()
+        anchorStatus = .notAttempted
         state = .idle
     }
 }
 
 enum CaptureCoordinatorError: Error {
     case duplicateArtifact(ProofArtifact.Kind)
+}
+
+// Server-audit + on-chain anchor status for a sealed commitment. `pending`
+// fires as soon as the seal lands; `completed` carries the server's reply
+// (which itself may say accepted=false / solana-anchor-not-wired until the
+// Anchor program ships the commitment-anchor instruction). `failed` captures
+// network / auth errors before any server-level response.
+enum AnchorStatus: Equatable {
+    case notAttempted
+    case pending
+    case completed(AnchorCommitmentResult)
+    case failed(String)
 }
 
 // Pose prompts for the multi-frame liveness sequence. Until Phase 4's real

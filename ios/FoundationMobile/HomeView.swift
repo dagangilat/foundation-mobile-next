@@ -186,8 +186,26 @@ struct HomeView: View {
         case .readyToVerify: return "Humanity — ready to verify"
         case .verifying(let phase):
             return phase == .signing ? "Humanity — signing…" : "Humanity — sealing…"
-        case .sealed: return "Humanity — sealed"
+        case .sealed: return "Humanity — sealed · \(anchorSuffix)"
         case .failed(let msg): return "Humanity — failed: \(msg)"
+        }
+    }
+
+    // Trailing status for the sealed row — visible once the commitment lands
+    // locally, then updates live as the server-audit call returns.
+    private var anchorSuffix: String {
+        switch capture.anchorStatus {
+        case .notAttempted: return "audit pending"
+        case .pending: return "auditing…"
+        case .completed(let r):
+            if r.accepted, let slot = r.slot {
+                return "audited · chain slot \(slot)"
+            }
+            if let reason = r.reason, !reason.isEmpty {
+                return "audited · \(reason)"
+            }
+            return r.accepted ? "audited" : "audit rejected"
+        case .failed(let msg): return "audit failed: \(msg.prefix(40))"
         }
     }
 
