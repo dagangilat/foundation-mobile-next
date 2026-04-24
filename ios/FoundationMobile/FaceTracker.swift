@@ -53,12 +53,18 @@ struct FaceStatus: Equatable {
     )
 }
 
+// Minimum VNFaceObservation.confidence for a detection to count toward
+// matchesTargetPose. Below this we surface the face (so the ellipse can
+// still track the user) but never flip the "pose held" signal. Declared at
+// file scope (non-isolated) so the nonisolated Vision request can read it
+// without tripping Swift 6 actor-isolation errors.
+private let faceTrackerMinConfidence: Float = 0.5
+
 @MainActor
 final class FaceTracker: ObservableObject {
-    // Minimum VNFaceObservation.confidence for a detection to count toward
-    // matchesTargetPose. Below this we surface the face (so the ellipse can
-    // still track the user) but never flip the "pose held" signal.
-    static let minConfidence: Float = 0.5
+    // Publicly exposed for tests / views that want to show a low-light hint
+    // on the same threshold.
+    static var minConfidence: Float { faceTrackerMinConfidence }
 
     @Published private(set) var status: FaceStatus = .empty
 
@@ -170,7 +176,7 @@ final class FaceTracker: ObservableObject {
         let confidence = obs.confidence
 
         let matches: Bool = {
-            guard confidence >= FaceTracker.minConfidence else { return false }
+            guard confidence >= faceTrackerMinConfidence else { return false }
             guard let yaw, let pitch else { return false }
             return targetPose.matches(yaw: yaw, pitch: pitch)
         }()
