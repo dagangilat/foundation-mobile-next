@@ -25,6 +25,7 @@
 		916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */; };
 		ACCE88CCFDE53CDF9A9FB6B3 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */; };
 		CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */; };
+		CB2B44A02F9C480000000001 /* multiplier2_final.zkey in Resources */ = {isa = PBXBuildFile; fileRef = CB2B44A02F9C480000000002 /* multiplier2_final.zkey */; };
 		CB1D44AA2F9B36A4006DE63D /* MoproSmoke.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB1D44A92F9B3605006DE63D /* MoproSmoke.xcframework */; };
 		CB1D44AB2F9B36A4006DE63D /* MoproSmoke.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CB1D44A92F9B3605006DE63D /* MoproSmoke.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CB1D44AE2F9B37E4006DE63D /* MoproSmoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1D44AD2F9B37E4006DE63D /* MoproSmoke.swift */; };
@@ -78,6 +79,7 @@
 		BB3C48CBE0357E5145A601C5 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = FoundationMobile/HomeView.swift; sourceTree = "<group>"; };
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
 		CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "FoundationMobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CB2B44A02F9C480000000002 /* multiplier2_final.zkey */ = {isa = PBXFileReference; lastKnownFileType = file; name = "multiplier2_final.zkey"; path = "FoundationMobile/Resources/circuits/multiplier2_final.zkey"; sourceTree = "<group>"; };
 		CB1D44A92F9B3605006DE63D /* MoproSmoke.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoproSmoke.xcframework; path = "Frameworks/MoproSmoke.xcframework"; sourceTree = "<group>"; };
 		CB1D44AD2F9B37E4006DE63D /* MoproSmoke.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmoke.swift; path = "FoundationMobile/Generated/MoproSmoke.swift"; sourceTree = "<group>"; };
 		DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoadingView.swift; path = FoundationMobile/LoadingView.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */,
+				CB2B44A02F9C480000000002 /* multiplier2_final.zkey */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -245,6 +248,7 @@
 				CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				CF5CE0747DA47027EE13A3DA /* PrivacyInfo.xcprivacy in Resources */,
+				CB2B44A02F9C480000000001 /* multiplier2_final.zkey in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
