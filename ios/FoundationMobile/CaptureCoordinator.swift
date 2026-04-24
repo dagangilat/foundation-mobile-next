@@ -283,22 +283,35 @@ enum AnchorStatus: Equatable {
     case failed(String)
 }
 
-// Pose prompts for the multi-frame liveness sequence. Until Phase 4's real
-// active-liveness detector lands, these are UX theater — they drive the user
-// to move their head so multiple distinct frames land in the combined hash,
-// but the app does not verify that the head actually moved. Phase 4 adds the
-// MediaPipe check; the signature surface stays identical so migrating is a
-// drop-in.
+// Pose prompts for the multi-frame active-liveness sequence. Phase 4 replaces
+// the tap-to-capture UX with a continuous Vision-driven scan: FaceTracker
+// reads yaw/pitch on each frame and CaptureCoordinator auto-advances when the
+// user holds the target pose for POSE_HOLD_DURATION. Thresholds are in
+// radians, matched to VNFaceObservation.yaw/.pitch. Order starts with
+// .straight so the very first match is trivial and the user sees progress
+// immediately.
+//
+// Front-camera mirror: AVCaptureVideoPreviewLayer mirrors the selfie preview
+// for user display, but Vision runs on the non-mirrored CVPixelBuffer. The
+// raw yaw sign therefore matches the user's real-world head turn (positive
+// yaw = user's head rotates to the user's right = user's left ear toward
+// camera). We keep thresholds in the raw Vision frame; the ellipse overlay
+// flips X to compensate for the mirrored preview so the ellipse tracks the
+// user's face as they see it. See FaceEllipseOverlay.
 enum LivenessPose: String, CaseIterable, Equatable {
     case straight
     case left
     case right
+    case up
+    case down
 
     var prompt: String {
         switch self {
         case .straight: return "Look straight at the camera"
         case .left: return "Turn your head slowly to the left"
         case .right: return "Turn your head slowly to the right"
+        case .up: return "Tilt your head up"
+        case .down: return "Tilt your head down"
         }
     }
 
@@ -307,6 +320,69 @@ enum LivenessPose: String, CaseIterable, Equatable {
         case .straight: return "person.fill"
         case .left: return "arrow.left"
         case .right: return "arrow.right"
+        case .up: return "arrow.up"
+        case .down: return "arrow.down"
+        }
+    }
+
+    // Target yaw in radians (VNFaceObservation convention — positive = user's
+    // head rotates to the user's right / user's left ear toward camera).
+    // 0.0 where yaw is not discriminating for the pose.
+    var targetYaw: Float {
+        switch self {
+        case .straight: return 0.0
+        case .left: return -0.45
+        case .right: return 0.45
+        case .up, .down: return 0.0
+        }
+    }
+
+    // Target pitch in radians (positive = user's chin up / face tilts back).
+    var targetPitch: Float {
+        switch self {
+        case .straight, .left, .right: return 0.0
+        case .up: return 0.35
+        case .down: return -0.35
+        }
+    }
+
+    // Half-window on yaw. For yaw-dominant poses (left/right) this is the
+    // distance from 0 (so we treat the pose as held if yaw crosses the sign
+    // boundary generously). For pitch-dominant and straight, it's the
+    // allowed yaw drift while holding the pitch target.
+    var toleranceYaw: Float {
+        switch self {
+        case .straight: return 0.18
+        case .left, .right: return 0.15  // window around targetYaw
+        case .up, .down: return 0.25
+        }
+    }
+
+    // Half-window on pitch.
+    var tolerancePitch: Float {
+        switch self {
+        case .straight: return 0.18
+        case .left, .right: return 0.30
+        case .up, .down: return 0.15
+        }
+    }
+
+    // True if the observed angles fall within tolerance of the target for
+    // this pose. Straight needs both yaw AND pitch near zero; yaw-dominant
+    // poses require yaw past the threshold in the correct direction (and
+    // pitch within tolerance); same mirror for pitch-dominant.
+    func matches(yaw: Float, pitch: Float) -> Bool {
+        switch self {
+        case .straight:
+            return abs(yaw) <= toleranceYaw && abs(pitch) <= tolerancePitch
+        case .left:
+            return yaw <= (targetYaw + toleranceYaw) && abs(pitch) <= tolerancePitch
+        case .right:
+            return yaw >= (targetYaw - toleranceYaw) && abs(pitch) <= tolerancePitch
+        case .up:
+            return pitch >= (targetPitch - tolerancePitch) && abs(yaw) <= toleranceYaw
+        case .down:
+            return pitch <= (targetPitch + tolerancePitch) && abs(yaw) <= toleranceYaw
         }
     }
 }
