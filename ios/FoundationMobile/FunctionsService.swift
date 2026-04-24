@@ -28,6 +28,44 @@ struct ResendInviteLinkResult: Decodable, Sendable {
     let reason: String?
 }
 
+// Phase 2 — seal commitment anchor.
+//
+// The client produces an EnclaveSeal.Commitment locally (SHA-256 over the
+// canonical artifact bytes) and posts it here. The server re-derives the
+// canonical bytes from the same `artifacts` payload, verifies the hash
+// matches, persists to Firestore, and writes the hash to Solana devnet
+// via the shared Anchor client. The mobile side never holds a Solana
+// keypair (hard invariant — see project_solana_server_side).
+//
+// `kinds` is the rawValue list of ProofArtifact.Kind values in the seal,
+// sorted the same way EnclaveSeal.seal sorts them (alphabetical by
+// rawValue). `producedAtMs` is EnclaveSeal.Commitment.producedAtMs.
+struct AnchorCommitmentRequest: Encodable, Sendable {
+    let commitment: CommitmentPayload
+    let artifacts: [ArtifactPayload]
+
+    struct CommitmentPayload: Encodable, Sendable {
+        let hashHex: String
+        let producedAtMs: Int64
+        let kinds: [String]
+    }
+
+    struct ArtifactPayload: Encodable, Sendable {
+        let kind: String
+        let producedAtMs: Int64
+        let payloadHashHex: String
+        let signatureBase64: String
+    }
+}
+
+struct AnchorCommitmentResult: Decodable, Sendable {
+    let accepted: Bool
+    let slot: Int64?
+    let txSignature: String?
+    let commitmentDocPath: String?
+    let reason: String?
+}
+
 enum FunctionsError: Error {
     case malformedResponse
 }
@@ -57,6 +95,12 @@ actor FunctionsService {
             "platform": "ios",
         ])
         return try decode(ResendInviteLinkResult.self, from: result.data)
+    }
+
+    func anchorCommitment(_ req: AnchorCommitmentRequest) async throws -> AnchorCommitmentResult {
+        let payload = try encodeToDict(req)
+        let result = try await functions.httpsCallable("anchorCommitment").call(payload)
+        return try decode(AnchorCommitmentResult.self, from: result.data)
     }
 
     private func decode<T: Decodable>(_: T.Type, from raw: Any) throws -> T {
