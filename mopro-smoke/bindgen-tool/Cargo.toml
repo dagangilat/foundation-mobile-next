@@ -1,0 +1,17 @@
+[package]
+name = "mopro-smoke-bindgen-tool"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Thin wrapper around `uniffi::uniffi_bindgen_main()` so build-xcframework.sh can generate Swift bindings without polluting mopro_smoke's extern prelude."
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/main.rs"
+
+[dependencies]
+# MUST match mopro-ffi 0.3.5's `uniffi = "=0.29.0"` pin exactly. The CLI feature
+# brings in clap + the `uniffi_bindgen_main` entry point — required for the
+# `cargo run --bin uniffi-bindgen -- generate ...` invocation in
+# ../build-xcframework.sh.
+uniffi = { version = "=0.29.0", features = ["cli"] }
