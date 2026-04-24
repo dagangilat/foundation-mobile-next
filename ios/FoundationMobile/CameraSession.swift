@@ -28,9 +28,15 @@ final class CameraSession: NSObject, ObservableObject {
 
     enum CameraError: Error {
         case noFrontCamera
+        case captureTimeout
     }
 
     @Published private(set) var state: State = .idle
+
+    // AVCaptureVideoPreviewLayer must bind directly to the session; a wrapping
+    // accessor is the only seam we expose. Everything else goes through
+    // `frames()` / `captureOneFrame()`.
+    var underlyingSession: AVCaptureSession { session }
 
     private let session = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
@@ -41,6 +47,30 @@ final class CameraSession: NSObject, ObservableObject {
 
     private var continuations: [UUID: AsyncStream<FrameBuffer>.Continuation] = [:]
     private var isConfigured = false
+
+    // One-shot capture for Phase 4 liveness: subscribes to `frames()`, returns
+    // the first frame, tears the subscription down immediately. Throws
+    // `captureTimeout` if no frame arrives within `timeout`.
+    func captureOneFrame(timeout: Duration = .seconds(3)) async throws -> FrameBuffer {
+        let stream = frames()
+        return try await withThrowingTaskGroup(of: FrameBuffer.self) { group in
+            group.addTask {
+                for await frame in stream {
+                    return frame
+                }
+                throw CameraError.captureTimeout
+            }
+            group.addTask {
+                try await Task.sleep(for: timeout)
+                throw CameraError.captureTimeout
+            }
+            guard let frame = try await group.next() else {
+                throw CameraError.captureTimeout
+            }
+            group.cancelAll()
+            return frame
+        }
+    }
 
     func frames() -> AsyncStream<FrameBuffer> {
         let id = UUID()

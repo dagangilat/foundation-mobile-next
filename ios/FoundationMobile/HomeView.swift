@@ -6,6 +6,7 @@ struct HomeView: View {
     @StateObject private var firestore = FirestoreService.shared
     @StateObject private var attestation = AttestationCoordinator.shared
     @State private var proofSmoke: SmokeProofResult = .skipped
+    @StateObject private var capture = CaptureCoordinator.shared
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -14,16 +15,24 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                header
-                solanaPill
-                hero
-                ringCard
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    header
+                    solanaPill
+                    hero
+                    ringCard
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 40)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .padding(.bottom, 40)
+            .navigationDestination(for: HomeView.Route.self) { route in
+                switch route {
+                case .capture:
+                    CaptureView()
+                }
+            }
         }
         .onAppear {
             firestore.observeUser(uid: claims.uid)
@@ -32,6 +41,10 @@ struct HomeView: View {
         .task {
             proofSmoke = await MoproSmokeBridge.runMultiplier2Smoke()
         }
+    }
+
+    enum Route: Hashable {
+        case capture
     }
 
     private var header: some View {
@@ -109,12 +122,108 @@ struct HomeView: View {
             attestationRow
                 .padding(.top, 8)
             moproRow
+            captureRow
+            verifyHumanityButton
+                .padding(.top, 8)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.surface)
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.border))
         .cornerRadius(12)
+    }
+
+    @ViewBuilder
+    private var captureRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: captureIcon)
+                .font(.caption)
+                .foregroundStyle(captureColor)
+            Text(captureLabel)
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+                .lineLimit(2)
+        }
+        if case .sealed(let commitment) = capture.state {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(shortHash(commitment.commitmentHashHex))
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.brandGreen)
+                Text(kindChecklist(commitment.artifactKinds))
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(Theme.muted)
+            }
+            .padding(.leading, 20)
+        }
+    }
+
+    private var captureIcon: String {
+        switch capture.state {
+        case .idle: return "camera"
+        case .unsupported: return "iphone.slash"
+        case .needsAttestation: return "hourglass"
+        case .capturing, .signing, .sealing: return "hourglass"
+        case .sealed: return "checkmark.seal.fill"
+        case .failed: return "exclamationmark.triangle.fill"
+        }
+    }
+
+    private var captureColor: Color {
+        switch capture.state {
+        case .sealed: return Theme.brandGreen
+        case .failed: return .orange
+        default: return Theme.muted
+        }
+    }
+
+    private var captureLabel: String {
+        switch capture.state {
+        case .idle: return "Humanity — not yet verified"
+        case .unsupported: return "Humanity — requires real device"
+        case .needsAttestation: return "Humanity — App Attest pending"
+        case .capturing: return "Humanity — capturing frame…"
+        case .signing: return "Humanity — signing…"
+        case .sealing: return "Humanity — sealing…"
+        case .sealed: return "Humanity — sealed"
+        case .failed(let msg): return "Humanity — failed: \(msg)"
+        }
+    }
+
+    @ViewBuilder
+    private var verifyHumanityButton: some View {
+        let enabled = isAttested
+        NavigationLink(value: Route.capture) {
+            Text(enabled ? "Verify humanity" : "Verify humanity — App Attest pending")
+                .font(.headline)
+                .foregroundStyle(.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Theme.brandGreen)
+                .cornerRadius(10)
+                .opacity(enabled ? 1.0 : 0.5)
+        }
+        .disabled(!enabled)
+    }
+
+    private var isAttested: Bool {
+        switch attestation.state {
+        case .attested, .alreadyAttested: return true
+        default: return false
+        }
+    }
+
+    private func shortHash(_ hex: String) -> String {
+        guard hex.count > 16 else { return hex }
+        let first = hex.prefix(12)
+        let last = hex.suffix(4)
+        return "\(first)…\(last)"
+    }
+
+    private func kindChecklist(_ kinds: [ProofArtifact.Kind]) -> String {
+        let order: [ProofArtifact.Kind] = [.appAttest, .nfcZk, .liveness, .antiSpoof, .faceMatch]
+        let set = Set(kinds)
+        return order.map { set.contains($0) ? "\u{2713} \($0.rawValue)" : "\u{00B7} \($0.rawValue)" }
+            .joined(separator: "  ")
     }
 
     @ViewBuilder
