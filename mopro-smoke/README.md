@@ -50,3 +50,14 @@ If that renders on a physical device running a Xcode-Cloud-built IPA, the smoke 
 ## Xcode Cloud integration (second-stage smoke)
 
 After the local build is green, add a `rustup install` + `build-xcframework.sh` step to `ios/ci_scripts/ci_post_clone.sh` so the xcframework is produced on every cloud build. Keep the xcframework out of git — it's a 10+ MB static lib per arch.
+
+## Test vectors
+
+The Sprint-0 circuit is upstream mopro's stock `multiplier2` (`a*b=c`). It exercises the toolchain, not the circuit — Phase 3 swaps the zkey. Both files live under `test-vectors/circom/` and are committed to git (~86 KB total):
+
+| File                      | Size    | SHA-256                                                            |
+| ------------------------- | ------- | ------------------------------------------------------------------ |
+| `multiplier2_final.zkey`  | 3035 B  | `587aa7c44a0a7e507a2e7447399911bd6c631c2e0eb0a384de5d9432dc9abded` |
+| `multiplier2.wasm`        | 34283 B | `ca9cb7e633e812c5b536c58e09eadc43b75a6adbf4701eed7ff84b96ed65baeb` |
+
+Source: `http://ci-keys.zkmopro.org/` (upstream mopro CI fixtures).
