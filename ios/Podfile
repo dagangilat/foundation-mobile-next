@@ -9,6 +9,9 @@ target 'FoundationMobile' do
   pod 'Firebase/Firestore'
   pod 'Firebase/Functions'
   pod 'FirebaseAppCheck'
+  # Phase 3a — ePassport ICAO 9303 reader (BAC + PACE + passive auth).
+  # Bundles CSCA masterlist; handles DG1/SOD parsing + MRZ-derived BAC keys.
+  pod 'NFCPassportReader', '~> 2.0'
 end
 
 # Firebase 12 + CocoaPods 1.16 + device SDK surface a strict framework-header
