@@ -63,12 +63,13 @@ actor AttestationService {
     }
 
     /// Full nonce → attest → submit round-trip. Feeds the Phase 7 enclave seal
-    /// via the `recordMobileAttestation` callable.
+    /// via the `recordMobileAttestation` callable. Persists the attested keyId
+    /// so future runs use `generateAssertion` instead.
     func attestDeviceEndToEnd() async throws -> RecordAttestationResult {
         let nonce = try await FunctionsService.shared.issueAttestationNonce()
         let keyId = try await generateKey()
         let attestation = try await attestKey(keyId: keyId, challengeBase64: nonce.nonce)
-        return try await FunctionsService.shared.recordMobileAttestation(
+        let result = try await FunctionsService.shared.recordMobileAttestation(
             RecordAttestationRequest(
                 nonce: nonce.nonce,
                 attestation: .init(
@@ -78,5 +79,9 @@ actor AttestationService {
                 )
             )
         )
+        if result.accepted {
+            Keychain.setAttestedKeyId(keyId)
+        }
+        return result
     }
 }

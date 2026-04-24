@@ -4,6 +4,7 @@ import Security
 enum Keychain {
     private static let service = "com.foundationglobal.mobile"
     private static let pendingEmailAccount = "pendingSignInEmail"
+    private static let attestKeyIdAccount = "appAttestKeyId"
 
     static func setPendingEmail(_ email: String) {
         write(account: pendingEmailAccount, value: Data(email.utf8))
@@ -16,6 +17,22 @@ enum Keychain {
 
     static func clearPendingEmail() {
         delete(account: pendingEmailAccount)
+    }
+
+    // App Attest keys are bound to the device + this bundle id. Persist the
+    // keyId after a successful attestation so subsequent launches skip the
+    // generateKey → attestKey round-trip and use `generateAssertion` instead.
+    static func setAttestedKeyId(_ keyId: String) {
+        write(account: attestKeyIdAccount, value: Data(keyId.utf8))
+    }
+
+    static func getAttestedKeyId() -> String? {
+        guard let data = read(account: attestKeyIdAccount) else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+
+    static func clearAttestedKeyId() {
+        delete(account: attestKeyIdAccount)
     }
 
     private static func baseQuery(account: String) -> [String: Any] {

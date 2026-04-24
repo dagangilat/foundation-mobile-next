@@ -27,7 +27,7 @@ Any code path that uploads DG2 photos, selfie frames, MRZ strings, or raw biomet
 | Phase | Summary | Status |
 |---|---|---|
 | 0 | SwiftUI app shell, Firebase sign-in, ring-tier display | ✅ Done (2026-04-24) — email-link sign-in + Ring 0 render verified on device |
-| 1 | App Attest (first real integration) | In progress — Swift `AttestationService` landed; backend verifier pending |
+| 1 | App Attest (first real integration) | Mobile client complete (service + coordinator + UI); backend verifier + portal/console config pending |
 | 2 | Solana Groth16 verifier (backend Anchor program) | Pending |
 | 3 | NFC + ZK via MOPRO-bound Self circuits | Pending |
 | 4 | Active liveness + nonce binding (MediaPipe via XCFramework) | Pending |
@@ -65,8 +65,9 @@ Verified on device:
 - App Check debug provider wired on simulator; real App Attest wiring for device lands in Phase 1.
 
 Open Phase 0 housekeeping (not blocking Phase 1):
-- Confirm `PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile` in `ios/FoundationMobile.xcodeproj/project.pbxproj` (Debug + Release) matches the Apple Developer portal identifier used for App Attest.
 - Finalize `GoogleService-Info.plist` policy (commit vs. `.gitignore` + CI-injected).
+
+(`PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile` is already set in both Debug and Release configurations.)
 
 ## Phase 1 — Platform attestation (Swift)
 
@@ -77,8 +78,16 @@ Two layers — don't conflate them:
 - **Coarse request gating: Firebase App Check** (delegates App Attest to Firebase, which verifies against Apple public keys). Wired via `AppCheck.setAppCheckProviderFactory(...)` *before* `FirebaseApp.configure()` in `AppDelegate`. Backend enforcement already plumbed in `foundation-global/functions/lib/app-check.js` — flip `ENFORCE_APP_CHECK=true` in the functions env to reject unattested requests.
 - **Fine-grained attestation payload** (for the Phase 7 enclave-seal hash): `AttestationService` exposes `attestDeviceEndToEnd()` which runs `issueAttestationNonce` → `DCAppAttestService.generateKey` / `attestKey(clientDataHash:)` → `recordMobileAttestation`. App Check's opaque token isn't suitable for that payload.
 
-Phase 1 remainder (deployment + config):
-1. Apple Developer portal: enable "App Attest" on the standardized bundle id.
+Phase 1 mobile client (in-repo):
+- `AppCheckFactory` picks `AppCheckDebugProvider` on simulator and `AppAttestProvider` on device, wired from `AppDelegate` before `FirebaseApp.configure()`.
+- `AttestationService.attestDeviceEndToEnd()` runs `issueAttestationNonce` → `generateKey` → `attestKey(clientDataHash:)` → `recordMobileAttestation`, and persists the attested keyId in Keychain on success for reuse via `generateAssertion`.
+- `AttestationCoordinator` kicks off once per session after sign-in, short-circuits on simulator (App Attest unsupported) and on devices with a persisted keyId, and publishes state for the UI.
+- `HomeView` surfaces the coordinator's state as a small status row in the ring card so device attestation is visible during the demo and debugging.
+- Entitlements (`com.apple.developer.devicecheck.appattest-environment = development`) and bundle id (`com.foundationglobal.mobile`) are in place.
+
+Phase 1 remainder (out-of-repo deployment + config):
+1. Apple Developer portal: enable "App Attest" on the bundle id.
 2. Firebase console → App Check: register the iOS app (App Attest provider); generate a debug token for the simulator.
-3. Functions env: set `ENFORCE_APP_CHECK=true` once the Swift client reliably attaches tokens.
-4. `recordMobileAttestation` callable in `foundation-global/functions/` accepts `{ platform: 'ios', keyId, attestation }` and writes to the user's `identity_proofs` doc — feeds the Phase 7 enclave seal.
+3. `foundation-global/functions/`: `recordMobileAttestation` callable accepts `{ platform: 'ios', keyId, attestation }`, verifies the CBOR attestation against Apple roots, and writes to the user's `identity_proofs` doc — feeds the Phase 7 enclave seal.
+4. Functions env: set `ENFORCE_APP_CHECK=true` once the Swift client reliably attaches tokens and the verifier is live.
+5. On-device verification: clean install → email-link sign-in → attestation row transitions to "device attested".

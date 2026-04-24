@@ -4,6 +4,7 @@ struct HomeView: View {
     let claims: Claims
 
     @StateObject private var firestore = FirestoreService.shared
+    @StateObject private var attestation = AttestationCoordinator.shared
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -23,7 +24,10 @@ struct HomeView: View {
             .padding(.top, 20)
             .padding(.bottom, 40)
         }
-        .onAppear { firestore.observeUser(uid: claims.uid) }
+        .onAppear {
+            firestore.observeUser(uid: claims.uid)
+            attestation.start()
+        }
     }
 
     private var header: some View {
@@ -98,11 +102,53 @@ struct HomeView: View {
                     .foregroundStyle(Theme.muted)
                     .padding(.top, 4)
             }
+            attestationRow
+                .padding(.top, 8)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.surface)
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.border))
         .cornerRadius(12)
+    }
+
+    @ViewBuilder
+    private var attestationRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: attestationIcon)
+                .font(.caption)
+                .foregroundStyle(attestationColor)
+            Text(attestationLabel)
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+        }
+    }
+
+    private var attestationIcon: String {
+        switch attestation.state {
+        case .idle, .attesting: return "hourglass"
+        case .unsupported: return "iphone.slash"
+        case .alreadyAttested, .attested: return "checkmark.seal.fill"
+        case .failed: return "exclamationmark.triangle.fill"
+        }
+    }
+
+    private var attestationColor: Color {
+        switch attestation.state {
+        case .attested, .alreadyAttested: return Theme.brandGreen
+        case .failed: return .orange
+        default: return Theme.muted
+        }
+    }
+
+    private var attestationLabel: String {
+        switch attestation.state {
+        case .idle: return "App Attest — queued"
+        case .unsupported: return "App Attest — simulator (debug provider)"
+        case .attesting: return "App Attest — attesting…"
+        case .alreadyAttested: return "App Attest — device attested"
+        case .attested: return "App Attest — device attested"
+        case .failed(let msg): return "App Attest — failed: \(msg)"
+        }
     }
 }
