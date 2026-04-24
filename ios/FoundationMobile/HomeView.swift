@@ -195,19 +195,30 @@ struct HomeView: View {
     }
 
     // Trailing status for the sealed row — visible once the commitment lands
-    // locally, then updates live as the server-audit call returns.
+    // locally, then updates live as the server-audit call returns. The
+    // callable returns immediately with status:"queued" and the on-chain
+    // write happens async (Cloud Tasks → identity_commitments program on
+    // devnet). Firestore onSnapshot subscription for live queued→anchored
+    // transitions is the next polish.
     private var anchorSuffix: String {
         switch capture.anchorStatus {
         case .notAttempted: return "audit pending"
         case .pending: return "auditing…"
         case .completed(let r):
-            if r.accepted, let slot = r.slot {
-                return "audited · chain slot \(slot)"
+            switch r.status {
+            case "anchored":
+                if let slot = r.slot { return "anchored · slot \(slot)" }
+                return "anchored"
+            case "queued":
+                return "queued · anchoring on devnet…"
+            case "anchor-failed":
+                return "anchor failed — retrying"
+            default:
+                // Legacy stub or unknown status — fall back to accepted/reason.
+                if r.accepted, let slot = r.slot { return "anchored · slot \(slot)" }
+                if let reason = r.reason, !reason.isEmpty { return reason }
+                return r.accepted ? "sealed" : "audit rejected"
             }
-            if let reason = r.reason, !reason.isEmpty {
-                return "audited · \(reason)"
-            }
-            return r.accepted ? "audited" : "audit rejected"
         case .failed(let msg): return "audit failed: \(msg.prefix(40))"
         }
     }

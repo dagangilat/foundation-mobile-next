@@ -60,9 +60,16 @@ struct AnchorCommitmentRequest: Encodable, Sendable {
 
 struct AnchorCommitmentResult: Decodable, Sendable, Equatable {
     let accepted: Bool
+    // "queued" — server enqueued the on-chain write; poll the Firestore doc
+    // at commitmentDocPath for the transition to "anchored" or "anchor-failed".
+    // "anchored" — tx landed on-chain; slot + txSignature populated.
+    // "anchor-failed" — DLQ'd after 24h retry budget.
+    // nil — legacy stub response shape (pre-2026-04-25 deploy).
+    let status: String?
     let slot: Int64?
     let txSignature: String?
     let commitmentDocPath: String?
+    let recordAddress: String?
     let reason: String?
 }
 
