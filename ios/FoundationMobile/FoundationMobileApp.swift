@@ -11,14 +11,7 @@ struct FoundationMobileApp: App {
                 .environmentObject(auth)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in
-                    Task {
-                        do {
-                            _ = try await AuthService.shared.completeSignIn(url: url)
-                        } catch {
-                            // Keep silent — the UI stays on SignInView and the
-                            // user can re-send the link. No PII in logs.
-                        }
-                    }
+                    Task { await AuthService.shared.handleDeepLink(url: url) }
                 }
         }
     }

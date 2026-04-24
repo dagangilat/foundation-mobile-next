@@ -34,7 +34,14 @@ struct RootView: View {
             case .loading:
                 LoadingView()
             case .signedOut:
-                SignInView()
+                // While a Universal Link is being consumed, keep LoadingView
+                // on screen with a contextual message instead of flashing the
+                // SignInView form for the ~1s network round-trip.
+                if auth.isCompletingSignIn {
+                    LoadingView(message: "Signing you in…")
+                } else {
+                    SignInView()
+                }
             case .signedIn(let claims):
                 HomeView(claims: claims)
             }

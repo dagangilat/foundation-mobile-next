@@ -3,6 +3,7 @@ import SwiftUI
 struct SignInView: View {
     enum Status { case idle, sending, sent, error }
 
+    @EnvironmentObject var auth: AuthService
     @State private var email: String = ""
     @State private var status: Status = .idle
     @State private var errorText: String = ""
@@ -59,6 +60,13 @@ struct SignInView: View {
             Text("Enter your invited email. We'll send a one-tap sign-in link.")
                 .foregroundStyle(Theme.muted)
 
+            // Deep-link failures surface here (expired / reused / wrong-device
+            // link). Cleared the moment the user edits the email — treating
+            // input as intent to retry.
+            if let deepLinkError = auth.deepLinkError {
+                deepLinkErrorCard(deepLinkError)
+            }
+
             TextField("", text: $email,
                       prompt: Text("Email").foregroundColor(Theme.muted))
                 .keyboardType(.emailAddress)
@@ -71,6 +79,9 @@ struct SignInView: View {
                 .cornerRadius(8)
                 .foregroundStyle(.white)
                 .disabled(status == .sending || status == .sent)
+                .onChange(of: email) { _, _ in
+                    if auth.deepLinkError != nil { auth.deepLinkError = nil }
+                }
 
             submitButton
 
@@ -83,6 +94,24 @@ struct SignInView: View {
                 EmptyView()
             }
         }
+    }
+
+    private func deepLinkErrorCard(_ text: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 18))
+                .foregroundStyle(.orange)
+            Text(text)
+                .font(.callout)
+                .foregroundStyle(.white)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.surface)
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.orange.opacity(0.5)))
+        .cornerRadius(10)
     }
 
     private var submitButton: some View {
@@ -148,7 +177,7 @@ struct SignInView: View {
             status = .sent
         } catch {
             status = .error
-            errorText = error.localizedDescription
+            errorText = AuthCopy.friendly(error)
         }
     }
 }

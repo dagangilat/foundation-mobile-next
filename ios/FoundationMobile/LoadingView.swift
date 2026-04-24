@@ -1,10 +1,14 @@
 import SwiftUI
 
-// Shown while Firebase Auth resolves the initial state. Matches the HomeView
-// hero exactly (shield + wordmark + Solana pill + three pillars) so the user
-// perceives UILaunchScreen → LoadingView → HomeView as one continuous opening
-// sequence. The subtle spinner at the bottom is the only thing that differs.
+// Shown while Firebase Auth resolves the initial state, and while a Universal
+// Link is being consumed. Matches the HomeView hero exactly (shield + wordmark
+// + Solana pill + three pillars) so the user perceives UILaunchScreen →
+// LoadingView → HomeView as one continuous opening sequence. The subtle
+// spinner at the bottom is the only thing that differs. `message` lets the
+// deep-link handoff show "Signing you in…" instead of the startup copy.
 struct LoadingView: View {
+    var message: String = "Checking sign-in…"
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             header
@@ -68,7 +72,7 @@ struct LoadingView: View {
             ProgressView()
                 .tint(Theme.brandGreen)
                 .controlSize(.small)
-            Text("Checking sign-in…")
+            Text(message)
                 .font(.footnote)
                 .foregroundStyle(Theme.muted)
         }
