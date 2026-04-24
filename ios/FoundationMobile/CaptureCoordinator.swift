@@ -20,8 +20,13 @@ final class CaptureCoordinator: ObservableObject {
         // is how many frames are already in the buffer (0-indexed for which
         // pose is showing: pose index == captured when readyForPose fires).
         case readyForPose(pose: LivenessPose, captured: Int, total: Int)
-        // All poses captured. Waiting for the user to tap Verify.
-        case readyToVerify(framesCount: Int)
+        // All poses captured. Waiting for the user to tap "Scan passport".
+        case readyForPassport(framesCount: Int)
+        // NFC chip read in flight. Triggered after MRZScanView parses the
+        // MRZ key; the system NFC modal is drawn by CoreNFC.
+        case scanningPassport(framesCount: Int)
+        // NFC read completed. Waiting for the user to tap Verify.
+        case passportReady(framesCount: Int, passport: PassportReadResult)
         // User tapped Verify; we're signing + sealing. `phase` tells the UI
         // which of the two we're in without making the view count seconds.
         case verifying(phase: VerifyPhase)
@@ -48,14 +53,23 @@ final class CaptureCoordinator: ObservableObject {
     private var capturedJpegs: [Data] = []
     private var task: Task<Void, Never>?
     private var anchorTask: Task<Void, Never>?
+    private var passportScanTask: Task<Void, Never>?
+
+    // Tracks the pre-scan frame count so the retry path can restore the
+    // correct `.readyForPassport(framesCount:)` state after a failure
+    // without re-running the pose loop.
+    private var lastFramesCount: Int = 0
 
     // Begin a fresh capture run. Call from CaptureView.onAppear.
     func begin() {
         task?.cancel()
         anchorTask?.cancel()
+        passportScanTask?.cancel()
         task = nil
         anchorTask = nil
+        passportScanTask = nil
         capturedJpegs.removeAll()
+        lastFramesCount = 0
         anchorStatus = .notAttempted
 
         guard DCAppAttestService.shared.isSupported else {
@@ -93,7 +107,8 @@ final class CaptureCoordinator: ObservableObject {
                         total: total
                     )
                 } else {
-                    self.state = .readyToVerify(framesCount: next)
+                    self.lastFramesCount = next
+                    self.state = .readyForPassport(framesCount: next)
                 }
             } catch {
                 self.state = .failed(String(describing: error))
@@ -101,11 +116,48 @@ final class CaptureCoordinator: ObservableObject {
         }
     }
 
+    // Phase 3a — NFC chip read step. Called from CaptureView once
+    // MRZScanView hands back a parsed MRZ key. Transitions through
+    // .scanningPassport → .passportReady(...) → (user taps Verify).
+    func scanPassport(mrzKey: MRZKey) {
+        // Accept from either state — user may have just finished the pose
+        // loop (.readyForPassport) or is retrying after a scan failure
+        // (.failed, where lastFramesCount still carries the right count).
+        let frames: Int
+        switch state {
+        case .readyForPassport(let n): frames = n
+        case .failed: frames = lastFramesCount
+        default: return
+        }
+
+        state = .scanningPassport(framesCount: frames)
+        passportScanTask?.cancel()
+        passportScanTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let result = try await PassportNFCReader.shared.readPassport(mrzKey: mrzKey)
+                self.state = .passportReady(framesCount: frames, passport: result)
+            } catch {
+                self.state = .failed("Passport scan failed: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    // Called from NFCScanView's retry button when the scan failed. Drops
+    // the user back to .readyForPassport so CaptureView re-presents
+    // MRZScanView. Preserves already-captured liveness frames.
+    func retryPassportFromFailure() {
+        guard case .failed = state else { return }
+        state = .readyForPassport(framesCount: lastFramesCount)
+    }
+
     // User tapped Verify: sign the combined liveness payload with App Attest,
-    // build the Phase 1 appAttest artifact, fan in mocks, seal. AttestationService
-    // self-heals on a stale keyId, so a ~5-8s stall on first run is normal.
+    // build the Phase 1 appAttest artifact, build the Phase 3a real .nfcZk
+    // artifact from the NFC scan, fan in remaining mocks, seal.
+    // AttestationService self-heals on a stale keyId, so a ~5-8s stall on
+    // first run is normal.
     func verify() {
-        guard case .readyToVerify(let framesCount) = state, framesCount > 0 else { return }
+        guard case .passportReady(let framesCount, let passport) = state, framesCount > 0 else { return }
         guard let keyId = Keychain.getAttestedKeyId() else {
             state = .needsAttestation
             return
@@ -136,8 +188,13 @@ final class CaptureCoordinator: ObservableObject {
                     payload: appAttestPayload
                 )
 
-                var artifacts: [ProofArtifact] = [appAttest, liveness]
-                for kind in [ProofArtifact.Kind.nfcZk, .antiSpoof, .faceMatch] {
+                // Phase 3a — real .nfcZk artifact bound to the captured DG1.
+                let nfcArtifact = try await PassportNfcProducer(passportData: passport).produce()
+
+                var artifacts: [ProofArtifact] = [appAttest, liveness, nfcArtifact]
+                // .nfcZk is now produced explicitly above; keep the loop for
+                // the still-mocked phases.
+                for kind in [ProofArtifact.Kind.antiSpoof, .faceMatch] {
                     guard let producer = ProofProducerRegistry.producer(for: kind) else { continue }
                     let artifact = try await producer.produce()
                     artifacts.append(artifact)
@@ -192,9 +249,12 @@ final class CaptureCoordinator: ObservableObject {
     func reset() {
         task?.cancel()
         anchorTask?.cancel()
+        passportScanTask?.cancel()
         task = nil
         anchorTask = nil
+        passportScanTask = nil
         capturedJpegs.removeAll()
+        lastFramesCount = 0
         anchorStatus = .notAttempted
         state = .idle
     }
