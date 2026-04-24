@@ -98,50 +98,33 @@ struct CaptureView: View {
         }
     }
 
+    // Phase 4 — continuous active-liveness panel. The camera preview is
+    // the stage; FaceEllipseOverlay tracks the user's face; PosePromptBar
+    // announces the current head-pose ask; PoseProgressBar runs across
+    // the whole capture. No capture button during normal flow — the
+    // coordinator auto-advances on pose-held.
     private var liveCapturePanel: some View {
         VStack(spacing: 16) {
-            CameraPreview(session: CameraSession.shared.underlyingSession)
-                .frame(maxWidth: .infinity)
-                .aspectRatio(3.0/4.0, contentMode: .fit)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.border))
+            ZStack {
+                CameraPreview(session: CameraSession.shared.underlyingSession)
+                FaceEllipseOverlay(faceStatus: coordinator.faceTracker.status)
+            }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(3.0/4.0, contentMode: .fit)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.border))
 
-            progressDots
-
-            promptBlock
+            if case .readyForPose(let pose, let captured, let total) = coordinator.state {
+                PosePromptBar(pose: pose, faceStatus: coordinator.faceTracker.status)
+                PoseProgressBar(captured: captured, total: total)
+            } else {
+                promptBlock
+            }
 
             primaryButton
 
             Spacer(minLength: 0)
         }
-    }
-
-    // Three dots tracking pose progress. Filled = captured, empty = pending,
-    // filled-with-halo = current pose.
-    @ViewBuilder
-    private var progressDots: some View {
-        let total = LivenessPose.allCases.count
-        let captured = currentCapturedCount
-        HStack(spacing: 10) {
-            ForEach(0..<total, id: \.self) { i in
-                let isCaptured = i < captured
-                let isCurrent = i == captured && activePoseIndex == i
-                Circle()
-                    .fill(isCaptured ? Theme.brandGreen : Theme.muted.opacity(0.3))
-                    .frame(width: isCurrent ? 14 : 10, height: isCurrent ? 14 : 10)
-                    .overlay(
-                        Circle()
-                            .stroke(Theme.brandGreen, lineWidth: isCurrent ? 2 : 0)
-                            .frame(width: 22, height: 22)
-                    )
-                    .animation(.easeInOut(duration: 0.2), value: captured)
-            }
-            Spacer()
-            Text(progressSummary)
-                .font(.caption)
-                .foregroundStyle(Theme.muted)
-        }
-        .padding(.horizontal, 4)
     }
 
     // Main instruction to the user — big, high-contrast.
@@ -237,7 +220,9 @@ struct CaptureView: View {
     private var primaryButton: some View {
         switch coordinator.state {
         case .readyForPose:
-            bigGreenButton(title: "Capture") { coordinator.capturePose() }
+            // Phase 4 — no manual Capture button during the pose loop.
+            // CaptureCoordinator auto-advances on a 500ms pose hold.
+            EmptyView()
         case .readyForPassport:
             bigGreenButton(title: "Scan passport") { isShowingMRZScan = true }
         case .scanningPassport:
@@ -276,33 +261,6 @@ struct CaptureView: View {
     }
 
     // MARK: — derived values
-
-    private var currentCapturedCount: Int {
-        switch coordinator.state {
-        case .readyForPose(_, let captured, _): return captured
-        case .readyForPassport(let n): return n
-        case .scanningPassport(let n): return n
-        case .passportReady(let n, _): return n
-        case .verifying, .sealed: return LivenessPose.allCases.count
-        default: return 0
-        }
-    }
-
-    private var activePoseIndex: Int {
-        if case .readyForPose(_, let captured, _) = coordinator.state { return captured }
-        return -1
-    }
-
-    private var progressSummary: String {
-        let total = LivenessPose.allCases.count
-        switch coordinator.state {
-        case .readyForPose(_, let captured, _): return "\(captured) of \(total)"
-        case .readyForPassport, .scanningPassport, .passportReady:
-            return "\(total) of \(total) · passport"
-        case .verifying, .sealed: return "done"
-        default: return ""
-        }
-    }
 
     private var verifyButtonLabel: String {
         if case .verifying(let phase) = coordinator.state {

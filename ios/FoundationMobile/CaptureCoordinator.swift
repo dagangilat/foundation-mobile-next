@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import CryptoKit
 import DeviceCheck
 
@@ -60,6 +61,40 @@ final class CaptureCoordinator: ObservableObject {
     // without re-running the pose loop.
     private var lastFramesCount: Int = 0
 
+    // Phase 4 — active-liveness face tracker. Exposed so the view can
+    // observe @Published status for overlay rendering. Lifecycle is
+    // owned by the coordinator: started on .readyForPose entry, stopped
+    // when pose advances / flow ends / flow restarts.
+    let faceTracker = FaceTracker()
+
+    // Pose-hold debounce: how long the user must continuously match the
+    // target pose before we auto-capture. 500ms is snappy enough to feel
+    // responsive while rejecting momentary noise in the angle signal.
+    // Easy to tune post-merge.
+    static let poseHoldDuration: Duration = .milliseconds(500)
+
+    // Timeout per pose. If the user doesn't hold the target pose for
+    // poseHoldDuration within this window, we count it as a failed
+    // attempt and either retry the same pose or fail the whole run.
+    // 15s is generous — a cooperative user nails each pose in <3s; the
+    // overage exists for first-time users fumbling with "turn up".
+    static let posePoseTimeout: Duration = .seconds(15)
+
+    // Retry budget across the whole capture run. Incremented on each
+    // per-pose timeout; exceeded → .failed.
+    static let maxRetries: Int = 3
+    private var retryCount: Int = 0
+
+    // Countdown task that fires capturePose() after the user holds the
+    // pose for poseHoldDuration. Cancelled whenever the pose match drops.
+    private var poseHoldTask: Task<Void, Never>?
+    // Per-pose timeout task. Cancelled on successful capture / pose
+    // advance / flow reset.
+    private var poseTimeoutTask: Task<Void, Never>?
+    // Subscribes to faceTracker.$status and drives the auto-capture
+    // countdown. One subscription per pose; torn down on stop.
+    private var faceTrackerCancellable: AnyCancellable?
+
     // Begin a fresh capture run. Call from CaptureView.onAppear.
     func begin() {
         task?.cancel()
@@ -72,6 +107,11 @@ final class CaptureCoordinator: ObservableObject {
         lastFramesCount = 0
         anchorStatus = .notAttempted
 
+        // Phase 4 — reset retry budget + tracker state for the new run.
+        retryCount = 0
+        tearDownPoseWatchers()
+        faceTracker.stop()
+
         guard DCAppAttestService.shared.isSupported else {
             state = .unsupported
             return
@@ -80,17 +120,27 @@ final class CaptureCoordinator: ObservableObject {
             state = .needsAttestation
             return
         }
+        let firstPose = LivenessPose.allCases[0]
         state = .readyForPose(
-            pose: LivenessPose.allCases[0],
+            pose: firstPose,
             captured: 0,
             total: LivenessPose.allCases.count
         )
+        startTracking(pose: firstPose)
     }
 
     // Grab one frame for the current pose, then advance to the next pose
-    // (or to `.readyToVerify` if this was the last one).
+    // (or to `.readyToVerify` if this was the last one). Called by the
+    // auto-capture path when faceTracker.status.matchesTargetPose stays
+    // true for poseHoldDuration; also callable directly as a debug
+    // affordance (no UI for that at present).
     func capturePose() {
         guard case .readyForPose(_, let captured, let total) = state else { return }
+
+        // Stop the watchers eagerly so no stray pose-hold / timeout
+        // fires while we're capturing and transitioning.
+        tearDownPoseWatchers()
+        faceTracker.stop()
 
         task = Task { [weak self] in
             guard let self else { return }
@@ -101,11 +151,14 @@ final class CaptureCoordinator: ObservableObject {
 
                 let next = captured + 1
                 if next < total {
+                    let nextPose = LivenessPose.allCases[next]
                     self.state = .readyForPose(
-                        pose: LivenessPose.allCases[next],
+                        pose: nextPose,
                         captured: next,
                         total: total
                     )
+                    // Restart tracker for the next pose.
+                    self.startTracking(pose: nextPose)
                 } else {
                     self.lastFramesCount = next
                     self.state = .readyForPassport(framesCount: next)
@@ -114,6 +167,90 @@ final class CaptureCoordinator: ObservableObject {
                 self.state = .failed(String(describing: error))
             }
         }
+    }
+
+    // MARK: — Phase 4 auto-capture helpers
+
+    // Start the face tracker for this pose and wire the status stream
+    // into the pose-hold countdown + per-pose timeout.
+    private func startTracking(pose: LivenessPose) {
+        tearDownPoseWatchers()
+        faceTracker.start(targetPose: pose)
+
+        // Subscribe to tracker status updates. On every emission, decide
+        // whether to start / keep / cancel the pose-hold countdown.
+        faceTrackerCancellable = faceTracker.$status
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self else { return }
+                self.handleTrackerUpdate(status: status, currentPose: pose)
+            }
+
+        // Arm the per-pose timeout. If poseHoldDuration doesn't fire
+        // within this window, we treat it as a missed attempt.
+        poseTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.posePoseTimeout)
+            if Task.isCancelled { return }
+            await MainActor.run {
+                self?.handlePoseTimeout()
+            }
+        }
+    }
+
+    private func handleTrackerUpdate(status: FaceStatus, currentPose: LivenessPose) {
+        // Only act while we're actually waiting for this pose.
+        guard case .readyForPose(let pose, _, _) = state, pose == currentPose else {
+            return
+        }
+
+        if status.matchesTargetPose {
+            // Already counting down? Let it run.
+            if poseHoldTask != nil { return }
+            poseHoldTask = Task { [weak self] in
+                try? await Task.sleep(for: Self.poseHoldDuration)
+                if Task.isCancelled { return }
+                await MainActor.run {
+                    guard let self else { return }
+                    // Still in the right state and still matching? Fire.
+                    if case .readyForPose(let p, _, _) = self.state, p == currentPose {
+                        self.capturePose()
+                    }
+                }
+            }
+        } else {
+            // Lost the pose — cancel any in-flight countdown.
+            poseHoldTask?.cancel()
+            poseHoldTask = nil
+        }
+    }
+
+    private func handlePoseTimeout() {
+        // Only count the timeout if we're actually still waiting on a
+        // pose — a successful capture between arming and firing leaves
+        // us in a different state.
+        guard case .readyForPose(let pose, let captured, let total) = state else { return }
+
+        tearDownPoseWatchers()
+        faceTracker.stop()
+
+        retryCount += 1
+        if retryCount >= Self.maxRetries {
+            state = .failed("Liveness detection failed after \(Self.maxRetries) attempts")
+            return
+        }
+        // Reset to the CURRENT pose so the user gets another shot at
+        // the same ask without replaying earlier poses.
+        state = .readyForPose(pose: pose, captured: captured, total: total)
+        startTracking(pose: pose)
+    }
+
+    private func tearDownPoseWatchers() {
+        poseHoldTask?.cancel()
+        poseHoldTask = nil
+        poseTimeoutTask?.cancel()
+        poseTimeoutTask = nil
+        faceTrackerCancellable?.cancel()
+        faceTrackerCancellable = nil
     }
 
     // Phase 3a — NFC chip read step. Called from CaptureView once
@@ -256,8 +393,15 @@ final class CaptureCoordinator: ObservableObject {
         capturedJpegs.removeAll()
         lastFramesCount = 0
         anchorStatus = .notAttempted
+        retryCount = 0
+        tearDownPoseWatchers()
+        faceTracker.stop()
         state = .idle
     }
+
+    // How many retry attempts remain for the current run. Surfaced to
+    // the view so the UI can show "1 of 3 left" style copy.
+    var retriesRemaining: Int { max(0, Self.maxRetries - retryCount) }
 
     // Helper for the view layer: distinguishes a scan-stage failure (where
     // lastFramesCount > 0 and the user is in the passport funnel) from a
@@ -283,22 +427,35 @@ enum AnchorStatus: Equatable {
     case failed(String)
 }
 
-// Pose prompts for the multi-frame liveness sequence. Until Phase 4's real
-// active-liveness detector lands, these are UX theater — they drive the user
-// to move their head so multiple distinct frames land in the combined hash,
-// but the app does not verify that the head actually moved. Phase 4 adds the
-// MediaPipe check; the signature surface stays identical so migrating is a
-// drop-in.
+// Pose prompts for the multi-frame active-liveness sequence. Phase 4 replaces
+// the tap-to-capture UX with a continuous Vision-driven scan: FaceTracker
+// reads yaw/pitch on each frame and CaptureCoordinator auto-advances when the
+// user holds the target pose for POSE_HOLD_DURATION. Thresholds are in
+// radians, matched to VNFaceObservation.yaw/.pitch. Order starts with
+// .straight so the very first match is trivial and the user sees progress
+// immediately.
+//
+// Front-camera mirror: AVCaptureVideoPreviewLayer mirrors the selfie preview
+// for user display, but Vision runs on the non-mirrored CVPixelBuffer. The
+// raw yaw sign therefore matches the user's real-world head turn (positive
+// yaw = user's head rotates to the user's right = user's left ear toward
+// camera). We keep thresholds in the raw Vision frame; the ellipse overlay
+// flips X to compensate for the mirrored preview so the ellipse tracks the
+// user's face as they see it. See FaceEllipseOverlay.
 enum LivenessPose: String, CaseIterable, Equatable {
     case straight
     case left
     case right
+    case up
+    case down
 
     var prompt: String {
         switch self {
         case .straight: return "Look straight at the camera"
         case .left: return "Turn your head slowly to the left"
         case .right: return "Turn your head slowly to the right"
+        case .up: return "Tilt your head up"
+        case .down: return "Tilt your head down"
         }
     }
 
@@ -307,6 +464,69 @@ enum LivenessPose: String, CaseIterable, Equatable {
         case .straight: return "person.fill"
         case .left: return "arrow.left"
         case .right: return "arrow.right"
+        case .up: return "arrow.up"
+        case .down: return "arrow.down"
+        }
+    }
+
+    // Target yaw in radians (VNFaceObservation convention — positive = user's
+    // head rotates to the user's right / user's left ear toward camera).
+    // 0.0 where yaw is not discriminating for the pose.
+    var targetYaw: Float {
+        switch self {
+        case .straight: return 0.0
+        case .left: return -0.45
+        case .right: return 0.45
+        case .up, .down: return 0.0
+        }
+    }
+
+    // Target pitch in radians (positive = user's chin up / face tilts back).
+    var targetPitch: Float {
+        switch self {
+        case .straight, .left, .right: return 0.0
+        case .up: return 0.35
+        case .down: return -0.35
+        }
+    }
+
+    // Half-window on yaw. For yaw-dominant poses (left/right) this is the
+    // distance from 0 (so we treat the pose as held if yaw crosses the sign
+    // boundary generously). For pitch-dominant and straight, it's the
+    // allowed yaw drift while holding the pitch target.
+    var toleranceYaw: Float {
+        switch self {
+        case .straight: return 0.18
+        case .left, .right: return 0.15  // window around targetYaw
+        case .up, .down: return 0.25
+        }
+    }
+
+    // Half-window on pitch.
+    var tolerancePitch: Float {
+        switch self {
+        case .straight: return 0.18
+        case .left, .right: return 0.30
+        case .up, .down: return 0.15
+        }
+    }
+
+    // True if the observed angles fall within tolerance of the target for
+    // this pose. Straight needs both yaw AND pitch near zero; yaw-dominant
+    // poses require yaw past the threshold in the correct direction (and
+    // pitch within tolerance); same mirror for pitch-dominant.
+    func matches(yaw: Float, pitch: Float) -> Bool {
+        switch self {
+        case .straight:
+            return abs(yaw) <= toleranceYaw && abs(pitch) <= tolerancePitch
+        case .left:
+            return yaw <= (targetYaw + toleranceYaw) && abs(pitch) <= tolerancePitch
+        case .right:
+            return yaw >= (targetYaw - toleranceYaw) && abs(pitch) <= tolerancePitch
+        case .up:
+            return pitch >= (targetPitch - tolerancePitch) && abs(yaw) <= toleranceYaw
+        case .down:
+            return pitch <= (targetPitch + tolerancePitch) && abs(yaw) <= toleranceYaw
         }
     }
 }
