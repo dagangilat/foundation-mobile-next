@@ -1,0 +1,17 @@
+[package]
+name = "mopro_smoke"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Sprint-0 smoke test that proves the UniFFI → .xcframework toolchain works on Xcode Cloud before committing to MOPRO for Phase 3 (NFC + ZK)."
+
+[lib]
+name = "mopro_smoke"
+crate-type = ["staticlib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[dependencies]
+uniffi = { version = "0.28", features = ["cli"] }

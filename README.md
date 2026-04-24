@@ -102,7 +102,7 @@ The phases fan out behind a frozen artifact contract so mobile sensor tracks, th
 
 **Sprint 0 — de-risk + contract (all in parallel):**
 1. Contract freeze — done (`ProofArtifact.swift`, `EnclaveSeal.swift`, `SensorFeatureFlags.swift` landed).
-2. MOPRO toolchain smoke test: trivial UniFFI `.xcframework` into the app on Xcode Cloud. Decide fall-back (WASM in JavaScriptCore) if the toolchain fights us. Highest-risk item in the plan.
+2. MOPRO toolchain smoke test: scaffolded in `mopro-smoke/` — a minimal Rust crate + `build-xcframework.sh` that produces `ios/Frameworks/MoproSmoke.xcframework` and `ios/FoundationMobile/Generated/MoproSmoke.swift`. `MoproSmokeBridge` gates the real call behind `-D MOPRO_LINKED` so the host app compiles without the framework. **Next step on macOS:** run `./mopro-smoke/build-xcframework.sh`, drag the xcframework + binding into Xcode, add the compile flag, verify the HomeView MOPRO row shows the real version string. If green, swapping `uniffi` for `mopro-ffi` unblocks Track B. If red, fall back to WASM in JavaScriptCore.
 3. Core ML smoke test: load Silent-Face-Anti-Spoofing + ArcFace in a throwaway Playground on iOS 16 and confirm they compile.
 4. Phase 1 backend verifier (out of this repo): `recordMobileAttestation` CBOR verify + Apple portal + Firebase console config.
 

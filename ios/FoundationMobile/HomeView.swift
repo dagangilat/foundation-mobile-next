@@ -104,6 +104,7 @@ struct HomeView: View {
             }
             attestationRow
                 .padding(.top, 8)
+            moproRow
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -149,6 +150,19 @@ struct HomeView: View {
         case .alreadyAttested: return "App Attest — device attested"
         case .attested: return "App Attest — device attested"
         case .failed(let msg): return "App Attest — failed: \(msg)"
+        }
+    }
+
+    @ViewBuilder
+    private var moproRow: some View {
+        HStack(spacing: 8) {
+            Image(systemName: MoproSmokeBridge.isLinked ? "checkmark.seal.fill" : "hammer")
+                .font(.caption)
+                .foregroundStyle(MoproSmokeBridge.isLinked ? Theme.brandGreen : Theme.muted)
+            Text(MoproSmokeBridge.hello())
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+                .lineLimit(3)
         }
     }
 }

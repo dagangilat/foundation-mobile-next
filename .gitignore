@@ -73,3 +73,9 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Rust + MOPRO smoke outputs (regenerated per build on macOS)
+target/
+**/target/
+ios/Frameworks/
+ios/FoundationMobile/Generated/
