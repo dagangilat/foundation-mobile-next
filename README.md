@@ -91,3 +91,33 @@ Phase 1 remainder (out-of-repo deployment + config):
 3. `foundation-global/functions/`: `recordMobileAttestation` callable accepts `{ platform: 'ios', keyId, attestation }`, verifies the CBOR attestation against Apple roots, and writes to the user's `identity_proofs` doc — feeds the Phase 7 enclave seal.
 4. Functions env: set `ENFORCE_APP_CHECK=true` once the Swift client reliably attaches tokens and the verifier is live.
 5. On-device verification: clean install → email-link sign-in → attestation row transitions to "device attested".
+
+## Parallel execution plan (Phases 2–11)
+
+The phases fan out behind a frozen artifact contract so mobile sensor tracks, the backend verifier track, and the Solana on-chain track can progress independently and merge in Phase 7.
+
+**Contract (frozen):** `ProofArtifact { kind, producedAtMs, payloadHashHex, signatureBase64 }` — defined in `ios/FoundationMobile/ProofArtifact.swift`. Every sensor phase emits exactly this shape; Phase 7 (`EnclaveSeal.swift`) sorts by kind, concatenates canonical bytes, SHA-256s, and submits to the Phase 2 Solana callable. Changing this shape invalidates every signed artifact — treat as load-bearing.
+
+**Feature flags:** `SensorFeatureFlags.swift` — each sensor phase has a compile-time bool. Disabled phases emit deterministic mocks so Phase 7 + Phase 2 always see a complete fan-in during development. Flip to `true` once the real sensor ships.
+
+**Sprint 0 — de-risk + contract (all in parallel):**
+1. Contract freeze — done (`ProofArtifact.swift`, `EnclaveSeal.swift`, `SensorFeatureFlags.swift` landed).
+2. MOPRO toolchain smoke test: trivial UniFFI `.xcframework` into the app on Xcode Cloud. Decide fall-back (WASM in JavaScriptCore) if the toolchain fights us. Highest-risk item in the plan.
+3. Core ML smoke test: load Silent-Face-Anti-Spoofing + ArcFace in a throwaway Playground on iOS 16 and confirm they compile.
+4. Phase 1 backend verifier (out of this repo): `recordMobileAttestation` CBOR verify + Apple portal + Firebase console config.
+
+**Sprints 1–3 — three parallel tracks, all behind feature flags:**
+- **Track A — Backend:** Phase 2 Anchor Groth16 verifier, developing against a mock commitment hash.
+- **Track B — NFC + ZK (Phase 3):** gated on Sprint 0 step 2 going green. Real NFC passport read → DG1/DG2 → Self circuit via MOPRO → `ProofArtifact(kind: .nfcZk)`.
+- **Track C — Camera sensors (Phases 4, 5, 6):** all three consume `CameraSession.shared.frames()` (one `AVCaptureSession`, many `AsyncStream` subscribers). Each phase emits its own `ProofArtifact` kind. Building them together avoids three competing capture sessions and shared-state rework later.
+
+**Sprint 4 — integration:** Phase 7 enclave seal becomes trivially small — collect available artifacts, hash, sign with Secure Enclave key, submit to the Phase 2 callable. Phase 8 ring uplift wires off the on-chain confirmation. If a sensor track slipped, Phase 7 still seals with the subset — the demo can ship partial.
+
+**Sprint 5 — ship:** Phase 9 (demo record) and Phase 10 (TestFlight) run in parallel; Phase 11 (threshold tuning) pulls from Phase 9 rehearsal telemetry.
+
+**Anti-rework rules:**
+- Nothing bypasses the `ProofArtifact` contract.
+- One camera session for Phases 4/5/6 — don't ship three.
+- Both sides of every integration develop against mocks; real wire-up happens in Sprint 4.
+- Sign-in / home path never blocks on an in-progress sensor — feature flag it off.
+- If MOPRO's toolchain fights back in Sprint 0 step 2, fall back to WASM-in-JavaScriptCore rather than letting Track B slip.
