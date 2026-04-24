@@ -258,6 +258,13 @@ final class CaptureCoordinator: ObservableObject {
         anchorStatus = .notAttempted
         state = .idle
     }
+
+    // Helper for the view layer: distinguishes a scan-stage failure (where
+    // lastFramesCount > 0 and the user is in the passport funnel) from a
+    // pose-stage failure (where a full restart is the right affordance).
+    var isAfterPoseCapture: Bool {
+        lastFramesCount > 0
+    }
 }
 
 enum CaptureCoordinatorError: Error {

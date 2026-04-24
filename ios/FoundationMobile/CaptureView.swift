@@ -6,6 +6,7 @@ struct CaptureView: View {
     @StateObject private var camera = CameraSession.shared
     @StateObject private var coordinator = CaptureCoordinator.shared
     @State private var warmupTask: Task<Void, Never>?
+    @State private var isShowingMRZScan = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -46,6 +47,17 @@ struct CaptureView: View {
                 }
             }
         }
+        .sheet(isPresented: $isShowingMRZScan) {
+            MRZScanView(
+                onParsed: { key in
+                    isShowingMRZScan = false
+                    coordinator.scanPassport(mrzKey: key)
+                },
+                onCancel: {
+                    isShowingMRZScan = false
+                }
+            )
+        }
     }
 
     @ViewBuilder
@@ -59,9 +71,31 @@ struct CaptureView: View {
         case .failed(let msg):
             failedBanner(msg)
         default:
-            liveCapturePanel
+            // Once we leave the pose-capture phase the live camera
+            // preview isn't useful — swap to the NFC host view.
+            if shouldShowNFCPanel {
+                NFCScanView(coordinator: coordinator)
+            } else {
+                liveCapturePanel
+            }
         }
         #endif
+    }
+
+    // True once we've left the pose-capture path — i.e. we're in the
+    // passport scan funnel or later. Drives the swap between the camera
+    // preview and the NFC host screen.
+    private var shouldShowNFCPanel: Bool {
+        switch coordinator.state {
+        case .readyForPassport, .scanningPassport, .passportReady:
+            return true
+        case .failed:
+            // After a passport-scan failure, stay on the NFC host so the
+            // retry button is visible.
+            return coordinator.isAfterPoseCapture
+        default:
+            return false
+        }
     }
 
     private var liveCapturePanel: some View {
@@ -126,13 +160,31 @@ struct CaptureView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer()
             }
-        case .readyToVerify(let n):
+        case .readyForPassport(let n):
             HStack(spacing: 12) {
                 Image(systemName: "checkmark.seal")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(Theme.brandGreen)
-                Text("\(n) frames captured — ready to verify")
+                Text("\(n) frames captured — scan your passport next")
                     .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .scanningPassport:
+            HStack(spacing: 12) {
+                ProgressView().progressViewStyle(.circular).tint(Theme.brandGreen)
+                Text("Reading passport chip…")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .passportReady(_, let passport):
+            HStack(spacing: 12) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("Passport scanned (\(passport.issuingCountryCode) \(passport.passportNumberMasked)) — ready to verify")
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.white)
                 Spacer()
             }
@@ -186,12 +238,22 @@ struct CaptureView: View {
         switch coordinator.state {
         case .readyForPose:
             bigGreenButton(title: "Capture") { coordinator.capturePose() }
-        case .readyToVerify:
+        case .readyForPassport:
+            bigGreenButton(title: "Scan passport") { isShowingMRZScan = true }
+        case .scanningPassport:
+            bigGreenButton(title: "Reading chip…", enabled: false) { }
+        case .passportReady:
             bigGreenButton(title: "Verify") { coordinator.verify() }
         case .verifying:
             bigGreenButton(title: verifyButtonLabel, enabled: false) { }
         case .failed:
-            bigGreenButton(title: "Retry") { coordinator.begin() }
+            // The NFC host renders its own retry button when it's visible;
+            // fall back to the full-restart button for pre-scan failures.
+            if coordinator.isAfterPoseCapture {
+                EmptyView()
+            } else {
+                bigGreenButton(title: "Retry") { coordinator.begin() }
+            }
         case .sealed:
             bigGreenButton(title: "Done", enabled: false) { }
         case .idle, .needsAttestation, .unsupported:
@@ -218,7 +280,9 @@ struct CaptureView: View {
     private var currentCapturedCount: Int {
         switch coordinator.state {
         case .readyForPose(_, let captured, _): return captured
-        case .readyToVerify(let n): return n
+        case .readyForPassport(let n): return n
+        case .scanningPassport(let n): return n
+        case .passportReady(let n, _): return n
         case .verifying, .sealed: return LivenessPose.allCases.count
         default: return 0
         }
@@ -233,7 +297,8 @@ struct CaptureView: View {
         let total = LivenessPose.allCases.count
         switch coordinator.state {
         case .readyForPose(_, let captured, _): return "\(captured) of \(total)"
-        case .readyToVerify: return "\(total) of \(total)"
+        case .readyForPassport, .scanningPassport, .passportReady:
+            return "\(total) of \(total) · passport"
         case .verifying, .sealed: return "done"
         default: return ""
         }

@@ -162,7 +162,8 @@ struct HomeView: View {
         case .idle: return "camera"
         case .unsupported: return "iphone.slash"
         case .needsAttestation: return "hourglass"
-        case .readyForPose, .readyToVerify, .verifying: return "hourglass"
+        case .readyForPose, .readyForPassport, .scanningPassport, .passportReady, .verifying:
+            return "hourglass"
         case .sealed: return "checkmark.seal.fill"
         case .failed: return "exclamationmark.triangle.fill"
         }
@@ -183,7 +184,9 @@ struct HomeView: View {
         case .needsAttestation: return "Humanity — App Attest pending"
         case .readyForPose(_, let captured, let total):
             return "Humanity — capturing poses (\(captured)/\(total))"
-        case .readyToVerify: return "Humanity — ready to verify"
+        case .readyForPassport: return "Humanity — ready to scan passport"
+        case .scanningPassport: return "Humanity — scanning passport…"
+        case .passportReady: return "Humanity — passport scanned, ready to verify"
         case .verifying(let phase):
             return phase == .signing ? "Humanity — signing…" : "Humanity — sealing…"
         case .sealed: return "Humanity — sealed · \(anchorSuffix)"

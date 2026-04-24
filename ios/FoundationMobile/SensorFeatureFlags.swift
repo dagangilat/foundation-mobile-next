@@ -6,7 +6,7 @@ import Foundation
 // fan-in from day one. Flip a flag to true once the real sensor ships.
 
 enum SensorFeatureFlags {
-    static let nfcZk: Bool = false       // Phase 3 — MOPRO-bound Self circuit
+    static let nfcZk: Bool = true        // Phase 3a — real ePassport NFC read (Phase 3b adds the zk circuit)
     static let liveness: Bool = true     // Phase 4 — single-frame stand-in (MediaPipe lands later)
     static let antiSpoof: Bool = false   // Phase 5 — Silent-Face-Anti-Spoofing
     static let faceMatch: Bool = false   // Phase 6 — ArcFace DG2 ↔ selfie match
