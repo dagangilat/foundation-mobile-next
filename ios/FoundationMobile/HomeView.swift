@@ -4,6 +4,7 @@ struct HomeView: View {
     let claims: Claims
 
     @StateObject private var firestore = FirestoreService.shared
+    @State private var showSignOutConfirm = false
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -24,6 +25,16 @@ struct HomeView: View {
             .padding(.bottom, 40)
         }
         .onAppear { firestore.observeUser(uid: claims.uid) }
+        .confirmationDialog(
+            "Sign out of Foundation?",
+            isPresented: $showSignOutConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Sign out", role: .destructive) {
+                try? AuthService.shared.signOut()
+            }
+            Button("Cancel", role: .cancel) {}
+        }
     }
 
     private var header: some View {
@@ -40,7 +51,7 @@ struct HomeView: View {
             }
             Spacer()
             Button {
-                try? AuthService.shared.signOut()
+                showSignOutConfirm = true
             } label: {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .foregroundStyle(Theme.muted)
