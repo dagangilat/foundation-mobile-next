@@ -5,6 +5,7 @@ struct HomeView: View {
 
     @StateObject private var firestore = FirestoreService.shared
     @StateObject private var attestation = AttestationCoordinator.shared
+    @State private var proofSmoke: SmokeProofResult = .skipped
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -27,6 +28,9 @@ struct HomeView: View {
         .onAppear {
             firestore.observeUser(uid: claims.uid)
             attestation.start()
+        }
+        .task {
+            proofSmoke = await MoproSmokeBridge.runMultiplier2Smoke()
         }
     }
 
@@ -155,14 +159,52 @@ struct HomeView: View {
 
     @ViewBuilder
     private var moproRow: some View {
-        HStack(spacing: 8) {
-            Image(systemName: MoproSmokeBridge.isLinked ? "checkmark.seal.fill" : "hammer")
-                .font(.caption)
-                .foregroundStyle(MoproSmokeBridge.isLinked ? Theme.brandGreen : Theme.muted)
-            Text(MoproSmokeBridge.hello())
-                .font(.caption)
-                .foregroundStyle(Theme.muted)
-                .lineLimit(3)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                Image(systemName: MoproSmokeBridge.isLinked ? "checkmark.seal.fill" : "hammer")
+                    .font(.caption)
+                    .foregroundStyle(MoproSmokeBridge.isLinked ? Theme.brandGreen : Theme.muted)
+                Text(MoproSmokeBridge.hello())
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+                    .lineLimit(3)
+            }
+            HStack(spacing: 8) {
+                Image(systemName: proofIcon)
+                    .font(.caption)
+                    .foregroundStyle(proofColor)
+                Text(proofLabel)
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+                    .lineLimit(2)
+            }
+        }
+    }
+
+    private var proofIcon: String {
+        switch proofSmoke {
+        case .ok: return "checkmark.seal.fill"
+        case .skipped: return "hourglass"
+        case .failed: return "exclamationmark.triangle.fill"
+        }
+    }
+
+    private var proofColor: Color {
+        switch proofSmoke {
+        case .ok: return Theme.brandGreen
+        case .failed: return .orange
+        case .skipped: return Theme.muted
+        }
+    }
+
+    private var proofLabel: String {
+        switch proofSmoke {
+        case .ok(let publicInputs):
+            return "multiplier2: ok (\(publicInputs.count))"
+        case .skipped:
+            return "multiplier2: awaiting linked xcframework"
+        case .failed(let msg):
+            return "multiplier2: failed — \(msg)"
         }
     }
 }

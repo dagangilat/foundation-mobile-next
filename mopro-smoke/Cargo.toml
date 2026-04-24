@@ -1,18 +1,49 @@
+[workspace]
+# Two-crate layout is a deliberate workaround for a UniFFI/mopro-ffi
+# limitation: `mopro_ffi::app!()` expands to `extern crate mopro_ffi as uniffi;`
+# inside this lib, which collides with any direct `uniffi = "..."` dep in the
+# same Cargo.toml (Rust can't decide which `uniffi::` path to use). Keeping
+# the `uniffi-bindgen` binary in a sibling package (`bindgen-tool/`) lets that
+# crate depend on `uniffi` directly (with the `cli` feature) without polluting
+# this crate's extern prelude.
+members = ["bindgen-tool"]
+
 [package]
 name = "mopro_smoke"
 version = "0.1.0"
 edition = "2021"
 publish = false
-description = "Sprint-0 smoke test that proves the UniFFI → .xcframework toolchain works on Xcode Cloud before committing to MOPRO for Phase 3 (NFC + ZK)."
+description = "Sprint-0 smoke test that proves the mopro-ffi → UniFFI → .xcframework → Circom proof toolchain works on Xcode Cloud before committing to MOPRO for Phase 3 (NFC + ZK)."
 
 [lib]
 name = "mopro_smoke"
-crate-type = ["staticlib"]
+# mopro-ffi's UniFFI integration requires `cdylib` for scaffolding registration
+# and `staticlib` for the iOS xcframework archive. `lib` stays for unit tests.
+# Layout matches upstream mopro-cli 0.3.5 init template (src/init/write_toml.rs).
+crate-type = ["lib", "cdylib", "staticlib"]
 
-[[bin]]
-name = "uniffi-bindgen"
-path = "src/bin/uniffi-bindgen.rs"
+# Feature layout mirrors what `mopro-cli init --adapter circom` emits so we
+# track upstream conventions.
+[features]
+default = ["uniffi"]
+uniffi = ["mopro-ffi/uniffi"]
 
 [dependencies]
-uniffi = { version = "0.28", features = ["cli"] }
-mopro-ffi = { version = "0.3", features = ["uniffi"] }
+# mopro-ffi 0.3.5 pins uniffi = "=0.29.0" exactly. We keep the direct
+# `uniffi` dep OUT of this crate on purpose — see the workspace comment
+# above. `#[uniffi::export]` etc. still resolve because `mopro_ffi::app!()`
+# aliases mopro_ffi → uniffi, and mopro_ffi re-exports the relevant items.
+mopro-ffi = { version = "=0.3.5", default-features = false, features = ["uniffi"] }
+
+# Circom adapter deps — mopro-ffi 0.3.5 does NOT ship a `circom` feature;
+# instead, mopro-cli copies a circom.rs template into the user crate that
+# imports these directly. We replicate that layout in src/circom.rs.
+circom-prover = "0.1"
+rust-witness = "0.1"
+num-bigint = "0.4"
+thiserror = "2.0"
+
+[build-dependencies]
+# Transpiles test-vectors/circom/*.wasm into Rust functions at build time so
+# the release library can generate proofs without shipping a WASM VM.
+rust-witness = "0.1"

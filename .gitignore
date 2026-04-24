@@ -80,3 +80,6 @@ target/
 ios/Frameworks/
 ios/*.xcframework/
 ios/FoundationMobile/Generated/
+# zkey is source-of-truth under mopro-smoke/test-vectors/circom/; this is the
+# build-xcframework.sh copy consumed by the iOS bundle.
+ios/FoundationMobile/Resources/circuits/

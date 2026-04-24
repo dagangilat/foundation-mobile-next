@@ -19,6 +19,14 @@ echo "foundation-mobile: ci_post_clone.sh — installing Rust toolchain"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# rust-witness's build script uses w2c2 (WASM-to-C transpiler) which shells out
+# to cmake to build its native lib. Xcode Cloud's macOS image historically has
+# cmake preinstalled via Homebrew; install defensively if it doesn't.
+if ! command -v cmake >/dev/null 2>&1; then
+    echo "foundation-mobile: ci_post_clone.sh — installing cmake for rust-witness"
+    brew install cmake
+fi
+
 echo "foundation-mobile: ci_post_clone.sh — building MoproSmoke.xcframework"
 cd "$CI_WORKSPACE/mopro-smoke"
 ./build-xcframework.sh
