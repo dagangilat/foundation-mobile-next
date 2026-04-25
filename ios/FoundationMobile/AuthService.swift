@@ -111,8 +111,9 @@ final class AuthService: ObservableObject {
         guard let user = Auth.auth().currentUser else { return nil }
         do {
             let token = try await user.getIDTokenResult(forcingRefresh: false)
-            guard let authDate = token.authDate else { return nil }
-            return Int64(Date().timeIntervalSince(authDate) * 1000)
+            // IDTokenResult.authDate is non-optional Date — fall back
+            // through the catch only if the token itself can't be read.
+            return Int64(Date().timeIntervalSince(token.authDate) * 1000)
         } catch {
             return nil
         }
