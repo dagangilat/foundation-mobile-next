@@ -42,12 +42,18 @@ final class FirestoreService: ObservableObject {
         humanityRegistration?.remove()
         // limit:1 — we only need yes/no. Server marks the doc
         // status="anchored" inside anchorIdentityCommitmentTask once
-        // the Solana tx lands. A future "passport expired" filter will
-        // layer on top so an old anchored commitment doesn't keep the
-        // user out of the verify funnel forever.
-        humanityRegistration = db.collection("users")
+        // the Solana tx lands.
+        //
+        // Path matches server-side anchorCommitment + handler:
+        //   identity_commitments/{uid}/commitments/{hashHex}
+        // Earlier this listened at users/{uid}/identity_commitments
+        // (drift from a pre-Phase-2 layout) and silently never matched.
+        // A future "passport expired" filter will layer on top so an
+        // old anchored commitment doesn't keep the user out of the
+        // verify funnel forever.
+        humanityRegistration = db.collection("identity_commitments")
             .document(uid)
-            .collection("identity_commitments")
+            .collection("commitments")
             .whereField("status", isEqualTo: "anchored")
             .limit(to: 1)
             .addSnapshotListener { [weak self] snap, _ in
