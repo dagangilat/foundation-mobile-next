@@ -113,6 +113,18 @@ struct SupportTicketResult: Decodable, Sendable {
     let createdAtMs: Int64
 }
 
+// Web session bridge — Firebase custom token minted by the server for
+// the embedded WKWebView. Token is one-shot: WebContainer exchanges it
+// for a Firebase web-session ID token via signInWithCustomToken, then
+// drops the raw token. Server gates mint on a recent email-link sign-in
+// (auth_time freshness, same as pair-claim/release), so a stolen-but-
+// still-signed-in phone can't quietly mint web access.
+struct WebSessionTokenResult: Decodable, Sendable {
+    let customToken: String
+    let issuedAtMs: Int64
+    let expiresInSeconds: Int
+}
+
 enum FunctionsError: Error {
     case malformedResponse
 }
@@ -169,6 +181,11 @@ actor FunctionsService {
         let payload = try encodeToDict(req)
         let result = try await functions.httpsCallable("submitSupportTicket").call(payload)
         return try decode(SupportTicketResult.self, from: result.data)
+    }
+
+    func mintWebSessionToken() async throws -> WebSessionTokenResult {
+        let result = try await functions.httpsCallable("mintWebSessionToken").call([:])
+        return try decode(WebSessionTokenResult.self, from: result.data)
     }
 
     private func decode<T: Decodable>(_: T.Type, from raw: Any) throws -> T {

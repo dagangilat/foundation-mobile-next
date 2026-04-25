@@ -21,6 +21,14 @@ struct WebHomeView: View {
     @State private var attestation = AttestationCoordinator.shared
     @State private var capture = CaptureCoordinator.shared
     @State private var proofSmoke: SmokeProofResult = .skipped
+    @State private var customToken: String? = nil
+    @State private var bridgeStatus: BridgeStatus = .minting
+
+    enum BridgeStatus: Equatable {
+        case minting
+        case ready
+        case failed(String)
+    }
 
     // Foundation web app URL — same hosting target the docs-site +
     // evoting-frontend deploy to (foundation-global). Hard-coded for
@@ -32,7 +40,10 @@ struct WebHomeView: View {
     var body: some View {
         VStack(spacing: 0) {
             chrome
-            WebContainer(url: Self.webURL)
+            if case .failed(let msg) = bridgeStatus {
+                bridgeBanner(msg)
+            }
+            WebContainer(url: Self.webURL, customToken: customToken)
                 .ignoresSafeArea(edges: .bottom)
         }
         .background(Theme.bg.ignoresSafeArea())
@@ -55,6 +66,51 @@ struct WebHomeView: View {
         .task {
             proofSmoke = await MoproSmokeBridge.runMultiplier2Smoke()
         }
+        .task {
+            await mintToken()
+        }
+    }
+
+    private func mintToken() async {
+        bridgeStatus = .minting
+        do {
+            let result = try await FunctionsService.shared.mintWebSessionToken()
+            customToken = result.customToken
+            bridgeStatus = .ready
+        } catch {
+            // The user can still sign in via the WebView's own email link
+            // flow as a fallback — surface a banner so they know what
+            // happened without blocking the surface entirely.
+            bridgeStatus = .failed(error.localizedDescription)
+        }
+    }
+
+    private func bridgeBanner(_ msg: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+                .font(.caption)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Couldn't auto sign-in to web")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.orange)
+                Text(msg)
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+                    .lineLimit(2)
+            }
+            Spacer()
+            Button("Retry") { Task { await mintToken() } }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(Theme.brandGreen)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(Color.orange.opacity(0.08))
+        .overlay(
+            Rectangle().fill(Color.orange.opacity(0.4)).frame(height: 0.5),
+            alignment: .bottom
+        )
     }
 
     private var chrome: some View {
@@ -102,27 +158,98 @@ struct WebHomeView: View {
     }
 }
 
-// Thin UIViewRepresentable wrapper. The WebView keeps its own auth
-// state — Foundation web reads Firebase Auth via the JS SDK, so the
-// user signs in once on mobile (email link) and once in the WebView
-// (same email link, separate session). A custom-token bridge would
-// collapse those into one — TODO.
+// Thin UIViewRepresentable wrapper. Mobile mints a Firebase custom
+// token via mintWebSessionToken, then injects it after the WebView
+// finishes loading by calling window.__foundationSignInWithCustomToken
+// (defined in evoting-frontend lib/auth.ts). The token never appears
+// in the URL — it travels only via JS injection inside the WebView's
+// process boundary.
 struct WebContainer: UIViewRepresentable {
     let url: URL
+    let customToken: String?
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
         config.websiteDataStore = .default()
         let view = WKWebView(frame: .zero, configuration: config)
+        view.navigationDelegate = context.coordinator
         view.allowsBackForwardNavigationGestures = true
         view.scrollView.bounces = true
         view.isOpaque = false
         view.backgroundColor = UIColor(Theme.bg)
         view.scrollView.backgroundColor = UIColor(Theme.bg)
+        context.coordinator.webView = view
         view.load(URLRequest(url: url))
         return view
     }
 
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        context.coordinator.handle(token: customToken)
+    }
+
+    final class Coordinator: NSObject, WKNavigationDelegate {
+        weak var webView: WKWebView?
+        private var pendingToken: String?
+        private var pageLoaded = false
+        private var injectedTokenFingerprint: String?
+
+        func handle(token: String?) {
+            if let token { pendingToken = token }
+            inject()
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            pageLoaded = true
+            inject()
+        }
+
+        private func inject() {
+            guard pageLoaded, let token = pendingToken, let view = webView else { return }
+            // First 12 chars used as an idempotency key — re-injecting
+            // the same token would just replay the same sign-in. If the
+            // token changes (re-mint), we inject again.
+            let fingerprint = String(token.prefix(12))
+            if injectedTokenFingerprint == fingerprint { return }
+            injectedTokenFingerprint = fingerprint
+
+            // Escape backslashes first, then single quotes, so the JS
+            // literal can't be broken out of. Custom tokens are
+            // base64url + dots so neither character should appear, but
+            // belt-and-suspenders.
+            let escaped = token
+                .replacingOccurrences(of: "\\", with: "\\\\")
+                .replacingOccurrences(of: "'", with: "\\'")
+            let js = """
+            (async () => {
+              if (typeof window.__foundationSignInWithCustomToken !== 'function') {
+                return { ok: false, error: 'bridge_not_ready' };
+              }
+              try {
+                const r = await window.__foundationSignInWithCustomToken('\(escaped)');
+                return { ok: true, uid: r?.uid || null };
+              } catch (e) {
+                return { ok: false, error: e?.message || String(e) };
+              }
+            })()
+            """
+            view.evaluateJavaScript(js) { result, error in
+                if let error {
+                    print("[WebHome] inject error: \(error.localizedDescription)")
+                    return
+                }
+                if let dict = result as? [String: Any] {
+                    let ok = dict["ok"] as? Bool ?? false
+                    if !ok {
+                        let err = dict["error"] as? String ?? "unknown"
+                        print("[WebHome] sign-in bridge failed: \(err)")
+                    } else {
+                        print("[WebHome] sign-in bridge ok uid=\(dict["uid"] ?? "nil")")
+                    }
+                }
+            }
+        }
+    }
 }
