@@ -53,12 +53,10 @@ struct FaceStatus: Equatable {
     )
 }
 
-// Minimum VNFaceObservation.confidence for a detection to count toward
-// matchesTargetPose. Below this we surface the face (so the ellipse can
-// still track the user) but never flip the "pose held" signal. Declared at
-// file scope (non-isolated) so the nonisolated Vision request can read it
-// without tripping Swift 6 actor-isolation errors.
-private let faceTrackerMinConfidence: Float = 0.5
+// Minimum VNFaceObservation.confidence — read from AppConfig at access time.
+// Declared as a non-isolated closure so the nonisolated Vision request can
+// resolve it without tripping Swift 6 actor-isolation errors.
+private var faceTrackerMinConfidence: Float { AppConfig.shared.liveness.minConfidence }
 
 @MainActor
 final class FaceTracker: ObservableObject {
@@ -71,9 +69,9 @@ final class FaceTracker: ObservableObject {
     private var targetPose: LivenessPose?
     private var streamTask: Task<Void, Never>?
     private var frameCounter: Int = 0
-    // Process 1 out of every N frames. At 30fps this is 15Hz — plenty for
-    // human head motion and easy on the CPU.
-    private let frameStride: Int = 2
+    // Process 1 out of every N frames. Read from AppConfig
+    // (liveness.frameStride). At 30fps, stride=2 gives 15Hz processing.
+    private var frameStride: Int { AppConfig.shared.liveness.frameStride }
 
     func start(targetPose: LivenessPose) {
         self.targetPose = targetPose

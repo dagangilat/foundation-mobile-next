@@ -41,8 +41,11 @@ struct MockFaceMatchProducer: ProofProducer {
 }
 
 enum ProofProducerRegistry {
+    // Returns a mock producer ONLY when the active profile does not require
+    // this kind. When the profile DOES require it, returns nil so the real
+    // producer (built explicitly by CaptureCoordinator.verify) is used.
     static func producer(for kind: ProofArtifact.Kind) -> (any ProofProducer)? {
-        guard SensorFeatureFlags.isEnabled(kind) == false else { return nil }
+        guard !AppConfig.shared.profile.requires(kind) else { return nil }
         switch kind {
         case .appAttest: return nil
         case .nfcZk: return MockNfcZkProducer()

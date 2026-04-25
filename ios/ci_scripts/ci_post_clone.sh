@@ -30,3 +30,15 @@ fi
 echo "foundation-mobile: ci_post_clone.sh — building MoproSmoke.xcframework"
 cd "$CI_WORKSPACE/mopro-smoke"
 ./build-xcframework.sh
+
+# Map Xcode Cloud workflow → FOUNDATION_PROFILE (consumed by
+# ios/scripts/select-profile.sh during the build phase).
+# Override per-workflow in App Store Connect → Xcode Cloud → Environment.
+if [ -z "${FOUNDATION_PROFILE:-}" ]; then
+    case "${CI_WORKFLOW:-}" in
+        *standardsec*) export FOUNDATION_PROFILE="standardsec" ;;
+        *lowsec*)      export FOUNDATION_PROFILE="lowsec-attest" ;;
+        *)             export FOUNDATION_PROFILE="hisec-global" ;;
+    esac
+fi
+echo "foundation-mobile: ci_post_clone.sh — FOUNDATION_PROFILE=${FOUNDATION_PROFILE}"

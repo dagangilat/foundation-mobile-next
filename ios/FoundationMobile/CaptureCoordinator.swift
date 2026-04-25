@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import CryptoKit
 import DeviceCheck
+import UIKit
 
 // Phase 2 fan-in coordinator. Drives a multi-pose liveness capture sequence
 // (stand-in for Phase 4 MediaPipe active-liveness until it ships), then signs
@@ -22,12 +23,22 @@ final class CaptureCoordinator: ObservableObject {
         // pose is showing: pose index == captured when readyForPose fires).
         case readyForPose(pose: LivenessPose, captured: Int, total: Int)
         // All poses captured. Waiting for the user to tap "Scan passport".
+        // Entered when the active profile requires .nfcZk.
         case readyForPassport(framesCount: Int)
         // NFC chip read in flight. Triggered after MRZScanView parses the
         // MRZ key; the system NFC modal is drawn by CoreNFC.
         case scanningPassport(framesCount: Int)
         // NFC read completed. Waiting for the user to tap Verify.
         case passportReady(framesCount: Int, passport: PassportReadResult)
+        // standardsec branch — profile requires faceMatch with source=
+        // documentPhoto. DocumentPhotoView opens the back camera; user holds
+        // their ID/passport up; Vision auto-captures the face crop.
+        case readyForDocumentPhoto(framesCount: Int)
+        // standardsec — face crop captured, JPEG + SHA-256 in memory only.
+        case documentPhotoReady(framesCount: Int, captureJpeg: Data, captureHash: Data)
+        // lowsec-attest branch — neither nfcZk nor faceMatch is required.
+        // Poses captured, ready to seal App Attest + liveness only.
+        case readyForVerification(framesCount: Int)
         // User tapped Verify; we're signing + sealing. `phase` tells the UI
         // which of the two we're in without making the view count seconds.
         case verifying(phase: VerifyPhase)
@@ -67,17 +78,11 @@ final class CaptureCoordinator: ObservableObject {
     // when pose advances / flow ends / flow restarts.
     let faceTracker = FaceTracker()
 
-    // Pose-hold debounce: how long the user must continuously match the
-    // target pose before we auto-capture. 250ms is responsive enough for
-    // demo pacing while still rejecting a one-frame noise spike.
-    static let poseHoldDuration: Duration = .milliseconds(250)
-
-    // Total scan budget across the whole pose loop. When this fires we
-    // auto-advance to .readyForPassport with whatever poses were captured
-    // (or an emergency one-frame capture if none). This is the "seal with
-    // face fingerprint even if not every pose was hit" fallback — users
-    // aren't blocked from reaching the MRZ/NFC step by a flaky yaw signal.
-    static let scanBudget: Duration = .seconds(15)
+    // Tunables driven by AppConfig (foundationmobile.json). Lazy-evaluated
+    // once at first access, after AppConfig.shared has loaded the bundled
+    // profile. See `liveness` block in the profile JSONs.
+    static let poseHoldDuration: Duration = .milliseconds(AppConfig.shared.liveness.poseHoldMs)
+    static let scanBudget: Duration = .seconds(AppConfig.shared.liveness.scanBudgetSeconds)
 
     // Countdown task that fires capturePose() after the user holds the
     // pose for poseHoldDuration. Cancelled whenever the pose match drops.
@@ -160,7 +165,7 @@ final class CaptureCoordinator: ObservableObject {
                     self.scanBudgetTask?.cancel()
                     self.scanBudgetTask = nil
                     self.lastFramesCount = next
-                    self.state = .readyForPassport(framesCount: next)
+                    self.state = self.afterPosesState(framesCount: next)
                 }
             } catch {
                 self.state = .failed(String(describing: error))
@@ -221,14 +226,14 @@ final class CaptureCoordinator: ObservableObject {
                     let jpeg = try LivenessFrameEncoder.encodeJpeg(frame)
                     self.capturedJpegs.append(jpeg)
                     self.lastFramesCount = 1
-                    self.state = .readyForPassport(framesCount: 1)
+                    self.state = self.afterPosesState(framesCount: 1)
                 } catch {
                     self.state = .failed("Liveness scan timed out and emergency capture failed: \(error.localizedDescription)")
                 }
             }
         } else {
             lastFramesCount = capturedJpegs.count
-            state = .readyForPassport(framesCount: lastFramesCount)
+            state = afterPosesState(framesCount: lastFramesCount)
         }
     }
 
@@ -290,7 +295,8 @@ final class CaptureCoordinator: ObservableObject {
                 // ~10-12s); leave it off until the producer actually consumes it.
                 let result = try await PassportNFCReader.shared.readPassport(
                     mrzKey: mrzKey,
-                    includeFacePhoto: SensorFeatureFlags.faceMatch
+                    includeFacePhoto: AppConfig.shared.profile.requires(.faceMatch) &&
+                                      AppConfig.shared.profile.faceMatchSource == .dg2
                 )
                 self.state = .passportReady(framesCount: frames, passport: result)
             } catch {
@@ -307,13 +313,63 @@ final class CaptureCoordinator: ObservableObject {
         state = .readyForPassport(framesCount: lastFramesCount)
     }
 
+    // Called by DocumentPhotoView when the back-camera face crop is captured.
+    // Holds the JPEG + hash on the state for verify() to consume.
+    func documentPhotoCaptured(_ capture: DocumentPhotoCapture) {
+        guard case .readyForDocumentPhoto(let framesCount) = state else { return }
+        state = .documentPhotoReady(
+            framesCount: framesCount,
+            captureJpeg: capture.faceCropJpeg,
+            captureHash: capture.faceCropHash
+        )
+    }
+
+    // Branches the post-poses transition based on the active profile.
+    // Hisec (NFC) → readyForPassport; standardsec (documentPhoto) →
+    // readyForDocumentPhoto; lowsec-attest → readyForVerification.
+    private func afterPosesState(framesCount: Int) -> State {
+        let profile = AppConfig.shared.profile
+        if profile.requires(.nfcZk) {
+            return .readyForPassport(framesCount: framesCount)
+        }
+        if profile.requires(.faceMatch) && profile.faceMatchSource == .documentPhoto {
+            return .readyForDocumentPhoto(framesCount: framesCount)
+        }
+        return .readyForVerification(framesCount: framesCount)
+    }
+
     // User tapped Verify: sign the combined liveness payload with App Attest,
-    // build the Phase 1 appAttest artifact, build the Phase 3a real .nfcZk
-    // artifact from the NFC scan, fan in remaining mocks, seal.
+    // build the Phase 1 appAttest artifact, then per the active profile build
+    // the .nfcZk / .faceMatch / .antiSpoof artifacts from whatever credential
+    // was gathered (NFC chip read, document-photo capture, or nothing for
+    // lowsec-attest). Fan in remaining mocks. Seal.
     // AttestationService self-heals on a stale keyId, so a ~5-8s stall on
     // first run is normal.
     func verify() {
-        guard case .passportReady(let framesCount, let passport) = state, framesCount > 0 else { return }
+        let framesCount: Int
+        let passportData: PassportReadResult?
+        let docPhotoJpeg: Data?
+        let docPhotoHash: Data?
+        switch state {
+        case .passportReady(let n, let passport):
+            framesCount = n
+            passportData = passport
+            docPhotoJpeg = nil
+            docPhotoHash = nil
+        case .documentPhotoReady(let n, let jpeg, let hash):
+            framesCount = n
+            passportData = nil
+            docPhotoJpeg = jpeg
+            docPhotoHash = hash
+        case .readyForVerification(let n):
+            framesCount = n
+            passportData = nil
+            docPhotoJpeg = nil
+            docPhotoHash = nil
+        default:
+            return
+        }
+        guard framesCount > 0 else { return }
         guard let keyId = Keychain.getAttestedKeyId() else {
             state = .needsAttestation
             return
@@ -344,34 +400,75 @@ final class CaptureCoordinator: ObservableObject {
                     payload: appAttestPayload
                 )
 
-                // Phase 3a — real .nfcZk artifact bound to the captured DG1.
-                let nfcArtifact = try await PassportNfcProducer(passportData: passport).produce()
+                var artifacts: [ProofArtifact] = [appAttest, liveness]
 
-                var artifacts: [ProofArtifact] = [appAttest, liveness, nfcArtifact]
+                // Phase 3a — real .nfcZk artifact when the active profile
+                // requires it AND the user came through the NFC-scan funnel.
+                if AppConfig.shared.profile.requires(.nfcZk), let passport = passportData {
+                    let nfcArtifact = try await PassportNfcProducer(passportData: passport).produce()
+                    artifacts.append(nfcArtifact)
+                }
 
-                // Phase 6 — real .faceMatch artifact when the flag is on AND
-                // the chip returned a face photo AND we have a selfie frame.
-                // First-pose JPEG (straight-on) is the natural input — it
-                // matches DG2's typical neutral expression.
-                if SensorFeatureFlags.faceMatch {
-                    guard
-                        let dg2Image = passport.dg2FaceImage,
-                        let dg2Hash = passport.dg2Hash,
-                        let selfieJpeg = jpegs.first
-                    else {
+                // Phase 6 — real .faceMatch artifact when the active profile
+                // requires it. Reference image source is profile-driven:
+                //   .dg2           → bind selfie ↔ chip's DG2 photo
+                //   .documentPhoto → bind selfie ↔ back-camera capture of doc
+                if AppConfig.shared.profile.requires(.faceMatch) {
+                    let source = AppConfig.shared.profile.faceMatchSource
+                    let referenceImage: UIImage
+                    let referenceHash: Data
+                    let producerSource: FaceMatchSource
+                    switch source {
+                    case .dg2:
+                        guard
+                            let dg2Image = passportData?.dg2FaceImage,
+                            let dg2Hash = passportData?.dg2Hash
+                        else {
+                            throw CaptureCoordinatorError.faceMatchInputsMissing
+                        }
+                        referenceImage = dg2Image
+                        referenceHash = dg2Hash
+                        producerSource = .dg2
+                    case .documentPhoto:
+                        guard
+                            let docJpeg = docPhotoJpeg,
+                            let docHash = docPhotoHash,
+                            let docImage = UIImage(data: docJpeg)
+                        else {
+                            throw CaptureCoordinatorError.faceMatchInputsMissing
+                        }
+                        referenceImage = docImage
+                        referenceHash = docHash
+                        producerSource = .documentPhoto
+                    case .none:
+                        throw CaptureCoordinatorError.faceMatchInputsMissing
+                    }
+                    guard let selfieJpeg = jpegs.first else {
                         throw CaptureCoordinatorError.faceMatchInputsMissing
                     }
                     let faceMatch = try await FaceMatchProducer(
-                        dg2Image: dg2Image,
-                        dg2Hash: dg2Hash,
-                        selfieJpeg: selfieJpeg
+                        referenceImage: referenceImage,
+                        referenceHash: referenceHash,
+                        source: producerSource,
+                        selfieJpeg: selfieJpeg,
+                        threshold: AppConfig.shared.faceMatch.cosineThreshold
                     ).produce()
                     artifacts.append(faceMatch)
                 }
 
-                // .nfcZk + .faceMatch handled above; loop covers still-mocked
-                // kinds. The registry returns nil for any kind whose feature
-                // flag is on, so .faceMatch isn't double-emitted here.
+                // Phase 5 — real .antiSpoof artifact when required. Reuses
+                // captured selfie JPEGs (no fresh camera capture); Silent-Face
+                // inference runs on cropped 80x80 face regions.
+                if AppConfig.shared.profile.requires(.antiSpoof) {
+                    let antiSpoof = try await AntiSpoofProducer(
+                        selfieJpegs: jpegs,
+                        threshold: AppConfig.shared.antiSpoof.minScore
+                    ).produce()
+                    artifacts.append(antiSpoof)
+                }
+
+                // Loop covers still-mocked kinds. The registry returns nil
+                // for any kind already emitted above, so we don't double-emit.
                 for kind in [ProofArtifact.Kind.antiSpoof, .faceMatch] {
                     guard let producer = ProofProducerRegistry.producer(for: kind) else { continue }
                     let artifact = try await producer.produce()
@@ -488,13 +585,13 @@ enum LivenessPose: String, CaseIterable, Equatable {
     case up
     case down
 
-    // Active poses driven by the scan loop. Up/down pitch detection proved
-    // unreliable on iPhone 13 at arm's length — VNFaceObservation.pitch's
-    // dynamic range and sign convention don't match user expectations as
-    // cleanly as yaw. Keep the cases defined (thresholds below) so a future
-    // Vision revision or MediaPipe drop-in can re-enable them by adding to
-    // this array; the rest of the coordinator iterates `active` not `allCases`.
-    static let active: [LivenessPose] = [.straight, .left, .right]
+    // Active poses come from the active profile (`liveness.activePoses`).
+    // Up/down pitch detection has been historically unreliable on iPhone 13
+    // at arm's length, so default profiles list only [straight, left, right];
+    // re-enable per-profile by adding to the JSON array.
+    static var active: [LivenessPose] {
+        AppConfig.shared.liveness.activePoses.compactMap { LivenessPose(rawValue: $0) }
+    }
 
     var prompt: String {
         switch self {
@@ -516,47 +613,15 @@ enum LivenessPose: String, CaseIterable, Equatable {
         }
     }
 
-    // Target yaw in radians (VNFaceObservation convention — positive = user's
-    // head rotates to the user's right / user's left ear toward camera).
-    // 0.0 where yaw is not discriminating for the pose.
-    var targetYaw: Float {
-        switch self {
-        case .straight: return 0.0
-        case .left: return -0.45
-        case .right: return 0.45
-        case .up, .down: return 0.0
-        }
+    // Pose thresholds come from AppConfig (foundationmobile.json). Yaw
+    // convention: positive = user's head rotates to their right.
+    private var poseConfig: AppConfig.Liveness.Pose? {
+        AppConfig.shared.liveness.poses[rawValue]
     }
-
-    // Target pitch in radians (positive = user's chin up / face tilts back).
-    var targetPitch: Float {
-        switch self {
-        case .straight, .left, .right: return 0.0
-        case .up: return 0.35
-        case .down: return -0.35
-        }
-    }
-
-    // Half-window on yaw. For yaw-dominant poses (left/right) this is the
-    // distance from 0 (so we treat the pose as held if yaw crosses the sign
-    // boundary generously). For pitch-dominant and straight, it's the
-    // allowed yaw drift while holding the pitch target.
-    var toleranceYaw: Float {
-        switch self {
-        case .straight: return 0.18
-        case .left, .right: return 0.15  // window around targetYaw
-        case .up, .down: return 0.25
-        }
-    }
-
-    // Half-window on pitch.
-    var tolerancePitch: Float {
-        switch self {
-        case .straight: return 0.18
-        case .left, .right: return 0.30
-        case .up, .down: return 0.15
-        }
-    }
+    var targetYaw: Float       { poseConfig?.yaw ?? 0 }
+    var targetPitch: Float     { poseConfig?.pitch ?? 0 }
+    var toleranceYaw: Float    { poseConfig?.yawTolerance ?? 0.18 }
+    var tolerancePitch: Float  { poseConfig?.pitchTolerance ?? 0.18 }
 
     // True if the observed angles fall within tolerance of the target for
     // this pose. Straight needs both yaw AND pitch near zero; yaw-dominant

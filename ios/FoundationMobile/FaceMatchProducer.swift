@@ -5,67 +5,78 @@ import UIKit
 import CoreImage
 
 // Phase 6 — real `.faceMatch` artifact. Replaces MockFaceMatchProducer when
-// SensorFeatureFlags.faceMatch is true and a passport DG2 image is in hand.
+// the active profile requires .faceMatch.
 //
-// Inputs:
-//   - DG2 face image from the passport chip (from PassportNFCReader with
-//     includeFacePhoto: true)
-//   - selfie JPEG bytes from CameraSession (the same first-pose frame the
-//     liveness producer hashes — reusing it avoids a second camera capture)
+// Reference image source (controlled by the active profile's
+// `faceMatchSource` field) is one of:
+//   - `.dg2`           — passport chip's DG2 face image (hisec-global)
+//   - `.documentPhoto` — back-camera capture of the document's face region
+//                        (standardsec, for IDs without an RFID chip)
+//
+// Probe image is always the selfie JPEG from the liveness pose loop's
+// first frame (straight-on neutral, matches both reference modalities).
 //
 // Output: `ProofArtifact(.faceMatch)` whose payload binds:
+//   - the reference source (so the verifier knows which trust posture applies)
 //   - the boolean match decision
-//   - the cosine distance (rounded to 4 decimal places, encoded as an int
-//     to keep the payload deterministic across float-print drift)
+//   - the cosine distance (×10000, rounded — sidesteps Float-print drift)
 //   - the threshold the decision was made against
-//   - SHA-256(DG2) — pins the artifact to the chip's exact face image
+//   - SHA-256(reference image bytes) — pins the artifact to that exact image
 //   - SHA-256(selfie JPEG) — pins it to the captured selfie
 //
-// HARD INVARIANT: neither the DG2 image nor the selfie image leaves the
-// device. Only the SHA-256 of the canonical decision string above does,
+// HARD INVARIANT: neither the reference image nor the selfie image leaves
+// the device. Only the SHA-256 of the canonical decision string above does,
 // signed by the device's App Attest key, and only as part of the Phase 7
 // commitment hash (i.e. one hash inside another hash).
+
+enum FaceMatchSource: String, Sendable {
+    case dg2
+    case documentPhoto
+}
 
 struct FaceMatchProducer: ProofProducer {
     let kind: ProofArtifact.Kind = .faceMatch
 
-    let dg2Image: UIImage
-    let dg2Hash: Data
+    let referenceImage: UIImage
+    let referenceHash: Data
+    let source: FaceMatchSource
     let selfieJpeg: Data
+    let threshold: Float
     let embedder: any FaceEmbedder
 
-    /// Cosine-distance threshold for the match decision. Anything ≤ threshold
-    /// is treated as "same person". The default is conservative for a
-    /// stub-embedder world (where genuine matches will fail anyway, so the
-    /// producer just emits decision=false truthfully). Re-tune per the
-    /// embedder's verification ROC when a real model lands.
+    /// Conservative default for the stub-embedder world; AppConfig overrides
+    /// per-profile (hisec-global: 0.45, standardsec: 0.55 — tighter because
+    /// document-photo references are noisier than chip-bound DG2).
     static let defaultThreshold: Float = 0.45
 
     init(
-        dg2Image: UIImage,
-        dg2Hash: Data,
+        referenceImage: UIImage,
+        referenceHash: Data,
+        source: FaceMatchSource,
         selfieJpeg: Data,
+        threshold: Float = FaceMatchProducer.defaultThreshold,
         embedder: any FaceEmbedder = FaceEmbedderRegistry.current
     ) {
-        self.dg2Image = dg2Image
-        self.dg2Hash = dg2Hash
+        self.referenceImage = referenceImage
+        self.referenceHash = referenceHash
+        self.source = source
         self.selfieJpeg = selfieJpeg
+        self.threshold = threshold
         self.embedder = embedder
     }
 
     func produce() async throws -> ProofArtifact {
-        guard let dg2CG = dg2Image.cgImage else {
+        guard let refCG = referenceImage.cgImage else {
             throw FaceEmbedderError.imageRenderFailed
         }
         guard let selfieCG = Self.decodeSelfie(jpeg: selfieJpeg) else {
             throw FaceEmbedderError.imageRenderFailed
         }
 
-        let dg2Embedding = try await embedder.embed(dg2CG)
+        let refEmbedding = try await embedder.embed(refCG)
         let selfieEmbedding = try await embedder.embed(selfieCG)
 
-        let distance = type(of: embedder).cosineDistance(dg2Embedding, selfieEmbedding)
-        let threshold = Self.defaultThreshold
+        let distance = type(of: embedder).cosineDistance(refEmbedding, selfieEmbedding)
         let accepted = distance <= threshold
 
         let selfieHash = Data(SHA256.hash(data: selfieJpeg))
@@ -73,26 +84,29 @@ struct FaceMatchProducer: ProofProducer {
             accepted: accepted,
             distance: distance,
             threshold: threshold,
-            dg2Hash: dg2Hash,
+            source: source,
+            referenceHash: referenceHash,
             selfieHash: selfieHash
         )
         return try await ProofArtifactBuilder.build(kind: .faceMatch, payload: payload)
     }
 
-    // Deterministic payload encoding so the audit-side verifier can
-    // reconstruct the exact bytes that were hashed and signed. The integer
-    // distance/threshold encoding (×10000, rounded) sidesteps Float printing
-    // drift across Swift versions. Keys are sorted lexicographically.
+    // Schema v2 canonical payload. Keys lexicographic. The `source` field is
+    // load-bearing — it tells the verifier whether to trust the reference as
+    // a CSCA-signed chip image (`dg2`) or as a tamperable camera capture
+    // (`documentPhoto`). v1 (no source field) is deprecated in lock-step
+    // with foundationmobile.json schemaVersion bump 1 → 2.
     static func canonicalPayload(
         accepted: Bool,
         distance: Float,
         threshold: Float,
-        dg2Hash: Data,
+        source: FaceMatchSource,
+        referenceHash: Data,
         selfieHash: Data
     ) -> Data {
         let distanceMilli = Int((distance * 10_000).rounded())
         let thresholdMilli = Int((threshold * 10_000).rounded())
-        let line = "faceMatch:accepted=\(accepted ? 1 : 0):dg2=\(dg2Hash.hexLower):distance10000=\(distanceMilli):selfie=\(selfieHash.hexLower):threshold10000=\(thresholdMilli)"
+        let line = "faceMatch:accepted=\(accepted ? 1 : 0):distance10000=\(distanceMilli):reference=\(referenceHash.hexLower):selfie=\(selfieHash.hexLower):source=\(source.rawValue):threshold10000=\(thresholdMilli)"
         return Data(line.utf8)
     }
 

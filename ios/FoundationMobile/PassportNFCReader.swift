@@ -111,10 +111,10 @@ final class PassportNFCReader {
     // chip read completes, the hash-integrity check passes, and we've
     // extracted the minimum proof fields.
     //
-    // `includeFacePhoto` is gated by SensorFeatureFlags.faceMatch on the
-    // caller side. Adding DG2 to the read roughly doubles the on-chip dwell
-    // time (~4-6s → ~10-12s) because DG2 is the largest data group on the
-    // chip. Only flip it on when Phase 6 face match actually runs.
+    // `includeFacePhoto` is gated on the caller side by the active profile's
+    // .faceMatch requirement + faceMatchSource=dg2. Adding DG2 to the read
+    // roughly doubles the on-chip dwell time (~4-6s → ~10-12s) because DG2
+    // is the largest data group on the chip.
     func readPassport(
         mrzKey: MRZKey,
         includeFacePhoto: Bool = false
@@ -177,13 +177,12 @@ final class PassportNFCReader {
                 throw PassportNFCReaderError.dg2Missing
             }
             dg2Hash = Data(SHA256.hash(data: Data(dg2.data)))
-            // DataGroup2's runtime type exposes `.faceInfos[0].faceImage`.
-            // Cast through the dynamic type instead of importing the
-            // concrete class so a future library upgrade that renames the
-            // accessor surface fails at this single site, not project-wide.
-            if let dg2Concrete = dg2 as? DataGroup2,
-               let face = dg2Concrete.faceInfos.first?.faceImage {
-                dg2FaceImage = face
+            // DataGroup2.getImage() is internal to the library; reach through
+            // the public `imageData: [UInt8]` (raw JPEG or JPEG2000 bytes per
+            // ISO 19794-5). UIImage(data:) on iOS handles both formats via
+            // ImageIO.
+            if let dg2Concrete = dg2 as? DataGroup2, !dg2Concrete.imageData.isEmpty {
+                dg2FaceImage = UIImage(data: Data(dg2Concrete.imageData))
             }
             guard dg2FaceImage != nil else {
                 throw PassportNFCReaderError.dg2FaceImageMissing

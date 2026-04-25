@@ -28,10 +28,35 @@ sources = %w[
   LoadingView.swift
   SignInView.swift
   HomeView.swift
+  AntiSpoofProducer.swift
+  CoreMLFaceEmbedder.swift
+  AppConfig.swift
+  QRScannerView.swift
+  PairingCoordinator.swift
+  DocumentPhotoView.swift
+]
+
+# Profile JSONs are sources for the select-profile.sh build phase; the script
+# copies the active one into the bundle as foundationmobile.json. They are
+# NOT added to Copy Bundle Resources (the script writes the output directly).
+# Listed here so Xcode shows them in the navigator.
+profile_files = %w[
+  Resources/profiles/hisec-global.json
+  Resources/profiles/standardsec.json
+  Resources/profiles/lowsec-attest.json
 ]
 
 resources = %w[
   GoogleService-Info.plist
+]
+
+# Core ML model packages: .mlpackage is a directory bundle; xcodeproj treats
+# it as a single file ref with last_known_file_type "wrapper" (Xcode then
+# compiles to .mlmodelc at build time and bundles the compiled form).
+ml_packages = %w[
+  Resources/SilentFaceMiniFASNetV2.mlpackage
+  Resources/SilentFaceMiniFASNetV1SE.mlpackage
+  Resources/MobileFaceNet.mlpackage
 ]
 
 # Files previously registered for the RN bridge; remove from all build phases
@@ -86,5 +111,51 @@ resources.each do |name|
   target.resources_build_phase.add_file_reference(ref) unless target.resources_build_phase.files_references.include?(ref)
 end
 
+# .mlpackage handling — find or create with the wrapper file type Xcode
+# uses for Core ML packages.
+ml_packages.each do |relative|
+  basename = File.basename(relative)
+  full_relative = "FoundationMobile/#{relative}"
+  existing = group.recursive_children.find do |f|
+    f.respond_to?(:path) && (f.path == full_relative || f.path == relative || f.name == basename)
+  end
+  ref = existing || group.new_reference(full_relative)
+  ref.path = full_relative
+  ref.name = basename
+  ref.last_known_file_type = 'wrapper'
+  target.resources_build_phase.add_file_reference(ref) unless target.resources_build_phase.files_references.include?(ref)
+end
+
+# Profile JSONs — show in navigator only; not bundled directly.
+profile_files.each do |relative|
+  basename = File.basename(relative)
+  full_relative = "FoundationMobile/#{relative}"
+  existing = group.recursive_children.find do |f|
+    f.respond_to?(:path) && (f.path == full_relative || f.path == relative || f.name == basename)
+  end
+  ref = existing || group.new_reference(full_relative)
+  ref.path = full_relative
+  ref.name = basename
+  ref.last_known_file_type = 'text.json'
+end
+
+# Run Script Build Phase — bakes the active profile JSON into the bundle as
+# foundationmobile.json. Inserted once; idempotent on re-runs.
+phase_name = 'Select Foundation profile JSON'
+existing_phase = target.shell_script_build_phases.find { |p| p.name == phase_name }
+unless existing_phase
+  phase = target.new_shell_script_build_phase(phase_name)
+  phase.shell_path = '/bin/sh'
+  phase.shell_script = '"${SRCROOT}/scripts/select-profile.sh"'
+  phase.input_paths = [
+    '$(SRCROOT)/FoundationMobile/Resources/profiles/$(FOUNDATION_PROFILE).json',
+    '$(SRCROOT)/scripts/select-profile.sh',
+  ]
+  phase.output_paths = [
+    '$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/foundationmobile.json',
+  ]
+  phase.always_out_of_date = '1'  # FOUNDATION_PROFILE may flip between builds
+end
+
 project.save
-puts 'Swift sources + resources registered with FoundationMobile target.'
+puts 'Swift sources + resources + ML packages + profile JSONs + Run Script registered.'

@@ -7,6 +7,8 @@ struct HomeView: View {
     @StateObject private var attestation = AttestationCoordinator.shared
     @State private var proofSmoke: SmokeProofResult = .skipped
     @StateObject private var capture = CaptureCoordinator.shared
+    @StateObject private var pairing = PairingCoordinator.shared
+    @State private var isShowingQRScanner: Bool = false
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -125,6 +127,8 @@ struct HomeView: View {
             captureRow
             verifyHumanityButton
                 .padding(.top, 8)
+            pairingRow
+                .padding(.top, 4)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,7 +166,8 @@ struct HomeView: View {
         case .idle: return "camera"
         case .unsupported: return "iphone.slash"
         case .needsAttestation: return "hourglass"
-        case .readyForPose, .readyForPassport, .scanningPassport, .passportReady, .verifying:
+        case .readyForPose, .readyForPassport, .scanningPassport, .passportReady,
+             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification, .verifying:
             return "hourglass"
         case .sealed: return "checkmark.seal.fill"
         case .failed: return "exclamationmark.triangle.fill"
@@ -187,6 +192,9 @@ struct HomeView: View {
         case .readyForPassport: return "Humanity — ready to scan passport"
         case .scanningPassport: return "Humanity — scanning passport…"
         case .passportReady: return "Humanity — passport scanned, ready to verify"
+        case .readyForDocumentPhoto: return "Humanity — ready to capture document"
+        case .documentPhotoReady: return "Humanity — document photo captured, ready to verify"
+        case .readyForVerification: return "Humanity — ready to verify"
         case .verifying(let phase):
             return phase == .signing ? "Humanity — signing…" : "Humanity — sealing…"
         case .sealed: return "Humanity — sealed · \(anchorSuffix)"
@@ -348,6 +356,65 @@ struct HomeView: View {
             return "multiplier2: awaiting linked xcframework"
         case .failed(let msg):
             return "multiplier2: failed — \(msg)"
+        }
+    }
+
+    @ViewBuilder
+    private var pairingRow: some View {
+        switch pairing.state {
+        case .idle, .failed:
+            Button {
+                isShowingQRScanner = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "qrcode.viewfinder")
+                        .font(.system(size: 14, weight: .semibold))
+                    Text("Pair desktop")
+                        .font(.system(size: 14, weight: .semibold))
+                    Spacer()
+                }
+                .foregroundStyle(Theme.brandGreen)
+                .padding(.vertical, 10)
+                .padding(.horizontal, 12)
+                .frame(maxWidth: .infinity)
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.brandGreen.opacity(0.4)))
+            }
+            .sheet(isPresented: $isShowingQRScanner) {
+                QRScannerView(
+                    onScanned: { code in
+                        isShowingQRScanner = false
+                        pairing.claim(scannedPayload: code)
+                    },
+                    onCancel: { isShowingQRScanner = false }
+                )
+            }
+        case .claiming:
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small).tint(Theme.muted)
+                Text("Pairing desktop…")
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+            }
+        case .paired:
+            HStack(spacing: 8) {
+                Image(systemName: "desktopcomputer")
+                    .font(.caption)
+                    .foregroundStyle(Theme.brandGreen)
+                Text("Desktop paired")
+                    .font(.caption)
+                    .foregroundStyle(Theme.brandGreen)
+                Spacer()
+                Button("Disconnect") { pairing.disconnect() }
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+            }
+        case .releasing:
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small).tint(Theme.muted)
+                Text("Disconnecting desktop…")
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+            }
         }
     }
 }

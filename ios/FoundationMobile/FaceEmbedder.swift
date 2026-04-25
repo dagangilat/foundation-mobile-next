@@ -71,12 +71,10 @@ enum FaceEmbedderRegistry {
     /// Returns the embedder Phase 6 should use today. While the Core ML
     /// model isn't bundled, every consumer gets the deterministic stub —
     /// the producer plumbing still runs end-to-end so we can flip
-    /// SensorFeatureFlags.faceMatch to true and exercise the artifact-
+    /// the .faceMatch requirement on in a profile and exercise the artifact-
     /// emit path under the same shape the real path will use.
     static var current: any FaceEmbedder {
-        // CoreMLFaceEmbedder.tryLoadFromBundle() ?? StubFaceEmbedder()
-        // Wire the Core ML branch when ArcFaceMobileFaceNet.mlmodel ships.
-        StubFaceEmbedder()
+        CoreMLFaceEmbedder.tryLoadFromBundle() ?? StubFaceEmbedder()
     }
 }
 

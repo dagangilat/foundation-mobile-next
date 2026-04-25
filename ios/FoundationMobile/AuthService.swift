@@ -95,5 +95,6 @@ final class AuthService: ObservableObject {
     func signOut() throws {
         try Auth.auth().signOut()
         AttestationCoordinator.shared.reset()
+        PairingCoordinator.shared.suspendOnLifecycleEvent()
     }
 }

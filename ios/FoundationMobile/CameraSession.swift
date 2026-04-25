@@ -50,8 +50,11 @@ final class CameraSession: NSObject, ObservableObject {
 
     // One-shot capture for Phase 4 liveness: subscribes to `frames()`, returns
     // the first frame, tears the subscription down immediately. Throws
-    // `captureTimeout` if no frame arrives within `timeout`.
-    func captureOneFrame(timeout: Duration = .seconds(3)) async throws -> FrameBuffer {
+    // `captureTimeout` if no frame arrives within `timeout`. Default from
+    // AppConfig (`camera.frameTimeoutSeconds`).
+    func captureOneFrame(
+        timeout: Duration = .seconds(AppConfig.shared.camera.frameTimeoutSeconds)
+    ) async throws -> FrameBuffer {
         let stream = frames()
         return try await withThrowingTaskGroup(of: FrameBuffer.self) { group in
             group.addTask {

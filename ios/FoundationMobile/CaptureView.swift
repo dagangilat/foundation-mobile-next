@@ -7,6 +7,7 @@ struct CaptureView: View {
     @StateObject private var coordinator = CaptureCoordinator.shared
     @State private var warmupTask: Task<Void, Never>?
     @State private var isShowingMRZScan = false
+    @State private var isShowingDocPhoto = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -42,7 +43,7 @@ struct CaptureView: View {
             // fail the deployment target check.
             if case .sealed = newValue {
                 Task {
-                    try? await Task.sleep(for: .milliseconds(900))
+                    try? await Task.sleep(for: .milliseconds(AppConfig.shared.captureView.postSealDismissMs))
                     dismiss()
                 }
             }
@@ -56,6 +57,15 @@ struct CaptureView: View {
                 onCancel: {
                     isShowingMRZScan = false
                 }
+            )
+        }
+        .sheet(isPresented: $isShowingDocPhoto) {
+            DocumentPhotoView(
+                onCaptured: { capture in
+                    isShowingDocPhoto = false
+                    coordinator.documentPhotoCaptured(capture)
+                },
+                onCancel: { isShowingDocPhoto = false }
             )
         }
     }
@@ -89,7 +99,8 @@ struct CaptureView: View {
 
     // True once we've left the pose-capture path — i.e. we're in the
     // passport scan funnel or later. Drives the swap between the camera
-    // preview and the NFC host screen.
+    // preview and the NFC host screen. Document-photo flow stays in the
+    // live capture panel (with the back-camera modal sheet on top).
     private var shouldShowNFCPanel: Bool {
         switch coordinator.state {
         case .readyForPassport, .scanningPassport, .passportReady:
@@ -176,6 +187,36 @@ struct CaptureView: View {
                     .foregroundStyle(.white)
                 Spacer()
             }
+        case .readyForDocumentPhoto(let n):
+            HStack(spacing: 12) {
+                Image(systemName: "doc.text.viewfinder")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("\(n) frames captured — capture your document next")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .documentPhotoReady:
+            HStack(spacing: 12) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("Document photo captured — ready to verify")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
+        case .readyForVerification(let n):
+            HStack(spacing: 12) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("\(n) frames captured — ready to verify")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+            }
         case .verifying(let phase):
             HStack(spacing: 12) {
                 ProgressView()
@@ -233,6 +274,10 @@ struct CaptureView: View {
         case .scanningPassport:
             bigGreenButton(title: "Reading chip…", enabled: false) { }
         case .passportReady:
+            bigGreenButton(title: "Verify") { coordinator.verify() }
+        case .readyForDocumentPhoto:
+            bigGreenButton(title: "Capture document") { isShowingDocPhoto = true }
+        case .documentPhotoReady, .readyForVerification:
             bigGreenButton(title: "Verify") { coordinator.verify() }
         case .verifying:
             bigGreenButton(title: verifyButtonLabel, enabled: false) { }

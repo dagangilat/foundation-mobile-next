@@ -73,6 +73,22 @@ struct AnchorCommitmentResult: Decodable, Sendable, Equatable {
     let reason: String?
 }
 
+// Phase — desktop pairing.
+//
+// Desktop calls `requestPairingCode` (unauthenticated) and renders the
+// returned code as a QR. Mobile scans, calls `claimPairingSession` (authed)
+// to attach the mobile UID + ring claims to the server-side pairing doc.
+// Mobile then heartbeats every ~30s; server flips to "stale" after 90s
+// without a heartbeat (cleanupStalePairings scheduled function).
+struct ClaimPairingSessionResult: Decodable, Sendable {
+    let sessionId: String
+    let acceptedAtMs: Int64?
+}
+
+struct AckResult: Decodable, Sendable {
+    let ok: Bool
+}
+
 enum FunctionsError: Error {
     case malformedResponse
 }
@@ -108,6 +124,21 @@ actor FunctionsService {
         let payload = try encodeToDict(req)
         let result = try await functions.httpsCallable("anchorCommitment").call(payload)
         return try decode(AnchorCommitmentResult.self, from: result.data)
+    }
+
+    func claimPairingSession(code: String) async throws -> ClaimPairingSessionResult {
+        let result = try await functions.httpsCallable("claimPairingSession").call(["code": code])
+        return try decode(ClaimPairingSessionResult.self, from: result.data)
+    }
+
+    func heartbeatPairingSession(sessionId: String) async throws -> AckResult {
+        let result = try await functions.httpsCallable("heartbeatPairingSession").call(["sessionId": sessionId])
+        return try decode(AckResult.self, from: result.data)
+    }
+
+    func releasePairingSession(sessionId: String) async throws -> AckResult {
+        let result = try await functions.httpsCallable("releasePairingSession").call(["sessionId": sessionId])
+        return try decode(AckResult.self, from: result.data)
     }
 
     private func decode<T: Decodable>(_: T.Type, from raw: Any) throws -> T {

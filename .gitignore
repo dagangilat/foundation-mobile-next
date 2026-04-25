@@ -83,3 +83,10 @@ ios/FoundationMobile/Generated/
 # zkey is source-of-truth under mopro-smoke/test-vectors/circom/; this is the
 # build-xcframework.sh copy consumed by the iOS bundle.
 ios/FoundationMobile/Resources/circuits/
+
+# Core ML conversion harness — the cloned upstream repos are large + third-
+# party. Conversion scripts (convert-*.py) + README stay tracked for
+# reproducibility; the bundled .mlpackage outputs live in
+# ios/FoundationMobile/Resources/ and ARE committed.
+tools/coreml-convert/Silent-Face-Anti-Spoofing/
+tools/coreml-convert/MobileFaceNet_Pytorch/

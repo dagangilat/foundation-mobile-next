@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 2,
+  "profile": {
+    "id": "lowsec-attest",
+    "label": "Low Security — Device Attest + Liveness",
+    "description": "Pure device-uniqueness + warm-body signal. App Attest + active liveness only — no document, no anti-spoof, no face match. Suitable for low-stakes Sybil-resistance use cases (comment moderation, surveys, polls).",
+    "requiredPhases": ["appAttest", "liveness"],
+    "faceMatchSource": "none"
+  },
+  "splash": {
+    "minDurationMs": 900
+  },
+  "loading": {
+    "phaseThresholdsMs": [0, 1500, 3500, 7000]
+  },
+  "liveness": {
+    "scanBudgetSeconds": 15,
+    "poseHoldMs": 250,
+    "activePoses": ["straight", "left", "right"],
+    "frameStride": 2,
+    "minConfidence": 0.5,
+    "poses": {
+      "straight": {"yaw":  0.00, "pitch":  0.00, "yawTolerance": 0.18, "pitchTolerance": 0.18},
+      "left":     {"yaw": -0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
+      "right":    {"yaw":  0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
+      "up":       {"yaw":  0.00, "pitch":  0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15},
+      "down":     {"yaw":  0.00, "pitch": -0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15}
+    }
+  },
+  "camera": {
+    "frameTimeoutSeconds": 3
+  },
+  "captureView": {
+    "postSealDismissMs": 900
+  },
+  "antiSpoof": {
+    "minScore": 0.55,
+    "modelTag": "MiniFASNetV2+V1SE"
+  },
+  "faceMatch": {
+    "cosineThreshold": 0.45
+  }
+}

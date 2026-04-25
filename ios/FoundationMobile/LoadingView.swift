@@ -11,16 +11,19 @@ struct LoadingView: View {
     @State private var phaseIndex: Int = 0
     @State private var startedAt: Date = Date()
 
-    // Rotating copy for cold-launch waits. Times are wall-clock thresholds
-    // since LoadingView appeared. The last phrase sticks past 7s — at that
-    // point the user is on a particularly slow launch and needs reassurance,
-    // not creative copy.
-    private static let phases: [(after: TimeInterval, text: String)] = [
-        (0,   "Loading Foundation…"),
-        (1.5, "Verifying device trust…"),
-        (3.5, "Connecting to Solana…"),
-        (7.0, "Almost ready…"),
+    // Rotating copy for cold-launch waits. Wall-clock thresholds come from
+    // AppConfig (loading.phaseThresholdsMs); the copy is local since it's
+    // brand-voice rather than tunable.
+    private static let phaseTexts: [String] = [
+        "Loading Foundation…",
+        "Verifying device trust…",
+        "Connecting to Solana…",
+        "Almost ready…",
     ]
+    private static var phases: [(after: TimeInterval, text: String)] {
+        let thresholds = AppConfig.shared.loading.phaseThresholdsMs
+        return zip(thresholds, phaseTexts).map { ($0 / 1000.0, $1) }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
