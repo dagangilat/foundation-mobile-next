@@ -26,30 +26,7 @@ struct FaceEllipseOverlay: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                // Soft always-on guide ellipse (centered, ~60% width).
-                // Helps the user find the frame before a face is even
-                // locked on. Dashed so it reads as a hint not a target.
-                guideEllipse(in: geo.size)
-
-                if let bbox = faceStatus.boundingBox {
-                    let rect = Self.viewRect(from: bbox, in: geo.size)
-                    Ellipse()
-                        .stroke(
-                            faceStatus.matchesTargetPose
-                                ? Theme.brandGreen
-                                : Theme.muted.opacity(0.7),
-                            style: StrokeStyle(lineWidth: 3)
-                        )
-                        .frame(width: rect.width, height: rect.height)
-                        .position(x: rect.midX, y: rect.midY)
-                        .animation(.easeInOut(duration: 0.12), value: rect)
-                        .animation(
-                            .easeInOut(duration: 0.15),
-                            value: faceStatus.matchesTargetPose
-                        )
-                }
-            }
+            guideEllipse(in: geo.size)
         }
         .allowsHitTesting(false)
         .accessibilityElement(children: .ignore)
