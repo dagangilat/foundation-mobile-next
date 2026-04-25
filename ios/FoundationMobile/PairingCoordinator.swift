@@ -42,10 +42,15 @@ final class PairingCoordinator: ObservableObject {
     private var heartbeatTask: Task<Void, Never>?
     private static let heartbeatInterval: Duration = .seconds(30)
 
-    // Five minutes. Long enough to scan a QR + tap once without forcing
-    // a sign-in dance; short enough that a stolen phone with an old
-    // session can't pair anything without inbox access.
-    private static let authFreshnessMs: Int64 = 5 * 60 * 1000
+    // Threshold for how recent the email-link sign-in must be before
+    // claim/release will run. Sourced from the active profile JSON via
+    // AppConfig.session.authFreshnessSeconds — hisec-global tightens to
+    // 300s (5 min), standardsec sits at 600s (10 min default), lowsec-
+    // attest relaxes to 1800s (30 min). Server-side ensureFreshPairingAuth
+    // in foundation-global enforces an upper bound regardless of profile.
+    private static var authFreshnessMs: Int64 {
+        Int64(AppConfig.shared.session.authFreshnessSeconds) * 1000
+    }
 
     /// Called by QRScannerView with the decoded payload. Trims whitespace +
     /// strips an optional `foundation://pair/` URL prefix so future deep-link

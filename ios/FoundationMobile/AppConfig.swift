@@ -27,6 +27,7 @@ struct AppConfig: Decodable, Sendable {
     let captureView: CaptureViewSection
     let antiSpoof: AntiSpoof
     let faceMatch: FaceMatch
+    // session: see struct below — added in schemaVersion 3.
 
     struct Profile: Decodable, Sendable {
         let id: String
@@ -86,6 +87,17 @@ struct AppConfig: Decodable, Sendable {
     struct FaceMatch: Decodable, Sendable {
         let cosineThreshold: Float
     }
+
+    // Session-level controls. authFreshnessSeconds gates pair claim/release
+    // (and any future "sensitive" mobile op) on a recent email-link sign-in:
+    // the JWT auth_time claim must be within this window. Profile-tunable
+    // because high-security postures want tighter windows than community
+    // postures. Server-side ensureFreshPairingAuth in foundation-global is
+    // the load-bearing backstop; the client check is for UX.
+    struct Session: Decodable, Sendable {
+        let authFreshnessSeconds: Int
+    }
+    let session: Session
 
     static let shared: AppConfig = {
         do {

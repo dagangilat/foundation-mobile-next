@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "profile": {
     "id": "hisec-global",
     "label": "High Security — Global",
@@ -39,5 +39,8 @@
   },
   "faceMatch": {
     "cosineThreshold": 0.45
+  },
+  "session": {
+    "authFreshnessSeconds": 300
   }
 }
