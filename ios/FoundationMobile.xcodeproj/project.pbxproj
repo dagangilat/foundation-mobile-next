@@ -26,6 +26,8 @@
 		7B1E2B3C4D5E6F7A8B9C0D1E /* PassportNFCReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */; };
 		7C1E2B3C4D5E6F7A8B9C0D1E /* NFCScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */; };
 		7D1E2B3C4D5E6F7A8B9C0D1E /* PassportNfcProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */; };
+		A01E2B3C4D5E6F7A8B9C0D1E /* FaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */; };
+		B01E2B3C4D5E6F7A8B9C0D1E /* FaceMatchProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */; };
 		8E1E2B3C4D5E6F7A8B9C0D1E /* FaceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */; };
 		8F1E2B3C4D5E6F7A8B9C0D1E /* FaceEllipseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */; };
 		901E2B3C4D5E6F7A8B9C0D1E /* PosePromptBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */; };
@@ -84,6 +86,8 @@
 		7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNFCReader.swift; path = FoundationMobile/PassportNFCReader.swift; sourceTree = "<group>"; };
 		7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NFCScanView.swift; path = FoundationMobile/NFCScanView.swift; sourceTree = "<group>"; };
 		7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNfcProducer.swift; path = FoundationMobile/PassportNfcProducer.swift; sourceTree = "<group>"; };
+		A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEmbedder.swift; path = FoundationMobile/FaceEmbedder.swift; sourceTree = "<group>"; };
+		B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceMatchProducer.swift; path = FoundationMobile/FaceMatchProducer.swift; sourceTree = "<group>"; };
 		8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTracker.swift; path = FoundationMobile/FaceTracker.swift; sourceTree = "<group>"; };
 		8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEllipseOverlay.swift; path = FoundationMobile/FaceEllipseOverlay.swift; sourceTree = "<group>"; };
 		902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PosePromptBar.swift; path = FoundationMobile/PosePromptBar.swift; sourceTree = "<group>"; };
@@ -152,6 +156,8 @@
 				7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */,
 				7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */,
 				7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */,
+				A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */,
+				B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */,
 				8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */,
 				8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */,
 				902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */,
@@ -352,6 +358,8 @@
 				7B1E2B3C4D5E6F7A8B9C0D1E /* PassportNFCReader.swift in Sources */,
 				7C1E2B3C4D5E6F7A8B9C0D1E /* NFCScanView.swift in Sources */,
 				7D1E2B3C4D5E6F7A8B9C0D1E /* PassportNfcProducer.swift in Sources */,
+				A01E2B3C4D5E6F7A8B9C0D1E /* FaceEmbedder.swift in Sources */,
+				B01E2B3C4D5E6F7A8B9C0D1E /* FaceMatchProducer.swift in Sources */,
 				8E1E2B3C4D5E6F7A8B9C0D1E /* FaceTracker.swift in Sources */,
 				8F1E2B3C4D5E6F7A8B9C0D1E /* FaceEllipseOverlay.swift in Sources */,
 				901E2B3C4D5E6F7A8B9C0D1E /* PosePromptBar.swift in Sources */,

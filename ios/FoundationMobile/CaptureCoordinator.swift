@@ -285,7 +285,13 @@ final class CaptureCoordinator: ObservableObject {
         passportScanTask = Task { [weak self] in
             guard let self else { return }
             do {
-                let result = try await PassportNFCReader.shared.readPassport(mrzKey: mrzKey)
+                // Phase 6 — request DG2 (face photo) only when the face-match
+                // flag is on. DG2 roughly doubles chip dwell time (~4-6s →
+                // ~10-12s); leave it off until the producer actually consumes it.
+                let result = try await PassportNFCReader.shared.readPassport(
+                    mrzKey: mrzKey,
+                    includeFacePhoto: SensorFeatureFlags.faceMatch
+                )
                 self.state = .passportReady(framesCount: frames, passport: result)
             } catch {
                 self.state = .failed("Passport scan failed: \(error.localizedDescription)")
@@ -342,8 +348,30 @@ final class CaptureCoordinator: ObservableObject {
                 let nfcArtifact = try await PassportNfcProducer(passportData: passport).produce()
 
                 var artifacts: [ProofArtifact] = [appAttest, liveness, nfcArtifact]
-                // .nfcZk is now produced explicitly above; keep the loop for
-                // the still-mocked phases.
+
+                // Phase 6 — real .faceMatch artifact when the flag is on AND
+                // the chip returned a face photo AND we have a selfie frame.
+                // First-pose JPEG (straight-on) is the natural input — it
+                // matches DG2's typical neutral expression.
+                if SensorFeatureFlags.faceMatch {
+                    guard
+                        let dg2Image = passport.dg2FaceImage,
+                        let dg2Hash = passport.dg2Hash,
+                        let selfieJpeg = jpegs.first
+                    else {
+                        throw CaptureCoordinatorError.faceMatchInputsMissing
+                    }
+                    let faceMatch = try await FaceMatchProducer(
+                        dg2Image: dg2Image,
+                        dg2Hash: dg2Hash,
+                        selfieJpeg: selfieJpeg
+                    ).produce()
+                    artifacts.append(faceMatch)
+                }
+
+                // .nfcZk + .faceMatch handled above; loop covers still-mocked
+                // kinds. The registry returns nil for any kind whose feature
+                // flag is on, so .faceMatch isn't double-emitted here.
                 for kind in [ProofArtifact.Kind.antiSpoof, .faceMatch] {
                     guard let producer = ProofProducerRegistry.producer(for: kind) else { continue }
                     let artifact = try await producer.produce()
@@ -423,6 +451,7 @@ final class CaptureCoordinator: ObservableObject {
 
 enum CaptureCoordinatorError: Error {
     case duplicateArtifact(ProofArtifact.Kind)
+    case faceMatchInputsMissing
 }
 
 // Server-audit + on-chain anchor status for a sealed commitment. `pending`
