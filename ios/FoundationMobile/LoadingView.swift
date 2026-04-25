@@ -85,6 +85,10 @@ struct LoadingView: View {
         .cornerRadius(999)
     }
 
+    // KEEP IN SYNC: ios/FoundationMobile/LaunchScreen.storyboard renders this
+    // same hero (header + pill + pillars) statically so the native iOS launch
+    // screen and the SwiftUI splash share one visual. Storyboards can't run
+    // code, so any text/icon/color change here must be mirrored there by hand.
     private var hero: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Your")
