@@ -34,6 +34,8 @@ sources = %w[
   QRScannerView.swift
   PairingCoordinator.swift
   DocumentPhotoView.swift
+  SupportSheet.swift
+  WebHomeView.swift
 ]
 
 # Profile JSONs are sources for the select-profile.sh build phase; the script

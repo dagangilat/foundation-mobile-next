@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0234470E89B3B3C730DD40F6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257D88861F1B9A2298427239 /* Theme.swift */; };
+		055B2A9AF8EF61699C7E8A2A /* WebHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBA9375FD4DABA14059C332 /* WebHomeView.swift */; };
 		07A4980EBF784B52F1044B82 /* AttestationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A1C216FE07660C1AEE3797 /* AttestationService.swift */; };
 		0A1E2B3C4D5E6F7A8B9C0D1E /* AttestationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3A4B5C6D7E8F9A0B1C2D /* AttestationCoordinator.swift */; };
 		12CE3F47726184E1CF3A6CB1 /* AntiSpoofProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C0868B26FBF852E51F08E6 /* AntiSpoofProducer.swift */; };
@@ -15,7 +16,6 @@
 		1A1E2B3C4D5E6F7A8B9C0D1E /* MockProofProducers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2F3A4B5C6D7E8F9A0B1C2D /* MockProofProducers.swift */; };
 		1B1E2B3C4D5E6F7A8B9C0D1E /* ProofArtifact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B2F3A4B5C6D7E8F9A0B1C2D /* ProofArtifact.swift */; };
 		2171B4F30FFE85A02B5ADE02 /* MobileFaceNet.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */; };
-		F0E1D2C3B4A596877869001A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */; };
 		224B28A8AA45C15BEF8745E6 /* SolanaRPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8351F183C8FF3D833804FC09 /* SolanaRPC.swift */; };
 		2C1E2B3C4D5E6F7A8B9C0D1E /* CameraSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2F3A4B5C6D7E8F9A0B1C2D /* CameraSession.swift */; };
 		31E5AD17CC664B4B4E4D713B /* DocumentPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */; };
@@ -54,8 +54,10 @@
 		D4EA0AD49BDD537F13A9FD0C /* FunctionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E345E6207D916EE710C97076 /* FunctionsService.swift */; };
 		DC04C58E0C52A69163A08B86 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */; };
 		DE347E00A21678F8334E84F4 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEDDEC186D8993801244BC5 /* AppConfig.swift */; };
+		F0E1D2C3B4A596877869001A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */; };
 		F28CF907F668041EC3C9B7FC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */; };
 		F85B0EA965A797F6A54805D0 /* Pods_FoundationMobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */; };
+		FA79B59EBC18DD4B12CA2402 /* SupportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */; };
 		FB116A53DCD4836E5B91D7FC /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8C681943614A55B4EC0094 /* FirestoreService.swift */; };
 /* End PBXBuildFile section */
 
@@ -88,9 +90,9 @@
 		257D88861F1B9A2298427239 /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = FoundationMobile/Theme.swift; sourceTree = "<group>"; };
 		2C2F3A4B5C6D7E8F9A0B1C2D /* CameraSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraSession.swift; path = FoundationMobile/CameraSession.swift; sourceTree = "<group>"; };
 		4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Keychain.swift; path = FoundationMobile/Keychain.swift; sourceTree = "<group>"; };
-		4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.mlpackage; name = MobileFaceNet.mlpackage; path = FoundationMobile/Resources/MobileFaceNet.mlpackage; sourceTree = "<group>"; };
-		F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FoundationMobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = MobileFaceNet.mlpackage; path = FoundationMobile/Resources/MobileFaceNet.mlpackage; sourceTree = "<group>"; };
 		4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnclaveSeal.swift; path = FoundationMobile/EnclaveSeal.swift; sourceTree = "<group>"; };
+		4FBA9375FD4DABA14059C332 /* WebHomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebHomeView.swift; path = FoundationMobile/WebHomeView.swift; sourceTree = "<group>"; };
 		54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoundationMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmokeBridge.swift; path = FoundationMobile/MoproSmokeBridge.swift; sourceTree = "<group>"; };
 		6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppCheckFactory.swift; path = FoundationMobile/AppCheckFactory.swift; sourceTree = "<group>"; };
@@ -112,12 +114,13 @@
 		8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEllipseOverlay.swift; path = FoundationMobile/FaceEllipseOverlay.swift; sourceTree = "<group>"; };
 		8F8C681943614A55B4EC0094 /* FirestoreService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FirestoreService.swift; path = FoundationMobile/FirestoreService.swift; sourceTree = "<group>"; };
 		902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PosePromptBar.swift; path = FoundationMobile/PosePromptBar.swift; sourceTree = "<group>"; };
-		96BC2836F465D61E7AEC7F7F /* SilentFaceMiniFASNetV1SE.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.mlpackage; name = SilentFaceMiniFASNetV1SE.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV1SE.mlpackage; sourceTree = "<group>"; };
+		96BC2836F465D61E7AEC7F7F /* SilentFaceMiniFASNetV1SE.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = SilentFaceMiniFASNetV1SE.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV1SE.mlpackage; sourceTree = "<group>"; };
 		98DC6490D5D01BDE8C366453 /* QRScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = QRScannerView.swift; path = FoundationMobile/QRScannerView.swift; sourceTree = "<group>"; };
 		A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEmbedder.swift; path = FoundationMobile/FaceEmbedder.swift; sourceTree = "<group>"; };
-		AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.mlpackage; name = SilentFaceMiniFASNetV2.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV2.mlpackage; sourceTree = "<group>"; };
+		AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = SilentFaceMiniFASNetV2.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV2.mlpackage; sourceTree = "<group>"; };
 		B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceMatchProducer.swift; path = FoundationMobile/FaceMatchProducer.swift; sourceTree = "<group>"; };
 		BB3C48CBE0357E5145A601C5 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = FoundationMobile/HomeView.swift; sourceTree = "<group>"; };
+		BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SupportSheet.swift; path = FoundationMobile/SupportSheet.swift; sourceTree = "<group>"; };
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
 		CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "FoundationMobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CB1D44A92F9B3605006DE63D /* MoproSmoke.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MoproSmoke.xcframework; path = Frameworks/MoproSmoke.xcframework; sourceTree = "<group>"; };
@@ -130,6 +133,7 @@
 		E4C0868B26FBF852E51F08E6 /* AntiSpoofProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AntiSpoofProducer.swift; path = FoundationMobile/AntiSpoofProducer.swift; sourceTree = "<group>"; };
 		ECD6D17AB7D898E4655B9C2B /* lowsec-attest.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = "lowsec-attest.json"; path = "FoundationMobile/Resources/profiles/lowsec-attest.json"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FoundationMobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CoreMLFaceEmbedder.swift; path = FoundationMobile/CoreMLFaceEmbedder.swift; sourceTree = "<group>"; };
 		FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SignInView.swift; path = FoundationMobile/SignInView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -201,6 +205,8 @@
 				15E8BCD934051CD421D01402 /* PairingCoordinator.swift */,
 				CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */,
 				F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */,
+				BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */,
+				4FBA9375FD4DABA14059C332 /* WebHomeView.swift */,
 			);
 			name = FoundationMobile;
 			sourceTree = "<group>";
@@ -436,6 +442,8 @@
 				C0C0F9DE03F0A12B16EFBA0A /* QRScannerView.swift in Sources */,
 				5FE07A47373B2A0BFC93A828 /* PairingCoordinator.swift in Sources */,
 				31E5AD17CC664B4B4E4D713B /* DocumentPhotoView.swift in Sources */,
+				FA79B59EBC18DD4B12CA2402 /* SupportSheet.swift in Sources */,
+				055B2A9AF8EF61699C7E8A2A /* WebHomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

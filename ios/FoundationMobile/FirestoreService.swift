@@ -12,7 +12,15 @@ final class FirestoreService: ObservableObject {
 
     @Published private(set) var userDoc: UserDoc?
 
+    // True once any of the user's identity_commitments docs has reached
+    // status="anchored". Drives HomeView's swap to WebHomeView so the
+    // Verify-humanity CTA + technical readouts disappear after a
+    // successful registration. Persists across app launches — unlike
+    // CaptureCoordinator.anchorStatus, which is in-memory only.
+    @Published private(set) var humanityVerified: Bool = false
+
     private var registration: ListenerRegistration?
+    private var humanityRegistration: ListenerRegistration?
 
     func observeUser(uid: String) {
         registration?.remove()
@@ -30,11 +38,32 @@ final class FirestoreService: ObservableObject {
                 )
             }
         }
+
+        humanityRegistration?.remove()
+        // limit:1 — we only need yes/no. Server marks the doc
+        // status="anchored" inside anchorIdentityCommitmentTask once
+        // the Solana tx lands. A future "passport expired" filter will
+        // layer on top so an old anchored commitment doesn't keep the
+        // user out of the verify funnel forever.
+        humanityRegistration = db.collection("users")
+            .document(uid)
+            .collection("identity_commitments")
+            .whereField("status", isEqualTo: "anchored")
+            .limit(to: 1)
+            .addSnapshotListener { [weak self] snap, _ in
+                Task { @MainActor in
+                    guard let self else { return }
+                    self.humanityVerified = !(snap?.documents.isEmpty ?? true)
+                }
+            }
     }
 
     func stopObserving() {
         registration?.remove()
         registration = nil
+        humanityRegistration?.remove()
+        humanityRegistration = nil
         userDoc = nil
+        humanityVerified = false
     }
 }

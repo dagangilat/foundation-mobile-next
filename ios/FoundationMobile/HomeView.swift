@@ -9,6 +9,7 @@ struct HomeView: View {
     @StateObject private var capture = CaptureCoordinator.shared
     @StateObject private var pairing = PairingCoordinator.shared
     @State private var isShowingQRScanner: Bool = false
+    @State private var isShowingSupport: Bool = false
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -16,7 +17,44 @@ struct HomeView: View {
         return Theme.ringLabels[ring] ?? "Ring \(ring)"
     }
 
+    // True once registration has completed AND the on-chain anchor has
+    // landed (Firestore signal — survives app restart). Drives the swap
+    // to WebHomeView so the user no longer sees the Verify-humanity CTA
+    // or the technical readouts. Falls back to the live capture state
+    // for the brief queued→anchored window before Firestore propagates.
+    private var humanityVerified: Bool {
+        if firestore.humanityVerified { return true }
+        if case .completed(let r) = capture.anchorStatus, r.status == "anchored" {
+            return true
+        }
+        return false
+    }
+
     var body: some View {
+        Group {
+            if humanityVerified {
+                WebHomeView(claims: claims, pairing: pairing)
+            } else {
+                preVerifyHome
+            }
+        }
+        .onAppear {
+            firestore.observeUser(uid: claims.uid)
+            attestation.start()
+        }
+        .task {
+            proofSmoke = await MoproSmokeBridge.runMultiplier2Smoke()
+        }
+        .sheet(isPresented: $isShowingSupport) {
+            SupportSheet(
+                attestation: attestation,
+                capture: capture,
+                proofSmoke: proofSmoke
+            )
+        }
+    }
+
+    private var preVerifyHome: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
@@ -35,13 +73,6 @@ struct HomeView: View {
                     CaptureView()
                 }
             }
-        }
-        .onAppear {
-            firestore.observeUser(uid: claims.uid)
-            attestation.start()
-        }
-        .task {
-            proofSmoke = await MoproSmokeBridge.runMultiplier2Smoke()
         }
     }
 
@@ -146,20 +177,111 @@ struct HomeView: View {
                     .foregroundStyle(Theme.muted)
                     .padding(.top, 4)
             }
-            attestationRow
-                .padding(.top, 8)
-            moproRow
-            captureRow
+            humanityStatusLine
+                .padding(.top, 12)
             verifyHumanityButton
                 .padding(.top, 8)
             pairingRow
                 .padding(.top, 4)
+            supportButton
+                .padding(.top, 12)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.surface)
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.border))
         .cornerRadius(12)
+    }
+
+    // Single user-facing line for humanity-verification state. The raw
+    // technical detail (App Attest, mopro, commitment hash, anchor
+    // status) lives in SupportSheet behind the Support button — this
+    // row stays narratively legible.
+    @ViewBuilder
+    private var humanityStatusLine: some View {
+        HStack(spacing: 8) {
+            Image(systemName: humanityFriendlyIcon)
+                .font(.callout)
+                .foregroundStyle(humanityFriendlyColor)
+            Text(humanityFriendlyLabel)
+                .font(.callout)
+                .foregroundStyle(Theme.muted)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+        }
+    }
+
+    private var humanityFriendlyIcon: String {
+        switch capture.state {
+        case .sealed: return "checkmark.seal.fill"
+        case .failed: return "exclamationmark.triangle.fill"
+        case .verifying, .scanningPassport, .readyForPose, .readyForPassport,
+             .passportReady, .readyForDocumentPhoto, .documentPhotoReady,
+             .readyForVerification:
+            return "hourglass"
+        case .needsAttestation: return "lock.shield"
+        case .unsupported: return "iphone.slash"
+        case .idle: return "person.crop.circle.badge.questionmark"
+        }
+    }
+
+    private var humanityFriendlyColor: Color {
+        switch capture.state {
+        case .sealed: return Theme.brandGreen
+        case .failed: return .orange
+        default: return Theme.muted
+        }
+    }
+
+    private var humanityFriendlyLabel: String {
+        switch capture.state {
+        case .idle:
+            if isAttested { return "Verify humanity to start using Foundation" }
+            return "Setting up your secure session…"
+        case .needsAttestation: return "Setting up your secure session…"
+        case .unsupported: return "Verification needs a real iPhone (not a simulator)"
+        case .readyForPose, .readyForPassport, .scanningPassport, .passportReady,
+             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification:
+            return "Verification in progress — finish in the camera step"
+        case .verifying: return "Sealing your humanity proof…"
+        case .sealed:
+            switch capture.anchorStatus {
+            case .completed(let r) where r.status == "anchored":
+                return "Humanity verified — recording on-chain confirmation"
+            case .pending, .completed:
+                return "Humanity sealed — anchoring on devnet…"
+            case .failed:
+                return "Humanity sealed — anchor retrying"
+            case .notAttempted:
+                return "Humanity sealed"
+            }
+        case .failed: return "Verification didn't complete — tap to try again"
+        }
+    }
+
+    @ViewBuilder
+    private var supportButton: some View {
+        Button {
+            isShowingSupport = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "lifepreserver")
+                    .font(.system(size: 15, weight: .semibold))
+                Text("Support & diagnostics")
+                    .font(.system(size: 14, weight: .semibold))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+            }
+            .foregroundStyle(Theme.muted)
+            .padding(.vertical, 11)
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity)
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.border))
+        }
+        .accessibilityLabel("Open support and diagnostics")
+        .accessibilityHint("Reveals device technical state and lets you send it to Foundation Support without sharing personal data.")
     }
 
     @ViewBuilder

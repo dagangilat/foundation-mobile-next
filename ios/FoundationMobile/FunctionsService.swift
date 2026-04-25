@@ -89,6 +89,30 @@ struct AckResult: Decodable, Sendable {
     let ok: Bool
 }
 
+// Support ticket — diagnostic-only payload. SupportSheet renders the
+// same strings it sends, so what the user sees is what the support team
+// receives. Server enforces strict per-field length caps and writes to
+// /support/{ticketId} via admin SDK; client direct read/write is denied
+// in firestore.rules. No personal data — see foundation-global
+// submitSupportTicket comments.
+struct SubmitSupportTicketRequest: Encodable, Sendable {
+    let appAttest: String
+    let moproStatus: String
+    let humanityState: String
+    let latestCommitment: String
+    let anchorStatus: String
+    let profileId: String
+    let appVersion: String
+    let buildVersion: String
+    let iosVersion: String
+    let deviceModel: String
+}
+
+struct SupportTicketResult: Decodable, Sendable {
+    let ticketId: String
+    let createdAtMs: Int64
+}
+
 enum FunctionsError: Error {
     case malformedResponse
 }
@@ -139,6 +163,12 @@ actor FunctionsService {
     func releasePairingSession(sessionId: String) async throws -> AckResult {
         let result = try await functions.httpsCallable("releasePairingSession").call(["sessionId": sessionId])
         return try decode(AckResult.self, from: result.data)
+    }
+
+    func submitSupportTicket(_ req: SubmitSupportTicketRequest) async throws -> SupportTicketResult {
+        let payload = try encodeToDict(req)
+        let result = try await functions.httpsCallable("submitSupportTicket").call(payload)
+        return try decode(SupportTicketResult.self, from: result.data)
     }
 
     private func decode<T: Decodable>(_: T.Type, from raw: Any) throws -> T {
