@@ -367,32 +367,36 @@ struct HomeView: View {
         var out: [BadgeData] = []
         let profile = AppConfig.shared.profile
 
-        // App Attest — always required.
+        // Icon picks mirror the hero's bold-filled aesthetic (waveform,
+        // wallet.pass.fill, cart.fill). Each one chosen for one-glance
+        // semantic legibility; all SF Symbol fills, single-color.
+
+        // App Attest — always required. Mirrors Foundation's shield logo.
         out.append(BadgeData(
             icon: "lock.shield.fill",
             label: "App Attest",
             state: appAttestBadgeState
         ))
 
-        // Liveness — almost always required (profile-driven).
+        // Liveness — bold filled face = real, present human.
         if profile.requires(.liveness) {
             out.append(BadgeData(
-                icon: "face.smiling",
+                icon: "face.smiling.inverse",
                 label: "Liveness",
                 state: captureBadgeState
             ))
         }
 
-        // ePassport NFC — hisec-global only (chip-bearing docs).
+        // ePassport NFC — book of pages = passport silhouette.
         if profile.requires(.nfcZk) {
             out.append(BadgeData(
-                icon: "doc.text.fill",
+                icon: "book.pages.fill",
                 label: "ePassport",
                 state: captureBadgeState
             ))
         }
 
-        // Anti-spoof — hisec-global + standardsec.
+        // Anti-spoof — open eye = "we see the real you, not a print".
         if profile.requires(.antiSpoof) {
             out.append(BadgeData(
                 icon: "eye.fill",
@@ -401,16 +405,16 @@ struct HomeView: View {
             ))
         }
 
-        // Face match — hisec-global + standardsec.
+        // Face match — filled person + checkmark = identity confirmed.
         if profile.requires(.faceMatch) {
             out.append(BadgeData(
-                icon: "person.crop.circle.badge.checkmark",
+                icon: "person.crop.circle.fill.badge.checkmark",
                 label: "Face match",
                 state: captureBadgeState
             ))
         }
 
-        // On-chain anchor — always shown.
+        // On-chain anchor — chain link = Solana commitment landed.
         out.append(BadgeData(
             icon: "link.circle.fill",
             label: "On-chain",
