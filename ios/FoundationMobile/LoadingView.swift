@@ -85,10 +85,14 @@ struct LoadingView: View {
         .cornerRadius(999)
     }
 
-    // KEEP IN SYNC: ios/FoundationMobile/LaunchScreen.storyboard renders this
-    // same hero (header + pill + pillars) statically so the native iOS launch
-    // screen and the SwiftUI splash share one visual. Storyboards can't run
-    // code, so any text/icon/color change here must be mirrored there by hand.
+    // KEEP IN SYNC across three surfaces — Foundation's hero is one
+    // visual that lives in three repos (storyboards can't run code,
+    // and the web app + plantagoai have their own renderers):
+    //   1. ios/FoundationMobile/LaunchScreen.storyboard  (UIKit static)
+    //   2. foundation-global/evoting-frontend            (web app hero)
+    //   3. plantagoai/...                                (org-level source of truth)
+    // Any text / icon / color / weight change here must land in all
+    // three. Treat plantagoai as the spec; the other two follow.
     private var hero: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Your")
