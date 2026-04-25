@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import CryptoKit
 import DeviceCheck
+import FirebaseFirestore
 import UIKit
 
 // Phase 2 fan-in coordinator. Drives a multi-pose liveness capture sequence
@@ -78,6 +79,12 @@ final class CaptureCoordinator: ObservableObject {
     private var anchorTask: Task<Void, Never>?
     private var passportScanTask: Task<Void, Never>?
 
+    // Live Firestore subscription on the commitment doc that the server
+    // writes during the queued → anchored → (anchor-failed) lifecycle.
+    // Same pattern as FirestoreService.observeUser and the web's
+    // subscribeToProposals. Held here so reset()/begin() can tear it down.
+    private var commitmentListener: ListenerRegistration?
+
     // Tracks the pre-scan frame count so the retry path can restore the
     // correct `.readyForPassport(framesCount:)` state after a failure
     // without re-running the pose loop.
@@ -112,6 +119,8 @@ final class CaptureCoordinator: ObservableObject {
         task = nil
         anchorTask = nil
         passportScanTask = nil
+        commitmentListener?.remove()
+        commitmentListener = nil
         capturedJpegs.removeAll()
         lastFramesCount = 0
         anchorStatus = .notAttempted
@@ -529,8 +538,44 @@ final class CaptureCoordinator: ObservableObject {
             do {
                 let result = try await FunctionsService.shared.anchorCommitment(req)
                 self?.anchorStatus = .completed(result)
+                if result.status == "queued", let path = result.commitmentDocPath {
+                    self?.observeCommitmentDoc(at: path, baseResult: result)
+                }
             } catch {
                 self?.anchorStatus = .failed(String(describing: error))
+            }
+        }
+    }
+
+    // Listen for the server's queued → anchored (or anchor-failed) write
+    // on the Firestore commitment doc. Same pattern as the web's
+    // subscribeToProposals + FirestoreService.observeUser. The callable
+    // returns immediately with status:"queued"; the on-chain task finishes
+    // async and only the doc reflects the final outcome.
+    private func observeCommitmentDoc(at path: String, baseResult: AnchorCommitmentResult) {
+        commitmentListener?.remove()
+        let db = Firestore.firestore()
+        commitmentListener = db.document(path).addSnapshotListener { [weak self] snap, _ in
+            Task { @MainActor in
+                guard let self, let data = snap?.data() else { return }
+                let status = data["status"] as? String ?? baseResult.status
+                let slot: Int64? = (data["slot"] as? Int64)
+                    ?? (data["slot"] as? NSNumber)?.int64Value
+                let txSig = data["txSignature"] as? String
+                let reason = data["reason"] as? String ?? baseResult.reason
+                self.anchorStatus = .completed(AnchorCommitmentResult(
+                    accepted: baseResult.accepted,
+                    status: status,
+                    slot: slot,
+                    txSignature: txSig,
+                    commitmentDocPath: baseResult.commitmentDocPath,
+                    recordAddress: baseResult.recordAddress,
+                    reason: reason
+                ))
+                if status == "anchored" || status == "anchor-failed" {
+                    self.commitmentListener?.remove()
+                    self.commitmentListener = nil
+                }
             }
         }
     }
@@ -544,6 +589,8 @@ final class CaptureCoordinator: ObservableObject {
         anchorTask = nil
         passportScanTask = nil
         scanBudgetTask = nil
+        commitmentListener?.remove()
+        commitmentListener = nil
         capturedJpegs.removeAll()
         lastFramesCount = 0
         anchorStatus = .notAttempted
