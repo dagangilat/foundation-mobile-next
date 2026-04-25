@@ -99,6 +99,15 @@ struct AppConfig: Decodable, Sendable {
     }
     let session: Session
 
+    // Support-sheet controls. maxPerSession caps how many diagnostic
+    // tickets a single app session can submit; the count resets on app
+    // relaunch. Prevents a wedged client from spamming /support during
+    // a debug loop. SupportSessionTracker lives in memory only.
+    struct Support: Decodable, Sendable {
+        let maxPerSession: Int
+    }
+    let support: Support
+
     static let shared: AppConfig = {
         do {
             return try load()

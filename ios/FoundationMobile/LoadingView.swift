@@ -99,8 +99,8 @@ struct LoadingView: View {
                 .font(.system(size: 48, weight: .bold))
                 .foregroundStyle(.white)
             pillar(icon: "waveform", label: "Voice.", color: Theme.voice)
-            pillar(icon: "square.and.arrow.up", label: "Share.", color: Theme.share)
-            pillar(icon: "chart.line.uptrend.xyaxis", label: "Market.", color: Theme.market)
+            pillar(icon: "wallet.pass.fill", label: "Share.", color: Theme.share)
+            pillar(icon: "cart.fill", label: "Market.", color: Theme.market)
         }
     }
 

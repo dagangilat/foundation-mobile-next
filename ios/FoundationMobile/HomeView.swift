@@ -10,6 +10,11 @@ struct HomeView: View {
     @StateObject private var pairing = PairingCoordinator.shared
     @State private var isShowingQRScanner: Bool = false
     @State private var isShowingSupport: Bool = false
+    // Session-only — flips true when the user taps "Connect to Foundation"
+    // after humanity is anchored. Until tapped, post-anchor home stays on
+    // preVerifyHome with the Connect CTA visible. Reset on app relaunch
+    // (intentional — the user re-affirms entry per session).
+    @State private var hasConnected: Bool = false
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -32,7 +37,7 @@ struct HomeView: View {
 
     var body: some View {
         Group {
-            if humanityVerified {
+            if humanityVerified && hasConnected {
                 WebHomeView(claims: claims, pairing: pairing)
             } else {
                 preVerifyHome
@@ -146,8 +151,8 @@ struct HomeView: View {
                 .font(.system(size: 48, weight: .bold))
                 .foregroundStyle(.white)
             pillar(icon: "waveform", label: "Voice.", color: Theme.voice)
-            pillar(icon: "square.and.arrow.up", label: "Share.", color: Theme.share)
-            pillar(icon: "chart.line.uptrend.xyaxis", label: "Market.", color: Theme.market)
+            pillar(icon: "wallet.pass.fill", label: "Share.", color: Theme.share)
+            pillar(icon: "cart.fill", label: "Market.", color: Theme.market)
         }
     }
 
@@ -235,6 +240,12 @@ struct HomeView: View {
     }
 
     private var humanityFriendlyLabel: String {
+        // Returning user (anchored from a prior session, no fresh capture
+        // this run). Surfaces the Connect call-to-action so they don't
+        // see "Verify humanity" again.
+        if humanityVerified, case .idle = capture.state {
+            return "Humanity verified — tap Connect to enter Foundation"
+        }
         switch capture.state {
         case .idle:
             if isAttested { return "Verify humanity to start using Foundation" }
@@ -248,7 +259,7 @@ struct HomeView: View {
         case .sealed:
             switch capture.anchorStatus {
             case .completed(let r) where r.status == "anchored":
-                return "Humanity verified — recording on-chain confirmation"
+                return "Humanity verified — tap Connect to enter Foundation"
             case .pending, .completed:
                 return "Humanity sealed — anchoring on devnet…"
             case .failed:
@@ -378,13 +389,36 @@ struct HomeView: View {
         }
     }
 
+    // Three-stage CTA: Verify (pre-PoH) → Anchoring (sealed) → Connect (anchored).
+    // App Attest failure shorts to a retry button regardless of stage.
+    private enum VerifyStage {
+        case attestFailed(String)
+        case attestPending
+        case verify
+        case verifying          // PoH in flight (capture state non-idle, non-sealed)
+        case anchorPending      // sealed, waiting for chain anchor
+        case connect            // anchored, ready to enter Foundation
+    }
+
+    private var verifyStage: VerifyStage {
+        if case .failed(let msg) = attestation.state { return .attestFailed(msg) }
+        if !isAttested { return .attestPending }
+        if humanityVerified { return .connect }
+        switch capture.state {
+        case .sealed: return .anchorPending
+        case .readyForPose, .readyForPassport, .scanningPassport, .passportReady,
+             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification, .verifying:
+            return .verifying
+        default: return .verify
+        }
+    }
+
     @ViewBuilder
     private var verifyHumanityButton: some View {
-        if case .failed(let msg) = attestation.state {
+        switch verifyStage {
+        case .attestFailed(let msg):
             // App Attest failed — surface the error and let the user retry
-            // without delete-and-reinstall. Without this branch the home
-            // screen sits forever on "Setting up your secure session…" and
-            // the user has no actionable signal.
+            // without delete-and-reinstall.
             Button {
                 attestation.retry()
             } label: {
@@ -408,20 +442,44 @@ struct HomeView: View {
                 .background(Color.orange)
                 .cornerRadius(10)
             }
-        } else {
-            let enabled = isAttested
+        case .attestPending:
+            disabledGreenButton(text: "Verify humanity — App Attest pending")
+        case .verify:
             NavigationLink(value: Route.capture) {
-                Text(enabled ? "Verify humanity" : "Verify humanity — App Attest pending")
-                    .font(.headline)
-                    .foregroundStyle(.black)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Theme.brandGreen)
-                    .cornerRadius(10)
-                    .opacity(enabled ? 1.0 : 0.5)
+                primaryGreenButtonLabel(text: "Verify humanity")
             }
-            .disabled(!enabled)
+        case .verifying:
+            disabledGreenButton(text: "Verification in progress…")
+        case .anchorPending:
+            disabledGreenButton(text: "Anchoring on devnet…")
+        case .connect:
+            Button {
+                hasConnected = true
+            } label: {
+                primaryGreenButtonLabel(text: "Connect to Foundation")
+            }
         }
+    }
+
+    private func primaryGreenButtonLabel(text: String) -> some View {
+        Text(text)
+            .font(.headline)
+            .foregroundStyle(.black)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Theme.brandGreen)
+            .cornerRadius(10)
+    }
+
+    private func disabledGreenButton(text: String) -> some View {
+        Text(text)
+            .font(.headline)
+            .foregroundStyle(.black)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Theme.brandGreen)
+            .cornerRadius(10)
+            .opacity(0.5)
     }
 
     private var isAttested: Bool {

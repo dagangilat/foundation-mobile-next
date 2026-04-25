@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "profile": {
     "id": "lowsec-attest",
     "label": "Low Security — Device Attest + Liveness",
@@ -42,5 +42,8 @@
   },
   "session": {
     "authFreshnessSeconds": 1800
+  },
+  "support": {
+    "maxPerSession": 5
   }
 }

@@ -96,6 +96,7 @@ final class AuthService: ObservableObject {
         try Auth.auth().signOut()
         AttestationCoordinator.shared.reset()
         PairingCoordinator.shared.suspendOnLifecycleEvent()
+        SupportSessionTracker.shared.reset()
     }
 
     // Age of the current Firebase ID token's `auth_time` claim. This is

@@ -20,6 +20,7 @@ struct SupportSheet: View {
     let proofSmoke: SmokeProofResult
 
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var tracker = SupportSessionTracker.shared
 
     @State private var phase: Phase = .idle
     @State private var copiedTicketId: Bool = false
@@ -111,31 +112,55 @@ struct SupportSheet: View {
             if case .sent = phase { return true }
             return false
         }()
-        Button {
-            send()
-        } label: {
-            HStack(spacing: 10) {
-                if isSending { ProgressView().controlSize(.small).tint(.black) }
-                Image(systemName: isSent ? "checkmark.circle.fill" : "paperplane.fill")
-                Text(buttonLabel)
+        let atLimit = tracker.isAtLimit
+        let disabled = isSending || isSent || atLimit
+        VStack(spacing: 6) {
+            Button {
+                send()
+            } label: {
+                HStack(spacing: 10) {
+                    if isSending { ProgressView().controlSize(.small).tint(.black) }
+                    Image(systemName: buttonIcon(isSent: isSent, atLimit: atLimit))
+                    Text(buttonLabel(isSending: isSending, isSent: isSent, atLimit: atLimit))
+                }
+                .font(.headline)
+                .foregroundStyle(.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(atLimit ? Theme.muted : Theme.brandGreen)
+                .cornerRadius(12)
+                .opacity(disabled ? 0.7 : 1.0)
             }
-            .font(.headline)
-            .foregroundStyle(.black)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Theme.brandGreen)
-            .cornerRadius(12)
-            .opacity(isSending || isSent ? 0.7 : 1.0)
+            .disabled(disabled)
+            // Quota copy — keeps the user informed without dominating the
+            // sheet. Hidden when count is 0 / limit, surfaced after the
+            // first send so they know the cap exists.
+            if tracker.sentCount > 0 {
+                Text(quotaCaption)
+                    .font(.caption2)
+                    .foregroundStyle(Theme.muted)
+            }
         }
-        .disabled(isSending || isSent)
     }
 
-    private var buttonLabel: String {
-        switch phase {
-        case .idle, .failed: return "Send to Foundation Support"
-        case .sending: return "Sending…"
-        case .sent: return "Sent — thank you"
+    private func buttonIcon(isSent: Bool, atLimit: Bool) -> String {
+        if atLimit { return "clock.badge.exclamationmark" }
+        return isSent ? "checkmark.circle.fill" : "paperplane.fill"
+    }
+
+    private func buttonLabel(isSending: Bool, isSent: Bool, atLimit: Bool) -> String {
+        if atLimit { return "Session limit reached — relaunch app" }
+        if isSending { return "Sending…" }
+        if isSent { return "Sent — thank you" }
+        return "Send to Foundation Support"
+    }
+
+    private var quotaCaption: String {
+        let remaining = tracker.remaining
+        if remaining == 0 {
+            return "Limit hit (\(tracker.maxPerSession) per session). Relaunch the app to reset."
         }
+        return "\(remaining) of \(tracker.maxPerSession) sends remaining this session."
     }
 
     @ViewBuilder
@@ -197,6 +222,7 @@ struct SupportSheet: View {
     // MARK: - Send
 
     private func send() {
+        guard !tracker.isAtLimit else { return }
         let payload = SubmitSupportTicketRequest(
             appAttest: attestationDescription,
             moproStatus: "\(moproBridgeDescription) — \(moproProofDescription)",
@@ -213,7 +239,10 @@ struct SupportSheet: View {
         Task {
             do {
                 let result = try await FunctionsService.shared.submitSupportTicket(payload)
-                await MainActor.run { phase = .sent(ticketId: result.ticketId) }
+                await MainActor.run {
+                    tracker.recordSent()
+                    phase = .sent(ticketId: result.ticketId)
+                }
             } catch {
                 await MainActor.run { phase = .failed(message: error.localizedDescription) }
             }

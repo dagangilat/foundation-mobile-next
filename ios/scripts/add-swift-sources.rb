@@ -36,6 +36,7 @@ sources = %w[
   DocumentPhotoView.swift
   SupportSheet.swift
   WebHomeView.swift
+  SupportSessionTracker.swift
 ]
 
 # Profile JSONs are sources for the select-profile.sh build phase; the script

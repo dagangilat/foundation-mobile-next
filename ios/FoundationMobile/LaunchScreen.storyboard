@@ -79,7 +79,7 @@
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="ps">
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="square.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv2">
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="wallet.pass.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv2">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" pointSize="32" weight="regular" scale="default"/>
                                                         <color key="tintColor" red="0.17647058823529413" green="0.8313725490196079" blue="0.7490196078431373" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </imageView>
@@ -92,7 +92,7 @@
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="pm">
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="chart.line.uptrend.xyaxis" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv3">
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="cart.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv3">
                                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" pointSize="32" weight="regular" scale="default"/>
                                                         <color key="tintColor" red="0.13333333333333333" green="0.8274509803921568" blue="0.9333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </imageView>
@@ -142,9 +142,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="chart.line.uptrend.xyaxis" catalog="system" width="32" height="32"/>
+        <image name="cart.fill" catalog="system" width="32" height="32"/>
         <image name="shield.lefthalf.filled" catalog="system" width="32" height="32"/>
-        <image name="square.and.arrow.up" catalog="system" width="32" height="32"/>
+        <image name="wallet.pass.fill" catalog="system" width="32" height="32"/>
         <image name="waveform" catalog="system" width="32" height="32"/>
         <namedColor name="LaunchBackground">
             <color red="0.039215686274509803" green="0.054901960784313725" blue="0.15294117647058825" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "profile": {
     "id": "hisec-global",
     "label": "High Security — Global",
@@ -42,5 +42,8 @@
   },
   "session": {
     "authFreshnessSeconds": 300
+  },
+  "support": {
+    "maxPerSession": 3
   }
 }
