@@ -194,17 +194,51 @@ struct AntiSpoofProducer: ProofProducer {
 
     // MARK: - Bundle loading
 
+    // Prefer Xcode-compiled .mlmodelc; fall back to runtime-compiling the
+    // .mlpackage and caching the result. Xcode's CoreMLModelCompile only
+    // runs when the .mlpackage file ref is in the right build phase with
+    // the right last-known-file-type — both are fragile across pbxproj
+    // edits and re-runs of add-swift-sources.rb. Runtime compile is the
+    // belt-and-suspenders fallback that survives any pbxproj weirdness.
+    // First call is ~1-2 s per model; subsequent calls hit the cache.
     private static func loadBundled(name: String) throws -> MLModel {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "mlmodelc")
-            ?? Bundle.main.url(forResource: name, withExtension: "mlpackage") else {
+        let cfg = MLModelConfiguration()
+        cfg.computeUnits = .cpuAndGPU
+
+        if let url = Bundle.main.url(forResource: name, withExtension: "mlmodelc") {
+            do {
+                return try MLModel(contentsOf: url, configuration: cfg)
+            } catch {
+                // Pre-compiled bundle is malformed — surface and stop.
+                throw Failure.inferenceFailed("MLModel load (mlmodelc): \(error)")
+            }
+        }
+
+        guard let packageURL = Bundle.main.url(forResource: name, withExtension: "mlpackage") else {
             throw Failure.modelNotBundled(name)
         }
         do {
-            let cfg = MLModelConfiguration()
-            cfg.computeUnits = .cpuAndGPU
-            return try MLModel(contentsOf: url, configuration: cfg)
+            let cachedURL = try Self.compileMLPackageToCache(name: name, packageURL: packageURL)
+            return try MLModel(contentsOf: cachedURL, configuration: cfg)
         } catch {
-            throw Failure.inferenceFailed("MLModel load: \(error)")
+            throw Failure.inferenceFailed("MLModel runtime-compile + load: \(error)")
         }
+    }
+
+    private static func compileMLPackageToCache(name: String, packageURL: URL) throws -> URL {
+        let fm = FileManager.default
+        let cachesURL = try fm.url(
+            for: .cachesDirectory, in: .userDomainMask,
+            appropriateFor: nil, create: true
+        )
+        let modelDir = cachesURL.appendingPathComponent("MLModelCache", isDirectory: true)
+        try? fm.createDirectory(at: modelDir, withIntermediateDirectories: true)
+        let cachedURL = modelDir.appendingPathComponent("\(name).mlmodelc")
+        if !fm.fileExists(atPath: cachedURL.path) {
+            let compiledURL = try MLModel.compileModel(at: packageURL)
+            try? fm.removeItem(at: cachedURL)
+            try fm.moveItem(at: compiledURL, to: cachedURL)
+        }
+        return cachedURL
     }
 }

@@ -28,15 +28,47 @@ struct CoreMLFaceEmbedder: FaceEmbedder {
         }
     }
 
+    // Prefer Xcode-compiled .mlmodelc; fall back to runtime-compiling the
+    // .mlpackage and caching the result. See AntiSpoofProducer.loadBundled
+    // for the rationale (pbxproj build-phase fragility).
     static func tryLoadFromBundle() -> CoreMLFaceEmbedder? {
-        guard let url = Bundle.main.url(forResource: "MobileFaceNet", withExtension: "mlmodelc")
-            ?? Bundle.main.url(forResource: "MobileFaceNet", withExtension: "mlpackage") else {
-            return nil
-        }
         let cfg = MLModelConfiguration()
         cfg.computeUnits = .cpuAndGPU
-        guard let model = try? MLModel(contentsOf: url, configuration: cfg) else { return nil }
-        return CoreMLFaceEmbedder(model: model)
+
+        if let url = Bundle.main.url(forResource: "MobileFaceNet", withExtension: "mlmodelc") {
+            if let model = try? MLModel(contentsOf: url, configuration: cfg) {
+                return CoreMLFaceEmbedder(model: model)
+            }
+        }
+
+        guard let packageURL = Bundle.main.url(forResource: "MobileFaceNet", withExtension: "mlpackage") else {
+            return nil
+        }
+        do {
+            let cachedURL = try compileToCache(name: "MobileFaceNet", packageURL: packageURL)
+            let model = try MLModel(contentsOf: cachedURL, configuration: cfg)
+            return CoreMLFaceEmbedder(model: model)
+        } catch {
+            print("[CoreMLFaceEmbedder] runtime compile failed: \(error)")
+            return nil
+        }
+    }
+
+    private static func compileToCache(name: String, packageURL: URL) throws -> URL {
+        let fm = FileManager.default
+        let cachesURL = try fm.url(
+            for: .cachesDirectory, in: .userDomainMask,
+            appropriateFor: nil, create: true
+        )
+        let modelDir = cachesURL.appendingPathComponent("MLModelCache", isDirectory: true)
+        try? fm.createDirectory(at: modelDir, withIntermediateDirectories: true)
+        let cachedURL = modelDir.appendingPathComponent("\(name).mlmodelc")
+        if !fm.fileExists(atPath: cachedURL.path) {
+            let compiledURL = try MLModel.compileModel(at: packageURL)
+            try? fm.removeItem(at: cachedURL)
+            try fm.moveItem(at: compiledURL, to: cachedURL)
+        }
+        return cachedURL
     }
 
     func embed(_ image: CGImage) async throws -> [Float] {

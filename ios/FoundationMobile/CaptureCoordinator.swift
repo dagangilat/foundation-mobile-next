@@ -321,12 +321,59 @@ final class CaptureCoordinator: ObservableObject {
                     includeFacePhoto: AppConfig.shared.profile.requires(.faceMatch) &&
                                       AppConfig.shared.profile.faceMatchSource == .dg2
                 )
+                #if DEBUG
+                Self.dumpPassportForDebug(result)
+                #endif
                 self.state = .passportReady(framesCount: frames, passport: result)
             } catch {
                 self.state = .failed(stage: .passportScan, message: error.localizedDescription)
             }
         }
     }
+
+    #if DEBUG
+    // Debug-only DG2 + chip-data export. Writes the JPEG-decoded face photo
+    // and a metadata text file into the app's Documents directory; pull
+    // them off the device via Xcode → Window → Devices and Simulators →
+    // FoundationMobile → ⚙ → Download Container → unpack the .xcappdata
+    // bundle, look in AppDataContainer/Documents.
+    //
+    // HARD INVARIANT: this path is wrapped in #if DEBUG and only executes
+    // in debug builds. Release builds never see DG2 imagery touch disk.
+    // Don't loosen this guard.
+    private static func dumpPassportForDebug(_ result: PassportReadResult) {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        guard let docs else { return }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyyMMdd-HHmmss"
+        let stamp = fmt.string(from: Date())
+        let safeNumber = result.passportNumberMasked.replacingOccurrences(of: "•", with: "x")
+        let prefix = "passport-\(result.issuingCountryCode)-\(safeNumber)-\(stamp)"
+
+        if let img = result.dg2FaceImage,
+           let jpeg = img.jpegData(compressionQuality: 0.95) {
+            let imgURL = docs.appendingPathComponent("\(prefix)-dg2.jpg")
+            try? jpeg.write(to: imgURL)
+            print("[DEBUG] DG2 → \(imgURL.lastPathComponent) (\(jpeg.count) bytes)")
+        }
+
+        let dg1HashHex = result.dg1Hash.map { String(format: "%02x", $0) }.joined()
+        let dg2HashHex = result.dg2Hash.map { $0.map { String(format: "%02x", $0) }.joined() } ?? "n/a"
+        let meta = """
+        passport-debug-dump
+        ---
+        timestamp: \(stamp)
+        issuingCountryCode: \(result.issuingCountryCode)
+        passportNumberMasked: \(result.passportNumberMasked)
+        dg1Hash: \(dg1HashHex)
+        dg2Hash: \(dg2HashHex)
+        dg2FaceImage: \(result.dg2FaceImage != nil ? "captured \(prefix)-dg2.jpg" : "not requested")
+        """
+        let metaURL = docs.appendingPathComponent("\(prefix)-meta.txt")
+        try? meta.data(using: .utf8)?.write(to: metaURL)
+        print("[DEBUG] passport meta → \(metaURL.lastPathComponent)")
+    }
+    #endif
 
     // Called from NFCScanView's retry button when the scan failed. Drops
     // the user back to .readyForPassport so CaptureView re-presents
