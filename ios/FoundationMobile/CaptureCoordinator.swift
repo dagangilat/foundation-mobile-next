@@ -43,7 +43,18 @@ final class CaptureCoordinator: ObservableObject {
         // which of the two we're in without making the view count seconds.
         case verifying(phase: VerifyPhase)
         case sealed(EnclaveSeal.Commitment)
-        case failed(String)
+        case failed(stage: FailureStage, message: String)
+    }
+
+    // Coarse stage label for `.failed`. Lets the view layer pick body copy
+    // that matches what actually went wrong instead of always showing the
+    // passport-scan retry message. Keep this enum small — finer detail
+    // belongs in the message string.
+    enum FailureStage: Equatable {
+        case poseCapture       // active-liveness pose loop / emergency capture
+        case livenessTimeout   // 15 s scan budget expired with zero frames
+        case passportScan      // MRZ parse / NFC chip read
+        case verify            // App Attest signing, anti-spoof, face-match, seal
     }
 
     enum VerifyPhase: Equatable {
@@ -168,7 +179,7 @@ final class CaptureCoordinator: ObservableObject {
                     self.state = self.afterPosesState(framesCount: next)
                 }
             } catch {
-                self.state = .failed(String(describing: error))
+                self.state = .failed(stage: .poseCapture, message: String(describing: error))
             }
         }
     }
@@ -228,7 +239,10 @@ final class CaptureCoordinator: ObservableObject {
                     self.lastFramesCount = 1
                     self.state = self.afterPosesState(framesCount: 1)
                 } catch {
-                    self.state = .failed("Liveness scan timed out and emergency capture failed: \(error.localizedDescription)")
+                    self.state = .failed(
+                        stage: .livenessTimeout,
+                        message: "Liveness scan timed out and emergency capture failed: \(error.localizedDescription)"
+                    )
                 }
             }
         } else {
@@ -300,7 +314,7 @@ final class CaptureCoordinator: ObservableObject {
                 )
                 self.state = .passportReady(framesCount: frames, passport: result)
             } catch {
-                self.state = .failed("Passport scan failed: \(error.localizedDescription)")
+                self.state = .failed(stage: .passportScan, message: error.localizedDescription)
             }
         }
     }
@@ -485,7 +499,7 @@ final class CaptureCoordinator: ObservableObject {
                 self.state = .sealed(commitment)
                 self.submitAnchor(commitment: commitment, artifacts: artifacts)
             } catch {
-                self.state = .failed(String(describing: error))
+                self.state = .failed(stage: .verify, message: String(describing: error))
             }
         }
     }

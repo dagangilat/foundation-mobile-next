@@ -237,7 +237,7 @@ struct CaptureView: View {
                     .foregroundStyle(.white)
                 Spacer()
             }
-        case .failed(let msg):
+        case .failed(_, let msg):
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)

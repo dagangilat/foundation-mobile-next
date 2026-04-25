@@ -120,6 +120,16 @@ struct NFCScanView: View {
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)
             }
+        case .failed(stage: .verify, _):
+            VStack(spacing: 8) {
+                Text("Verification failed")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(.orange)
+                Text("We couldn't sign and seal your verification. Tap retry to scan your passport again — sometimes the chip read needs a second attempt to capture the face photo cleanly.")
+                    .font(.callout)
+                    .foregroundStyle(Theme.muted)
+                    .multilineTextAlignment(.center)
+            }
         case .failed:
             VStack(spacing: 8) {
                 Text("Scan failed")
@@ -147,7 +157,7 @@ struct NFCScanView: View {
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
             }
-        case .failed(let msg):
+        case .failed(_, let msg):
             Text(msg)
                 .font(.caption)
                 .foregroundStyle(Theme.muted)

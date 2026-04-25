@@ -198,7 +198,7 @@ struct HomeView: View {
         case .verifying(let phase):
             return phase == .signing ? "Humanity — signing…" : "Humanity — sealing…"
         case .sealed: return "Humanity — sealed · \(anchorSuffix)"
-        case .failed(let msg): return "Humanity — failed: \(msg)"
+        case .failed(_, let msg): return "Humanity — failed: \(msg)"
         }
     }
 
