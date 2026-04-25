@@ -380,18 +380,48 @@ struct HomeView: View {
 
     @ViewBuilder
     private var verifyHumanityButton: some View {
-        let enabled = isAttested
-        NavigationLink(value: Route.capture) {
-            Text(enabled ? "Verify humanity" : "Verify humanity — App Attest pending")
-                .font(.headline)
-                .foregroundStyle(.black)
+        if case .failed(let msg) = attestation.state {
+            // App Attest failed — surface the error and let the user retry
+            // without delete-and-reinstall. Without this branch the home
+            // screen sits forever on "Setting up your secure session…" and
+            // the user has no actionable signal.
+            Button {
+                attestation.retry()
+            } label: {
+                VStack(spacing: 4) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                        Text("Retry secure session")
+                    }
+                    .font(.headline)
+                    .foregroundStyle(.black)
+                    Text(msg)
+                        .font(.caption2)
+                        .foregroundStyle(.black.opacity(0.75))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(Theme.brandGreen)
+                .padding(.horizontal, 12)
+                .background(Color.orange)
                 .cornerRadius(10)
-                .opacity(enabled ? 1.0 : 0.5)
+            }
+        } else {
+            let enabled = isAttested
+            NavigationLink(value: Route.capture) {
+                Text(enabled ? "Verify humanity" : "Verify humanity — App Attest pending")
+                    .font(.headline)
+                    .foregroundStyle(.black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Theme.brandGreen)
+                    .cornerRadius(10)
+                    .opacity(enabled ? 1.0 : 0.5)
+            }
+            .disabled(!enabled)
         }
-        .disabled(!enabled)
     }
 
     private var isAttested: Bool {
