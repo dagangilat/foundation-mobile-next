@@ -184,6 +184,8 @@ struct HomeView: View {
             }
             humanityStatusLine
                 .padding(.top, 12)
+            verificationBadges
+                .padding(.top, 10)
             verifyHumanityButton
                 .padding(.top, 8)
             pairingRow
@@ -268,6 +270,195 @@ struct HomeView: View {
                 return "Humanity sealed"
             }
         case .failed: return "Verification didn't complete — tap to try again"
+        }
+    }
+
+    // MARK: - Verification badges
+    //
+    // Visual roll-call of every protection layer the active profile
+    // demands, plus the on-chain anchor that always applies. States
+    // drive color: locked (muted) before the flow starts, pending
+    // (orange) while in flight, verified (brand green) when the seal
+    // (or anchor) lands. We worked hard to get here — show it off.
+
+    private enum BadgeState {
+        case locked, pending, verified, failed
+
+        var fg: Color {
+            switch self {
+            case .verified: return Theme.brandGreen
+            case .pending:  return .orange
+            case .failed:   return .orange
+            case .locked:   return Theme.muted
+            }
+        }
+        var bg: Color {
+            switch self {
+            case .verified: return Theme.brandGreen.opacity(0.14)
+            case .pending:  return Color.orange.opacity(0.12)
+            case .failed:   return Color.orange.opacity(0.16)
+            case .locked:   return Theme.surface
+            }
+        }
+        var border: Color {
+            switch self {
+            case .verified: return Theme.brandGreen.opacity(0.45)
+            case .pending:  return Color.orange.opacity(0.45)
+            case .failed:   return Color.orange.opacity(0.55)
+            case .locked:   return Theme.border
+            }
+        }
+        var iconSuffix: String {
+            switch self {
+            case .verified: return "checkmark.circle.fill"
+            case .pending:  return "clock.fill"
+            case .failed:   return "exclamationmark.triangle.fill"
+            case .locked:   return "lock.fill"
+            }
+        }
+    }
+
+    private struct BadgeData: Identifiable {
+        let id = UUID()
+        let icon: String
+        let label: String
+        let state: BadgeState
+    }
+
+    @ViewBuilder
+    private var verificationBadges: some View {
+        let badges = activeBadges
+        if !badges.isEmpty {
+            LazyVGrid(
+                columns: [GridItem(.flexible()), GridItem(.flexible())],
+                alignment: .leading,
+                spacing: 8
+            ) {
+                ForEach(badges) { badge in
+                    badgePill(badge)
+                }
+            }
+        }
+    }
+
+    private func badgePill(_ b: BadgeData) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: b.icon)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(b.state.fg)
+                .frame(width: 16)
+            Text(b.label)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(b.state.fg)
+                .lineLimit(1)
+            Spacer(minLength: 4)
+            Image(systemName: b.state.iconSuffix)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(b.state.fg)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(b.state.bg)
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(b.state.border, lineWidth: 1))
+        .cornerRadius(8)
+    }
+
+    private var activeBadges: [BadgeData] {
+        var out: [BadgeData] = []
+        let profile = AppConfig.shared.profile
+
+        // App Attest — always required.
+        out.append(BadgeData(
+            icon: "lock.shield.fill",
+            label: "App Attest",
+            state: appAttestBadgeState
+        ))
+
+        // Liveness — almost always required (profile-driven).
+        if profile.requires(.liveness) {
+            out.append(BadgeData(
+                icon: "face.smiling",
+                label: "Liveness",
+                state: captureBadgeState
+            ))
+        }
+
+        // ePassport NFC — hisec-global only (chip-bearing docs).
+        if profile.requires(.nfcZk) {
+            out.append(BadgeData(
+                icon: "doc.text.fill",
+                label: "ePassport",
+                state: captureBadgeState
+            ))
+        }
+
+        // Anti-spoof — hisec-global + standardsec.
+        if profile.requires(.antiSpoof) {
+            out.append(BadgeData(
+                icon: "eye.fill",
+                label: "Anti-spoof",
+                state: captureBadgeState
+            ))
+        }
+
+        // Face match — hisec-global + standardsec.
+        if profile.requires(.faceMatch) {
+            out.append(BadgeData(
+                icon: "person.crop.circle.badge.checkmark",
+                label: "Face match",
+                state: captureBadgeState
+            ))
+        }
+
+        // On-chain anchor — always shown.
+        out.append(BadgeData(
+            icon: "link.circle.fill",
+            label: "On-chain",
+            state: anchorBadgeState
+        ))
+
+        return out
+    }
+
+    private var appAttestBadgeState: BadgeState {
+        switch attestation.state {
+        case .attested, .alreadyAttested: return .verified
+        case .attesting, .idle:           return .pending
+        case .failed:                     return .failed
+        case .unsupported:                return .locked
+        }
+    }
+
+    // Single badge state for all capture-driven phases (liveness +
+    // ePassport + anti-spoof + face-match). They pass or fail together
+    // because the seal is atomic — partial sealing is impossible. If
+    // the seal landed, every required phase passed; if it failed,
+    // we don't get to claim any individual phase.
+    private var captureBadgeState: BadgeState {
+        switch capture.state {
+        case .sealed: return .verified
+        case .failed: return .failed
+        case .readyForPose, .readyForPassport, .scanningPassport,
+             .passportReady, .readyForDocumentPhoto, .documentPhotoReady,
+             .readyForVerification, .verifying:
+            return .pending
+        case .idle, .needsAttestation, .unsupported: return .locked
+        }
+    }
+
+    private var anchorBadgeState: BadgeState {
+        if humanityVerified { return .verified }
+        switch capture.anchorStatus {
+        case .completed(let r):
+            switch r.status {
+            case "anchored":      return .verified
+            case "queued":        return .pending
+            case "anchor-failed": return .failed
+            default:              return r.accepted ? .verified : .pending
+            }
+        case .pending: return .pending
+        case .failed:  return .failed
+        case .notAttempted: return .locked
         }
     }
 
