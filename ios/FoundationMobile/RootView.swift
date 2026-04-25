@@ -25,11 +25,21 @@ struct RootView: View {
     @ViewBuilder
     private var content: some View {
         if !minSplashElapsed {
+            // Same .id as the auth.state == .loading branch below so SwiftUI
+            // preserves view identity across the minSplashElapsed flip. Without
+            // this, the LoadingView at position-A (splash window) is torn
+            // down and rebuilt at position-B (auth-still-loading) when the
+            // splash timer fires — IndeterminateBar.onAppear runs again,
+            // sweepOffset resets to -1 (offscreen), .task's startedAt
+            // re-anchors, and the splash looks frozen from ~minDurationMs
+            // until auth resolves.
             LoadingView()
+                .id("foundation-loading-splash")
         } else {
             switch auth.state {
             case .loading:
                 LoadingView()
+                    .id("foundation-loading-splash")
             case .signedOut:
                 SignInView()
             case .signedIn(let claims):

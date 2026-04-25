@@ -107,6 +107,23 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="footer">
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Loading Foundation…" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lload">
+                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                        <color key="textColor" red="0.6039215686274509" green="0.6392156862745098" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="track">
+                                        <rect key="frame" x="0.0" y="0.0" width="200" height="2"/>
+                                        <color key="backgroundColor" red="0.6039215686274509" green="0.6392156862745098" blue="0.7803921568627451" alpha="0.18" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="200" id="trkw"/>
+                                            <constraint firstAttribute="height" constant="2" id="trkh"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="LaunchBackground"/>
@@ -114,6 +131,8 @@
                             <constraint firstItem="root" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="rl"/>
                             <constraint firstItem="root" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="rt"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="root" secondAttribute="trailing" constant="20" id="rtr"/>
+                            <constraint firstItem="footer" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="ftcx"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="footer" secondAttribute="bottom" constant="40" id="ftb"/>
                         </constraints>
                     </view>
                 </viewController>
