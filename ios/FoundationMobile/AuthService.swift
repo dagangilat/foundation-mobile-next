@@ -97,4 +97,24 @@ final class AuthService: ObservableObject {
         AttestationCoordinator.shared.reset()
         PairingCoordinator.shared.suspendOnLifecycleEvent()
     }
+
+    // Age of the current Firebase ID token's `auth_time` claim. This is
+    // when the user actually authenticated (email-link sign-in), not when
+    // the token was last refreshed — so a 7-day-old session reports a
+    // 7-day-old auth time even after silent token refreshes.
+    //
+    // PairingCoordinator gates claim/release on this being fresh enough
+    // (see PAIRING_AUTH_FRESHNESS_MS): a stolen-but-still-signed-in phone
+    // can't kick the legitimate desktop offline without the user
+    // re-authenticating, because email-link auth requires inbox access.
+    func currentAuthAgeMs() async -> Int64? {
+        guard let user = Auth.auth().currentUser else { return nil }
+        do {
+            let token = try await user.getIDTokenResult(forcingRefresh: false)
+            guard let authDate = token.authDate else { return nil }
+            return Int64(Date().timeIntervalSince(authDate) * 1000)
+        } catch {
+            return nil
+        }
+    }
 }

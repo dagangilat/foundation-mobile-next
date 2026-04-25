@@ -16,18 +16,36 @@ import Combine
 final class PairingCoordinator: ObservableObject {
     static let shared = PairingCoordinator()
 
+    enum PendingAction: Equatable {
+        case claim(payload: String)
+        case disconnect
+    }
+
     enum State: Equatable {
         case idle                                  // not paired
         case claiming                              // claim in flight
         case paired(sessionId: String)             // heartbeat active
         case releasing                             // release in flight
         case failed(message: String)               // last claim/heartbeat failed
+        // Stolen-phone defense: claim/disconnect require a recent
+        // email-link sign-in. When the current session is older than
+        // PAIRING_AUTH_FRESHNESS_MS (or the server returns stale_auth),
+        // PairingCoordinator parks the requested action here and the UI
+        // prompts the user to sign back in. After a fresh sign-in the
+        // user re-taps the action; we don't auto-resume to keep the
+        // user's intent explicit.
+        case needsFreshAuth(pending: PendingAction)
     }
 
     @Published private(set) var state: State = .idle
 
     private var heartbeatTask: Task<Void, Never>?
     private static let heartbeatInterval: Duration = .seconds(30)
+
+    // Five minutes. Long enough to scan a QR + tap once without forcing
+    // a sign-in dance; short enough that a stolen phone with an old
+    // session can't pair anything without inbox access.
+    private static let authFreshnessMs: Int64 = 5 * 60 * 1000
 
     /// Called by QRScannerView with the decoded payload. Trims whitespace +
     /// strips an optional `foundation://pair/` URL prefix so future deep-link
@@ -38,15 +56,23 @@ final class PairingCoordinator: ObservableObject {
             state = .failed(message: "Empty pairing code.")
             return
         }
-        state = .claiming
         Task { [weak self] in
             guard let self else { return }
+            if await self.isAuthStale() {
+                self.state = .needsFreshAuth(pending: .claim(payload: scannedPayload))
+                return
+            }
+            self.state = .claiming
             do {
                 let result = try await FunctionsService.shared.claimPairingSession(code: code)
                 self.state = .paired(sessionId: result.sessionId)
                 self.startHeartbeat(sessionId: result.sessionId)
             } catch {
-                self.state = .failed(message: error.localizedDescription)
+                if Self.isStaleAuthError(error) {
+                    self.state = .needsFreshAuth(pending: .claim(payload: scannedPayload))
+                } else {
+                    self.state = .failed(message: error.localizedDescription)
+                }
             }
         }
     }
@@ -55,14 +81,55 @@ final class PairingCoordinator: ObservableObject {
     /// HomeView). Server-side flip to status=disconnected; desktop reacts.
     func disconnect() {
         guard case .paired(let sessionId) = state else { return }
-        state = .releasing
-        heartbeatTask?.cancel()
-        heartbeatTask = nil
         Task { [weak self] in
             guard let self else { return }
-            _ = try? await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
-            self.state = .idle
+            if await self.isAuthStale() {
+                self.state = .needsFreshAuth(pending: .disconnect)
+                return
+            }
+            self.state = .releasing
+            self.heartbeatTask?.cancel()
+            self.heartbeatTask = nil
+            do {
+                _ = try await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
+                self.state = .idle
+            } catch {
+                if Self.isStaleAuthError(error) {
+                    self.state = .needsFreshAuth(pending: .disconnect)
+                } else {
+                    self.state = .failed(message: error.localizedDescription)
+                }
+            }
         }
+    }
+
+    /// Called from HomeView's "Sign in to confirm" CTA when state is
+    /// .needsFreshAuth. Drops to idle after sign-out so the next sign-in
+    /// lands the user back on HomeView with a fresh auth_time, ready to
+    /// re-tap the action.
+    func clearStaleAuthGate() {
+        state = .idle
+    }
+
+    private func isAuthStale() async -> Bool {
+        guard let ageMs = await AuthService.shared.currentAuthAgeMs() else {
+            // No current user / token unreadable — treat as stale; the
+            // user will land on SignInView via the auth-state listener.
+            return true
+        }
+        return ageMs > Self.authFreshnessMs
+    }
+
+    private static func isStaleAuthError(_ error: Error) -> Bool {
+        // Server signals stale auth via HttpsError("failed-precondition",
+        // "stale_auth: …"). The Firebase SDK surfaces that as an NSError
+        // with FIRFunctionsErrorDomain code .failedPrecondition; the
+        // localizedDescription includes the "stale_auth" prefix.
+        let ns = error as NSError
+        if ns.domain == "com.firebase.functions" && ns.code == 9 /* FailedPrecondition */ {
+            return ns.localizedDescription.contains("stale_auth")
+        }
+        return ns.localizedDescription.contains("stale_auth")
     }
 
     /// Called from FoundationMobileApp's scenePhase observer + AuthService

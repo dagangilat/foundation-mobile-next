@@ -65,9 +65,34 @@ struct HomeView: View {
             Button {
                 try? AuthService.shared.signOut()
             } label: {
-                Image(systemName: "rectangle.portrait.and.arrow.right")
-                    .foregroundStyle(Theme.muted)
+                if pairingActive {
+                    HStack(spacing: 6) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                        Text("Sign out")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .foregroundStyle(Theme.brandGreen)
+                } else {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .foregroundStyle(Theme.muted)
+                }
             }
+            .accessibilityLabel(pairingActive
+                ? "Sign out — phone is the master key for the paired desktop"
+                : "Sign out")
+        }
+    }
+
+    // True when there's an active or in-flight pairing — sign-out is the
+    // single most important affordance because the phone session is what
+    // a desktop pair trusts. Promoting it visually reinforces "this phone
+    // is your master key" so the user keeps it close.
+    private var pairingActive: Bool {
+        switch pairing.state {
+        case .paired, .claiming, .releasing, .needsFreshAuth:
+            return true
+        case .idle, .failed:
+            return false
         }
     }
 
@@ -415,6 +440,44 @@ struct HomeView: View {
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
             }
+        case .needsFreshAuth(let pending):
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: "lock.shield.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.orange)
+                    Text("Sign in to confirm")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.orange)
+                    Spacer()
+                }
+                Text(staleAuthCopy(for: pending))
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+                Button {
+                    pairing.clearStaleAuthGate()
+                    try? AuthService.shared.signOut()
+                } label: {
+                    Text("Sign out & sign back in")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Theme.brandGreen)
+                        .cornerRadius(8)
+                }
+            }
+            .padding(12)
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.orange.opacity(0.4)))
+        }
+    }
+
+    private func staleAuthCopy(for pending: PairingCoordinator.PendingAction) -> String {
+        switch pending {
+        case .claim:
+            return "For safety, sign back in before pairing a new desktop. Email-link sign-in confirms it's really you, not someone with a stolen phone."
+        case .disconnect:
+            return "For safety, sign back in before disconnecting the paired desktop. Email-link sign-in confirms it's really you, not someone with a stolen phone."
         }
     }
 }
