@@ -15,6 +15,11 @@ struct HomeView: View {
     // preVerifyHome with the Connect CTA visible. Reset on app relaunch
     // (intentional — the user re-affirms entry per session).
     @State private var hasConnected: Bool = false
+    // NavigationStack path for programmatic push into CaptureView. Lets
+    // the "Verify humanity" Button gate navigation behind a Face ID
+    // prompt instead of the implicit NavigationLink push. Empty path =
+    // root preVerifyHome; [.capture] = pushed into the capture flow.
+    @State private var captureNavigationPath = NavigationPath()
 
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
@@ -60,7 +65,7 @@ struct HomeView: View {
     }
 
     private var preVerifyHome: some View {
-        NavigationStack {
+        NavigationStack(path: $captureNavigationPath) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     header
@@ -71,7 +76,16 @@ struct HomeView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
                 .padding(.bottom, 40)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
+            // Hide the navigation bar on this root screen so the safe-area
+            // handling matches LoadingView's plain-VStack layout. Without
+            // this, NavigationStack reserves bar height even when no
+            // title is set, pushing the hero ~44pt lower than the splash
+            // and breaking the splash → home pixel-match. Capture uses
+            // its own dedicated screen via .navigationDestination, so
+            // hiding the bar here doesn't affect that flow.
+            .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: HomeView.Route.self) { route in
                 switch route {
                 case .capture:
@@ -655,7 +669,9 @@ struct HomeView: View {
                 }
             }
         case .verify:
-            NavigationLink(value: Route.capture) {
+            Button {
+                Task { await beginVerifyHumanity() }
+            } label: {
                 primaryGreenButtonLabel(text: "Verify humanity")
             }
         case .verifying:
@@ -697,6 +713,50 @@ struct HomeView: View {
         case .attested, .alreadyAttested: return true
         default: return false
         }
+    }
+
+    /// Entry gate for the humanity-verification flow. A Face ID prompt
+    /// happens HERE — before camera opens for ~40 seconds of pose
+    /// capture + NFC + anti-spoof — so the user authorizes the session
+    /// once, up-front, instead of being prompted post-flow when the
+    /// camera was already locked on their face. Cancellation by the
+    /// user (or no enrolled biometric) skips the gate but still allows
+    /// proceeding; server already gates artifact trust by attestation
+    /// tier so an unsealed verification simply lands as unattested.
+    /// Future: per-gate seals (post-NFC, pre-final-seal) per
+    /// docs/connect-and-pairing-flows.md follow-up.
+    @MainActor
+    private func beginVerifyHumanity() async {
+        guard BiometricSealer.shared.isAvailable else {
+            captureNavigationPath.append(Route.capture)
+            return
+        }
+        // Sign uid + the current second so the signature is bound to
+        // this session, not a replayable static value. Server doesn't
+        // verify this today — the per-anchor seal model is the future
+        // place for cryptographic binding — but the prompt itself is
+        // the load-bearing UX gate.
+        let nowSec = Int64(Date().timeIntervalSince1970)
+        let payload = Data("\(claims.uid):\(nowSec)".utf8)
+        do {
+            _ = try await BiometricSealer.shared.sign(
+                payload: payload,
+                prompt: "Authorize identity verification"
+            )
+        } catch BiometricSealError.userCancelled {
+            return  // user explicitly bailed; don't navigate
+        } catch BiometricSealError.keyInvalidated {
+            // Biometric set changed since enrollment — reset and ask
+            // the user to re-tap. Don't auto-retry the prompt; that
+            // would feel like the OS is misbehaving.
+            BiometricSealer.shared.resetKey()
+            return
+        } catch {
+            // Generic failure — log and proceed. The capture flow's
+            // own per-step protections still apply.
+            print("[HomeView] biometric gate skipped: \(error)")
+        }
+        captureNavigationPath.append(Route.capture)
     }
 
     private func shortHash(_ hex: String) -> String {

@@ -290,7 +290,12 @@ struct CaptureView: View {
                 bigGreenButton(title: "Retry") { coordinator.begin() }
             }
         case .sealed:
-            bigGreenButton(title: "Done", enabled: false) { }
+            // Auto-dismiss is set up in .onChange above, but it relies on
+            // a state TRANSITION while this view is mounted. If the view
+            // re-enters in .sealed state, .onChange never fires and the
+            // user is stuck. Make Done tappable so manual exit always
+            // works.
+            bigGreenButton(title: "Done") { dismiss() }
         case .idle, .needsAttestation, .unsupported:
             EmptyView()
         }

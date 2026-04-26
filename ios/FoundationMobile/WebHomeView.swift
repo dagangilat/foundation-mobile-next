@@ -193,6 +193,23 @@ struct WebContainer: UIViewRepresentable {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
         config.websiteDataStore = .default()
+
+        // Document-start marker: AccessGate.tsx reads this to stay on its
+        // Loading… state while the iOS bridge is in-flight, instead of
+        // falling through to Landing the instant Firebase's first
+        // onAuthStateChanged fires with null. Without this the bridge
+        // races the React initial render and the user sees the public
+        // Landing page even when the bridge eventually succeeds. The
+        // marker is cleared by window.__foundationSignInWithCustomToken
+        // (in evoting-frontend/src/lib/auth.ts) once it's done — so
+        // success and failure both unblock AccessGate.
+        let bridgeMarker = WKUserScript(
+            source: "window.__foundationMobileBridgePending = true;",
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        )
+        config.userContentController.addUserScript(bridgeMarker)
+
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
         view.allowsBackForwardNavigationGestures = true
