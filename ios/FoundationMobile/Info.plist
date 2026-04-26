@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Foundation uses the front camera on-device only to verify you're a live human. No images leave your phone — only an anonymous hash of the liveness result is signed and stored.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Foundation uses Face ID so only you can authorize identity-verification sessions and sign actions on this device. Face ID never leaves the Secure Enclave.</string>
 	<key>NFCReaderUsageDescription</key>
 	<string>Foundation reads your ePassport chip to verify your identity. The chip contents never leave this device — only a cryptographic hash is signed and stored.</string>
 	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
