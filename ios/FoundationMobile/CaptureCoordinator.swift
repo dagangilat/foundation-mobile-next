@@ -567,6 +567,15 @@ final class CaptureCoordinator: ObservableObject {
     private func submitAnchor(commitment: EnclaveSeal.Commitment, artifacts: [ProofArtifact]) {
         anchorStatus = .pending
         anchorTask = Task { [weak self] in
+            // Best-effort biometric seal of the commitment hash. Failure
+            // (no biometrics enrolled, user cancelled the Face ID prompt,
+            // key invalidation due to changed biometric set) does not
+            // block the anchor — server stores the seal as a sidecar
+            // when present; the unattested tier already covers the
+            // "no biometric" trust degradation. Future tiers may make
+            // sealing mandatory for some governance actions.
+            let biometricSeal = await Self.sealCommitment(hashHex: commitment.commitmentHashHex)
+
             let req = AnchorCommitmentRequest(
                 commitment: .init(
                     hashHex: commitment.commitmentHashHex,
@@ -580,7 +589,8 @@ final class CaptureCoordinator: ObservableObject {
                         payloadHashHex: $0.payloadHashHex,
                         signatureBase64: $0.signatureBase64
                     )
-                }
+                },
+                biometricSeal: biometricSeal
             )
             do {
                 let result = try await FunctionsService.shared.anchorCommitment(req)
@@ -591,6 +601,41 @@ final class CaptureCoordinator: ObservableObject {
             } catch {
                 self?.anchorStatus = .failed(String(describing: error))
             }
+        }
+    }
+
+    /// Produces a BiometricSealPayload for the given commitment hash, or
+    /// nil if the device can't seal (no enrolled biometrics) OR the
+    /// user dismissed the Face ID prompt OR the seal key is invalidated
+    /// (biometrics changed since enrollment — keychain entry is wiped
+    /// so the next attempt re-enrolls). Failures here are non-fatal:
+    /// the anchor still fires, just without the sidecar seal.
+    @MainActor
+    private static func sealCommitment(hashHex: String) async -> AnchorCommitmentRequest.BiometricSealPayload? {
+        guard BiometricSealer.shared.isAvailable else { return nil }
+        let payload = Data(hashHex.utf8)
+        do {
+            let signature = try await BiometricSealer.shared.sign(
+                payload: payload,
+                prompt: "Authorize your humanity commitment"
+            )
+            let pubKey = try BiometricSealer.shared.publicKeyBase64()
+            return .init(
+                publicKeyB64: pubKey,
+                signatureB64: signature,
+                signedAtMs: Int64(Date().timeIntervalSince1970 * 1000)
+            )
+        } catch BiometricSealError.userCancelled {
+            return nil
+        } catch BiometricSealError.keyInvalidated {
+            // Biometric set changed since the seal key was generated —
+            // wipe the stale key so the next sealing call regenerates.
+            BiometricSealer.shared.resetKey()
+            return nil
+        } catch {
+            // Generic signing failure — log but don't block the anchor.
+            print("[CaptureCoordinator] biometric seal failed: \(error)")
+            return nil
         }
     }
 

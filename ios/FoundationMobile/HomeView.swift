@@ -64,8 +64,8 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     header
-                    solanaPill
-                    hero
+                    SolanaPill()
+                    PillarsHero()
                     ringCard
                 }
                 .padding(.horizontal, 20)
@@ -132,36 +132,9 @@ struct HomeView: View {
         }
     }
 
-    private var solanaPill: some View {
-        HStack(spacing: 8) {
-            Circle().fill(Theme.brandGreen).frame(width: 8, height: 8)
-            Text("Powered by Solana Blockchain")
-                .font(.callout)
-                .foregroundStyle(Theme.brandGreen)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Theme.pillBg)
-        .cornerRadius(999)
-    }
-
-    private var hero: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Your")
-                .font(.system(size: 48, weight: .bold))
-                .foregroundStyle(.white)
-            pillar(icon: "waveform", label: "Voice.", color: Theme.voice)
-            pillar(icon: "wallet.pass.fill", label: "Share.", color: Theme.share)
-            pillar(icon: "cart.fill", label: "Market.", color: Theme.market)
-        }
-    }
-
-    private func pillar(icon: String, label: String, color: Color) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon).font(.system(size: 32)).foregroundStyle(color)
-            Text(label).font(.system(size: 48, weight: .bold)).foregroundStyle(color)
-        }
-    }
+    // SolanaPill + PillarsHero live in PillarsHero.swift — shared with
+    // LoadingView so the splash and the post-sign-in hero are guaranteed
+    // identical pixel-for-pixel.
 
     private var ringCard: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -282,13 +255,14 @@ struct HomeView: View {
     // (or anchor) lands. We worked hard to get here — show it off.
 
     private enum BadgeState {
-        case locked, pending, verified, failed
+        case locked, pending, verified, failed, caution
 
         var fg: Color {
             switch self {
             case .verified: return Theme.brandGreen
             case .pending:  return .orange
             case .failed:   return .orange
+            case .caution:  return .yellow
             case .locked:   return Theme.muted
             }
         }
@@ -297,6 +271,7 @@ struct HomeView: View {
             case .verified: return Theme.brandGreen.opacity(0.14)
             case .pending:  return Color.orange.opacity(0.12)
             case .failed:   return Color.orange.opacity(0.16)
+            case .caution:  return Color.yellow.opacity(0.12)
             case .locked:   return Theme.surface
             }
         }
@@ -305,6 +280,7 @@ struct HomeView: View {
             case .verified: return Theme.brandGreen.opacity(0.45)
             case .pending:  return Color.orange.opacity(0.45)
             case .failed:   return Color.orange.opacity(0.55)
+            case .caution:  return Color.yellow.opacity(0.45)
             case .locked:   return Theme.border
             }
         }
@@ -313,6 +289,7 @@ struct HomeView: View {
             case .verified: return "checkmark.circle.fill"
             case .pending:  return "clock.fill"
             case .failed:   return "exclamationmark.triangle.fill"
+            case .caution:  return "exclamationmark.shield.fill"
             case .locked:   return "lock.fill"
             }
         }
@@ -430,6 +407,7 @@ struct HomeView: View {
         case .attesting, .idle:           return .pending
         case .failed:                     return .failed
         case .unsupported:                return .locked
+        case .unattested:                 return .caution
         }
     }
 
@@ -438,7 +416,13 @@ struct HomeView: View {
     // because the seal is atomic — partial sealing is impossible. If
     // the seal landed, every required phase passed; if it failed,
     // we don't get to claim any individual phase.
+    //
+    // Returning users (humanityVerified from Firestore) keep these
+    // badges green even after a fresh launch where capture.state has
+    // reset to .idle — the on-chain anchor is the source of truth that
+    // the seal landed, so the constituent phases must have passed.
     private var captureBadgeState: BadgeState {
+        if humanityVerified { return .verified }
         switch capture.state {
         case .sealed: return .verified
         case .failed: return .failed
@@ -597,7 +581,13 @@ struct HomeView: View {
 
     private var verifyStage: VerifyStage {
         if case .failed(let msg) = attestation.state { return .attestFailed(msg) }
-        if !isAttested { return .attestPending }
+        // Standard tier requires .attested / .alreadyAttested before
+        // proceeding. Unattested tier (user skipped, simulator) is
+        // explicitly allowed past the gate — server stamps artifacts
+        // with attestationTier="unattested" so downstream consumers can
+        // weigh trust accordingly. Only block on .attesting / .idle
+        // here.
+        if !isAttested && attestation.tier != .unattested { return .attestPending }
         if humanityVerified { return .connect }
         switch capture.state {
         case .sealed: return .anchorPending
@@ -638,7 +628,32 @@ struct HomeView: View {
                 .cornerRadius(10)
             }
         case .attestPending:
-            disabledGreenButton(text: "Verify humanity — App Attest pending")
+            VStack(spacing: 10) {
+                disabledGreenButton(text: "Verify humanity — App Attest pending")
+                if attestation.canSkipAttestation {
+                    // Surfaced 10s into .attesting so the user is never
+                    // staring at an unresponsive screen on simulator
+                    // runs, network captive portals, or a misconfigured
+                    // App Attest entitlement. Skipping drops the
+                    // coordinator into .failed with copy that flags the
+                    // session as unattested — the broader unattested-
+                    // tier behavior (server-side flagging, tighter
+                    // freshness, biometric seal) is in the follow-on
+                    // two-tier App Attest task.
+                    Button {
+                        attestation.skipAttestation()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "forward.circle")
+                                .font(.caption)
+                            Text("Continue without attestation")
+                                .font(.caption.weight(.semibold))
+                        }
+                        .foregroundStyle(Theme.muted)
+                    }
+                    .accessibilityLabel("Continue without device attestation")
+                }
+            }
         case .verify:
             NavigationLink(value: Route.capture) {
                 primaryGreenButtonLabel(text: "Verify humanity")
@@ -716,6 +731,7 @@ struct HomeView: View {
         case .unsupported: return "iphone.slash"
         case .alreadyAttested, .attested: return "checkmark.seal.fill"
         case .failed: return "exclamationmark.triangle.fill"
+        case .unattested: return "exclamationmark.shield.fill"
         }
     }
 
@@ -723,6 +739,7 @@ struct HomeView: View {
         switch attestation.state {
         case .attested, .alreadyAttested: return Theme.brandGreen
         case .failed: return .orange
+        case .unattested: return .yellow
         default: return Theme.muted
         }
     }
@@ -735,6 +752,11 @@ struct HomeView: View {
         case .alreadyAttested: return "App Attest — device attested"
         case .attested: return "App Attest — device attested"
         case .failed(let msg): return "App Attest — failed: \(msg)"
+        case .unattested(let reason):
+            switch reason {
+            case .userSkipped: return "App Attest — skipped (unattested mode)"
+            case .deviceUnsupported: return "App Attest — unavailable (unattested mode)"
+            }
         }
     }
 

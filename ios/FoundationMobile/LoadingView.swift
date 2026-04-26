@@ -28,8 +28,8 @@ struct LoadingView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             header
-            solanaPill
-            hero
+            SolanaPill()
+            PillarsHero()
             Spacer(minLength: 0)
             footerSpinner
         }
@@ -72,44 +72,9 @@ struct LoadingView: View {
         }
     }
 
-    private var solanaPill: some View {
-        HStack(spacing: 8) {
-            Circle().fill(Theme.brandGreen).frame(width: 8, height: 8)
-            Text("Powered by Solana Blockchain")
-                .font(.callout)
-                .foregroundStyle(Theme.brandGreen)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Theme.pillBg)
-        .cornerRadius(999)
-    }
-
-    // KEEP IN SYNC across three surfaces — Foundation's hero is one
-    // visual that lives in three repos (storyboards can't run code,
-    // and the web app + plantagoai have their own renderers):
-    //   1. ios/FoundationMobile/LaunchScreen.storyboard  (UIKit static)
-    //   2. foundation-global/evoting-frontend            (web app hero)
-    //   3. plantagoai/...                                (org-level source of truth)
-    // Any text / icon / color / weight change here must land in all
-    // three. Treat plantagoai as the spec; the other two follow.
-    private var hero: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Your")
-                .font(.system(size: 48, weight: .bold))
-                .foregroundStyle(.white)
-            pillar(icon: "waveform", label: "Voice.", color: Theme.voice)
-            pillar(icon: "wallet.pass.fill", label: "Share.", color: Theme.share)
-            pillar(icon: "cart.fill", label: "Market.", color: Theme.market)
-        }
-    }
-
-    private func pillar(icon: String, label: String, color: Color) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon).font(.system(size: 32)).foregroundStyle(color)
-            Text(label).font(.system(size: 48, weight: .bold)).foregroundStyle(color)
-        }
-    }
+    // SolanaPill + PillarsHero live in PillarsHero.swift — shared with
+    // HomeView so the splash and the post-sign-in hero are guaranteed
+    // identical pixel-for-pixel.
 
     private var footerSpinner: some View {
         VStack(spacing: 10) {
@@ -135,16 +100,19 @@ struct LoadingView: View {
 }
 
 private struct IndeterminateBar: View {
-    @State private var sweepOffset: CGFloat = -1.0
+    @State private var sweepOffset: CGFloat = -0.4
 
     var body: some View {
         GeometryReader { geo in
+            // Bare moving pill, no muted track. The earlier muted-opacity
+            // track read as a faint horizontal shadow against the dark bg;
+            // the lone pill scans cleaner. Outer clipShape keeps the pill
+            // visually inside the bar bounds at both ends of the sweep.
             ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(Theme.muted.opacity(0.18))
+                Color.clear
                 Capsule()
                     .fill(Theme.brandGreen)
-                    .frame(width: geo.size.width * 0.35)
+                    .frame(width: geo.size.width * 0.4)
                     .offset(x: sweepOffset * geo.size.width)
             }
             .clipShape(Capsule())

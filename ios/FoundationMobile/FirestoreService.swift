@@ -36,6 +36,19 @@ final class FirestoreService: ObservableObject {
                     ring: ring,
                     inviteStatus: data["inviteStatus"] as? String
                 )
+                // Fast-path hydrate: anchorIdentityCommitmentTask stamps
+                // users/{uid}.humanityVerified=true atomically with the
+                // commitments doc flip. Reading it from the user doc
+                // (already subscribed) means the verification badges
+                // can paint green on cold launch the moment this
+                // listener fires, without waiting for the second
+                // identity_commitments query below to round-trip. The
+                // commitments query stays as the authoritative source —
+                // if it ever returns false after the user-doc said
+                // true, we trust the commitments query.
+                if let flag = data["humanityVerified"] as? Bool, flag {
+                    self.humanityVerified = true
+                }
             }
         }
 

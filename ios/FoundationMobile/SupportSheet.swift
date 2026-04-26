@@ -277,6 +277,7 @@ struct SupportSheet: View {
         case .alreadyAttested: return "attested (cached keyId)"
         case .attested: return "attested (fresh)"
         case .failed(let msg): return "failed: \(msg)"
+        case .unattested(let reason): return "unattested (\(reason.rawValue))"
         }
     }
 

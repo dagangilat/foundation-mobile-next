@@ -81,8 +81,27 @@ struct WebHomeView: View {
             // The user can still sign in via the WebView's own email link
             // flow as a fallback — surface a banner so they know what
             // happened without blocking the surface entirely.
-            bridgeStatus = .failed(error.localizedDescription)
+            bridgeStatus = .failed(Self.friendlyMintError(error))
         }
+    }
+
+    // Maps the raw NSError into copy a user can act on. Server returns
+    // ("failed-precondition", "stale_auth: …") when auth_time is past
+    // PAIRING_AUTH_FRESHNESS_SECONDS — sign-out + sign-in cures it.
+    // ("unauthenticated") usually means an App Check carve-out missing
+    // on the callable; nothing the user can fix, so frame it as "we'll
+    // catch this on our side, retry shortly". Anything else falls back
+    // to the raw message so the support sheet still has the detail.
+    private static func friendlyMintError(_ error: Error) -> String {
+        let ns = error as NSError
+        let desc = ns.localizedDescription
+        if desc.contains("stale_auth") {
+            return "Session is stale — sign out and sign in again to refresh, then tap Retry."
+        }
+        if ns.domain == "com.firebase.functions" && ns.code == 16 /* unauthenticated */ {
+            return "Server didn't accept the device session. Tap Retry; if it keeps failing, sign out and sign in again."
+        }
+        return desc
     }
 
     private func bridgeBanner(_ msg: String) -> some View {
@@ -222,10 +241,24 @@ struct WebContainer: UIViewRepresentable {
             let escaped = token
                 .replacingOccurrences(of: "\\", with: "\\\\")
                 .replacingOccurrences(of: "'", with: "\\'")
+            // Poll for the bridge function inside the JS itself: didFinish
+            // fires when the document finishes loading, but the React
+            // module that defines window.__foundationSignInWithCustomToken
+            // is loaded as a deferred <script type="module"> and may still
+            // be evaluating. A single-shot check would race and fall
+            // through to the Landing page; polling holds AccessGate on
+            // its Loading… state until the bridge can sign the user in
+            // directly into the authenticated app. 15s deadline covers
+            // cold cache + Edge-throttled networks; on timeout we clear
+            // the fingerprint so the next updateUIView retries.
             let js = """
             (async () => {
-              if (typeof window.__foundationSignInWithCustomToken !== 'function') {
-                return { ok: false, error: 'bridge_not_ready' };
+              const deadline = Date.now() + 15000;
+              while (typeof window.__foundationSignInWithCustomToken !== 'function') {
+                if (Date.now() > deadline) {
+                  return { ok: false, error: 'bridge_timeout' };
+                }
+                await new Promise(r => setTimeout(r, 75));
               }
               try {
                 const r = await window.__foundationSignInWithCustomToken('\(escaped)');
@@ -235,19 +268,29 @@ struct WebContainer: UIViewRepresentable {
               }
             })()
             """
-            view.evaluateJavaScript(js) { result, error in
+            view.evaluateJavaScript(js) { [weak self] result, error in
                 if let error {
                     print("[WebHome] inject error: \(error.localizedDescription)")
+                    self?.injectedTokenFingerprint = nil
                     return
                 }
-                if let dict = result as? [String: Any] {
-                    let ok = dict["ok"] as? Bool ?? false
-                    if !ok {
-                        let err = dict["error"] as? String ?? "unknown"
-                        print("[WebHome] sign-in bridge failed: \(err)")
-                    } else {
-                        print("[WebHome] sign-in bridge ok uid=\(dict["uid"] ?? "nil")")
-                    }
+                guard let dict = result as? [String: Any] else { return }
+                let ok = dict["ok"] as? Bool ?? false
+                if ok {
+                    print("[WebHome] sign-in bridge ok uid=\(dict["uid"] ?? "nil")")
+                    return
+                }
+                let err = dict["error"] as? String ?? "unknown"
+                print("[WebHome] sign-in bridge failed: \(err)")
+                // bridge_timeout means the React bundle hadn't evaluated by
+                // the deadline. Clearing the fingerprint lets the next
+                // updateUIView (e.g. on customToken re-emission, or any
+                // SwiftUI state tick) retry the injection. Other errors
+                // (exception inside __foundationSignInWithCustomToken) are
+                // not retryable from here — surfaced via the console for
+                // diagnostics; user must reload the WebView.
+                if err == "bridge_timeout" {
+                    self?.injectedTokenFingerprint = nil
                 }
             }
         }

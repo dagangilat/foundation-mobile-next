@@ -43,6 +43,13 @@ struct ResendInviteLinkResult: Decodable, Sendable {
 struct AnchorCommitmentRequest: Encodable, Sendable {
     let commitment: CommitmentPayload
     let artifacts: [ArtifactPayload]
+    /// Optional biometric seal sidecar — present when BiometricSealer
+    /// successfully signed the commitment.hashHex with the user's
+    /// Secure-Enclave-bound, Face-ID-protected key. Server stores the
+    /// fields on the commitment doc; cryptographic verification lives
+    /// in a follow-on task. Sending it on every successful seal lets
+    /// the server log + audit even before verification ships.
+    let biometricSeal: BiometricSealPayload?
 
     struct CommitmentPayload: Encodable, Sendable {
         let hashHex: String
@@ -55,6 +62,21 @@ struct AnchorCommitmentRequest: Encodable, Sendable {
         let producedAtMs: Int64
         let payloadHashHex: String
         let signatureBase64: String
+    }
+
+    struct BiometricSealPayload: Encodable, Sendable {
+        /// SEC1 / X9.63 uncompressed public key, base64-encoded. Sent
+        /// every call so the server can lazily build a per-uid public
+        /// key registry without a separate enrollment round-trip.
+        let publicKeyB64: String
+        /// DER ECDSA-P256 signature over UTF-8 bytes of
+        /// commitment.hashHex, base64-encoded. SecKey signs with
+        /// `.ecdsaSignatureMessageX962SHA256` so the algorithm hashes
+        /// the payload internally.
+        let signatureB64: String
+        /// Local timestamp the signature was produced. Surfaces clock
+        /// skew vs server time at audit; not enforced.
+        let signedAtMs: Int64
     }
 }
 
@@ -157,23 +179,29 @@ actor FunctionsService {
     }
 
     func anchorCommitment(_ req: AnchorCommitmentRequest) async throws -> AnchorCommitmentResult {
-        let payload = try encodeToDict(req)
+        var payload = try encodeToDict(req)
+        payload = await Self.injectAttestationTier(into: payload)
         let result = try await functions.httpsCallable("anchorCommitment").call(payload)
         return try decode(AnchorCommitmentResult.self, from: result.data)
     }
 
     func claimPairingSession(code: String) async throws -> ClaimPairingSessionResult {
-        let result = try await functions.httpsCallable("claimPairingSession").call(["code": code])
+        let payload = await Self.injectAttestationTier(into: ["code": code])
+        let result = try await functions.httpsCallable("claimPairingSession").call(payload)
         return try decode(ClaimPairingSessionResult.self, from: result.data)
     }
 
     func heartbeatPairingSession(sessionId: String) async throws -> AckResult {
+        // Heartbeats are read-mostly (touch the doc, no state change beyond
+        // lastHeartbeatAt) — server doesn't gate them on freshness, so no
+        // tier injection needed.
         let result = try await functions.httpsCallable("heartbeatPairingSession").call(["sessionId": sessionId])
         return try decode(AckResult.self, from: result.data)
     }
 
     func releasePairingSession(sessionId: String) async throws -> AckResult {
-        let result = try await functions.httpsCallable("releasePairingSession").call(["sessionId": sessionId])
+        let payload = await Self.injectAttestationTier(into: ["sessionId": sessionId])
+        let result = try await functions.httpsCallable("releasePairingSession").call(payload)
         return try decode(AckResult.self, from: result.data)
     }
 
@@ -184,8 +212,21 @@ actor FunctionsService {
     }
 
     func mintWebSessionToken() async throws -> WebSessionTokenResult {
-        let result = try await functions.httpsCallable("mintWebSessionToken").call([:])
+        let payload = await Self.injectAttestationTier(into: [:])
+        let result = try await functions.httpsCallable("mintWebSessionToken").call(payload)
         return try decode(WebSessionTokenResult.self, from: result.data)
+    }
+
+    /// Adds the current attestation tier to a callable payload. Mutating
+    /// callables (mintWebSessionToken, claim/release pairing, anchor)
+    /// read this on the server to pick a freshness window and stamp
+    /// produced artifacts. AttestationCoordinator runs on @MainActor so
+    /// the tier read hops there briefly.
+    private static func injectAttestationTier(into base: [String: Any]) async -> [String: Any] {
+        let tier = await MainActor.run { AttestationCoordinator.shared.tier.rawValue }
+        var payload = base
+        payload["attestationTier"] = tier
+        return payload
     }
 
     private func decode<T: Decodable>(_: T.Type, from raw: Any) throws -> T {
