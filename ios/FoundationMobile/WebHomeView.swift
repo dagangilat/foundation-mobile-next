@@ -194,21 +194,30 @@ struct WebContainer: UIViewRepresentable {
         config.allowsInlineMediaPlayback = true
         config.websiteDataStore = .default()
 
-        // Document-start marker: AccessGate.tsx reads this to stay on its
-        // Loading… state while the iOS bridge is in-flight, instead of
-        // falling through to Landing the instant Firebase's first
-        // onAuthStateChanged fires with null. Without this the bridge
-        // races the React initial render and the user sees the public
-        // Landing page even when the bridge eventually succeeds. The
-        // marker is cleared by window.__foundationSignInWithCustomToken
-        // (in evoting-frontend/src/lib/auth.ts) once it's done — so
-        // success and failure both unblock AccessGate.
-        let bridgeMarker = WKUserScript(
-            source: "window.__foundationMobileBridgePending = true;",
+        // Document-start markers for AccessGate.tsx:
+        //
+        //   - __foundationMobileBridgePending: in-flight bridge sign-in.
+        //     Cleared by window.__foundationSignInWithCustomToken when
+        //     the call resolves (success or failure). Holds AccessGate
+        //     on Loading… so it doesn't flash Landing in the race
+        //     between Firebase's first null callback and the bridge.
+        //
+        //   - __foundationMobileWebView: persistent flag that this
+        //     surface IS the iOS Foundation Mobile shell, not a real
+        //     desktop browser. AccessGate's pair gate (which forces
+        //     desktops to pair before granting access) is skipped when
+        //     this is set — pairing the mobile to itself would be a
+        //     useless self-loop. NOT cleared by the bridge function;
+        //     persists for the lifetime of the WebView.
+        let documentStartMarkers = WKUserScript(
+            source: """
+                window.__foundationMobileBridgePending = true;
+                window.__foundationMobileWebView = true;
+            """,
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
-        config.userContentController.addUserScript(bridgeMarker)
+        config.userContentController.addUserScript(documentStartMarkers)
 
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
