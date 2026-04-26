@@ -66,8 +66,11 @@
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="pv">
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="waveform" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv1">
-                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" pointSize="32" weight="regular" scale="default"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="PillarVoice" translatesAutoresizingMaskIntoConstraints="NO" id="iv1">
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="40" id="iv1w"/>
+                                                            <constraint firstAttribute="height" constant="40" id="iv1h"/>
+                                                        </constraints>
                                                         <color key="tintColor" red="0.5058823529411764" green="0.5490196078431373" blue="0.9725490196078431" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Voice." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lv">
@@ -79,8 +82,11 @@
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="ps">
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="wallet.pass.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv2">
-                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" pointSize="32" weight="regular" scale="default"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="PillarShare" translatesAutoresizingMaskIntoConstraints="NO" id="iv2">
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="40" id="iv2w"/>
+                                                            <constraint firstAttribute="height" constant="40" id="iv2h"/>
+                                                        </constraints>
                                                         <color key="tintColor" red="0.17647058823529413" green="0.8313725490196079" blue="0.7490196078431373" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Share." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ls">
@@ -92,8 +98,11 @@
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="pm">
                                                 <subviews>
-                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="cart.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="iv3">
-                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" pointSize="32" weight="regular" scale="default"/>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="PillarMarket" translatesAutoresizingMaskIntoConstraints="NO" id="iv3">
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="40" id="iv3w"/>
+                                                            <constraint firstAttribute="height" constant="40" id="iv3h"/>
+                                                        </constraints>
                                                         <color key="tintColor" red="0.13333333333333333" green="0.8274509803921568" blue="0.9333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Market." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lm">
@@ -142,10 +151,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="cart.fill" catalog="system" width="32" height="32"/>
+        <image name="PillarMarket" width="40" height="40"/>
+        <image name="PillarShare" width="40" height="40"/>
+        <image name="PillarVoice" width="40" height="40"/>
         <image name="shield.lefthalf.filled" catalog="system" width="32" height="32"/>
-        <image name="wallet.pass.fill" catalog="system" width="32" height="32"/>
-        <image name="waveform" catalog="system" width="32" height="32"/>
         <namedColor name="LaunchBackground">
             <color red="0.039215686274509803" green="0.054901960784313725" blue="0.15294117647058825" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
