@@ -160,7 +160,7 @@ struct WebHomeView: View {
             }
             .accessibilityLabel("Support")
             Button {
-                try? AuthService.shared.signOut()
+                Task { try? await AuthService.shared.signOut() }
             } label: {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .foregroundStyle(Theme.brandGreen)

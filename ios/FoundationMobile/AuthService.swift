@@ -92,10 +92,23 @@ final class AuthService: ObservableObject {
         return .signedIn
     }
 
-    func signOut() throws {
+    @MainActor
+    func signOut() async throws {
+        // Fire any active pair release BEFORE clearing Firebase auth.
+        // Otherwise the callable goes out with no auth header and the
+        // server rejects (requireAuth fails), the user's paired desktop
+        // never gets the disconnect signal, and the desktop has to wait
+        // for the 90s+sweep stale path. With this order the desktop
+        // sees the disconnect within seconds. Best-effort — if the
+        // network is down or the server rejects, we still proceed with
+        // sign-out.
+        if case .paired(let sessionId) = PairingCoordinator.shared.state {
+            _ = try? await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
+        }
+        // Clear local pairing state regardless of release outcome.
+        PairingCoordinator.shared.suspendOnLifecycleEvent()
         try Auth.auth().signOut()
         AttestationCoordinator.shared.reset()
-        PairingCoordinator.shared.suspendOnLifecycleEvent()
         SupportSessionTracker.shared.reset()
     }
 

@@ -113,7 +113,7 @@ struct HomeView: View {
             }
             Spacer()
             Button {
-                try? AuthService.shared.signOut()
+                Task { try? await AuthService.shared.signOut() }
             } label: {
                 if pairingActive {
                     HStack(spacing: 6) {
@@ -970,7 +970,7 @@ struct HomeView: View {
                     .foregroundStyle(Theme.muted)
                 Button {
                     pairing.clearStaleAuthGate()
-                    try? AuthService.shared.signOut()
+                    Task { try? await AuthService.shared.signOut() }
                 } label: {
                     Text("Sign out & sign back in")
                         .font(.caption.weight(.semibold))

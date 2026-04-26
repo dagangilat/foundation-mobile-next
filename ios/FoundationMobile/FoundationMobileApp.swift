@@ -4,7 +4,6 @@ import SwiftUI
 struct FoundationMobileApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var auth = AuthService.shared
-    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -21,15 +20,18 @@ struct FoundationMobileApp: App {
                         }
                     }
                 }
-                .onChange(of: scenePhase) { newPhase in
-                    // Desktop pairing tears down whenever the app stops being
-                    // active. iOS does not reliably call applicationWillTerminate;
-                    // backgrounding is the latest signal we can trust before
-                    // the OS evicts us.
-                    if newPhase != .active {
-                        PairingCoordinator.shared.suspendOnLifecycleEvent()
-                    }
-                }
+                // Intentionally no scenePhase observer for pair release.
+                // Triggering on .inactive/.background fires on every
+                // brief flicker (control center, notifications, swipe
+                // gestures) and would tear down the desktop session
+                // every time the user glances at something else. The
+                // 90-second heartbeat-stale sweep + scheduled
+                // cleanupStalePairings handles real "app went away"
+                // cases reliably (now that the composite indexes
+                // for pairing_sessions are deployed). Explicit
+                // sign-out fires its own release inside
+                // AuthService.signOut, before the auth header is
+                // gone.
         }
     }
 }
