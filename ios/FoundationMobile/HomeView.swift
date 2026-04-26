@@ -69,7 +69,6 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     header
-                    SolanaPill()
                     PillarsHero()
                     ringCard
                 }

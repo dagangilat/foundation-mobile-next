@@ -4,33 +4,18 @@ import SwiftUI
 //   1. ios/FoundationMobile/LaunchScreen.storyboard  (UIKit static; can't share code)
 //   2. foundation-mobile-claude (this file, used by LoadingView + HomeView)
 //   3. foundation-global/evoting-frontend + plantagoai (web hero, lucide-react)
-// Within iOS, LoadingView and HomeView previously each defined their own
-// hero/pillar/solanaPill helpers. The two definitions drifted (font
-// weights, spacing, icon sizing) on every change. Centralizing into
-// SolanaPill + PillarsHero makes drift structurally impossible: every
-// surface that wants the hero imports the same view.
+// Centralizing the SwiftUI hero into PillarsHero makes drift between
+// LoadingView and HomeView structurally impossible.
 //
 // Icon assets (Images.xcassets/Pillar{Voice,Share,Market}) are shared
 // lucide SVGs. Icon edge = 40pt = 83% of the 48pt pillar label,
 // matching the web ratios.
-
-struct SolanaPill: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Circle()
-                .fill(Theme.brandGreen)
-                .frame(width: 8, height: 8)
-                .accessibilityHidden(true)
-            Text("Powered by Solana Blockchain")
-                .font(.callout)
-                .foregroundStyle(Theme.brandGreen)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Theme.pillBg)
-        .cornerRadius(999)
-    }
-}
+//
+// (Previously this file also defined a SolanaPill view for the
+// "Powered by Solana Blockchain" badge; that was removed across all
+// surfaces — the on-chain anchor verification badge in HomeView's
+// verification grid is the canonical place to surface chain
+// authenticity to the user.)
 
 struct PillarsHero: View {
     var body: some View {

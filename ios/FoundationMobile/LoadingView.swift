@@ -28,7 +28,6 @@ struct LoadingView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             header
-            SolanaPill()
             PillarsHero()
             Spacer(minLength: 0)
             footerSpinner
