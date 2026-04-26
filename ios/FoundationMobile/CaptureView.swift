@@ -37,15 +37,26 @@ struct CaptureView: View {
             warmupTask = nil
         }
         .onChange(of: coordinator.state) { newValue in
-            // Auto-dismiss back to HomeView on success so the sealed
-            // commitment row is the next thing the user sees. iOS-16-style
-            // single-parameter onChange — iOS 17's (initial, _, _) would
-            // fail the deployment target check.
-            if case .sealed = newValue {
+            // Auto-dismiss back to HomeView the moment the user-input
+            // stages are done. .verifying is the first state where
+            // nothing on screen needs the camera or the user — it's
+            // pure compute (App Attest assertions per artifact, hash,
+            // local seal) followed by the on-chain anchor task. Send
+            // the user home immediately; the verifyHumanityButton +
+            // verification badges progressively reflect signing /
+            // sealing / anchoring states as each lands. Keeping
+            // .sealed as a defensive fallback in case any path skips
+            // the .verifying transition.
+            switch newValue {
+            case .verifying:
+                dismiss()
+            case .sealed:
                 Task {
                     try? await Task.sleep(for: .milliseconds(AppConfig.shared.captureView.postSealDismissMs))
                     dismiss()
                 }
+            default:
+                break
             }
         }
         .sheet(isPresented: $isShowingMRZScan) {

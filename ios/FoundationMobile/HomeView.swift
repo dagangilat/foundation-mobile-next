@@ -675,9 +675,14 @@ struct HomeView: View {
                 primaryGreenButtonLabel(text: "Verify humanity")
             }
         case .verifying:
-            disabledGreenButton(text: "Verification in progress…")
+            // CaptureView dismissed at .verifying — spinner here is the
+            // user's signal that the heavy work (App Attest assertions
+            // per artifact + final seal) is still running in the
+            // background while they're free to navigate the home
+            // screen. Capture / anchor badges are also pulsing pending.
+            backgroundProgressButton(text: "Sealing your verification…")
         case .anchorPending:
-            disabledGreenButton(text: "Anchoring on devnet…")
+            backgroundProgressButton(text: "Anchoring on devnet…")
         case .connect:
             Button {
                 hasConnected = true
@@ -695,6 +700,28 @@ struct HomeView: View {
             .padding(.vertical, 12)
             .background(Theme.brandGreen)
             .cornerRadius(10)
+    }
+
+    // Spinner-on-pill treatment for stages where heavy work runs in
+    // the background while the user is free on the home screen
+    // (sealing after CaptureView dismisses; anchoring on devnet). Same
+    // green pill as the primary CTA — visually it remains the "next
+    // step" surface, just non-interactive while we work.
+    private func backgroundProgressButton(text: String) -> some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .progressViewStyle(.circular)
+                .tint(.black)
+                .scaleEffect(0.8)
+            Text(text)
+                .font(.headline)
+                .foregroundStyle(.black)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(Theme.brandGreen)
+        .cornerRadius(10)
+        .opacity(0.7)
     }
 
     private func disabledGreenButton(text: String) -> some View {
