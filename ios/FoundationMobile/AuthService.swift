@@ -92,18 +92,51 @@ final class AuthService: ObservableObject {
         return .signedIn
     }
 
+    /// Retry the release CF up to `maxAttempts` times with exponential
+    /// backoff. The release is the explicit signal half of the
+    /// "lease + state machine + observable signal" pairing model — if
+    /// it succeeds, the desktop disconnects in <1s via the snapshot
+    /// listener. If it fails entirely, the lease layer (heartbeat
+    /// stops → server stales after grace window) is the fallback.
+    /// Idempotent server-side: the same sessionId → same outcome on
+    /// every attempt.
+    private static func releaseWithRetry(sessionId: String, maxAttempts: Int = 3) async {
+        let backoffsMs: [Int] = [200, 500, 1500]
+        for attempt in 1...maxAttempts {
+            do {
+                _ = try await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
+                print("[AuthService.signOut] release ok (attempt \(attempt))")
+                return
+            } catch {
+                print("[AuthService.signOut] release attempt \(attempt)/\(maxAttempts) failed: \(error)")
+                if attempt < maxAttempts {
+                    try? await Task.sleep(for: .milliseconds(backoffsMs[attempt - 1]))
+                }
+            }
+        }
+        print("[AuthService.signOut] release failed all \(maxAttempts) attempts; falling back to heartbeat-stale path")
+    }
+
     @MainActor
     func signOut() async throws {
         // Fire any active pair release BEFORE clearing Firebase auth.
         // Otherwise the callable goes out with no auth header and the
         // server rejects (requireAuth fails), the user's paired desktop
         // never gets the disconnect signal, and the desktop has to wait
-        // for the 90s+sweep stale path. With this order the desktop
+        // for the heartbeat-stale path. With this order the desktop
         // sees the disconnect within seconds. Best-effort — if the
         // network is down or the server rejects, we still proceed with
         // sign-out.
-        if case .paired(let sessionId) = PairingCoordinator.shared.state {
-            _ = try? await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
+        //
+        // Logs land in Xcode console under [AuthService.signOut] so we
+        // can verify in real time whether the release call fired,
+        // succeeded, or threw. Without these the failure is invisible
+        // and a 30-150s desktop disconnect looks like a code bug.
+        let pairingState = PairingCoordinator.shared.state
+        if case .paired(let sessionId) = pairingState {
+            await Self.releaseWithRetry(sessionId: sessionId)
+        } else {
+            print("[AuthService.signOut] no active pair to release (state=\(pairingState))")
         }
         // Clear local pairing state regardless of release outcome.
         PairingCoordinator.shared.suspendOnLifecycleEvent()

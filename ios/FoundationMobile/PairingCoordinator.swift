@@ -40,7 +40,15 @@ final class PairingCoordinator: ObservableObject {
     @Published private(set) var state: State = .idle
 
     private var heartbeatTask: Task<Void, Never>?
-    private static let heartbeatInterval: Duration = .seconds(30)
+    // Tightened from 30s → 10s for demo-grade desktop disconnect
+    // latency on mobile force-quit. Combined with the server's
+    // HEARTBEAT_GRACE_MS=30s, the desktop's lease layer detects a
+    // missing mobile within ~30-40s (heartbeat interval + grace).
+    // Server-side sweep (every 1m) is no longer load-bearing —
+    // AccessGate does its own client-side staleness check on a 5s
+    // timer. See docs/architecture_pairing-lease-pattern-2026-04-26.md
+    // for the full pattern rationale.
+    private static let heartbeatInterval: Duration = .seconds(10)
 
     // Threshold for how recent the email-link sign-in must be before
     // claim/release will run. Sourced from the active profile JSON via
