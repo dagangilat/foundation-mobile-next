@@ -213,11 +213,42 @@ struct WebContainer: UIViewRepresentable {
             source: """
                 window.__foundationMobileBridgePending = true;
                 window.__foundationMobileWebView = true;
+                // Sign-out bridge: when the web app's Logout fires, it
+                // calls this fn to delegate back to the iOS shell. The
+                // shell's AuthService.signOut() owns the pair release
+                // CF + clears iOS Firebase Auth + tears down this
+                // WebView. Without delegation, the web's Auth.signOut
+                // alone leaves the iOS pair lingering until the lease
+                // expires (~30s). evoting-frontend/src/lib/auth.ts
+                // clearAuth() awaits this hook before its own signOut.
+                window.__foundationMobileSignOut = function() {
+                    return new Promise(function(resolve) {
+                        try {
+                            window.webkit.messageHandlers.foundationMobileSignOut.postMessage({});
+                        } catch (e) {
+                            // Handler not registered — fall through
+                        }
+                        // Resolve quickly; iOS will tear down the
+                        // WebView shortly after, making the resolve
+                        // moot. 200ms gives the postMessage time to
+                        // dispatch before the WebView dies.
+                        setTimeout(resolve, 200);
+                    });
+                };
             """,
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
         config.userContentController.addUserScript(documentStartMarkers)
+
+        // Register the sign-out message handler. The handler is held
+        // by the Coordinator so its lifetime matches the WKWebView's;
+        // when WebHomeView dismisses, the handler is released along
+        // with the rest of the WebView graph.
+        config.userContentController.add(
+            context.coordinator.signOutMessageHandler,
+            name: "foundationMobileSignOut"
+        )
 
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator
@@ -240,6 +271,10 @@ struct WebContainer: UIViewRepresentable {
         private var pendingToken: String?
         private var pageLoaded = false
         private var injectedTokenFingerprint: String?
+        // Owned by the Coordinator so lifetime matches the WKWebView.
+        // When WebHomeView dismisses, this is released with the rest
+        // of the WebView graph and the message handler unregisters.
+        let signOutMessageHandler = SignOutMessageHandler()
 
         func handle(token: String?) {
             if let token { pendingToken = token }
@@ -319,6 +354,25 @@ struct WebContainer: UIViewRepresentable {
                     self?.injectedTokenFingerprint = nil
                 }
             }
+        }
+    }
+}
+
+// Receives `window.webkit.messageHandlers.foundationMobileSignOut.postMessage(...)`
+// from the WebView's JS context. Triggers the iOS shell's full
+// sign-out path — which fires the pair-release CF (with retry), then
+// clears iOS Firebase Auth, which causes RootView to swap to
+// SignInView, tearing down the WebView. Without this hook, the web
+// app's sign-out only signed out the WebView's Firebase Auth instance
+// and left the iOS shell paired indefinitely (until lease expiry).
+final class SignOutMessageHandler: NSObject, WKScriptMessageHandler {
+    func userContentController(
+        _ controller: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {
+        guard message.name == "foundationMobileSignOut" else { return }
+        Task { @MainActor in
+            try? await AuthService.shared.signOut()
         }
     }
 }
