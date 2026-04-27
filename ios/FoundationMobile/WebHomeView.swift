@@ -335,18 +335,28 @@ struct WebContainer: UIViewRepresentable {
             """
             view.evaluateJavaScript(js) { [weak self] result, error in
                 if let error {
+                    #if DEBUG
                     print("[WebHome] inject error: \(error.localizedDescription)")
+                    #endif
                     self?.injectedTokenFingerprint = nil
                     return
                 }
                 guard let dict = result as? [String: Any] else { return }
                 let ok = dict["ok"] as? Bool ?? false
                 if ok {
+                    // 2026-04-26 security review M-H-6: do not log uid in
+                    // release builds. uid ties this device session to the
+                    // backend across all surfaces; readable via Console.app
+                    // with USB access.
+                    #if DEBUG
                     print("[WebHome] sign-in bridge ok uid=\(dict["uid"] ?? "nil")")
+                    #endif
                     return
                 }
                 let err = dict["error"] as? String ?? "unknown"
+                #if DEBUG
                 print("[WebHome] sign-in bridge failed: \(err)")
+                #endif
                 // bridge_timeout means the React bundle hadn't evaluated by
                 // the deadline. Clearing the fingerprint lets the next
                 // updateUIView (e.g. on customToken re-emission, or any

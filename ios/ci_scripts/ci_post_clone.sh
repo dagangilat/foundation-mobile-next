@@ -42,3 +42,25 @@ if [ -z "${FOUNDATION_PROFILE:-}" ]; then
     esac
 fi
 echo "foundation-mobile: ci_post_clone.sh — FOUNDATION_PROFILE=${FOUNDATION_PROFILE}"
+
+# 2026-04-26 security review M-H-2: hard-fail archive builds that would
+# ship App Store with the development App Attest endpoint. Sandbox-CA
+# attestations are rejected by the production CBOR verifier in
+# @plantagoai/attestation/server, so a mis-archived TestFlight build is
+# silent-but-broken — every user gets a verification fail in prod.
+#
+# Triggered when CI_XCODEBUILD_ACTION=archive (Xcode Cloud sets this on
+# distribution workflows). Use FoundationMobile-Release.entitlements
+# (which carries `production`) for the Release build configuration.
+if [ "${CI_XCODEBUILD_ACTION:-}" = "archive" ]; then
+    REL_ENT="$CI_WORKSPACE/ios/FoundationMobile/FoundationMobile-Release.entitlements"
+    if [ ! -f "$REL_ENT" ]; then
+        echo "foundation-mobile: ci_post_clone.sh — ✗ archive build but FoundationMobile-Release.entitlements is missing"
+        exit 1
+    fi
+    if ! grep -q "<string>production</string>" "$REL_ENT"; then
+        echo "foundation-mobile: ci_post_clone.sh — ✗ archive build but Release entitlements does not declare appattest-environment=production"
+        exit 1
+    fi
+    echo "foundation-mobile: ci_post_clone.sh — archive build verified Release entitlements at production"
+fi

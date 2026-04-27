@@ -160,6 +160,11 @@ struct WebSessionTokenResult: Decodable, Sendable {
 
 enum FunctionsError: Error {
     case malformedResponse
+    /// hisec-global profile attempted a mutating callable while tier
+    /// is .unattested — the App Attest gate must succeed (or the user
+    /// must be on a lower-security profile) before mutating callables
+    /// are allowed. 2026-04-26 security review M-H-3.
+    case unattestedTierForHisec
 }
 
 actor FunctionsService {
@@ -191,13 +196,13 @@ actor FunctionsService {
 
     func anchorCommitment(_ req: AnchorCommitmentRequest) async throws -> AnchorCommitmentResult {
         var payload = try encodeToDict(req)
-        payload = await Self.injectAttestationTier(into: payload)
+        payload = try await Self.injectAttestationTier(into: payload)
         let result = try await functions.httpsCallable("anchorCommitment").call(payload)
         return try decode(AnchorCommitmentResult.self, from: result.data)
     }
 
     func claimPairingSession(code: String) async throws -> ClaimPairingSessionResult {
-        let payload = await Self.injectAttestationTier(into: ["code": code])
+        let payload = try await Self.injectAttestationTier(into: ["code": code])
         let result = try await functions.httpsCallable("claimPairingSession").call(payload)
         return try decode(ClaimPairingSessionResult.self, from: result.data)
     }
@@ -211,7 +216,7 @@ actor FunctionsService {
     }
 
     func releasePairingSession(sessionId: String) async throws -> AckResult {
-        let payload = await Self.injectAttestationTier(into: ["sessionId": sessionId])
+        let payload = try await Self.injectAttestationTier(into: ["sessionId": sessionId])
         let result = try await functions.httpsCallable("releasePairingSession").call(payload)
         return try decode(AckResult.self, from: result.data)
     }
@@ -223,7 +228,7 @@ actor FunctionsService {
     }
 
     func mintWebSessionToken() async throws -> WebSessionTokenResult {
-        let payload = await Self.injectAttestationTier(into: [:])
+        let payload = try await Self.injectAttestationTier(into: [:])
         let result = try await functions.httpsCallable("mintWebSessionToken").call(payload)
         return try decode(WebSessionTokenResult.self, from: result.data)
     }
@@ -247,8 +252,19 @@ actor FunctionsService {
     /// read this on the server to pick a freshness window and stamp
     /// produced artifacts. AttestationCoordinator runs on @MainActor so
     /// the tier read hops there briefly.
-    private static func injectAttestationTier(into base: [String: Any]) async -> [String: Any] {
+    ///
+    /// 2026-04-26 security review M-H-3: belt-and-suspenders. On the
+    /// hisec-global profile, refuse to send `.unattested` for mutating
+    /// callables — the server's per-callable enforcement is the real
+    /// gate, but throwing client-side surfaces the precondition early
+    /// and keeps the unattested-skip carve-out scoped to lower-security
+    /// profiles where it's intentional.
+    private static func injectAttestationTier(into base: [String: Any]) async throws -> [String: Any] {
         let tier = await MainActor.run { AttestationCoordinator.shared.tier.rawValue }
+        let profileId = AppConfig.shared.profile.id
+        if profileId == "hisec-global" && tier == AttestationTier.unattested.rawValue {
+            throw FunctionsError.unattestedTierForHisec
+        }
         var payload = base
         payload["attestationTier"] = tier
         return payload

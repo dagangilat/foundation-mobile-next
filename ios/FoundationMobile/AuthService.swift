@@ -101,20 +101,30 @@ final class AuthService: ObservableObject {
     /// Idempotent server-side: the same sessionId → same outcome on
     /// every attempt.
     private static func releaseWithRetry(sessionId: String, maxAttempts: Int = 3) async {
+        // 2026-04-26 security review M-H-6: pair-release retry logs go
+        // through #if DEBUG. They include sessionId + error.localizedDescription
+        // (server error strings can leak internals); fine for Xcode console
+        // debugging but unified-log readable via Console.app in release.
         let backoffsMs: [Int] = [200, 500, 1500]
         for attempt in 1...maxAttempts {
             do {
                 _ = try await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
+                #if DEBUG
                 print("[AuthService.signOut] release ok (attempt \(attempt))")
+                #endif
                 return
             } catch {
+                #if DEBUG
                 print("[AuthService.signOut] release attempt \(attempt)/\(maxAttempts) failed: \(error)")
+                #endif
                 if attempt < maxAttempts {
                     try? await Task.sleep(for: .milliseconds(backoffsMs[attempt - 1]))
                 }
             }
         }
+        #if DEBUG
         print("[AuthService.signOut] release failed all \(maxAttempts) attempts; falling back to heartbeat-stale path")
+        #endif
     }
 
     @MainActor
@@ -136,7 +146,9 @@ final class AuthService: ObservableObject {
         if case .paired(let sessionId) = pairingState {
             await Self.releaseWithRetry(sessionId: sessionId)
         } else {
+            #if DEBUG
             print("[AuthService.signOut] no active pair to release (state=\(pairingState))")
+            #endif
         }
         // Clear local pairing state regardless of release outcome.
         PairingCoordinator.shared.suspendOnLifecycleEvent()

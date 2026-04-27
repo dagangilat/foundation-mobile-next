@@ -149,7 +149,14 @@ final class PassportNFCReader {
             // Chain check ran but failed — surface so the user knows the
             // masterlist is present but doesn't cover this passport's CSCA.
             // Still accept the scan (DG1 integrity holds); demo-grade posture.
+            //
+            // 2026-04-26 security review M-H-6: do not log issuingAuthority
+            // (country code) in release builds. Combined with device model +
+            // iOS version + timestamp from other paths, the country narrows
+            // identification surface.
+            #if DEBUG
             print("[PassportNFCReader] chain-to-CSCA verification failed for \(passport.issuingAuthority); accepting DG1-integrity only.")
+            #endif
         }
 
         // Extract DG1 raw bytes for hashing. NFCPassportModel.getDataGroup
