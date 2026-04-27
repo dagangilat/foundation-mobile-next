@@ -10,6 +10,7 @@
 		0234470E89B3B3C730DD40F6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257D88861F1B9A2298427239 /* Theme.swift */; };
 		055B2A9AF8EF61699C7E8A2A /* WebHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBA9375FD4DABA14059C332 /* WebHomeView.swift */; };
 		52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */; };
+		93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE774A53B41BB88310159 /* BiometricConsentView.swift */; };
 		F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */; };
 		07A4980EBF784B52F1044B82 /* AttestationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A1C216FE07660C1AEE3797 /* AttestationService.swift */; };
 		0A1E2B3C4D5E6F7A8B9C0D1E /* AttestationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3A4B5C6D7E8F9A0B1C2D /* AttestationCoordinator.swift */; };
@@ -98,6 +99,7 @@
 		4FBA9375FD4DABA14059C332 /* WebHomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebHomeView.swift; path = FoundationMobile/WebHomeView.swift; sourceTree = "<group>"; };
 		5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PillarsHero.swift; path = FoundationMobile/PillarsHero.swift; sourceTree = "<group>"; };
 		638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricSealer.swift; path = FoundationMobile/BiometricSealer.swift; sourceTree = "<group>"; };
+		E12EE774A53B41BB88310159 /* BiometricConsentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricConsentView.swift; path = FoundationMobile/BiometricConsentView.swift; sourceTree = "<group>"; };
 		54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoundationMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmokeBridge.swift; path = FoundationMobile/MoproSmokeBridge.swift; sourceTree = "<group>"; };
 		6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppCheckFactory.swift; path = FoundationMobile/AppCheckFactory.swift; sourceTree = "<group>"; };
@@ -216,6 +218,7 @@
 				A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */,
 				5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */,
 				638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */,
+				E12EE774A53B41BB88310159 /* BiometricConsentView.swift */,
 			);
 			name = FoundationMobile;
 			sourceTree = "<group>";
@@ -456,6 +459,7 @@
 				5D22B61434305A98BFF847C5 /* SupportSessionTracker.swift in Sources */,
 				52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */,
 				F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */,
+				93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
