@@ -290,8 +290,64 @@ struct WebContainer: UIViewRepresentable {
             inject()
         }
 
+        // 2026-04-26 security review M-H-5: lock the WKWebView to the
+        // Foundation domain. Without a navigation policy, a link or
+        // auto-redirect on the loaded page could navigate to an
+        // attacker-controlled origin while the at-document-start user
+        // script (which sets __foundationMobileWebView and the custom-
+        // token bridge target) re-runs on every navigation. With this
+        // policy, in-app navigation is allowlist-bounded and external
+        // links open in Safari instead.
+        private static let allowedHosts: Set<String> = [
+            "foundation-global.com",
+            "www.foundation-global.com",
+        ]
+
+        func webView(
+            _ webView: WKWebView,
+            decidePolicyFor navigationAction: WKNavigationAction,
+            decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+        ) {
+            guard let host = navigationAction.request.url?.host?.lowercased() else {
+                decisionHandler(.cancel)
+                return
+            }
+            if Self.allowedHosts.contains(host) {
+                decisionHandler(.allow)
+                return
+            }
+            // Out-of-app link tap: open in Safari rather than inline.
+            if navigationAction.navigationType == .linkActivated,
+               let url = navigationAction.request.url {
+                Task { @MainActor in
+                    UIApplication.shared.open(url)
+                }
+            }
+            decisionHandler(.cancel)
+        }
+
+        // 2026-04-26 security review M-H-5: defense-in-depth shape check
+        // on the custom token before injecting into JS. Firebase custom
+        // tokens are JWTs (three base64url segments separated by dots);
+        // this regex rejects anything else, so a malformed value from
+        // mintWebSessionToken (debug echo, error string, server bug)
+        // can't reach evaluateJavaScript and break out of the literal.
+        private static let jwtShape = try! NSRegularExpression(
+            pattern: "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$"
+        )
+
         private func inject() {
             guard pageLoaded, let token = pendingToken, let view = webView else { return }
+
+            let range = NSRange(token.startIndex..<token.endIndex, in: token)
+            guard Self.jwtShape.firstMatch(in: token, range: range) != nil,
+                  token.count <= 4096 else {
+                #if DEBUG
+                print("[WebHome] refusing to inject malformed custom token (len=\(token.count))")
+                #endif
+                return
+            }
+
             // First 12 chars used as an idempotency key — re-injecting
             // the same token would just replay the same sign-in. If the
             // token changes (re-mint), we inject again.

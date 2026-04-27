@@ -1,5 +1,6 @@
 import Foundation
 import FirebaseAuth
+import WebKit
 
 struct Claims: Equatable, Sendable {
     let uid: String
@@ -155,6 +156,19 @@ final class AuthService: ObservableObject {
         try Auth.auth().signOut()
         AttestationCoordinator.shared.reset()
         SupportSessionTracker.shared.reset()
+
+        // 2026-04-26 security review M-H-5: WKWebsiteDataStore.default()
+        // is shared across users on the same device. Without this clear,
+        // the next user signing in on the same device sees the prior
+        // user's cookies + localStorage on yc.foundation-global.com.
+        // Best-effort — fire-and-forget; the sign-out itself completes
+        // regardless of whether WebKit finishes wiping data.
+        let allTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+        WKWebsiteDataStore.default().removeData(
+            ofTypes: allTypes,
+            modifiedSince: .distantPast,
+            completionHandler: {}
+        )
     }
 
     // Age of the current Firebase ID token's `auth_time` claim. This is

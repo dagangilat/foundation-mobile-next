@@ -530,16 +530,18 @@ final class CaptureCoordinator: ObservableObject {
     private func submitAnchor(commitment: EnclaveSeal.Commitment, artifacts: [ProofArtifact]) {
         anchorStatus = .pending
         anchorTask = Task { [weak self] in
-            // Biometric sealing has moved out of submitAnchor: prompting
-            // for Face ID after the user just spent 40 seconds with the
-            // camera locked on their face is redundant theatre — see
-            // HomeView.beginVerifyHumanity for the entry-gate prompt
-            // that authorizes the whole verification session up-front.
-            // A future iteration can add per-gate prompts (post-NFC,
-            // pre-final-seal) per the architect's recommendation; that
-            // requires extending AnchorCommitmentRequest.biometricSeal
-            // to a list of per-artifact seals rather than a single
-            // sidecar. Today the field is sent nil from this call site.
+            // 2026-04-26 security review M-H-4: build the biometric seal
+            // sidecar by Face-ID-signing commitment.hashHex with the
+            // Secure-Enclave-bound, biometryCurrentSet-protected key.
+            // The signature is proof the user explicitly authorized
+            // THIS commitment (not just the verification session). A
+            // graceful-degradation fallback to seal=nil is intentional
+            // — biometrics may be unavailable on this device, or the
+            // user may cancel; the canonical-bytes uid binding (Phase
+            // 1.C) plus the per-artifact App Attest assertions still
+            // protect the commitment, so a missing seal is a soft
+            // signal rather than a hard precondition.
+            let biometricSeal = await Self.buildBiometricSeal(commitment: commitment)
             let req = AnchorCommitmentRequest(
                 commitment: .init(
                     hashHex: commitment.commitmentHashHex,
@@ -554,7 +556,7 @@ final class CaptureCoordinator: ObservableObject {
                         signatureBase64: $0.signatureBase64
                     )
                 },
-                biometricSeal: nil
+                biometricSeal: biometricSeal
             )
             do {
                 let result = try await FunctionsService.shared.anchorCommitment(req)
@@ -565,6 +567,46 @@ final class CaptureCoordinator: ObservableObject {
             } catch {
                 self?.anchorStatus = .failed(String(describing: error))
             }
+        }
+    }
+
+    @MainActor
+    private static func buildBiometricSeal(
+        commitment: EnclaveSeal.Commitment
+    ) async -> AnchorCommitmentRequest.BiometricSealPayload? {
+        let sealer = BiometricSealer.shared
+        guard sealer.isAvailable else { return nil }
+        let payload = Data(commitment.commitmentHashHex.utf8)
+        do {
+            let signature = try await sealer.sign(
+                payload: payload,
+                prompt: "Sign your humanity commitment"
+            )
+            let publicKey = try sealer.publicKeyBase64()
+            return AnchorCommitmentRequest.BiometricSealPayload(
+                publicKeyB64: publicKey,
+                signatureB64: signature,
+                signedAtMs: Int64(Date().timeIntervalSince1970 * 1000)
+            )
+        } catch BiometricSealError.userCancelled {
+            // User explicitly cancelled the second prompt. They already
+            // approved verification at entry-gate, so still submit
+            // (sealing is best-effort here, the entry gate is the
+            // load-bearing consent moment).
+            return nil
+        } catch BiometricSealError.keyInvalidated {
+            // Biometrics changed mid-session. Reset the key so the next
+            // attempt regenerates; submit unsealed this round.
+            sealer.resetKey()
+            return nil
+        } catch {
+            // Generic signing failure — log only in debug. The submit
+            // proceeds without the seal so the verification round
+            // doesn't dead-end.
+            #if DEBUG
+            print("[CaptureCoordinator] biometric seal failed: \(error)")
+            #endif
+            return nil
         }
     }
 
