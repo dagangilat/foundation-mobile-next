@@ -108,6 +108,17 @@ struct AppConfig: Decodable, Sendable {
     }
     let support: Support
 
+    // Desktop-pairing UI gate. When enabled=false, HomeView hides the
+    // "Pair desktop" row entirely; the underlying PairingCoordinator +
+    // QR scanner code stays compiled in (so flipping back is a JSON
+    // edit, not a code change). Defaults to false for the demo path
+    // since pair gating was a side-track for a non-critical feature.
+    // Pairs with FEATURES.desktopPairing on the web side.
+    struct Pairing: Decodable, Sendable {
+        let enabled: Bool
+    }
+    let pairing: Pairing
+
     static let shared: AppConfig = {
         do {
             return try load()

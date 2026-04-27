@@ -45,5 +45,8 @@
   },
   "support": {
     "maxPerSession": 5
+  },
+  "pairing": {
+    "enabled": false
   }
 }

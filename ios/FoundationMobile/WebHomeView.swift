@@ -145,13 +145,17 @@ struct WebHomeView: View {
                 .font(.system(size: 16, weight: .bold))
             }
             Spacer()
-            Button {
-                isShowingQRScanner = true
-            } label: {
-                Image(systemName: "qrcode.viewfinder")
-                    .foregroundStyle(Theme.brandGreen)
+            // Pair-desktop button gated by AppConfig.shared.pairing.enabled.
+            // Sheet + QRScannerView code stays compiled.
+            if AppConfig.shared.pairing.enabled {
+                Button {
+                    isShowingQRScanner = true
+                } label: {
+                    Image(systemName: "qrcode.viewfinder")
+                        .foregroundStyle(Theme.brandGreen)
+                }
+                .accessibilityLabel("Pair desktop")
             }
-            .accessibilityLabel("Pair desktop")
             Button {
                 isShowingSupport = true
             } label: {

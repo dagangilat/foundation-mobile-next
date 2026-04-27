@@ -174,8 +174,15 @@ struct HomeView: View {
                 .padding(.top, 10)
             verifyHumanityButton
                 .padding(.top, 8)
-            pairingRow
-                .padding(.top, 4)
+            // Pair-desktop UI gated by AppConfig.shared.pairing.enabled.
+            // Code path stays compiled — flipping back is a profile-
+            // JSON edit, not a code change. See foundationmobile.json
+            // (and the matching FEATURES.desktopPairing flag in
+            // foundation-global/evoting-frontend/src/config/features.json).
+            if AppConfig.shared.pairing.enabled {
+                pairingRow
+                    .padding(.top, 4)
+            }
             supportButton
                 .padding(.top, 12)
         }
