@@ -18,9 +18,19 @@ enum EnclaveSeal {
         let producedAtMs: Int64
     }
 
-    static func seal(artifacts: [ProofArtifact]) -> Commitment {
+    enum Error: Swift.Error {
+        case missingUid
+    }
+
+    /// Bind the user identity into the commitment hash. A captured
+    /// payload from user A cannot be replayed by user B (with B's auth
+    /// token) because B's reconstruction would hash to a different
+    /// value and fail the server's seal-mismatch gate.
+    /// Server's canonicalSealBytes(uid, artifacts) mirrors this exactly.
+    static func seal(uid: String, artifacts: [ProofArtifact]) -> Commitment {
         let sorted = artifacts.sorted { $0.kind.rawValue < $1.kind.rawValue }
         var buffer = Data()
+        buffer.append(Data("uid:\(uid)\n".utf8))
         for artifact in sorted {
             buffer.append(artifact.canonicalBytes())
             buffer.append(0x0a)
