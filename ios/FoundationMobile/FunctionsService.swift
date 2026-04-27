@@ -141,6 +141,17 @@ struct SupportTicketResult: Decodable, Sendable {
 // drops the raw token. Server gates mint on a recent email-link sign-in
 // (auth_time freshness, same as pair-claim/release), so a stolen-but-
 // still-signed-in phone can't quietly mint web access.
+struct RecordBiometricConsentResult: Decodable, Sendable {
+    let success: Bool
+    let version: String
+}
+
+struct CheckBiometricConsentResult: Decodable, Sendable {
+    let accepted: Bool
+    let currentVersion: String
+    let documentType: String
+}
+
 struct WebSessionTokenResult: Decodable, Sendable {
     let customToken: String
     let issuedAtMs: Int64
@@ -215,6 +226,20 @@ actor FunctionsService {
         let payload = await Self.injectAttestationTier(into: [:])
         let result = try await functions.httpsCallable("mintWebSessionToken").call(payload)
         return try decode(WebSessionTokenResult.self, from: result.data)
+    }
+
+    // 2026-04-26 security review M-CRIT-4: Art. 9 biometric consent.
+    // Server-side schema lives at users/{uid}/legal_consent/biometric-processing_<version>.
+    // Pattern mirrors the existing ToS callables.
+
+    func recordBiometricConsent() async throws -> RecordBiometricConsentResult {
+        let result = try await functions.httpsCallable("recordBiometricConsent").call([:])
+        return try decode(RecordBiometricConsentResult.self, from: result.data)
+    }
+
+    func checkBiometricConsent() async throws -> CheckBiometricConsentResult {
+        let result = try await functions.httpsCallable("checkBiometricConsent").call([:])
+        return try decode(CheckBiometricConsentResult.self, from: result.data)
     }
 
     /// Adds the current attestation tier to a callable payload. Mutating

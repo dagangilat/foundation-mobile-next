@@ -10,6 +10,12 @@ struct HomeView: View {
     @StateObject private var pairing = PairingCoordinator.shared
     @State private var isShowingQRScanner: Bool = false
     @State private var isShowingSupport: Bool = false
+    // 2026-04-26 security review M-CRIT-4: explicit Art. 9 / BIPA
+    // §15(b) consent gate before any biometric capture. Sheet driver
+    // for BiometricConsentView. State is local; the source of truth
+    // is users/{uid}/legal_consent/biometric-processing_v1.
+    @State private var isShowingBiometricConsent: Bool = false
+    @StateObject private var biometricConsent = BiometricConsentState.shared
     // Session-only — flips true when the user taps "Connect to Foundation"
     // after humanity is anchored. Until tapped, post-anchor home stays on
     // preVerifyHome with the Connect CTA visible. Reset on app relaunch
@@ -61,6 +67,20 @@ struct HomeView: View {
                 capture: capture,
                 proofSmoke: proofSmoke
             )
+        }
+        .sheet(isPresented: $isShowingBiometricConsent) {
+            BiometricConsentView(
+                onAccept: {
+                    isShowingBiometricConsent = false
+                    // Re-enter the gate so the rest of beginVerifyHumanity
+                    // (Face ID prompt + capture push) runs in one tap.
+                    await beginVerifyHumanity()
+                },
+                onCancel: {
+                    isShowingBiometricConsent = false
+                }
+            )
+            .interactiveDismissDisabled()
         }
     }
 
@@ -760,6 +780,16 @@ struct HomeView: View {
     /// docs/connect-and-pairing-flows.md follow-up.
     @MainActor
     private func beginVerifyHumanity() async {
+        // 2026-04-26 security review M-CRIT-4: gate on explicit
+        // biometric-processing consent before triggering Art. 9
+        // capture. Local cache is just a fast path; the server-side
+        // legal_consent doc is the authoritative record. If the user
+        // has never consented at this version, present the consent
+        // sheet — beginVerifyHumanity is re-invoked from onAccept.
+        if !biometricConsent.hasAcceptedCurrentVersion() {
+            isShowingBiometricConsent = true
+            return
+        }
         guard BiometricSealer.shared.isAvailable else {
             captureNavigationPath.append(Route.capture)
             return
