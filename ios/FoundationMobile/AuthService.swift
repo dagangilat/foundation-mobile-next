@@ -58,42 +58,19 @@ final class AuthService: ObservableObject {
         }
     }
 
-    // MARK: - Email-link sign in (web fallback path; not used by iOS UI)
-
-    // Routes through the `resendInviteLink` callable in foundation-global so
-    // users get the Foundation-branded Resend email instead of Firebase Auth's
-    // unbranded default. The callable also enforces rate limiting + invite
-    // gating server-side — properties the client SDK's sendSignInLinkToEmail
-    // does not have. Anti-enumeration: the callable returns `sent: false`
-    // (not an error) for emails without access, so we surface the same
-    // "check your inbox" UI either way. `pendingEmail` still gets stashed in
-    // Keychain either way — if the email really has no access, there's no
-    // link to consume later, so the stashed value just ages out harmlessly.
-    func sendSignInLink(email: String) async throws {
-        _ = try await FunctionsService.shared.resendInviteLink(email: email)
-        Keychain.setPendingEmail(email)
-    }
-
-    enum CompleteResult: Sendable {
-        case signedIn
-        case noPendingEmail
-        case notASignInLink
-    }
-
-    @discardableResult
-    func completeSignIn(url: URL) async throws -> CompleteResult {
-        guard Auth.auth().isSignIn(withEmailLink: url.absoluteString) else {
-            return .notASignInLink
-        }
-        guard let email = Keychain.getPendingEmail() else {
-            return .noPendingEmail
-        }
-        _ = try await Auth.auth().signIn(withEmail: email, link: url.absoluteString)
-        Keychain.clearPendingEmail()
-        return .signedIn
-    }
-
-    // MARK: - OTP sign-in (iOS primary path)
+    // MARK: - OTP sign-in (iOS sign-in path — sole surviving entry point)
+    //
+    // History: the email-link path (sendSignInLink + completeSignIn,
+    // routing through Firebase Auth's `signIn(withEmail:link:)` and
+    // Universal Links from `foundation-global.com/__/auth/links*`) was
+    // retired 2026-04-28 because Gmail iOS opens tapped links inside
+    // its own in-app browser, which bypasses iOS Universal Links
+    // entirely and stranded users on a "Validating…" screen forever.
+    // The web continues using email-link — Universal Links don't apply
+    // to web, so the issue doesn't reproduce there.
+    //
+    // See foundation-global/docs/architecture_app-check-review-2026-04-28.md
+    // section 4 for the full reasoning.
 
     // Why this exists: the email-link path above relies on Universal
     // Links to land the tapped email link back inside Foundation Mobile.
