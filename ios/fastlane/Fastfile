@@ -44,19 +44,51 @@ platform :ios do
     )
   end
 
+  desc "Fetch or create the Apple Distribution certificate via the ASC API."
+  desc "Idempotent — uses the existing cert if one is already in keychain."
+  desc "Run once before :beta if the keychain only has Apple Development."
+  lane :certs do
+    cert(
+      api_key: asc_api_key,
+      development: false,
+      generate_apple_certs: true
+    )
+    # Default sigh = App Store distribution profile. Passing both
+    # development and adhoc as false trips fastlane's "you can't enable
+    # both" guard; just omit them.
+    sigh(
+      api_key: asc_api_key,
+      app_identifier: "com.foundationglobal.mobile",
+      force: false
+    )
+  end
+
   desc "Build a signed IPA and upload to TestFlight."
   desc "Intended to run from Xcode Cloud or locally with a dev cert configured."
   lane :beta do
     build_app(
-      project: "FoundationMobile.xcodeproj",
+      # CocoaPods project — must use the workspace, not the
+      # bare xcodeproj, otherwise gym can't link the Pods.
+      workspace: "FoundationMobile.xcworkspace",
       scheme: "FoundationMobile",
       export_method: "app-store",
-      clean: true
+      configuration: "Release",
+      clean: true,
+      # Explicit profile mapping so xcodebuild's exportArchive step
+      # can find the App Store distribution profile sigh installed.
+      # Without this, xcodebuild errors with
+      # "No profiles for 'com.foundationglobal.mobile' were found".
+      # The name matches what sigh created in the :certs lane.
+      export_options: {
+        provisioningProfiles: {
+          "com.foundationglobal.mobile" => "com.foundationglobal.mobile AppStore"
+        }
+      }
     )
     upload_to_testflight(
       api_key: asc_api_key,
       skip_waiting_for_build_processing: true,
-      changelog: "Phase 1 scaffold — sign-in, App Attest, Firestore."
+      changelog: "TestFlight build via App Store Connect API. App Attest in production environment."
     )
   end
 end

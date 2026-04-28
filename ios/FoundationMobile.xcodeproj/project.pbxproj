@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		0234470E89B3B3C730DD40F6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257D88861F1B9A2298427239 /* Theme.swift */; };
 		055B2A9AF8EF61699C7E8A2A /* WebHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBA9375FD4DABA14059C332 /* WebHomeView.swift */; };
-		52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */; };
-		93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE774A53B41BB88310159 /* BiometricConsentView.swift */; };
-		A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C3D4E5F6789012345678AB /* Reachability.swift */; };
-		F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */; };
 		07A4980EBF784B52F1044B82 /* AttestationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A1C216FE07660C1AEE3797 /* AttestationService.swift */; };
 		0A1E2B3C4D5E6F7A8B9C0D1E /* AttestationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3A4B5C6D7E8F9A0B1C2D /* AttestationCoordinator.swift */; };
 		12CE3F47726184E1CF3A6CB1 /* AntiSpoofProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C0868B26FBF852E51F08E6 /* AntiSpoofProducer.swift */; };
@@ -27,6 +23,7 @@
 		3F60C53D026EDD9B2EBAB77B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */; };
 		4367E2AE0ADEA723C5193B9A /* CoreMLFaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */; };
 		4E1E2B3C4D5E6F7A8B9C0D1E /* EnclaveSeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */; };
+		52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */; };
 		5D22B61434305A98BFF847C5 /* SupportSessionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */; };
 		5F1E2B3C4D5E6F7A8B9C0D1E /* MoproSmokeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */; };
 		5FE07A47373B2A0BFC93A828 /* PairingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E8BCD934051CD421D01402 /* PairingCoordinator.swift */; };
@@ -43,14 +40,15 @@
 		8F665D9EC7DFA3178F5B1961 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3AA1F49BD15F0794B52679 /* RootView.swift */; };
 		901E2B3C4D5E6F7A8B9C0D1E /* PosePromptBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */; };
 		916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */; };
+		93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE774A53B41BB88310159 /* BiometricConsentView.swift */; };
 		9552FC4EC18D904838A878DB /* SilentFaceMiniFASNetV2.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */; };
 		A01E2B3C4D5E6F7A8B9C0D1E /* FaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */; };
+		A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C3D4E5F6789012345678AB /* Reachability.swift */; };
 		ACCE88CCFDE53CDF9A9FB6B3 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */; };
 		B01E2B3C4D5E6F7A8B9C0D1E /* FaceMatchProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */; };
 		C0C0F9DE03F0A12B16EFBA0A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DC6490D5D01BDE8C366453 /* QRScannerView.swift */; };
 		CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */; };
 		CB1D44AA2F9B36A4006DE63D /* MoproSmoke.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB1D44A92F9B3605006DE63D /* MoproSmoke.xcframework */; };
-		CB1D44AB2F9B36A4006DE63D /* MoproSmoke.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CB1D44A92F9B3605006DE63D /* MoproSmoke.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CB1D44AE2F9B37E4006DE63D /* MoproSmoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1D44AD2F9B37E4006DE63D /* MoproSmoke.swift */; };
 		CB2B44A02F9C480000000001 /* multiplier2_final.zkey in Resources */ = {isa = PBXBuildFile; fileRef = CB2B44A02F9C480000000002 /* multiplier2_final.zkey */; };
 		CF5CE0747DA47027EE13A3DA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
@@ -60,6 +58,7 @@
 		DC04C58E0C52A69163A08B86 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */; };
 		DE347E00A21678F8334E84F4 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEDDEC186D8993801244BC5 /* AppConfig.swift */; };
 		F0E1D2C3B4A596877869001A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */; };
+		F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */; };
 		F28CF907F668041EC3C9B7FC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */; };
 		F85B0EA965A797F6A54805D0 /* Pods_FoundationMobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */; };
 		FA79B59EBC18DD4B12CA2402 /* SupportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */; };
@@ -73,7 +72,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				CB1D44AB2F9B36A4006DE63D /* MoproSmoke.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,12 +96,10 @@
 		4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = MobileFaceNet.mlpackage; path = FoundationMobile/Resources/MobileFaceNet.mlpackage; sourceTree = "<group>"; };
 		4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnclaveSeal.swift; path = FoundationMobile/EnclaveSeal.swift; sourceTree = "<group>"; };
 		4FBA9375FD4DABA14059C332 /* WebHomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebHomeView.swift; path = FoundationMobile/WebHomeView.swift; sourceTree = "<group>"; };
-		5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PillarsHero.swift; path = FoundationMobile/PillarsHero.swift; sourceTree = "<group>"; };
-		638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricSealer.swift; path = FoundationMobile/BiometricSealer.swift; sourceTree = "<group>"; };
-		E12EE774A53B41BB88310159 /* BiometricConsentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricConsentView.swift; path = FoundationMobile/BiometricConsentView.swift; sourceTree = "<group>"; };
-		B8C3D4E5F6789012345678AB /* Reachability.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Reachability.swift; path = FoundationMobile/Reachability.swift; sourceTree = "<group>"; };
 		54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoundationMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PillarsHero.swift; path = FoundationMobile/PillarsHero.swift; sourceTree = "<group>"; };
 		5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmokeBridge.swift; path = FoundationMobile/MoproSmokeBridge.swift; sourceTree = "<group>"; };
+		638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricSealer.swift; path = FoundationMobile/BiometricSealer.swift; sourceTree = "<group>"; };
 		6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppCheckFactory.swift; path = FoundationMobile/AppCheckFactory.swift; sourceTree = "<group>"; };
 		6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LivenessFrameProducer.swift; path = FoundationMobile/LivenessFrameProducer.swift; sourceTree = "<group>"; };
 		6AEDDEC186D8993801244BC5 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppConfig.swift; path = FoundationMobile/AppConfig.swift; sourceTree = "<group>"; };
@@ -129,6 +125,7 @@
 		A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SupportSessionTracker.swift; path = FoundationMobile/SupportSessionTracker.swift; sourceTree = "<group>"; };
 		AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = SilentFaceMiniFASNetV2.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV2.mlpackage; sourceTree = "<group>"; };
 		B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceMatchProducer.swift; path = FoundationMobile/FaceMatchProducer.swift; sourceTree = "<group>"; };
+		B8C3D4E5F6789012345678AB /* Reachability.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Reachability.swift; path = FoundationMobile/Reachability.swift; sourceTree = "<group>"; };
 		BB3C48CBE0357E5145A601C5 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = FoundationMobile/HomeView.swift; sourceTree = "<group>"; };
 		BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SupportSheet.swift; path = FoundationMobile/SupportSheet.swift; sourceTree = "<group>"; };
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
@@ -139,6 +136,7 @@
 		CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentPhotoView.swift; path = FoundationMobile/DocumentPhotoView.swift; sourceTree = "<group>"; };
 		DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoadingView.swift; path = FoundationMobile/LoadingView.swift; sourceTree = "<group>"; };
 		DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FoundationMobileApp.swift; path = FoundationMobile/FoundationMobileApp.swift; sourceTree = "<group>"; };
+		E12EE774A53B41BB88310159 /* BiometricConsentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricConsentView.swift; path = FoundationMobile/BiometricConsentView.swift; sourceTree = "<group>"; };
 		E345E6207D916EE710C97076 /* FunctionsService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FunctionsService.swift; path = FoundationMobile/FunctionsService.swift; sourceTree = "<group>"; };
 		E4C0868B26FBF852E51F08E6 /* AntiSpoofProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AntiSpoofProducer.swift; path = FoundationMobile/AntiSpoofProducer.swift; sourceTree = "<group>"; };
 		ECD6D17AB7D898E4655B9C2B /* lowsec-attest.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = "lowsec-attest.json"; path = "FoundationMobile/Resources/profiles/lowsec-attest.json"; sourceTree = "<group>"; };
@@ -402,9 +400,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -477,7 +479,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
@@ -510,8 +512,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile-Release.entitlements;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = F9F26FQW95;
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -696,6 +698,7 @@
 					"${PODS_ROOT}/React-renderercss",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				"LAUNCH_CONSTRAINT_RESPONSIBLE[sdk=*]" = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

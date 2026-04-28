@@ -90,3 +90,17 @@ ios/FoundationMobile/Resources/circuits/
 # ios/FoundationMobile/Resources/ and ARE committed.
 tools/coreml-convert/Silent-Face-Anti-Spoofing/
 tools/coreml-convert/MobileFaceNet_Pytorch/
+
+# Apple signing artifacts — NEVER commit
+# .p12 contains the private key; .cer is the public cert; .mobileprovision
+# is the provisioning profile (infra-specific, can leak team/app metadata).
+*.p12
+*.cer
+*.certSigningRequest
+*.mobileprovision
+
+# Debug symbols zip — large + regenerable from each archive
+*.app.dSYM.zip
+
+# Local Gemfile lock backup from bundler debugging
+Gemfile.lock.bak

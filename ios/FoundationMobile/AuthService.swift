@@ -172,6 +172,12 @@ final class AuthService: ObservableObject {
         try Auth.auth().signOut()
         AttestationCoordinator.shared.reset()
         SupportSessionTracker.shared.reset()
+        // Clear the persisted "user has tapped Connect to Foundation"
+        // affirmation. Without this, a different user signing in on
+        // the same device would auto-jump into WebHomeView with the
+        // previous user's affirmation baked in. The next signed-in
+        // user re-affirms via the Connect CTA.
+        UserDefaults.standard.removeObject(forKey: "foundationHasConnected")
         // P0-2: invalidate FunctionsService's ID-token freshness window
         // so the very first mutating callable after the next email-link
         // sign-in is guaranteed to force-refresh the ID token. Without

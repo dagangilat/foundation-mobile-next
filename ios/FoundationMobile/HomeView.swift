@@ -20,11 +20,16 @@ struct HomeView: View {
     // reachability so the user gets immediate "Waiting for network…" copy
     // instead of waiting for Firebase callables to time out 60s into a tap.
     @StateObject private var reachability = Reachability.shared
-    // Session-only — flips true when the user taps "Connect to Foundation"
-    // after humanity is anchored. Until tapped, post-anchor home stays on
-    // preVerifyHome with the Connect CTA visible. Reset on app relaunch
-    // (intentional — the user re-affirms entry per session).
-    @State private var hasConnected: Bool = false
+    // Persisted across app launches — flips true when the user taps
+    // "Connect to Foundation" after humanity is anchored. Subsequent
+    // cold launches skip the Connect tap entirely and go straight into
+    // WebHomeView (still pre-warmed under the hood). Reset to false on
+    // sign-out via UserDefaults.removeObject so a different user signing
+    // in on the same device sees the Connect CTA and can re-affirm
+    // entry. Originally `@State` (session-only) — changed 2026-04-28
+    // because the per-launch tap was costing 1-2 s plus a UX beat in
+    // the relogin path that returning users found disorienting.
+    @AppStorage("foundationHasConnected") private var hasConnected: Bool = false
     // NavigationStack path for programmatic push into CaptureView. Lets
     // the "Verify humanity" Button gate navigation behind a Face ID
     // prompt instead of the implicit NavigationLink push. Empty path =
