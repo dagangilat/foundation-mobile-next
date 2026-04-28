@@ -72,18 +72,38 @@ struct WebHomeView: View {
     }
 
     private func mintToken() async {
+        #if DEBUG
+        let t0 = Date()
+        print("[WebHome.timing] mintToken start at \(Self.fmt(t0))")
+        #endif
         bridgeStatus = .minting
         do {
             let result = try await FunctionsService.shared.mintWebSessionToken()
             customToken = result.customToken
             bridgeStatus = .ready
+            #if DEBUG
+            let elapsed = Date().timeIntervalSince(t0) * 1000
+            print("[WebHome.timing] mintToken success in \(Int(elapsed)) ms")
+            #endif
         } catch {
+            #if DEBUG
+            let elapsed = Date().timeIntervalSince(t0) * 1000
+            print("[WebHome.timing] mintToken FAILED in \(Int(elapsed)) ms: \(error.localizedDescription)")
+            #endif
             // The user can still sign in via the WebView's own email link
             // flow as a fallback — surface a banner so they know what
             // happened without blocking the surface entirely.
             bridgeStatus = .failed(Self.friendlyMintError(error))
         }
     }
+
+    #if DEBUG
+    private static func fmt(_ d: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm:ss.SSS"
+        return f.string(from: d)
+    }
+    #endif
 
     // Maps the raw NSError into copy a user can act on. Server returns
     // ("failed-precondition", "stale_auth: …") when auth_time is past
@@ -355,73 +375,103 @@ struct WebContainer: UIViewRepresentable {
             if injectedTokenFingerprint == fingerprint { return }
             injectedTokenFingerprint = fingerprint
 
-            // Escape backslashes first, then single quotes, so the JS
-            // literal can't be broken out of. Custom tokens are
-            // base64url + dots so neither character should appear, but
-            // belt-and-suspenders.
-            let escaped = token
-                .replacingOccurrences(of: "\\", with: "\\\\")
-                .replacingOccurrences(of: "'", with: "\\'")
-            // Poll for the bridge function inside the JS itself: didFinish
-            // fires when the document finishes loading, but the React
-            // module that defines window.__foundationSignInWithCustomToken
-            // is loaded as a deferred <script type="module"> and may still
-            // be evaluating. A single-shot check would race and fall
-            // through to the Landing page; polling holds AccessGate on
-            // its Loading… state until the bridge can sign the user in
-            // directly into the authenticated app. 15s deadline covers
-            // cold cache + Edge-throttled networks; on timeout we clear
-            // the fingerprint so the next updateUIView retries.
-            let js = """
-            (async () => {
-              const deadline = Date.now() + 15000;
-              while (typeof window.__foundationSignInWithCustomToken !== 'function') {
-                if (Date.now() > deadline) {
-                  return { ok: false, error: 'bridge_timeout' };
-                }
-                await new Promise(r => setTimeout(r, 75));
+            // Token is passed through `arguments:` rather than baked into
+            // the JS literal — callAsyncJavaScript marshals arguments
+            // through JSON, so there's no string-escape break-out risk
+            // even on a future token format that includes quotes or
+            // backslashes. The shape regex above already rejected anything
+            // that isn't a clean JWT.
+            //
+            // Bridge handoff is fire-and-forget. We've measured
+            // signInWithCustomToken inside WKWebView taking 20-40 s due
+            // to WebContent process / IndexedDB contention during the
+            // cold-start window, during which AWAITING the promise
+            // blocks the iOS side and wastes time we don't have. Once
+            // we've INVOKED window.__foundationSignInWithCustomToken,
+            // Firebase Web Auth will eventually update auth.currentUser
+            // — and AccessGate's 100 ms polling fallback (see web
+            // AccessGate.tsx) catches that the moment it lands,
+            // regardless of how long the promise itself takes to
+            // resolve. The bridge body returns to iOS in <100 ms after
+            // the function-defined poll succeeds; iOS logs "bridge
+            // fired" and stops waiting.
+            //
+            // We still poll for window.__foundationSignInWithCustomToken
+            // up to 15 s because the React bundle's lib/auth.ts module
+            // has to evaluate before the function is defined.
+            //
+            // callAsyncJavaScript wraps `body` in an async function and
+            // awaits the returned Promise before invoking the completion
+            // handler — required because evaluateJavaScript(_:completionHandler:)
+            // does NOT await Promises and would error with
+            // "JavaScript execution returned a result of an unsupported type".
+            let body = """
+            const deadline = Date.now() + 15000;
+            while (typeof window.__foundationSignInWithCustomToken !== 'function') {
+              if (Date.now() > deadline) {
+                return { ok: false, error: 'bridge_timeout' };
               }
-              try {
-                const r = await window.__foundationSignInWithCustomToken('\(escaped)');
-                return { ok: true, uid: r?.uid || null };
-              } catch (e) {
-                return { ok: false, error: e?.message || String(e) };
-              }
-            })()
+              await new Promise(r => setTimeout(r, 75));
+            }
+            // Fire-and-forget. The .catch is just there to keep the
+            // unhandled-rejection logger quiet if Firebase Auth ever
+            // throws (network down, malformed token, etc.) — the
+            // user-visible failure mode is "WebView stays on Loading
+            // until AccessGate's 60 s bridge timeout", which is the
+            // right behavior for a genuinely broken sign-in.
+            window.__foundationSignInWithCustomToken(token).catch(() => {});
+            return { ok: true, fired: true };
             """
-            view.evaluateJavaScript(js) { [weak self] result, error in
-                if let error {
-                    #if DEBUG
-                    print("[WebHome] inject error: \(error.localizedDescription)")
-                    #endif
-                    self?.injectedTokenFingerprint = nil
-                    return
-                }
-                guard let dict = result as? [String: Any] else { return }
-                let ok = dict["ok"] as? Bool ?? false
-                if ok {
-                    // 2026-04-26 security review M-H-6: do not log uid in
-                    // release builds. uid ties this device session to the
-                    // backend across all surfaces; readable via Console.app
-                    // with USB access.
-                    #if DEBUG
-                    print("[WebHome] sign-in bridge ok uid=\(dict["uid"] ?? "nil")")
-                    #endif
-                    return
-                }
-                let err = dict["error"] as? String ?? "unknown"
+            #if DEBUG
+            let injectStart = Date()
+            print("[WebHome.timing] inject start")
+            #endif
+            view.callAsyncJavaScript(
+                body,
+                arguments: ["token": token],
+                in: nil,
+                in: .page
+            ) { [weak self] result in
                 #if DEBUG
-                print("[WebHome] sign-in bridge failed: \(err)")
+                let elapsed = Date().timeIntervalSince(injectStart) * 1000
                 #endif
-                // bridge_timeout means the React bundle hadn't evaluated by
-                // the deadline. Clearing the fingerprint lets the next
-                // updateUIView (e.g. on customToken re-emission, or any
-                // SwiftUI state tick) retry the injection. Other errors
-                // (exception inside __foundationSignInWithCustomToken) are
-                // not retryable from here — surfaced via the console for
-                // diagnostics; user must reload the WebView.
-                if err == "bridge_timeout" {
+                switch result {
+                case .failure(let error):
+                    #if DEBUG
+                    print("[WebHome.timing] inject error after \(Int(elapsed)) ms: \(error.localizedDescription)")
+                    #endif
                     self?.injectedTokenFingerprint = nil
+                    return
+                case .success(let value):
+                    #if DEBUG
+                    print("[WebHome.timing] inject completed in \(Int(elapsed)) ms")
+                    #endif
+                    guard let dict = value as? [String: Any] else { return }
+                    let ok = dict["ok"] as? Bool ?? false
+                    if ok {
+                        // 2026-04-26 security review M-H-6: do not log uid in
+                        // release builds. uid ties this device session to the
+                        // backend across all surfaces; readable via Console.app
+                        // with USB access.
+                        #if DEBUG
+                        print("[WebHome] sign-in bridge ok uid=\(dict["uid"] ?? "nil")")
+                        #endif
+                        return
+                    }
+                    let err = dict["error"] as? String ?? "unknown"
+                    #if DEBUG
+                    print("[WebHome] sign-in bridge failed: \(err)")
+                    #endif
+                    // bridge_timeout means the React bundle hadn't evaluated by
+                    // the deadline. Clearing the fingerprint lets the next
+                    // updateUIView (e.g. on customToken re-emission, or any
+                    // SwiftUI state tick) retry the injection. Other errors
+                    // (exception inside __foundationSignInWithCustomToken) are
+                    // not retryable from here — surfaced via the console for
+                    // diagnostics; user must reload the WebView.
+                    if err == "bridge_timeout" {
+                        self?.injectedTokenFingerprint = nil
+                    }
                 }
             }
         }

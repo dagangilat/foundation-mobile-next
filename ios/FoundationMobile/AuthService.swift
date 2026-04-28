@@ -58,7 +58,7 @@ final class AuthService: ObservableObject {
         }
     }
 
-    // MARK: - Email-link sign in
+    // MARK: - Email-link sign in (web fallback path; not used by iOS UI)
 
     // Routes through the `resendInviteLink` callable in foundation-global so
     // users get the Foundation-branded Resend email instead of Firebase Auth's
@@ -91,6 +91,45 @@ final class AuthService: ObservableObject {
         _ = try await Auth.auth().signIn(withEmail: email, link: url.absoluteString)
         Keychain.clearPendingEmail()
         return .signedIn
+    }
+
+    // MARK: - OTP sign-in (iOS primary path)
+
+    // Why this exists: the email-link path above relies on Universal
+    // Links to land the tapped email link back inside Foundation Mobile.
+    // Gmail iOS opens links in its own in-app browser, which bypasses
+    // Universal Links entirely and strands the user on a "Validating…"
+    // screen forever. The OTP path is decoupled from email-client
+    // behavior — user reads a 6-digit code from the email, types it
+    // here, server exchanges it for a Firebase custom token, we sign
+    // in directly. See `requestSignInCode` / `verifySignInCode` in
+    // foundation-global/functions/index.js for the threat model.
+
+    enum RequestCodeOutcome: Sendable {
+        case sent
+        case noAccess  // email has no active invite + no existing account
+    }
+
+    /// Ask the server to email a 6-digit sign-in code. Anti-enumeration
+    /// returns `.noAccess` (not an error) for emails without access, so
+    /// the UI surfaces the same "check your inbox" affordance either way.
+    func requestSignInCode(email: String) async throws -> RequestCodeOutcome {
+        let result = try await FunctionsService.shared.requestSignInCode(email: email)
+        return result.sent ? .sent : .noAccess
+    }
+
+    /// Verify a 6-digit code and sign the user in. On success, Firebase
+    /// fires onAuthStateChanged → AuthService.state flips to .signedIn,
+    /// RootView swaps SignInView away. Any thrown error from the server
+    /// (wrong code, expired, attempts exhausted) is surfaced verbatim
+    /// to the caller so the UI can render the server-provided copy.
+    func verifyCodeAndSignIn(email: String, code: String) async throws {
+        let result = try await FunctionsService.shared.verifySignInCode(email: email, code: code)
+        // Whatever ID-token cache lived from a prior session is stale.
+        // Force the next mutating callable to refresh — same pattern as
+        // signOut → invalidateIDTokenCache.
+        await FunctionsService.shared.invalidateIDTokenCache()
+        _ = try await Auth.auth().signIn(withCustomToken: result.customToken)
     }
 
     /// Retry the release CF up to `maxAttempts` times with exponential
@@ -156,6 +195,13 @@ final class AuthService: ObservableObject {
         try Auth.auth().signOut()
         AttestationCoordinator.shared.reset()
         SupportSessionTracker.shared.reset()
+        // P0-2: invalidate FunctionsService's ID-token freshness window
+        // so the very first mutating callable after the next email-link
+        // sign-in is guaranteed to force-refresh the ID token. Without
+        // this, the sign-out → sign-in → tap-Connect happy path can
+        // still hit a stale cached token from the SDK's session 1
+        // because the 5-min staleness window hasn't expired.
+        await FunctionsService.shared.invalidateIDTokenCache()
 
         // 2026-04-26 security review M-H-5: WKWebsiteDataStore.default()
         // is shared across users on the same device. Without this clear,

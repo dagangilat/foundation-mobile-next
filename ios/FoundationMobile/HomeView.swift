@@ -16,6 +16,10 @@ struct HomeView: View {
     // is users/{uid}/legal_consent/biometric-processing_v1.
     @State private var isShowingBiometricConsent: Bool = false
     @StateObject private var biometricConsent = BiometricConsentState.shared
+    // P0-3: gate Verify-humanity / Connect-to-Foundation on real network
+    // reachability so the user gets immediate "Waiting for network…" copy
+    // instead of waiting for Firebase callables to time out 60s into a tap.
+    @StateObject private var reachability = Reachability.shared
     // Session-only — flips true when the user taps "Connect to Foundation"
     // after humanity is anchored. Until tapped, post-anchor home stays on
     // preVerifyHome with the Connect CTA visible. Reset on app relaunch
@@ -47,10 +51,29 @@ struct HomeView: View {
     }
 
     var body: some View {
-        Group {
-            if humanityVerified && hasConnected {
-                WebHomeView(claims: claims, pairing: pairing)
-            } else {
+        // Aggressive pre-warm: mount WebHomeView the moment HomeView
+        // appears for any signed-in user, hidden behind preVerifyHome,
+        // regardless of humanity verification state. WKWebView starts
+        // its WebContent process (~2 s cold), parses the 3.9 MB React
+        // bundle (~2-3 s), runs `mintWebSessionToken` (~1 s), and the
+        // bridge sign-in (signInWithCustomToken inside WebView) — all
+        // while the user is on the iOS verify-humanity flow. By the
+        // time they tap "Connect to Foundation", hasConnected flips,
+        // opacity flips, and they see the already-signed-in foundation
+        // home with no Landing flash, no "Connecting from your phone…"
+        // spinner.
+        //
+        // For users without humanity yet, the WebView's AccessGate
+        // redirects to /register internally. Once humanity is anchored
+        // on chain, the web's voter-proof listener picks it up and
+        // AccessGate transitions to home — also pre-warmed by the time
+        // they tap Connect. Network cost is one extra mint+bridge per
+        // session, which is negligible.
+        ZStack {
+            WebHomeView(claims: claims, pairing: pairing)
+                .opacity(hasConnected ? 1 : 0)
+                .allowsHitTesting(hasConnected)
+            if !hasConnected {
                 preVerifyHome
             }
         }
@@ -695,10 +718,14 @@ struct HomeView: View {
                 }
             }
         case .verify:
-            Button {
-                Task { await beginVerifyHumanity() }
-            } label: {
-                primaryGreenButtonLabel(text: "Verify humanity")
+            if !reachability.isReachable {
+                disabledGreenButton(text: "Waiting for network…")
+            } else {
+                Button {
+                    Task { await beginVerifyHumanity() }
+                } label: {
+                    primaryGreenButtonLabel(text: "Verify humanity")
+                }
             }
         case .verifying:
             // CaptureView dismissed at .verifying — spinner here is the
@@ -710,10 +737,14 @@ struct HomeView: View {
         case .anchorPending:
             backgroundProgressButton(text: "Anchoring on devnet…")
         case .connect:
-            Button {
-                hasConnected = true
-            } label: {
-                primaryGreenButtonLabel(text: "Connect to Foundation")
+            if !reachability.isReachable {
+                disabledGreenButton(text: "Waiting for network…")
+            } else {
+                Button {
+                    hasConnected = true
+                } label: {
+                    primaryGreenButtonLabel(text: "Connect to Foundation")
+                }
             }
         }
     }
