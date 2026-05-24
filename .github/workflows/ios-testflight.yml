@@ -1,0 +1,211 @@
+name: iOS TestFlight
+
+# Heavy-pipeline workflow: archive + sign + upload to TestFlight.
+# Triggered manually or by tags. Uses fastlane lane `beta` from
+# ios/fastlane/Fastfile (already set up for App Store Connect API key auth).
+#
+# Required repo secrets (Settings -> Secrets -> Actions):
+#   APP_STORE_CONNECT_API_KEY_KEY_ID       — 10-char key id
+#   APP_STORE_CONNECT_API_KEY_ISSUER_ID    — issuer id from ASC
+#   APP_STORE_CONNECT_API_KEY_KEY_CONTENT  — full text of the .p8 file
+#   IOS_DIST_CERT_P12_BASE64               — base64 of the distribution cert .p12
+#   IOS_DIST_CERT_P12_PASSWORD             — password for the .p12
+#   IOS_PROVISIONING_PROFILE_BASE64        — base64 of the .mobileprovision
+#   KEYCHAIN_PASSWORD                      — random string for the temp keychain
+#
+# All workflow inputs are constrained (choice / fixed strings) and consumed
+# only via env vars in run blocks, never interpolated into shell commands —
+# safe against the GitHub Actions injection patterns called out in
+# https://github.blog/security/vulnerability-research/how-to-catch-github-actions-workflow-injections-before-attackers-do/
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Foundation security profile'
+        type: choice
+        required: true
+        default: 'hisec-global'
+        options:
+          - hisec-global
+          - standardsec
+          - lowsec-attest
+      changelog:
+        description: 'TestFlight changelog (one line)'
+        type: string
+        required: false
+        default: 'Internal build'
+  push:
+    tags:
+      - 'tf-*'
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  archive-and-upload:
+    # macos-15 ships Xcode 16.x. Firebase 12.x requires Swift 6
+    # (`sending`, access-level-on-imports), which Xcode 15.4 on macos-14
+    # can't compile.
+    runs-on: macos-15
+    timeout-minutes: 90
+
+    env:
+      FOUNDATION_PROFILE: ${{ inputs.profile || 'hisec-global' }}
+      # Hard-fail archives that lack production App Attest entitlement —
+      # mirrors the M-H-2 gate in ci_post_clone.sh.
+      CI_XCODEBUILD_ACTION: archive
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        # ASC requires Xcode 26+ / iOS 26 SDK for uploads. macos-15 has
+        # Xcode 26 preinstalled but its `Xcode.app` symlink still points
+        # at 16.4 — pick the highest Xcode 26+ explicitly.
+        run: |
+          LATEST_XCODE=$(ls -d /Applications/Xcode_2[6-9]*.app /Applications/Xcode_3*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$LATEST_XCODE" ]; then
+            echo "::error::No Xcode 26+ found — ASC requires it for uploads"
+            ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          sudo xcode-select -s "$LATEST_XCODE"
+          xcodebuild -version
+
+      - name: Set up Ruby + bundler cache
+        # Gemfile + Gemfile.lock live at repo root, not ios/. Don't pass
+        # working-directory or setup-ruby silently no-ops bundler-cache.
+        # TF2's lockfile pulls connection_pool 3.0.2 (requires Ruby >= 3.2)
+        # and activesupport 7.2.3.1 (requires Ruby >= 3.1). 3.3 covers both
+        # comfortably. The lockfile's BUNDLED WITH 4.0.10 / RUBY VERSION
+        # 4.0.3 are advisory — bundler falls back to its installed version.
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Privacy-grep guard
+        run: |
+          if [ -f ios/ci_scripts/privacy_grep.sh ]; then
+            bash ios/ci_scripts/privacy_grep.sh
+          else
+            echo "privacy_grep.sh not present on this ref — skipping"
+          fi
+
+      - name: Verify Release entitlements declare production App Attest
+        # Replicates the ci_post_clone.sh M-H-2 gate. Only fails if the file
+        # exists but is wrong — main hasn't adopted FoundationMobile-Release
+        # .entitlements yet (it lives on claude/face-matching-design-on-tf2).
+        # When absent, the archive uses the default entitlements; gate
+        # auto-engages once the project wires Release → Release.entitlements.
+        run: |
+          REL_ENT=ios/FoundationMobile/FoundationMobile-Release.entitlements
+          if [ ! -f "$REL_ENT" ]; then
+            echo "::warning::Release entitlements file absent — guard skipped. Archive will use default entitlements."
+            exit 0
+          fi
+          if ! grep -q '<string>production</string>' "$REL_ENT"; then
+            echo "::error::Release entitlements does not declare appattest-environment=production"
+            exit 1
+          fi
+          echo "Release entitlements verified at appattest-environment=production"
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-macos15-${{ hashFiles('ios/Podfile.lock') }}
+
+      - name: pod install
+        working-directory: ios
+        run: bundle exec pod install
+
+      - name: Cache Cargo registry + git
+        if: hashFiles('mopro-smoke/**') != ''
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-${{ runner.os }}-${{ hashFiles('mopro-smoke/**/Cargo.lock') }}
+
+      - name: Cache MoproSmoke.xcframework
+        if: hashFiles('mopro-smoke/**') != ''
+        id: cache-xcframework
+        uses: actions/cache@v4
+        with:
+          path: mopro-smoke/MoproSmoke.xcframework
+          key: xcframework-${{ runner.os }}-${{ hashFiles('mopro-smoke/Cargo.lock', 'mopro-smoke/build-xcframework.sh', 'mopro-smoke/src/**') }}
+
+      - name: Install Rust toolchain
+        if: hashFiles('mopro-smoke/**') != '' && steps.cache-xcframework.outputs.cache-hit != 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+
+      - name: Build MoproSmoke.xcframework
+        if: hashFiles('mopro-smoke/**') != '' && steps.cache-xcframework.outputs.cache-hit != 'true'
+        working-directory: mopro-smoke
+        run: ./build-xcframework.sh
+
+      - name: Import code-signing certificate
+        env:
+          CERT_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -e
+          CERT_PATH="$RUNNER_TEMP/dist.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          echo "$CERT_BASE64" | base64 --decode > "$CERT_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+      - name: Install provisioning profile
+        env:
+          PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -e
+          PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILE_DIR"
+          PROFILE_PATH="$PROFILE_DIR/dist.mobileprovision"
+          echo "$PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
+
+      - name: Install fastlane
+        # fastlane is not preinstalled on macos-15 (correction from prior
+        # assumption) and not in the root Gemfile. Install standalone here.
+        # Follow-up: add `gem 'fastlane'` to Gemfile + regenerate Gemfile.lock
+        # for hermetic version pinning.
+        run: gem install --no-document fastlane
+
+      - name: fastlane beta (archive + upload to TestFlight)
+        working-directory: ios
+        env:
+          FOUNDATION_PROFILE: ${{ env.FOUNDATION_PROFILE }}
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_CONTENT }}
+          FASTLANE_SKIP_UPDATE_CHECK: '1'
+          FASTLANE_HIDE_CHANGELOG: '1'
+        run: fastlane beta
+
+      - name: Upload xcarchive as artifact
+        # Keep the archive around for 7 days so a failed upload can be
+        # re-tried without paying for another build.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FoundationMobile-xcarchive
+          path: ios/build/FoundationMobile.xcarchive
+          retention-days: 7
+          if-no-files-found: ignore
