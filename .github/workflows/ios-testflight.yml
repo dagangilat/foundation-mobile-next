@@ -199,6 +199,15 @@ jobs:
           FASTLANE_HIDE_CHANGELOG: '1'
         run: fastlane beta
 
+      - name: Upload gym build log (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gym-build-log
+          path: ~/Library/Logs/gym/FoundationMobile-FoundationMobile.log
+          retention-days: 7
+          if-no-files-found: ignore
+
       - name: Upload xcarchive as artifact
         # Keep the archive around for 7 days so a failed upload can be
         # re-tried without paying for another build.

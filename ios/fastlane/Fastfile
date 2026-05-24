@@ -106,7 +106,8 @@ platform :ios do
         provisioningProfiles: {
           "com.foundationglobal.mobile" => "Foundation_AppStore",
         },
-      }
+      },
+      xcodebuild_formatter: ""
     )
     upload_to_testflight(
       api_key: asc_api_key,
