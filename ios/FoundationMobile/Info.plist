@@ -26,11 +26,18 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UILaunchScreen</key>
-	<dict>
-		<key>UIColorName</key>
-		<string>LaunchBackground</string>
-	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Foundation uses the front camera on-device only to verify you're a live human. No images leave your phone — only an anonymous hash of the liveness result is signed and stored.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Foundation uses Face ID so only you can authorize identity-verification sessions and sign actions on this device. Face ID never leaves the Secure Enclave.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Foundation reads your ePassport chip to verify your identity. The chip contents never leave this device — only a cryptographic hash is signed and stored.</string>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>A0000002471001</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>

@@ -13,7 +13,7 @@ enum Theme {
     static var pillBg: Color { brandGreen.opacity(0.12) }
 
     static let ringLabels: [Int: String] = [
-        0: "Ring 0 — Operator",
+        0: "Ring 0 — Founder",
         1: "Ring 1 — Admin",
         2: "Ring 2 — Steward",
         3: "Ring 3 — Contributor",

@@ -1,54 +1,6 @@
 import Foundation
 import FirebaseAuth
-import FirebaseFunctions
-
-// Maps raw Firebase Auth + Functions errors to user-facing copy. Firebase's
-// localizedDescription is often cryptic ("The action code is invalid. This
-// can happen if the code is malformed, expired, or has already been used.")
-// — the friendlier strings here pair a plain explanation with a concrete
-// next step the user can take. Unknown errors fall back to a generic message
-// rather than leaking SDK internals.
-enum AuthCopy {
-    static func friendly(_ error: Error) -> String {
-        let ns = error as NSError
-
-        if ns.domain == AuthErrorDomain,
-           let code = AuthErrorCode(rawValue: ns.code) {
-            switch code {
-            case .invalidActionCode, .expiredActionCode:
-                return "This sign-in link expired or was already used. Request a new one below."
-            case .invalidEmail:
-                return "That doesn't look like a valid email address."
-            case .userDisabled:
-                return "This account has been disabled. Please contact a Foundation admin."
-            case .networkError:
-                return "No connection. Check your network and try again."
-            case .tooManyRequests:
-                return "Too many attempts — please wait a minute and try again."
-            default:
-                break
-            }
-        }
-
-        if ns.domain == FunctionsErrorDomain,
-           let code = FunctionsErrorCode(rawValue: ns.code) {
-            switch code {
-            case .resourceExhausted:
-                return "Too many sign-in requests for this email. Please wait a few minutes."
-            case .invalidArgument:
-                return "That doesn't look like a valid email address."
-            case .unavailable, .deadlineExceeded:
-                return "Service unavailable. Check your connection and try again."
-            case .internal:
-                return "Something went wrong on our side. Please try again."
-            default:
-                break
-            }
-        }
-
-        return "Couldn't complete that action. Please try again."
-    }
-}
+import WebKit
 
 struct Claims: Equatable, Sendable {
     let uid: String
@@ -70,18 +22,6 @@ final class AuthService: ObservableObject {
     }
 
     @Published private(set) var state: State = .loading
-
-    // True while a Universal Link is being consumed end-to-end. RootView reads
-    // this to show LoadingView("Signing you in…") instead of SignInView while
-    // the network round-trip completes, so the user doesn't see the form flash
-    // up between the tap and the HomeView transition.
-    @Published private(set) var isCompletingSignIn: Bool = false
-
-    // Last deep-link failure message, if any. SignInView surfaces this as an
-    // error card so users whose link opened on a fresh install / expired link /
-    // was reused aren't left staring at an empty form. Cleared when the user
-    // edits the email field or successfully re-sends.
-    @Published var deepLinkError: String? = nil
 
     private var handle: AuthStateDidChangeListenerHandle?
 
@@ -118,70 +58,166 @@ final class AuthService: ObservableObject {
         }
     }
 
-    // MARK: - Email-link sign in
+    // MARK: - OTP sign-in (iOS sign-in path — sole surviving entry point)
+    //
+    // History: the email-link path (sendSignInLink + completeSignIn,
+    // routing through Firebase Auth's `signIn(withEmail:link:)` and
+    // Universal Links from `foundation-global.com/__/auth/links*`) was
+    // retired 2026-04-28 because Gmail iOS opens tapped links inside
+    // its own in-app browser, which bypasses iOS Universal Links
+    // entirely and stranded users on a "Validating…" screen forever.
+    // The web continues using email-link — Universal Links don't apply
+    // to web, so the issue doesn't reproduce there.
+    //
+    // See foundation-global/docs/architecture_app-check-review-2026-04-28.md
+    // section 4 for the full reasoning.
 
-    // Routes through the `resendInviteLink` callable in foundation-global so
-    // users get the Foundation-branded Resend email instead of Firebase Auth's
-    // unbranded default. The callable also enforces rate limiting + invite
-    // gating server-side — properties the client SDK's sendSignInLinkToEmail
-    // does not have. Anti-enumeration: the callable returns `sent: false`
-    // (not an error) for emails without access, so we surface the same
-    // "check your inbox" UI either way. `pendingEmail` still gets stashed in
-    // Keychain either way — if the email really has no access, there's no
-    // link to consume later, so the stashed value just ages out harmlessly.
-    func sendSignInLink(email: String) async throws {
-        _ = try await FunctionsService.shared.resendInviteLink(email: email)
-        Keychain.setPendingEmail(email)
+    // Why this exists: the email-link path above relies on Universal
+    // Links to land the tapped email link back inside Foundation Mobile.
+    // Gmail iOS opens links in its own in-app browser, which bypasses
+    // Universal Links entirely and strands the user on a "Validating…"
+    // screen forever. The OTP path is decoupled from email-client
+    // behavior — user reads a 6-digit code from the email, types it
+    // here, server exchanges it for a Firebase custom token, we sign
+    // in directly. See `requestSignInCode` / `verifySignInCode` in
+    // foundation-global/functions/index.js for the threat model.
+
+    enum RequestCodeOutcome: Sendable {
+        case sent
+        case noAccess  // email has no active invite + no existing account
     }
 
-    enum CompleteResult: Sendable {
-        case signedIn
-        case noPendingEmail
-        case notASignInLink
+    /// Ask the server to email a 6-digit sign-in code. Anti-enumeration
+    /// returns `.noAccess` (not an error) for emails without access, so
+    /// the UI surfaces the same "check your inbox" affordance either way.
+    func requestSignInCode(email: String) async throws -> RequestCodeOutcome {
+        let result = try await FunctionsService.shared.requestSignInCode(email: email)
+        return result.sent ? .sent : .noAccess
     }
 
-    // Entry point for Universal Links (FoundationMobileApp .onOpenURL). Wraps
-    // completeSignIn with the published UI state — sets isCompletingSignIn
-    // while the network call runs, and writes a user-visible deepLinkError on
-    // any failure mode so SignInView can surface it. Non-sign-in URLs are
-    // ignored silently (iOS routes unrelated deep links here too).
-    func handleDeepLink(url: URL) async {
-        guard Auth.auth().isSignIn(withEmailLink: url.absoluteString) else { return }
-        isCompletingSignIn = true
-        deepLinkError = nil
-        defer { isCompletingSignIn = false }
-        do {
-            let result = try await completeSignIn(url: url)
-            switch result {
-            case .signedIn, .notASignInLink:
-                break
-            case .noPendingEmail:
-                // The pendingEmail was stashed in Keychain on the device that
-                // requested the link. If the link opened on a different device
-                // or after a fresh install, we have no email to complete with.
-                deepLinkError = "This link was sent from another device or install. Request a new link here to sign in on this device."
+    /// Verify a 6-digit code and sign the user in. On success, Firebase
+    /// fires onAuthStateChanged → AuthService.state flips to .signedIn,
+    /// RootView swaps SignInView away. Any thrown error from the server
+    /// (wrong code, expired, attempts exhausted) is surfaced verbatim
+    /// to the caller so the UI can render the server-provided copy.
+    func verifyCodeAndSignIn(email: String, code: String) async throws {
+        let result = try await FunctionsService.shared.verifySignInCode(email: email, code: code)
+        // Whatever ID-token cache lived from a prior session is stale.
+        // Force the next mutating callable to refresh — same pattern as
+        // signOut → invalidateIDTokenCache.
+        await FunctionsService.shared.invalidateIDTokenCache()
+        _ = try await Auth.auth().signIn(withCustomToken: result.customToken)
+    }
+
+    /// Retry the release CF up to `maxAttempts` times with exponential
+    /// backoff. The release is the explicit signal half of the
+    /// "lease + state machine + observable signal" pairing model — if
+    /// it succeeds, the desktop disconnects in <1s via the snapshot
+    /// listener. If it fails entirely, the lease layer (heartbeat
+    /// stops → server stales after grace window) is the fallback.
+    /// Idempotent server-side: the same sessionId → same outcome on
+    /// every attempt.
+    private static func releaseWithRetry(sessionId: String, maxAttempts: Int = 3) async {
+        // 2026-04-26 security review M-H-6: pair-release retry logs go
+        // through #if DEBUG. They include sessionId + error.localizedDescription
+        // (server error strings can leak internals); fine for Xcode console
+        // debugging but unified-log readable via Console.app in release.
+        let backoffsMs: [Int] = [200, 500, 1500]
+        for attempt in 1...maxAttempts {
+            do {
+                _ = try await FunctionsService.shared.releasePairingSession(sessionId: sessionId)
+                #if DEBUG
+                print("[AuthService.signOut] release ok (attempt \(attempt))")
+                #endif
+                return
+            } catch {
+                #if DEBUG
+                print("[AuthService.signOut] release attempt \(attempt)/\(maxAttempts) failed: \(error)")
+                #endif
+                if attempt < maxAttempts {
+                    try? await Task.sleep(for: .milliseconds(backoffsMs[attempt - 1]))
+                }
             }
-        } catch {
-            // Most common: invalid-action-code (link expired >6h or already
-            // redeemed).
-            deepLinkError = AuthCopy.friendly(error)
         }
+        #if DEBUG
+        print("[AuthService.signOut] release failed all \(maxAttempts) attempts; falling back to heartbeat-stale path")
+        #endif
     }
 
-    @discardableResult
-    func completeSignIn(url: URL) async throws -> CompleteResult {
-        guard Auth.auth().isSignIn(withEmailLink: url.absoluteString) else {
-            return .notASignInLink
+    @MainActor
+    func signOut() async throws {
+        // Fire any active pair release BEFORE clearing Firebase auth.
+        // Otherwise the callable goes out with no auth header and the
+        // server rejects (requireAuth fails), the user's paired desktop
+        // never gets the disconnect signal, and the desktop has to wait
+        // for the heartbeat-stale path. With this order the desktop
+        // sees the disconnect within seconds. Best-effort — if the
+        // network is down or the server rejects, we still proceed with
+        // sign-out.
+        //
+        // Logs land in Xcode console under [AuthService.signOut] so we
+        // can verify in real time whether the release call fired,
+        // succeeded, or threw. Without these the failure is invisible
+        // and a 30-150s desktop disconnect looks like a code bug.
+        let pairingState = PairingCoordinator.shared.state
+        if case .paired(let sessionId) = pairingState {
+            await Self.releaseWithRetry(sessionId: sessionId)
+        } else {
+            #if DEBUG
+            print("[AuthService.signOut] no active pair to release (state=\(pairingState))")
+            #endif
         }
-        guard let email = Keychain.getPendingEmail() else {
-            return .noPendingEmail
-        }
-        _ = try await Auth.auth().signIn(withEmail: email, link: url.absoluteString)
-        Keychain.clearPendingEmail()
-        return .signedIn
-    }
-
-    func signOut() throws {
+        // Clear local pairing state regardless of release outcome.
+        PairingCoordinator.shared.suspendOnLifecycleEvent()
         try Auth.auth().signOut()
+        AttestationCoordinator.shared.reset()
+        SupportSessionTracker.shared.reset()
+        // Clear the persisted "user has tapped Connect to Foundation"
+        // affirmation. Without this, a different user signing in on
+        // the same device would auto-jump into WebHomeView with the
+        // previous user's affirmation baked in. The next signed-in
+        // user re-affirms via the Connect CTA.
+        UserDefaults.standard.removeObject(forKey: "foundationHasConnected")
+        // P0-2: invalidate FunctionsService's ID-token freshness window
+        // so the very first mutating callable after the next email-link
+        // sign-in is guaranteed to force-refresh the ID token. Without
+        // this, the sign-out → sign-in → tap-Connect happy path can
+        // still hit a stale cached token from the SDK's session 1
+        // because the 5-min staleness window hasn't expired.
+        await FunctionsService.shared.invalidateIDTokenCache()
+
+        // 2026-04-26 security review M-H-5: WKWebsiteDataStore.default()
+        // is shared across users on the same device. Without this clear,
+        // the next user signing in on the same device sees the prior
+        // user's cookies + localStorage on yc.foundation-global.com.
+        // Best-effort — fire-and-forget; the sign-out itself completes
+        // regardless of whether WebKit finishes wiping data.
+        let allTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+        WKWebsiteDataStore.default().removeData(
+            ofTypes: allTypes,
+            modifiedSince: .distantPast,
+            completionHandler: {}
+        )
+    }
+
+    // Age of the current Firebase ID token's `auth_time` claim. This is
+    // when the user actually authenticated (email-link sign-in), not when
+    // the token was last refreshed — so a 7-day-old session reports a
+    // 7-day-old auth time even after silent token refreshes.
+    //
+    // PairingCoordinator gates claim/release on this being fresh enough
+    // (see PAIRING_AUTH_FRESHNESS_MS): a stolen-but-still-signed-in phone
+    // can't kick the legitimate desktop offline without the user
+    // re-authenticating, because email-link auth requires inbox access.
+    func currentAuthAgeMs() async -> Int64? {
+        guard let user = Auth.auth().currentUser else { return nil }
+        do {
+            let token = try await user.getIDTokenResult(forcingRefresh: false)
+            // IDTokenResult.authDate is non-optional Date — fall back
+            // through the catch only if the token itself can't be read.
+            return Int64(Date().timeIntervalSince(token.authDate) * 1000)
+        } catch {
+            return nil
+        }
     }
 }
