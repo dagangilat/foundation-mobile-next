@@ -83,7 +83,7 @@ struct SignInView: View {
                 .cornerRadius(8)
                 .foregroundStyle(.white)
                 .disabled(status == .sending || status == .sent)
-                .onChange(of: email) { _, _ in
+                .onChange(of: email) { _ in
                     if auth.deepLinkError != nil { auth.deepLinkError = nil }
                 }
 
