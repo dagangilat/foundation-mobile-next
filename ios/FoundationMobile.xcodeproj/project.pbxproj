@@ -48,7 +48,6 @@
 		B01E2B3C4D5E6F7A8B9C0D1E /* FaceMatchProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */; };
 		C0C0F9DE03F0A12B16EFBA0A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DC6490D5D01BDE8C366453 /* QRScannerView.swift */; };
 		CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */; };
-		CB2B44A02F9C480000000001 /* multiplier2_final.zkey in Resources */ = {isa = PBXBuildFile; fileRef = CB2B44A02F9C480000000002 /* multiplier2_final.zkey */; };
 		CF5CE0747DA47027EE13A3DA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		D3004DB63F1FC1FB03713F58 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3C48CBE0357E5145A601C5 /* HomeView.swift */; };
 		D3E6C2976FBC54C0F756AD37 /* SilentFaceMiniFASNetV1SE.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 96BC2836F465D61E7AEC7F7F /* SilentFaceMiniFASNetV1SE.mlpackage */; };
@@ -128,7 +127,6 @@
 		BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SupportSheet.swift; path = FoundationMobile/SupportSheet.swift; sourceTree = "<group>"; };
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
 		CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "FoundationMobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		CB2B44A02F9C480000000002 /* multiplier2_final.zkey */ = {isa = PBXFileReference; lastKnownFileType = file; name = multiplier2_final.zkey; path = FoundationMobile/Resources/circuits/multiplier2_final.zkey; sourceTree = "<group>"; };
 		CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentPhotoView.swift; path = FoundationMobile/DocumentPhotoView.swift; sourceTree = "<group>"; };
 		DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoadingView.swift; path = FoundationMobile/LoadingView.swift; sourceTree = "<group>"; };
 		DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FoundationMobileApp.swift; path = FoundationMobile/FoundationMobileApp.swift; sourceTree = "<group>"; };
@@ -158,7 +156,6 @@
 			isa = PBXGroup;
 			children = (
 				CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */,
-				CB2B44A02F9C480000000002 /* multiplier2_final.zkey */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -330,7 +327,6 @@
 				CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				CF5CE0747DA47027EE13A3DA /* PrivacyInfo.xcprivacy in Resources */,
-				CB2B44A02F9C480000000001 /* multiplier2_final.zkey in Resources */,
 				9552FC4EC18D904838A878DB /* SilentFaceMiniFASNetV2.mlpackage in Resources */,
 				D3E6C2976FBC54C0F756AD37 /* SilentFaceMiniFASNetV1SE.mlpackage in Resources */,
 				2171B4F30FFE85A02B5ADE02 /* MobileFaceNet.mlpackage in Resources */,
