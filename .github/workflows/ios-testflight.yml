@@ -181,12 +181,12 @@ jobs:
           PROFILE_PATH="$PROFILE_DIR/dist.mobileprovision"
           echo "$PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
 
-      - name: Install fastlane
-        # fastlane is not preinstalled on macos-15 (correction from prior
-        # assumption) and not in the root Gemfile. Install standalone here.
-        # Follow-up: add `gem 'fastlane'` to Gemfile + regenerate Gemfile.lock
-        # for hermetic version pinning.
-        run: gem install --no-document fastlane
+      - name: Install fastlane + xcbeautify
+        # fastlane is not preinstalled on macos-15 and not in the root Gemfile.
+        # xcbeautify formats xcodebuild output to human-readable progress lines.
+        run: |
+          gem install --no-document fastlane
+          brew install xcbeautify
 
       - name: fastlane beta (archive + upload to TestFlight)
         working-directory: ios
