@@ -482,8 +482,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "-DCOCOAPODS -DMOPRO_LINKED";
-				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS -DMOPRO_LINKED";
+				OTHER_SWIFT_FLAGS = "-DCOCOAPODS";
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile;
 				PRODUCT_NAME = FoundationMobile;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -515,8 +515,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "-DCOCOAPODS -DMOPRO_LINKED";
-				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS -DMOPRO_LINKED";
+				OTHER_SWIFT_FLAGS = "-DCOCOAPODS";
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile;
 				PRODUCT_NAME = FoundationMobile;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
