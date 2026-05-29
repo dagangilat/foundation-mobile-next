@@ -87,6 +87,22 @@ jobs:
           restore-keys: |
             pods-macos15-
 
+      - name: Inject GoogleService-Info.plist
+        # The plist is gitignored (contains live Firebase API key).
+        # Add GOOGLE_SERVICE_INFO_PLIST_B64 as a GitHub Actions secret:
+        #   base64 -i ios/FoundationMobile/GoogleService-Info.plist | pbcopy
+        # then paste in Settings → Secrets → Actions.
+        env:
+          GOOGLE_SERVICE_INFO_PLIST_B64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_B64 }}
+        run: |
+          if [ -n "$GOOGLE_SERVICE_INFO_PLIST_B64" ]; then
+            echo "$GOOGLE_SERVICE_INFO_PLIST_B64" | base64 -d \
+              > ios/FoundationMobile/GoogleService-Info.plist
+            echo "GoogleService-Info.plist injected from secret."
+          else
+            echo "⚠️  GOOGLE_SERVICE_INFO_PLIST_B64 secret not set — using committed file if present."
+          fi
+
       - name: pod install
         working-directory: ios
         run: bundle exec pod install

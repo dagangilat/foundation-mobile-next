@@ -1,3 +1,6 @@
+# Firebase — contains live API key; injected by CI from secret
+ios/FoundationMobile/GoogleService-Info.plist
+
 # OSX
 #
 .DS_Store
