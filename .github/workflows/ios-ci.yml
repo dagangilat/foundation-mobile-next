@@ -1,29 +1,12 @@
 name: iOS CI
 
-# Fast PR-validation pipeline. No signing, no archive, no upload.
-# Mirrors what ci_post_clone.sh does on Xcode Cloud (pod install +
-# privacy_grep + Rust + xcframework), then builds for the simulator.
-#
-# Cost note: GitHub Actions macOS minutes count 10x against the free
-# allotment. ~200 effective min/mo on private repos. Caches below
-# trim the Rust + Pods steps so repeat runs land at ~5-8 min.
+# Disabled — build and distribute manually via Xcode → Archive → ASC → TestFlight.
+# Re-enable the `on:` triggers below when automated CI is needed again.
+# The plist injection step (GOOGLE_SERVICE_INFO_PLIST_B64 secret) is already
+# wired; SPM replaces the old pod install step.
 
 on:
-  pull_request:
-    paths:
-      - 'ios/**'
-      - 'mopro-smoke/**'
-      - '.github/workflows/ios-ci.yml'
-  push:
-    branches:
-      - main
-      - 'claude/**'
-      - 'work/**'
-    paths:
-      - 'ios/**'
-      - 'mopro-smoke/**'
-      - '.github/workflows/ios-ci.yml'
-  workflow_dispatch:
+  workflow_dispatch:  # manual trigger only
 
 concurrency:
   group: ios-ci-${{ github.ref }}
