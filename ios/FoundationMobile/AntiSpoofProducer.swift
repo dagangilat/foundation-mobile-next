@@ -41,6 +41,7 @@ struct AntiSpoofProducer: ProofProducer {
         case modelNotBundled(String)
         case decodeFailed
         case inferenceFailed(String)
+        case rejected(Float)
 
         var errorDescription: String? {
             switch self {
@@ -48,6 +49,7 @@ struct AntiSpoofProducer: ProofProducer {
             case .modelNotBundled(let n): return "Anti-spoof model not bundled: \(n)"
             case .decodeFailed: return "Anti-spoof failed to decode a selfie frame."
             case .inferenceFailed(let m): return "Anti-spoof inference failed: \(m)"
+            case .rejected(let s): return "Anti-spoof check failed (score \(String(format: "%.2f", s))). Please retry in good lighting."
             }
         }
     }
@@ -77,6 +79,7 @@ struct AntiSpoofProducer: ProofProducer {
         }
         let score: Float = perFrameRealProb.reduce(0, +) / Float(perFrameRealProb.count)
         let accepted = score >= threshold
+        guard accepted else { throw Failure.rejected(score) }
 
         let payload = Self.canonicalPayload(
             accepted: accepted,

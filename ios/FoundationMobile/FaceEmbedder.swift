@@ -42,6 +42,7 @@ enum FaceEmbedderError: Error, LocalizedError {
     case imageRenderFailed
     case modelLoadFailed(String)
     case modelInferenceFailed(String)
+    case faceMatchRejected(Float)
 
     var errorDescription: String? {
         switch self {
@@ -51,6 +52,8 @@ enum FaceEmbedderError: Error, LocalizedError {
             return "Face-embedder model load failed: \(m)"
         case .modelInferenceFailed(let m):
             return "Face-embedder inference failed: \(m)"
+        case .faceMatchRejected(let d):
+            return "Face match failed (distance \(String(format: "%.2f", d))). Ensure the camera image matches your passport photo."
         }
     }
 }

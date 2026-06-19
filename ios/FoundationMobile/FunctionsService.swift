@@ -230,7 +230,7 @@ actor FunctionsService {
            now.timeIntervalSince(last) < Self.idTokenStaleWindow {
             return
         }
-        guard let user = await MainActor.run(body: { Auth.auth().currentUser }) else {
+        guard let user = await MainActor.run(body: { Auth.auth(app: DeploymentService.shared.currentFirebaseApp).currentUser }) else {
             // Not signed in — let the callable's own requireAuth path
             // produce the right "unauthenticated" error instead of
             // synthesising one here.

@@ -128,6 +128,9 @@ final class AuthService: ObservableObject {
         // signOut → invalidateIDTokenCache.
         await FunctionsService.shared.invalidateIDTokenCache()
         _ = try await currentAuth.signIn(withCustomToken: result.customToken)
+        // signIn(withCustomToken:) produces a fresh ID token; mark it so the
+        // first POH callable doesn't immediately force-refresh again.
+        await FunctionsService.shared.markIDTokenJustRefreshed()
     }
 
     /// Retry the release CF up to `maxAttempts` times with exponential
@@ -193,6 +196,7 @@ final class AuthService: ObservableObject {
         try currentAuth.signOut()
         AttestationCoordinator.shared.reset()
         SupportSessionTracker.shared.reset()
+        BiometricConsentState.shared.clear()
         // Clear the persisted "user has tapped Connect to Foundation"
         // affirmation. Without this, a different user signing in on
         // the same device would auto-jump into WebHomeView with the

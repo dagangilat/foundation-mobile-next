@@ -261,6 +261,7 @@ struct HomeView: View {
     }
 
     private var humanityFriendlyIcon: String {
+        if humanityVerified { return "checkmark.seal.fill" }
         switch capture.state {
         case .sealed: return "checkmark.seal.fill"
         case .failed: return "exclamationmark.triangle.fill"

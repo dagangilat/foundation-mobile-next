@@ -78,6 +78,7 @@ struct FaceMatchProducer: ProofProducer {
 
         let distance = type(of: embedder).cosineDistance(refEmbedding, selfieEmbedding)
         let accepted = distance <= threshold
+        guard accepted else { throw FaceEmbedderError.faceMatchRejected(distance) }
 
         let selfieHash = Data(SHA256.hash(data: selfieJpeg))
         let payload = Self.canonicalPayload(

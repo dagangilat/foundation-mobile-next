@@ -299,13 +299,15 @@ final class CaptureCoordinator: ObservableObject {
     // MRZScanView hands back a parsed MRZ key. Transitions through
     // .scanningPassport → .passportReady(...) → (user taps Verify).
     func scanPassport(mrzKey: MRZKey) {
-        // Accept from either state — user may have just finished the pose
-        // loop (.readyForPassport) or is retrying after a scan failure
-        // (.failed, where lastFramesCount still carries the right count).
+        // Accept from readyForPassport (fresh NFC scan) or failed at the
+        // passport/verify stage (retry). Reject failures from earlier stages
+        // (e.g. poseCapture) where lastFramesCount may be 0, which would
+        // produce a passportReady(framesCount:0) that silently blocks verify().
         let frames: Int
         switch state {
         case .readyForPassport(let n): frames = n
-        case .failed: frames = lastFramesCount
+        case .failed(let stage, _) where stage == .passportScan || stage == .verify:
+            frames = lastFramesCount
         default: return
         }
 
@@ -510,7 +512,7 @@ final class CaptureCoordinator: ObservableObject {
                 // matching uids the seal-mismatch gate rejects on submit
                 // (and for legitimate sessions the uid is always present
                 // because submitAnchor itself requires Firebase Auth).
-                guard let uid = Auth.auth().currentUser?.uid else {
+                guard let uid = Auth.auth(app: DeploymentService.shared.currentFirebaseApp).currentUser?.uid else {
                     self.state = .failed(stage: .verify, message: "not signed in")
                     return
                 }
