@@ -64,7 +64,7 @@ struct LoadingView: View {
                 .font(.system(size: 24, weight: .semibold))
                 .foregroundStyle(Theme.brandGreen)
             HStack(spacing: 0) {
-                Text("Found").foregroundStyle(.white)
+                Text("Found").foregroundStyle(Theme.text)
                 Text("ation").foregroundStyle(Theme.brandGreen)
             }
             .font(.system(size: 22, weight: .bold))

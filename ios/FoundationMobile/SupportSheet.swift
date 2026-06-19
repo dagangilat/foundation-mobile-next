@@ -119,12 +119,12 @@ struct SupportSheet: View {
                 send()
             } label: {
                 HStack(spacing: 10) {
-                    if isSending { ProgressView().controlSize(.small).tint(.black) }
+                    if isSending { ProgressView().controlSize(.small).tint(Theme.onAccent) }
                     Image(systemName: buttonIcon(isSent: isSent, atLimit: atLimit))
                     Text(buttonLabel(isSending: isSending, isSent: isSent, atLimit: atLimit))
                 }
                 .font(.headline)
-                .foregroundStyle(.black)
+                .foregroundStyle(Theme.onAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(atLimit ? Theme.muted : Theme.brandGreen)
@@ -174,7 +174,7 @@ struct SupportSheet: View {
                 HStack {
                     Text(ticketId)
                         .font(.callout.monospaced())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.text)
                         .lineLimit(1)
                         .truncationMode(.middle)
                     Spacer()
@@ -375,7 +375,7 @@ struct SupportSheet: View {
                 .frame(width: 90, alignment: .leading)
             Text(value)
                 .font(.caption.monospaced())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
         }

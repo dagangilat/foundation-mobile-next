@@ -159,7 +159,7 @@ struct WebHomeView: View {
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Theme.brandGreen)
                 HStack(spacing: 0) {
-                    Text("Found").foregroundStyle(.white)
+                    Text("Found").foregroundStyle(Theme.text)
                     Text("ation").foregroundStyle(Theme.brandGreen)
                 }
                 .font(.system(size: 16, weight: .bold))

@@ -34,7 +34,7 @@ struct SignInView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Sign in")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Text(headlineCopy)
                     .foregroundStyle(Theme.muted)
 
@@ -62,7 +62,7 @@ struct SignInView: View {
                     .font(.system(size: 24, weight: .semibold))
                     .foregroundStyle(Theme.brandGreen)
                 HStack(spacing: 0) {
-                    Text("Found").foregroundStyle(.white)
+                    Text("Found").foregroundStyle(Theme.text)
                     Text("ation").foregroundStyle(Theme.brandGreen)
                 }
                 .font(.system(size: 22, weight: .bold))
@@ -128,7 +128,7 @@ struct SignInView: View {
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled(true)
                 .focused($emailFieldFocused)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .disabled(emailLocked)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -179,7 +179,7 @@ struct SignInView: View {
                 .textContentType(.oneTimeCode)
                 .focused($codeFieldFocused)
                 .font(.system(size: 22, weight: .semibold, design: .monospaced))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .disabled(phase == .verifying)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .onChange(of: code) { newValue in

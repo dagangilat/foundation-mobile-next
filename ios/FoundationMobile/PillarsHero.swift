@@ -19,16 +19,42 @@ import SwiftUI
 
 struct PillarsHero: View {
     var body: some View {
+        // A white-label profile (e.g. mDL-NYC-MoMA) can replace the
+        // composed three-pillar wordmark with a single bundled hero image
+        // by setting theme.branding.hero.mode = "image" in its profile JSON.
+        // Falls through to the built-in pillars otherwise.
+        if let hero = AppConfig.shared.theme?.branding?.hero,
+           hero.mode == "image",
+           let assetName = Theme.palette.isDark ? (hero.darkAsset ?? hero.asset) : hero.asset {
+            brandedHero(assetName)
+        } else {
+            pillars
+        }
+    }
+
+    private var pillars: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Your")
                 .font(.system(size: 48, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             pillar(asset: "PillarVoice", label: "Voice.", color: Theme.voice)
             pillar(asset: "PillarShare", label: "Share.", color: Theme.share)
             pillar(asset: "PillarMarket", label: "Market.", color: Theme.market)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Your Voice, Share, and Market")
+    }
+
+    // Bundled hero artwork, left-aligned and width-capped to sit in the same
+    // space the pillar wordmark occupies. Height is left intrinsic so a
+    // wordmark or full hero both lay out sensibly.
+    private func brandedHero(_ assetName: String) -> some View {
+        Image(assetName)
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: 280, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityLabel("Brand hero")
     }
 
     private func pillar(asset: String, label: String, color: Color) -> some View {

@@ -7,7 +7,7 @@ DST="${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/foundationmobile
 
 if [ ! -f "$SRC" ]; then
     echo "error: Foundation profile JSON not found: $SRC" >&2
-    echo "error: Valid profiles: hisec-global, standardsec, lowsec-attest" >&2
+    echo "error: Valid profiles: hisec-global, standardsec, lowsec-attest, mDL-NYC-MoMA" >&2
     exit 1
 fi
 

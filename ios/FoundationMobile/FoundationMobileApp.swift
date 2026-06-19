@@ -5,11 +5,19 @@ struct FoundationMobileApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var auth = AuthService.shared
 
+    init() {
+        // Install the palette named in the baked profile JSON before any
+        // view renders. Falls back to `midnight` if the profile omits `theme`.
+        Theme.apply(paletteNamed: AppConfig.shared.themePaletteName)
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(auth)
-                .preferredColorScheme(.dark)
+                // System chrome (keyboard, cursors, nav bar) follows the
+                // palette brightness; our own surfaces are explicitly colored.
+                .preferredColorScheme(Theme.palette.isDark ? .dark : .light)
                 // Universal Link no-op handler.
                 //
                 // The email-link sign-in path was retired on 2026-04-28

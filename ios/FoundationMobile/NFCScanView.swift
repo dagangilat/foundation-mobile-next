@@ -68,7 +68,7 @@ struct NFCScanView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Image(systemName: "iphone")
                     .font(.system(size: 38))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
             }
         case .passportReady:
             Image(systemName: "checkmark.seal.fill")
@@ -94,7 +94,7 @@ struct NFCScanView: View {
             VStack(spacing: 8) {
                 Text("Scan your passport")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Text("Two steps: first, point your camera at the passport photo page to read the MRZ. Then hold the passport against the top-back of your iPhone for the chip read.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
@@ -104,7 +104,7 @@ struct NFCScanView: View {
             VStack(spacing: 8) {
                 Text("Hold your passport")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Text("near the top of your iPhone, under the camera bump. Keep still until the chip read completes.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
@@ -114,7 +114,7 @@ struct NFCScanView: View {
             VStack(spacing: 8) {
                 Text("Passport scanned")
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Text("\(prettyCountry(result.issuingCountryCode)) passport \(result.passportNumberMasked). Tap verify to sign and seal the commitment.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
@@ -193,7 +193,7 @@ struct NFCScanView: View {
         Button(action: action) {
             Text(title)
                 .font(.headline)
-                .foregroundStyle(.black)
+                .foregroundStyle(Theme.onAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(Theme.brandGreen)

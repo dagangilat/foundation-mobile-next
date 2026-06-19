@@ -165,7 +165,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text(pose.prompt)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer()
@@ -177,7 +177,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text("\(n) frames captured — scan your passport next")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .scanningPassport:
@@ -185,7 +185,7 @@ struct CaptureView: View {
                 ProgressView().progressViewStyle(.circular).tint(Theme.brandGreen)
                 Text("Reading passport chip…")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .passportReady(_, let passport):
@@ -195,7 +195,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text("Passport scanned (\(passport.issuingCountryCode) \(passport.passportNumberMasked)) — ready to verify")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .readyForDocumentPhoto(let n):
@@ -205,7 +205,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text("\(n) frames captured — capture your document next")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .documentPhotoReady:
@@ -215,7 +215,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text("Document photo captured — ready to verify")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .readyForVerification(let n):
@@ -225,7 +225,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text("\(n) frames captured — ready to verify")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .verifying(let phase):
@@ -235,7 +235,7 @@ struct CaptureView: View {
                     .tint(Theme.brandGreen)
                 Text(phase == .signing ? "Signing with App Attest…" : "Sealing commitment…")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .sealed(let c):
@@ -245,7 +245,7 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text("Sealed — \(shortHash(c.commitmentHashHex))")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Spacer()
             }
         case .failed(_, let msg):
@@ -316,7 +316,7 @@ struct CaptureView: View {
         Button(action: action) {
             Text(title)
                 .font(.headline)
-                .foregroundStyle(.black)
+                .foregroundStyle(Theme.onAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
                 .background(Theme.brandGreen)
@@ -341,7 +341,7 @@ struct CaptureView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Camera access required")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             Text("Foundation needs the front camera to verify your humanity. Enable camera access in Settings.")
                 .font(.callout)
                 .foregroundStyle(Theme.muted)
@@ -352,7 +352,7 @@ struct CaptureView: View {
             } label: {
                 Text("Open Settings")
                     .font(.headline)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(Theme.onAccent)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(Theme.brandGreen)
@@ -365,7 +365,7 @@ struct CaptureView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Camera failed")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             Text(msg)
                 .font(.callout)
                 .foregroundStyle(Theme.muted)
@@ -376,7 +376,7 @@ struct CaptureView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Simulator")
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             Text("Phase 2 capture requires a real device: App Attest and the front camera aren't available in the simulator.")
                 .font(.callout)
                 .foregroundStyle(Theme.muted)

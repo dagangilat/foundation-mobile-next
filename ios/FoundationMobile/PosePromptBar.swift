@@ -23,7 +23,7 @@ struct PosePromptBar: View {
                     .foregroundStyle(Theme.brandGreen)
                 Text(pose.prompt)
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer()

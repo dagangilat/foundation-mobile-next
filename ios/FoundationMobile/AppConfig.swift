@@ -88,6 +88,49 @@ struct AppConfig: Decodable, Sendable {
         let cosineThreshold: Float
     }
 
+    // MRZ scan tunables. Optional so profiles that don't read a passport
+    // (standardsec uses documentPhoto; lowsec has no passport step) decode
+    // without the key. `scanBudgetSeconds` is a deliberate confirmation
+    // window: MRZScanView locks the first checksum-valid TD3 read as a
+    // candidate, keeps scanning for this many seconds (latest clean read
+    // wins), then commits — turning a single noisy OCR frame into a
+    // multi-frame confirmation and giving the user a visible scan window
+    // instead of an instant <1s dismissal.
+    struct MRZ: Decodable, Sendable {
+        let scanBudgetSeconds: Int
+    }
+    let mrz: MRZ?
+
+    var mrzScanBudgetSeconds: Int { mrz?.scanBudgetSeconds ?? 3 }
+
+    // Theming + branding, set per profile. Optional so existing profiles
+    // without the key decode and fall back to the midnight palette / built-in
+    // branding. `palette` names one of the ThemePalette presets
+    // (midnight | light | ocean | forest | sunset). `branding` lets a
+    // white-label profile (e.g. mDL-NYC-MoMA) swap the logo + hero assets.
+    struct ThemeConfig: Decodable, Sendable {
+        let palette: String?
+        let branding: Branding?
+
+        struct Branding: Decodable, Sendable {
+            let logo: Asset?
+            let hero: Hero?
+
+            struct Asset: Decodable, Sendable {
+                let asset: String       // imageset name in Images.xcassets
+                let darkAsset: String?  // optional variant for dark palettes
+            }
+            struct Hero: Decodable, Sendable {
+                let mode: String        // "pillars" (default) | "image"
+                let asset: String?
+                let darkAsset: String?
+            }
+        }
+    }
+    let theme: ThemeConfig?
+
+    var themePaletteName: String { theme?.palette ?? "midnight" }
+
     // Session-level controls. authFreshnessSeconds gates pair claim/release
     // (and any future "sensitive" mobile op) on a recent email-link sign-in:
     // the JWT auth_time claim must be within this window. Profile-tunable

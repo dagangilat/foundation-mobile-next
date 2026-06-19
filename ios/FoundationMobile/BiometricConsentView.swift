@@ -111,13 +111,13 @@ struct BiometricConsentView: View {
                 Task { await submit() }
             } label: {
                 HStack {
-                    if submitting { ProgressView().tint(.black) }
+                    if submitting { ProgressView().tint(Theme.onAccent) }
                     Text(submitting ? "Recording consent…" : "Continue")
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .foregroundStyle(.black)
+                .foregroundStyle(Theme.onAccent)
                 .background(canSubmit ? Color.green : Color.gray.opacity(0.4))
                 .cornerRadius(12)
             }

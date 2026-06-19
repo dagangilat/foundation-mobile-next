@@ -275,6 +275,7 @@
 			buildPhases = (
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
+				0A1B2C3D4E5F60718293A4B5 /* Select launch logo */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				CB1D44AC2F9B36A4006DE63D /* Embed Frameworks */,
 				061B1DC0B5E5505152428502 /* Select Foundation profile JSON */,
@@ -350,6 +351,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0A1B2C3D4E5F60718293A4B5 /* Select launch logo */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Select launch logo";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/scripts/select-launch-logo.sh\"";
+		};
 		061B1DC0B5E5505152428502 /* Select Foundation profile JSON */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;

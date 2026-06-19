@@ -57,7 +57,7 @@ struct DocumentPhotoView: View {
                     } label: {
                         Text("Capture now")
                             .font(.headline)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(Theme.onAccent)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
                             .background(Theme.brandGreen)

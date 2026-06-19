@@ -1,11 +1,11 @@
 {
   "schemaVersion": 4,
   "profile": {
-    "id": "hisec-global",
-    "label": "High Security — Global",
-    "description": "Full credentialed identity. Requires App Attest + ePassport NFC + active liveness + anti-spoof + face match against the on-chip DG2 photo. Suitable for global civic identity and financial-grade identity claims.",
-    "requiredPhases": ["appAttest", "nfcZk", "liveness", "antiSpoof", "faceMatch"],
-    "faceMatchSource": "dg2"
+    "id": "mDL-NYC-MoMA",
+    "label": "MoMA Member — NYC mDL",
+    "description": "White-label MoMA membership identity for NYC. Intended to verify a New York State mobile driver's license (ISO 18013-5 mDL); until the mDL producer ships, this profile runs the document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Light palette with MoMA logo + hero branding.",
+    "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],
+    "faceMatchSource": "documentPhoto"
   },
   "splash": {
     "minDurationMs": 900
@@ -30,12 +30,6 @@
   "camera": {
     "frameTimeoutSeconds": 3
   },
-  "mrz": {
-    "scanBudgetSeconds": 3
-  },
-  "theme": {
-    "palette": "midnight"
-  },
   "captureView": {
     "postSealDismissMs": 900
   },
@@ -44,10 +38,24 @@
     "modelTag": "MiniFASNetV2+V1SE"
   },
   "faceMatch": {
-    "cosineThreshold": 0.45
+    "cosineThreshold": 0.55
+  },
+  "theme": {
+    "palette": "light",
+    "branding": {
+      "logo": {
+        "asset": "MoMALogo",
+        "darkAsset": "MoMALogoDark"
+      },
+      "hero": {
+        "mode": "image",
+        "asset": "MoMAHero",
+        "darkAsset": "MoMAHeroDark"
+      }
+    }
   },
   "session": {
-    "authFreshnessSeconds": 300
+    "authFreshnessSeconds": 600
   },
   "support": {
     "maxPerSession": 3

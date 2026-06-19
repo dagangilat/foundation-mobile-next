@@ -153,7 +153,7 @@ struct HomeView: View {
                     .font(.system(size: 24, weight: .semibold))
                     .foregroundStyle(Theme.brandGreen)
                 HStack(spacing: 0) {
-                    Text("Found").foregroundStyle(.white)
+                    Text("Found").foregroundStyle(Theme.text)
                     Text("ation").foregroundStyle(Theme.brandGreen)
                 }
                 .font(.system(size: 22, weight: .bold))
@@ -204,7 +204,7 @@ struct HomeView: View {
                 .foregroundStyle(Theme.muted)
             Text(claims.email ?? claims.uid)
                 .font(.callout)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             if let ringText {
                 Text(ringText)
                     .font(.system(size: 16, weight: .semibold))
@@ -683,10 +683,10 @@ struct HomeView: View {
                         Text("Retry secure session")
                     }
                     .font(.headline)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(Theme.onAccent)
                     Text(msg)
                         .font(.caption2)
-                        .foregroundStyle(.black.opacity(0.75))
+                        .foregroundStyle(Theme.onAccent.opacity(0.75))
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
@@ -759,7 +759,7 @@ struct HomeView: View {
     private func primaryGreenButtonLabel(text: String) -> some View {
         Text(text)
             .font(.headline)
-            .foregroundStyle(.black)
+            .foregroundStyle(Theme.onAccent)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .background(Theme.brandGreen)
@@ -775,11 +775,11 @@ struct HomeView: View {
         HStack(spacing: 8) {
             ProgressView()
                 .progressViewStyle(.circular)
-                .tint(.black)
+                .tint(Theme.onAccent)
                 .scaleEffect(0.8)
             Text(text)
                 .font(.headline)
-                .foregroundStyle(.black)
+                .foregroundStyle(Theme.onAccent)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
@@ -791,7 +791,7 @@ struct HomeView: View {
     private func disabledGreenButton(text: String) -> some View {
         Text(text)
             .font(.headline)
-            .foregroundStyle(.black)
+            .foregroundStyle(Theme.onAccent)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .background(Theme.brandGreen)
@@ -1048,7 +1048,7 @@ struct HomeView: View {
                 } label: {
                     Text("Sign out & sign back in")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Theme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
                         .background(Theme.brandGreen)

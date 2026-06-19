@@ -57,7 +57,7 @@ private struct DeploymentRow: View {
                     HStack(spacing: 8) {
                         Text(deployment.name)
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(isAvailable ? .white : Theme.muted)
+                            .foregroundStyle(isAvailable ? Theme.text : Theme.muted)
                         Text(deployment.version)
                             .font(.system(size: 10, weight: .medium))
                             .padding(.horizontal, 6)

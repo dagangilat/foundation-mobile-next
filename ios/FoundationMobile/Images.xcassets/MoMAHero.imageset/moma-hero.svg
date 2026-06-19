@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 200" fill="none">
+  <!-- PLACEHOLDER hero wordmark for the mDL-NYC-MoMA white-label profile.
+       Replace with the real MoMA-supplied hero artwork (see profile JSON
+       asset requirements). Black ink = light-palette variant. -->
+  <text x="0" y="118" font-family="Helvetica, Arial, sans-serif" font-weight="700"
+        font-size="120" letter-spacing="-6" fill="#0a0e27">MoMA</text>
+  <text x="4" y="170" font-family="Helvetica, Arial, sans-serif" font-weight="500"
+        font-size="34" letter-spacing="2" fill="#64708c">Member Identity</text>
+</svg>
