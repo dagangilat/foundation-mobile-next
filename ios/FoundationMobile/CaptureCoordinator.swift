@@ -406,12 +406,20 @@ final class CaptureCoordinator: ObservableObject {
 
         task = Task { [weak self] in
             guard let self else { return }
+            // Breadcrumb names the last-entered verify step. Printed
+            // unconditionally on failure (NOT #if DEBUG — staging/TestFlight
+            // are Release builds) so the orange-badge dead-end is no longer
+            // silent: the catch below swallowed the real error into UI state
+            // only, which is why device logs showed App Check / SE noise but
+            // never the actual verify throw.
+            var step = "start"
             do {
                 self.state = .verifying(phase: .signing)
 
                 // Liveness payload = concat of per-frame SHA-256s. Keeps the
                 // signed surface small (96 B for 3 frames) while still
                 // binding all frames into the commitment.
+                step = "liveness-artifact"
                 let perFrameHashes = jpegs.map { Data(SHA256.hash(data: $0)) }
                 let combinedPayload = perFrameHashes.reduce(Data(), +)
                 let liveness = try await ProofArtifactBuilder.build(
@@ -419,6 +427,7 @@ final class CaptureCoordinator: ObservableObject {
                     payload: combinedPayload
                 )
 
+                step = "appAttest-assertion"
                 let nowMs = Int64(Date().timeIntervalSince1970 * 1000)
                 let appAttestPayload = Data("appAttest:\(keyId):\(nowMs)".utf8)
                 let appAttest = try await ProofArtifactBuilder.build(
@@ -431,6 +440,7 @@ final class CaptureCoordinator: ObservableObject {
                 // Phase 3a — real .nfcZk artifact when the active profile
                 // requires it AND the user came through the NFC-scan funnel.
                 if AppConfig.shared.profile.requires(.nfcZk), let passport = passportData {
+                    step = "nfcZk-artifact"
                     let nfcArtifact = try await PassportNfcProducer(passportData: passport).produce()
                     artifacts.append(nfcArtifact)
                 }
@@ -440,6 +450,7 @@ final class CaptureCoordinator: ObservableObject {
                 //   .dg2           → bind selfie ↔ chip's DG2 photo
                 //   .documentPhoto → bind selfie ↔ back-camera capture of doc
                 if AppConfig.shared.profile.requires(.faceMatch) {
+                    step = "faceMatch-artifact"
                     let source = AppConfig.shared.profile.faceMatchSource
                     let referenceImage: UIImage
                     let referenceHash: Data
@@ -486,6 +497,7 @@ final class CaptureCoordinator: ObservableObject {
                 // captured selfie JPEGs (no fresh camera capture); Silent-Face
                 // inference runs on cropped 80x80 face regions.
                 if AppConfig.shared.profile.requires(.antiSpoof) {
+                    step = "antiSpoof-artifact"
                     let antiSpoof = try await AntiSpoofProducer(
                         selfieJpegs: jpegs,
                         threshold: AppConfig.shared.antiSpoof.minScore
@@ -512,7 +524,15 @@ final class CaptureCoordinator: ObservableObject {
                 // matching uids the seal-mismatch gate rejects on submit
                 // (and for legitimate sessions the uid is always present
                 // because submitAnchor itself requires Firebase Auth).
-                guard let uid = Auth.auth(app: DeploymentService.shared.currentFirebaseApp).currentUser?.uid else {
+                step = "seal-uid"
+                let deployment = DeploymentService.shared.current
+                let app = DeploymentService.shared.currentFirebaseApp
+                guard let uid = Auth.auth(app: app).currentUser?.uid else {
+                    // Firebase Auth state is PER-APP: signing into the default
+                    // (prod) app does NOT authenticate the named staging app.
+                    // Surface which app/deployment we resolved so a nil uid is
+                    // diagnosable instead of a generic "not signed in".
+                    print("[CaptureCoordinator] verify FAILED at step=seal-uid: no currentUser on FirebaseApp '\(app.name)' (deployment='\(deployment.id)', plist='\(deployment.plist)')")
                     self.state = .failed(stage: .verify, message: "not signed in")
                     return
                 }
@@ -520,6 +540,7 @@ final class CaptureCoordinator: ObservableObject {
                 self.state = .sealed(commitment)
                 self.submitAnchor(commitment: commitment, artifacts: artifacts)
             } catch {
+                print("[CaptureCoordinator] verify FAILED at step=\(step): \(error)")
                 self.state = .failed(stage: .verify, message: String(describing: error))
             }
         }
