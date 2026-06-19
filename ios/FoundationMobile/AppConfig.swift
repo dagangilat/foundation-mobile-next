@@ -119,6 +119,21 @@ struct AppConfig: Decodable, Sendable {
     }
     let pairing: Pairing
 
+    // Deployment targets selectable via the gear icon on the sign-in screen.
+    // Optional — if absent, DeploymentService falls back to production-only.
+    // Each entry names a GoogleService-Info-<plist>.plist bundled in the app;
+    // AppDelegate registers a named FirebaseApp for each at startup so
+    // switching is instant with no restart required.
+    struct Deployment: Decodable, Sendable, Identifiable, Equatable {
+        let id: String          // e.g. "production", "staging", "nyc-pilot"
+        let name: String        // display label: "Production"
+        let description: String // short tagline shown in picker
+        let version: String     // semantic / build label for this deployment
+        let webUrl: String      // canonical web-app base URL
+        let plist: String       // GoogleService-Info plist name (without .plist)
+    }
+    let deployments: [Deployment]?
+
     static let shared: AppConfig = {
         do {
             return try load()

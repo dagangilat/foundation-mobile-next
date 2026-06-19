@@ -283,10 +283,11 @@ struct HomeView: View {
     }
 
     private var humanityFriendlyLabel: String {
-        // Returning user (anchored from a prior session, no fresh capture
-        // this run). Surfaces the Connect call-to-action so they don't
-        // see "Verify humanity" again.
-        if humanityVerified, case .idle = capture.state {
+        // Returning user: Firestore already confirmed humanity is anchored.
+        // Show the positive message regardless of whether the current capture
+        // run is idle, in-flight, or failed — stale .failed state from a
+        // re-attempt shouldn't override a verified prior session.
+        if humanityVerified {
             return "Humanity verified — tap Connect to enter Foundation"
         }
         switch capture.state {

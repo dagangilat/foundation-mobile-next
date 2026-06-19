@@ -1,5 +1,6 @@
-# Firebase — contains live API key; injected by CI from secret
+# Firebase — contain live API keys; injected at build time from CI secret / local keychain
 ios/FoundationMobile/GoogleService-Info.plist
+ios/FoundationMobile/GoogleService-Info-staging.plist
 
 # OSX
 #

@@ -68,6 +68,11 @@ struct AnchorCommitmentRequest: Encodable, Sendable {
     /// in a follow-on task. Sending it on every successful seal lets
     /// the server log + audit even before verification ships.
     let biometricSeal: BiometricSealPayload?
+    /// Optional biometric seal of the passport dg1Hash — present when the
+    /// user completed Face ID on the "Passport scanned" screen before verify.
+    /// Signing the dg1Hash (32-byte SHA-256 of DG1) creates a proof that this
+    /// specific face authorized this specific passport's identity data.
+    let passportBiometricSeal: BiometricSealPayload?
 
     struct CommitmentPayload: Encodable, Sendable {
         let hashHex: String
@@ -191,7 +196,10 @@ actor FunctionsService {
     // All Foundation callables are deployed to us-east1. Firebase's default
     // region is us-central1, so passing the region explicitly is required
     // or the SDK routes to a nonexistent function URL.
-    private let functions = Functions.functions(region: "us-east1")
+    // Resolved per-call so deployment switches take effect immediately.
+    private var functions: Functions {
+        Functions.functions(app: DeploymentService.shared.currentFirebaseApp, region: "us-east1")
+    }
 
     /// Last time we forced a Firebase ID token refresh. Mutating callables
     /// gate on this to avoid sending a stale cached token to the server.

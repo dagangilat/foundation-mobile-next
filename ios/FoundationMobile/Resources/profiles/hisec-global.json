@@ -48,5 +48,23 @@
   },
   "pairing": {
     "enabled": false
-  }
+  },
+  "deployments": [
+    {
+      "id": "production",
+      "name": "Production",
+      "description": "Live platform — foundation-global.com",
+      "version": "1.0",
+      "webUrl": "https://foundation-global.com",
+      "plist": "GoogleService-Info"
+    },
+    {
+      "id": "staging",
+      "name": "Staging",
+      "description": "Test environment — staging.foundation-global.com",
+      "version": "1.0-rc",
+      "webUrl": "https://staging.foundation-global.com",
+      "plist": "GoogleService-Info-staging"
+    }
+  ]
 }

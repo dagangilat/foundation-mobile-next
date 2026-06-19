@@ -16,10 +16,12 @@ struct SignInView: View {
         case error(String)           // last action failed; show message
     }
 
+    @ObservedObject private var deployment = DeploymentService.shared
     @State private var email: String = ""
     @State private var code: String = ""
     @State private var phase: Phase = .enterEmail
     @State private var infoText: String = ""
+    @State private var showDeploymentPicker = false
     @FocusState private var emailFieldFocused: Bool
     @FocusState private var codeFieldFocused: Bool
 
@@ -54,15 +56,52 @@ struct SignInView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "shield.lefthalf.filled")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(Theme.brandGreen)
-            HStack(spacing: 0) {
-                Text("Found").foregroundStyle(.white)
-                Text("ation").foregroundStyle(Theme.brandGreen)
+        HStack {
+            HStack(spacing: 10) {
+                Image(systemName: "shield.lefthalf.filled")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(Theme.brandGreen)
+                HStack(spacing: 0) {
+                    Text("Found").foregroundStyle(.white)
+                    Text("ation").foregroundStyle(Theme.brandGreen)
+                }
+                .font(.system(size: 22, weight: .bold))
             }
-            .font(.system(size: 22, weight: .bold))
+            Spacer()
+            if phase == .enterEmail {
+                // Gear visible only on the email entry screen — the cancel
+                // button takes this slot during code entry.
+                Button {
+                    showDeploymentPicker = true
+                } label: {
+                    HStack(spacing: 5) {
+                        if deployment.current.id != "production" {
+                            Text(deployment.current.name)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(Theme.brandGreen)
+                        }
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 16))
+                            .foregroundStyle(
+                                deployment.current.id == "production" ? Theme.muted : Theme.brandGreen
+                            )
+                    }
+                }
+                .accessibilityLabel("Choose deployment: \(deployment.current.name)")
+                .sheet(isPresented: $showDeploymentPicker) {
+                    DeploymentPickerView()
+                }
+            } else {
+                Button {
+                    phase = .enterEmail
+                    code = ""
+                } label: {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(Theme.muted)
+                }
+                .accessibilityLabel("Cancel")
+                .disabled(phase == .sendingCode || phase == .verifying)
+            }
         }
     }
 

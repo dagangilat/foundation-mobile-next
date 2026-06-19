@@ -41,6 +41,7 @@
 		901E2B3C4D5E6F7A8B9C0D1E /* PosePromptBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */; };
 		916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */; };
 		93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE774A53B41BB88310159 /* BiometricConsentView.swift */; };
+		B2C3D4E5F6A7B8C9D0E1F2A3 /* BiometricGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* BiometricGateView.swift */; };
 		9552FC4EC18D904838A878DB /* SilentFaceMiniFASNetV2.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */; };
 		A01E2B3C4D5E6F7A8B9C0D1E /* FaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */; };
 		A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C3D4E5F6789012345678AB /* Reachability.swift */; };
@@ -57,9 +58,16 @@
 		F0E1D2C3B4A596877869001A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */; };
 		F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */; };
 		F28CF907F668041EC3C9B7FC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */; };
-		F85B0EA965A797F6A54805D0 /* Pods_FoundationMobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */; };
 		FA79B59EBC18DD4B12CA2402 /* SupportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */; };
 		FB116A53DCD4836E5B91D7FC /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8C681943614A55B4EC0094 /* FirestoreService.swift */; };
+		F42C6A932E8FA1D48025E73D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B1F0A3DECBA42456766175EE /* FirebaseAuth */; };
+		CA87B1A4A5369C4994958DF6 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */; };
+		EBC4E1FF1D6354DE03F1A287 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 2CA6FEF9C22F199624B2DDB5 /* FirebaseFunctions */; };
+		9BC3F8FAF9D45796BA10F4AD /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */; };
+		5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */ = {isa = PBXBuildFile; productRef = BEF059432CE00682A25A1D51 /* NFCPassportReader */; };
+		DA1110000000000000000004 /* GoogleService-Info-staging.plist in Resources */ = {isa = PBXBuildFile; fileRef = DA1110000000000000000001 /* GoogleService-Info-staging.plist */; };
+		DA1110000000000000000005 /* DeploymentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1110000000000000000002 /* DeploymentConfig.swift */; };
+		DA1110000000000000000006 /* DeploymentPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1110000000000000000003 /* DeploymentPickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -93,10 +101,10 @@
 		4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = MobileFaceNet.mlpackage; path = FoundationMobile/Resources/MobileFaceNet.mlpackage; sourceTree = "<group>"; };
 		4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnclaveSeal.swift; path = FoundationMobile/EnclaveSeal.swift; sourceTree = "<group>"; };
 		4FBA9375FD4DABA14059C332 /* WebHomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebHomeView.swift; path = FoundationMobile/WebHomeView.swift; sourceTree = "<group>"; };
-		54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FoundationMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PillarsHero.swift; path = FoundationMobile/PillarsHero.swift; sourceTree = "<group>"; };
 		5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmokeBridge.swift; path = FoundationMobile/MoproSmokeBridge.swift; sourceTree = "<group>"; };
 		638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricSealer.swift; path = FoundationMobile/BiometricSealer.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* BiometricGateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricGateView.swift; path = FoundationMobile/BiometricGateView.swift; sourceTree = "<group>"; };
 		6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppCheckFactory.swift; path = FoundationMobile/AppCheckFactory.swift; sourceTree = "<group>"; };
 		6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LivenessFrameProducer.swift; path = FoundationMobile/LivenessFrameProducer.swift; sourceTree = "<group>"; };
 		6AEDDEC186D8993801244BC5 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppConfig.swift; path = FoundationMobile/AppConfig.swift; sourceTree = "<group>"; };
@@ -110,8 +118,6 @@
 		7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NFCScanView.swift; path = FoundationMobile/NFCScanView.swift; sourceTree = "<group>"; };
 		7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNfcProducer.swift; path = FoundationMobile/PassportNfcProducer.swift; sourceTree = "<group>"; };
 		8351F183C8FF3D833804FC09 /* SolanaRPC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SolanaRPC.swift; path = FoundationMobile/SolanaRPC.swift; sourceTree = "<group>"; };
-		84D8B3783A9151207A31E914 /* Pods-FoundationMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FoundationMobile.debug.xcconfig"; path = "Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile.debug.xcconfig"; sourceTree = "<group>"; };
-		8973E558E7FFAE61B909051F /* Pods-FoundationMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FoundationMobile.release.xcconfig"; path = "Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile.release.xcconfig"; sourceTree = "<group>"; };
 		8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTracker.swift; path = FoundationMobile/FaceTracker.swift; sourceTree = "<group>"; };
 		8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEllipseOverlay.swift; path = FoundationMobile/FaceEllipseOverlay.swift; sourceTree = "<group>"; };
 		8F8C681943614A55B4EC0094 /* FirestoreService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FirestoreService.swift; path = FoundationMobile/FirestoreService.swift; sourceTree = "<group>"; };
@@ -138,6 +144,9 @@
 		F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FoundationMobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CoreMLFaceEmbedder.swift; path = FoundationMobile/CoreMLFaceEmbedder.swift; sourceTree = "<group>"; };
 		FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SignInView.swift; path = FoundationMobile/SignInView.swift; sourceTree = "<group>"; };
+		DA1110000000000000000001 /* GoogleService-Info-staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-staging.plist"; path = "FoundationMobile/GoogleService-Info-staging.plist"; sourceTree = "<group>"; };
+		DA1110000000000000000002 /* DeploymentConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentConfig.swift; path = FoundationMobile/DeploymentConfig.swift; sourceTree = "<group>"; };
+		DA1110000000000000000003 /* DeploymentPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentPickerView.swift; path = FoundationMobile/DeploymentPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,7 +154,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F85B0EA965A797F6A54805D0 /* Pods_FoundationMobile.framework in Frameworks */,
+				F42C6A932E8FA1D48025E73D /* FirebaseAuth in Frameworks */,
+				CA87B1A4A5369C4994958DF6 /* FirebaseFirestore in Frameworks */,
+				EBC4E1FF1D6354DE03F1A287 /* FirebaseFunctions in Frameworks */,
+				9BC3F8FAF9D45796BA10F4AD /* FirebaseAppCheck in Frameworks */,
+				5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,8 +223,12 @@
 				A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */,
 				5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */,
 				638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* BiometricGateView.swift */,
 				E12EE774A53B41BB88310159 /* BiometricConsentView.swift */,
 				B8C3D4E5F6789012345678AB /* Reachability.swift */,
+				DA1110000000000000000001 /* GoogleService-Info-staging.plist */,
+				DA1110000000000000000002 /* DeploymentConfig.swift */,
+				DA1110000000000000000003 /* DeploymentPickerView.swift */,
 			);
 			name = FoundationMobile;
 			sourceTree = "<group>";
@@ -220,7 +237,6 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				54A10C7DA693B0E4E6983207 /* Pods_FoundationMobile.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -239,7 +255,6 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				BBD78D7AC51CEA395F1C20DB /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -254,15 +269,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				84D8B3783A9151207A31E914 /* Pods-FoundationMobile.debug.xcconfig */,
-				8973E558E7FFAE61B909051F /* Pods-FoundationMobile.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -270,11 +276,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "FoundationMobile" */;
 			buildPhases = (
-				2125159DF0387EE5E620DBDD /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
-				48611D4E5145D3FEACEF3BFA /* [CP] Embed Pods Frameworks */,
 				CB1D44AC2F9B36A4006DE63D /* Embed Frameworks */,
 				061B1DC0B5E5505152428502 /* Select Foundation profile JSON */,
 			);
@@ -286,6 +290,13 @@
 			productName = FoundationMobile;
 			productReference = 13B07F961A680F5B00A75B9A /* FoundationMobile.app */;
 			productType = "com.apple.product-type.application";
+			packageProductDependencies = (
+				B1F0A3DECBA42456766175EE /* FirebaseAuth */,
+				4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */,
+				2CA6FEF9C22F199624B2DDB5 /* FirebaseFunctions */,
+				0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */,
+				BEF059432CE00682A25A1D51 /* NFCPassportReader */,
+			);
 		};
 /* End PBXNativeTarget section */
 
@@ -313,6 +324,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
+			packageReferences = (
+				AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				28E33A0E77F8A9A2EA0726E2 /* XCRemoteSwiftPackageReference "NFCPassportReader" */,
+			);
 			targets = (
 				13B07F861A680F5B00A75B9A /* FoundationMobile */,
 			);
@@ -325,6 +340,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */,
+				DA1110000000000000000004 /* GoogleService-Info-staging.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				CF5CE0747DA47027EE13A3DA /* PrivacyInfo.xcprivacy in Resources */,
 				9552FC4EC18D904838A878DB /* SilentFaceMiniFASNetV2.mlpackage in Resources */,
@@ -359,49 +375,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/scripts/select-profile.sh\"";
 		};
-		2125159DF0387EE5E620DBDD /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FoundationMobile-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		48611D4E5145D3FEACEF3BFA /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FoundationMobile/Pods-FoundationMobile-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -410,6 +383,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				DA1110000000000000000005 /* DeploymentConfig.swift in Sources */,
+				DA1110000000000000000006 /* DeploymentPickerView.swift in Sources */,
 				916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */,
 				0234470E89B3B3C730DD40F6 /* Theme.swift in Sources */,
 				3F60C53D026EDD9B2EBAB77B /* Keychain.swift in Sources */,
@@ -453,6 +428,7 @@
 				52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */,
 				F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */,
 				93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* BiometricGateView.swift in Sources */,
 				A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -462,12 +438,11 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 84D8B3783A9151207A31E914 /* Pods-FoundationMobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
@@ -482,8 +457,6 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "-DCOCOAPODS";
-				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile;
 				PRODUCT_NAME = FoundationMobile;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -496,12 +469,11 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8973E558E7FFAE61B909051F /* Pods-FoundationMobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile-Release.entitlements;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = F9F26FQW95;
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -515,8 +487,6 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "-DCOCOAPODS";
-				"OTHER_SWIFT_FLAGS[arch=*]" = "-DCOCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile;
 				PRODUCT_NAME = FoundationMobile;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -741,7 +711,54 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-/* End XCConfigurationList section */
+/* Begin XCRemoteSwiftPackageReference section */
+		AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
+		28E33A0E77F8A9A2EA0726E2 /* XCRemoteSwiftPackageReference "NFCPassportReader" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AndyQ/NFCPassportReader";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B1F0A3DECBA42456766175EE /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		2CA6FEF9C22F199624B2DDB5 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		BEF059432CE00682A25A1D51 /* NFCPassportReader */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28E33A0E77F8A9A2EA0726E2 /* XCRemoteSwiftPackageReference "NFCPassportReader" */;
+			productName = NFCPassportReader;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+	/* End XCConfigurationList section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

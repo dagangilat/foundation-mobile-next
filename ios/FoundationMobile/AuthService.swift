@@ -24,13 +24,34 @@ final class AuthService: ObservableObject {
     @Published private(set) var state: State = .loading
 
     private var handle: AuthStateDidChangeListenerHandle?
+    private var listenerAuth: Auth?
+
+    private var currentAuth: Auth {
+        Auth.auth(app: DeploymentService.shared.currentFirebaseApp)
+    }
 
     private init() {
-        handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+        attachListener()
+    }
+
+    private func attachListener() {
+        let auth = currentAuth
+        listenerAuth = auth
+        handle = auth.addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
                 await self?.apply(user: user)
             }
         }
+    }
+
+    func reattach() {
+        if let h = handle, let a = listenerAuth {
+            a.removeStateDidChangeListener(h)
+        }
+        handle = nil
+        listenerAuth = nil
+        state = .signedOut
+        attachListener()
     }
 
     private func apply(user: User?) async {
@@ -106,7 +127,7 @@ final class AuthService: ObservableObject {
         // Force the next mutating callable to refresh — same pattern as
         // signOut → invalidateIDTokenCache.
         await FunctionsService.shared.invalidateIDTokenCache()
-        _ = try await Auth.auth().signIn(withCustomToken: result.customToken)
+        _ = try await currentAuth.signIn(withCustomToken: result.customToken)
     }
 
     /// Retry the release CF up to `maxAttempts` times with exponential
@@ -169,7 +190,7 @@ final class AuthService: ObservableObject {
         }
         // Clear local pairing state regardless of release outcome.
         PairingCoordinator.shared.suspendOnLifecycleEvent()
-        try Auth.auth().signOut()
+        try currentAuth.signOut()
         AttestationCoordinator.shared.reset()
         SupportSessionTracker.shared.reset()
         // Clear the persisted "user has tapped Connect to Foundation"
@@ -210,7 +231,7 @@ final class AuthService: ObservableObject {
     // can't kick the legitimate desktop offline without the user
     // re-authenticating, because email-link auth requires inbox access.
     func currentAuthAgeMs() async -> Int64? {
-        guard let user = Auth.auth().currentUser else { return nil }
+        guard let user = currentAuth.currentUser else { return nil }
         do {
             let token = try await user.getIDTokenResult(forcingRefresh: false)
             // IDTokenResult.authDate is non-optional Date — fall back

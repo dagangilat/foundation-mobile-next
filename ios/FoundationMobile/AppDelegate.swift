@@ -14,7 +14,21 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         // this, the SDK hits exchangeDeviceCheckToken (400 "App not
         // registered") and burns 7-12 s on retries during cold launch.
         AppCheck.setAppCheckProviderFactory(AppCheckFactory())
+
+        // Default app — production, from GoogleService-Info.plist.
         FirebaseApp.configure()
+
+        // Register named apps for any additional deployments whose plist is
+        // bundled. DeploymentService reads the selection; FunctionsService +
+        // AuthService consult it to route calls to the right Firebase project.
+        for dep in DeploymentService.shared.all where dep.plist != "GoogleService-Info" {
+            guard
+                let path = Bundle.main.path(forResource: dep.plist, ofType: "plist"),
+                let opts = FirebaseOptions(contentsOfFile: path)
+            else { continue }
+            FirebaseApp.configure(name: dep.id, options: opts)
+        }
+
         return true
     }
 }
