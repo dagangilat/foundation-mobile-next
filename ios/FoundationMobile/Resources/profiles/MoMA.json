@@ -1,7 +1,7 @@
 {
   "schemaVersion": 4,
   "profile": {
-    "id": "mDL-NYC-MoMA",
+    "id": "MoMA",
     "label": "MoMA Member — NYC mDL",
     "description": "White-label MoMA membership identity for NYC. Intended to verify a New York State mobile driver's license (ISO 18013-5 mDL); until the mDL producer ships, this profile runs the document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Light palette with MoMA logo + hero branding.",
     "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],

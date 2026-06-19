@@ -19,7 +19,7 @@ import SwiftUI
 
 struct PillarsHero: View {
     var body: some View {
-        // A white-label profile (e.g. mDL-NYC-MoMA) can replace the
+        // A white-label profile (e.g. MoMA) can replace the
         // composed three-pillar wordmark with a single bundled hero image
         // by setting theme.branding.hero.mode = "image" in its profile JSON.
         // Falls through to the built-in pillars otherwise.
@@ -74,7 +74,7 @@ struct PillarsHero: View {
 }
 
 // The Foundation wordmark lockup, shared across the SignIn / Home / WebHome /
-// Loading headers. A white-label profile (e.g. mDL-NYC-MoMA) replaces the
+// Loading headers. A white-label profile (e.g. MoMA) replaces the
 // built-in shield + "Foundation" wordmark with a bundled logo image by setting
 // theme.branding.logo in its profile JSON; the default edition renders the
 // built-in lockup byte-for-byte as before. Same palette-aware dark/light

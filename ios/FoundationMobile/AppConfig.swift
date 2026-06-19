@@ -107,7 +107,7 @@ struct AppConfig: Decodable, Sendable {
     // without the key decode and fall back to the midnight palette / built-in
     // branding. `palette` names one of the ThemePalette presets
     // (midnight | light | ocean | forest | sunset). `branding` lets a
-    // white-label profile (e.g. mDL-NYC-MoMA) swap the logo + hero assets.
+    // white-label profile (e.g. MoMA) swap the logo + hero assets.
     struct ThemeConfig: Decodable, Sendable {
         let palette: String?
         let branding: Branding?
