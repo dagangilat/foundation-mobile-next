@@ -217,7 +217,13 @@ struct AntiSpoofProducer: ProofProducer {
             }
         }
 
-        guard let packageURL = Bundle.main.url(forResource: name, withExtension: "mlpackage") else {
+        // `url(forResource:withExtension:"mlpackage")` does NOT reliably
+        // resolve a directory-wrapper resource copied verbatim into the
+        // .app (the pbxproj references these as opaque wrappers, so Xcode
+        // never compiles them to .mlmodelc and the package ships as a
+        // folder). Fall back to a direct resourceURL path — same fix as
+        // CoreMLFaceEmbedder.locateBundledPackage.
+        guard let packageURL = Self.locateBundledPackage(name: name) else {
             throw Failure.modelNotBundled(name)
         }
         do {
@@ -226,6 +232,19 @@ struct AntiSpoofProducer: ProofProducer {
         } catch {
             throw Failure.inferenceFailed("MLModel runtime-compile + load: \(error)")
         }
+    }
+
+    private static func locateBundledPackage(name: String) -> URL? {
+        if let url = Bundle.main.url(forResource: name, withExtension: "mlpackage") {
+            return url
+        }
+        if let resourceURL = Bundle.main.resourceURL {
+            let direct = resourceURL.appendingPathComponent("\(name).mlpackage")
+            if FileManager.default.fileExists(atPath: direct.path) {
+                return direct
+            }
+        }
+        return nil
     }
 
     private static func compileMLPackageToCache(name: String, packageURL: URL) throws -> URL {

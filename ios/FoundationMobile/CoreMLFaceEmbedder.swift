@@ -35,23 +35,56 @@ struct CoreMLFaceEmbedder: FaceEmbedder {
         let cfg = MLModelConfiguration()
         cfg.computeUnits = .cpuAndGPU
 
+        // Fast path: Xcode-compiled .mlmodelc. Only present when the build
+        // recognizes the .mlpackage as a CoreML source and runs its compile
+        // rule — which it does NOT when the file is referenced as an opaque
+        // `wrapper` in the pbxproj (the case here). Logged, not silent.
         if let url = Bundle.main.url(forResource: "MobileFaceNet", withExtension: "mlmodelc") {
-            if let model = try? MLModel(contentsOf: url, configuration: cfg) {
+            do {
+                let model = try MLModel(contentsOf: url, configuration: cfg)
+                print("[CoreMLFaceEmbedder] loaded precompiled .mlmodelc")
                 return CoreMLFaceEmbedder(model: model)
+            } catch {
+                print("[CoreMLFaceEmbedder] .mlmodelc present but load failed: \(error)")
             }
         }
 
-        guard let packageURL = Bundle.main.url(forResource: "MobileFaceNet", withExtension: "mlpackage") else {
+        // Fallback: runtime-compile the bundled .mlpackage. `url(forResource:
+        // withExtension:)` does NOT reliably resolve a directory-wrapper
+        // resource that was copied verbatim (vs. a flattened file), so when
+        // it returns nil we look the package up directly under resourceURL.
+        // Without this the lookup silently fails → StubFaceEmbedder →
+        // faceMatch distance ≈ 1.0 → faceMatchRejected → POH dead-ends.
+        guard let packageURL = locateBundledPackage(name: "MobileFaceNet") else {
+            print("[CoreMLFaceEmbedder] MobileFaceNet.mlpackage NOT found in bundle (neither url(forResource:) nor resourceURL) — falling back to stub")
             return nil
         }
         do {
             let cachedURL = try compileToCache(name: "MobileFaceNet", packageURL: packageURL)
             let model = try MLModel(contentsOf: cachedURL, configuration: cfg)
+            print("[CoreMLFaceEmbedder] runtime-compiled .mlpackage at \(packageURL.lastPathComponent)")
             return CoreMLFaceEmbedder(model: model)
         } catch {
             print("[CoreMLFaceEmbedder] runtime compile failed: \(error)")
             return nil
         }
+    }
+
+    /// Resolve a bundled `.mlpackage` robustly. Tries the standard resource
+    /// lookup first, then a direct path under the bundle's resource dir —
+    /// directory-wrapper resources don't always answer `url(forResource:
+    /// withExtension:)` even when physically present in the .app.
+    static func locateBundledPackage(name: String) -> URL? {
+        if let url = Bundle.main.url(forResource: name, withExtension: "mlpackage") {
+            return url
+        }
+        if let resourceURL = Bundle.main.resourceURL {
+            let direct = resourceURL.appendingPathComponent("\(name).mlpackage")
+            if FileManager.default.fileExists(atPath: direct.path) {
+                return direct
+            }
+        }
+        return nil
     }
 
     private static func compileToCache(name: String, packageURL: URL) throws -> URL {
