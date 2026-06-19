@@ -41,7 +41,6 @@
 		901E2B3C4D5E6F7A8B9C0D1E /* PosePromptBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */; };
 		916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */; };
 		93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE774A53B41BB88310159 /* BiometricConsentView.swift */; };
-		B2C3D4E5F6A7B8C9D0E1F2A3 /* BiometricGateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* BiometricGateView.swift */; };
 		9552FC4EC18D904838A878DB /* SilentFaceMiniFASNetV2.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */; };
 		A01E2B3C4D5E6F7A8B9C0D1E /* FaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */; };
 		A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C3D4E5F6789012345678AB /* Reachability.swift */; };
@@ -104,7 +103,6 @@
 		5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PillarsHero.swift; path = FoundationMobile/PillarsHero.swift; sourceTree = "<group>"; };
 		5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmokeBridge.swift; path = FoundationMobile/MoproSmokeBridge.swift; sourceTree = "<group>"; };
 		638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricSealer.swift; path = FoundationMobile/BiometricSealer.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* BiometricGateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricGateView.swift; path = FoundationMobile/BiometricGateView.swift; sourceTree = "<group>"; };
 		6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppCheckFactory.swift; path = FoundationMobile/AppCheckFactory.swift; sourceTree = "<group>"; };
 		6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LivenessFrameProducer.swift; path = FoundationMobile/LivenessFrameProducer.swift; sourceTree = "<group>"; };
 		6AEDDEC186D8993801244BC5 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppConfig.swift; path = FoundationMobile/AppConfig.swift; sourceTree = "<group>"; };
@@ -223,8 +221,7 @@
 				A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */,
 				5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */,
 				638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* BiometricGateView.swift */,
-				E12EE774A53B41BB88310159 /* BiometricConsentView.swift */,
+					E12EE774A53B41BB88310159 /* BiometricConsentView.swift */,
 				B8C3D4E5F6789012345678AB /* Reachability.swift */,
 				DA1110000000000000000001 /* GoogleService-Info-staging.plist */,
 				DA1110000000000000000002 /* DeploymentConfig.swift */,
@@ -428,8 +425,7 @@
 				52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */,
 				F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */,
 				93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */,
-				B2C3D4E5F6A7B8C9D0E1F2A3 /* BiometricGateView.swift in Sources */,
-				A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */,
+					A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
