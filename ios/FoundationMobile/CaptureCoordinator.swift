@@ -558,7 +558,8 @@ final class CaptureCoordinator: ObservableObject {
                         signatureBase64: $0.signatureBase64
                     )
                 },
-                biometricSeal: biometricSeal
+                biometricSeal: biometricSeal,
+                passportBiometricSeal: nil
             )
             do {
                 let result = try await FunctionsService.shared.anchorCommitment(req)
