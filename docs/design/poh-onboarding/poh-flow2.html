@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+  :root{
+    --bg:#0a0e27; --surface:#0f1636; --surface2:#111b41; --border:#1e2a5a;
+    --muted:#9aa3c7; --text:#ffffff; --green:#34d399; --cyan:#22d3ee; --voice:#818cf8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;}
+  body{background:#070a1c;padding:46px 38px;}
+  .row{display:flex;gap:34px;justify-content:center;align-items:flex-start;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:13px;width:288px;}
+  .phone{width:288px;height:624px;border-radius:46px;border:11px solid #161d33;
+    background:var(--bg);overflow:hidden;position:relative;box-shadow:0 26px 60px rgba(0,0,0,.5);}
+  .notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:92px;height:25px;background:#000;border-radius:13px;z-index:5;}
+  .screen{position:absolute;inset:0;padding:46px 22px 26px;display:flex;flex-direction:column;color:var(--text);}
+  .cap{color:var(--muted);font-size:13px;font-weight:600;text-align:center;}
+  .sub{color:var(--muted);font-size:11px;text-align:center;}
+  .lockup{display:flex;align-items:center;gap:8px;justify-content:center;}
+  .shield{width:20px;height:24px;background:var(--green);
+    -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5z"/></svg>') center/contain no-repeat;}
+  .wm{font-size:17px;font-weight:800;color:var(--text);}
+  .wm b{color:var(--green);}
+  .h1{font-size:24px;font-weight:800;line-height:1.14;letter-spacing:-.4px;color:var(--text);}
+  .body{color:#c2cae8;font-size:13px;line-height:1.45;}
+  .muted{color:var(--muted);}
+  .btn{background:var(--green);color:#062014;font-weight:700;font-size:15px;text-align:center;padding:14px;border-radius:14px;}
+  .btn.ghost{background:transparent;color:var(--muted);font-weight:600;font-size:12.5px;padding:8px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,.13);color:var(--green);
+    font-size:11px;font-weight:700;padding:6px 11px;border-radius:999px;}
+  .spacer{flex:1;}
+  .field{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 14px;color:#fff;font-size:14px;}
+  .field .ph{color:#5d6796;}
+  .otp{display:flex;gap:9px;justify-content:center;}
+  .otp .b{width:34px;height:46px;border-radius:10px;border:1px solid var(--border);background:var(--surface);
+    display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;}
+  .otp .b.on{border-color:var(--green);box-shadow:0 0 0 3px rgba(52,211,153,.16);}
+  .otp .b.cur{border-color:var(--green);}
+  .caret{width:2px;height:24px;background:var(--green);}
+  /* checklist */
+  .step{display:flex;gap:12px;align-items:flex-start;}
+  .num{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;background:rgba(52,211,153,.14);color:var(--green);}
+  .num.done{background:var(--green);color:#062014;}
+  .stitle{font-size:14px;font-weight:700;color:#fff;}
+  .ssub{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .vline{width:2px;background:var(--border);margin-left:14px;height:14px;}
+  .stepbadge{font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--cyan);}
+  /* anim stage */
+  .stage{height:228px;border-radius:18px;background:radial-gradient(120% 90% at 50% 40%,#15204a 0%,#0c1struck 60%,#0a0e27 100%);
+    background:radial-gradient(120% 90% at 50% 40%,#15204a 0%,#0a0e27 70%);position:relative;overflow:hidden;}
+  .doc2{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) rotate(-6deg);width:150px;height:96px;border-radius:10px;
+    background:linear-gradient(135deg,#243056,#1a2241);box-shadow:0 12px 26px rgba(0,0,0,.45);}
+  .doc2 .ph{position:absolute;left:10px;top:12px;width:34px;height:44px;border-radius:5px;background:#3a4674;}
+  .doc2 .ln{position:absolute;left:52px;height:6px;border-radius:3px;background:#46508a;}
+  .brk{position:absolute;width:26px;height:26px;border:3px solid var(--green);}
+  .arrowdn{position:absolute;left:50%;transform:translateX(-50%);color:var(--green);font-size:20px;font-weight:900;opacity:.9;}
+  .passport{position:absolute;left:42px;bottom:36px;width:128px;height:84px;border-radius:9px;background:linear-gradient(135deg,#243056,#161d33);border:1px solid var(--border);}
+  .passport .chip{position:absolute;right:12px;top:14px;width:24px;height:18px;border-radius:4px;background:linear-gradient(135deg,var(--cyan),var(--green));}
+  .miniph{position:absolute;right:48px;top:30px;width:72px;height:140px;border-radius:16px;border:4px solid #2b3566;background:#0d1431;}
+  .arc{position:absolute;border:2px solid var(--cyan);border-radius:50%;}
+  .taparrow{position:absolute;color:var(--cyan);font-size:22px;font-weight:900;}
+  .ellipse{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:124px;height:152px;border-radius:50%;border:3px dashed var(--green);}
+  .face{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:96px;height:120px;}
+  .eye{position:absolute;top:44px;width:12px;height:12px;border-radius:50%;background:#cdd5ee;}
+  .smile{position:absolute;left:50%;top:78px;transform:translateX(-50%);width:40px;height:18px;border-bottom:3px solid #cdd5ee;border-radius:0 0 22px 22px;}
+  .liv{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+  .turn{position:absolute;top:50%;transform:translateY(-50%);color:var(--cyan);font-size:20px;font-weight:900;opacity:.8;}
+</style></head>
+<body>
+<div class="row">
+
+  <!-- A1 — Auth: email -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="lockup"><div class="shield"></div><div class="wm">Found<b>ation</b></div></div>
+        <div style="height:24px"></div>
+        <div class="h1">Sign in</div>
+        <div style="height:10px"></div>
+        <div class="body">We'll email you a one-time code. No password to remember.</div>
+        <div style="height:22px"></div>
+        <div class="field"><span class="ph">you@email.com</span></div>
+        <div style="height:12px"></div>
+        <div class="btn">Email me a code</div>
+        <div class="spacer"></div>
+        <div class="sub">By continuing you agree to the Terms & Privacy Policy</div>
+      </div>
+    </div>
+    <div class="cap">A1 · Auth — email</div>
+    <div class="sub">unchanged from today</div>
+  </div>
+
+  <!-- A2 — Auth: OTP code -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="lockup"><div class="shield"></div><div class="wm">Found<b>ation</b></div></div>
+        <div style="height:24px"></div>
+        <div class="h1">Enter your code</div>
+        <div style="height:10px"></div>
+        <div class="body">Sent to <b style="color:#fff">you@email.com</b> · check spam if needed.</div>
+        <div style="height:24px"></div>
+        <div class="otp">
+          <div class="b on">4</div><div class="b on">8</div><div class="b on">1</div>
+          <div class="b cur"><div class="caret"></div></div><div class="b"></div><div class="b"></div>
+        </div>
+        <div style="height:18px"></div>
+        <div class="sub" style="color:var(--cyan)">Resend code in 0:24</div>
+        <div class="spacer"></div>
+        <div class="btn">Verify & continue</div>
+      </div>
+    </div>
+    <div class="cap">A2 · Auth — one-time code</div>
+    <div class="sub">unchanged from today</div>
+  </div>
+
+  <!-- B — Overview checklist -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="pill">● Proof of human · ~1 min</div>
+        <div style="height:14px"></div>
+        <div class="h1">Let's confirm<br>you're human</div>
+        <div style="height:8px"></div>
+        <div class="body">Three quick steps. Everything happens on your phone.</div>
+        <div style="height:20px"></div>
+        <div class="card" style="display:flex;flex-direction:column">
+          <div class="step"><div class="num">1</div><div><div class="stitle">Scan your passport</div><div class="ssub">Photo page, laid flat</div></div></div>
+          <div class="vline"></div>
+          <div class="step"><div class="num">2</div><div><div class="stitle">Read the chip</div><div class="ssub">Tap the back of your phone</div></div></div>
+          <div class="vline"></div>
+          <div class="step"><div class="num">3</div><div><div class="stitle">Quick face check</div><div class="ssub">A short look at the camera</div></div></div>
+          <div class="vline"></div>
+          <div class="step"><div class="num done">✓</div><div><div class="stitle" style="color:var(--green)">You're a verified human</div><div class="ssub">A proof — never your photos</div></div></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn">Start</div>
+      </div>
+    </div>
+    <div class="cap">B · Overview checklist</div>
+    <div class="sub">sets expectations up front</div>
+  </div>
+
+  <!-- C1 — Explainer: document scan -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="stepbadge">STEP 1 OF 3</div>
+        <div style="height:14px"></div>
+        <div class="stage">
+          <div class="doc2"><div class="ph"></div><div class="ln" style="top:16px;width:74px"></div><div class="ln" style="top:30px;width:58px"></div><div class="ln" style="top:44px;width:66px"></div></div>
+          <div class="brk" style="left:60px;top:62px;border-right:0;border-bottom:0;border-radius:6px 0 0 0"></div>
+          <div class="brk" style="right:60px;top:62px;border-left:0;border-bottom:0;border-radius:0 6px 0 0"></div>
+          <div class="brk" style="left:60px;bottom:62px;border-right:0;border-top:0;border-radius:0 0 0 6px"></div>
+          <div class="brk" style="right:60px;bottom:62px;border-left:0;border-top:0;border-radius:0 0 6px 0"></div>
+          <div class="arrowdn" style="top:14px">⌄</div>
+        </div>
+        <div style="height:18px"></div>
+        <div class="h1" style="font-size:21px">Scan your passport</div>
+        <div style="height:8px"></div>
+        <div class="body">Open to the photo page and lay it flat in good light. We'll line up the frame and capture it for you — no perfect aim needed.</div>
+        <div class="spacer"></div>
+        <div class="btn">I'm ready</div>
+        <div style="height:4px"></div>
+        <div class="btn ghost">Why we need this</div>
+      </div>
+    </div>
+    <div class="cap">C1 · Explainer → capture</div>
+    <div class="sub">animation: frame locking on</div>
+  </div>
+
+  <!-- C2 — Explainer: NFC scan (headline example) -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="stepbadge">STEP 2 OF 3</div>
+        <div style="height:14px"></div>
+        <div class="stage">
+          <div class="passport"><div class="chip"></div></div>
+          <div class="miniph"></div>
+          <div class="arc" style="right:64px;top:62px;width:58px;height:58px;opacity:.6"></div>
+          <div class="arc" style="right:52px;top:50px;width:82px;height:82px;opacity:.35"></div>
+          <div class="arc" style="right:40px;top:38px;width:106px;height:106px;opacity:.18"></div>
+          <div class="taparrow" style="right:118px;top:84px">↘</div>
+        </div>
+        <div style="height:18px"></div>
+        <div class="h1" style="font-size:21px">Read the chip</div>
+        <div style="height:8px"></div>
+        <div class="body">Hold the <b style="color:#fff">top back of your phone</b> flat against the photo page. Keep still until it buzzes — about 3–5 seconds.</div>
+        <div class="spacer"></div>
+        <div class="btn">I'm ready</div>
+        <div style="height:4px"></div>
+        <div class="btn ghost">Why we need this</div>
+      </div>
+    </div>
+    <div class="cap">C2 · NFC explainer (example)</div>
+    <div class="sub">animation: phone meets chip</div>
+  </div>
+
+  <!-- C3 — Explainer: face check -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="stepbadge">STEP 3 OF 3</div>
+        <div style="height:14px"></div>
+        <div class="stage">
+          <div class="ellipse"></div>
+          <div class="face">
+            <div class="eye" style="left:24px"></div><div class="eye" style="right:24px"></div>
+            <div class="smile"></div>
+          </div>
+          <div class="liv" style="left:64px;top:54px"></div>
+          <div class="liv" style="right:64px;top:96px;opacity:.7"></div>
+          <div class="liv" style="left:88px;bottom:48px;opacity:.5"></div>
+          <div class="turn" style="left:30px">‹</div>
+          <div class="turn" style="right:30px">›</div>
+        </div>
+        <div style="height:18px"></div>
+        <div class="h1" style="font-size:21px">Quick face check</div>
+        <div style="height:8px"></div>
+        <div class="body">Center your face and follow the prompts. This confirms a live person — matched on-device to your passport photo, then discarded.</div>
+        <div class="spacer"></div>
+        <div class="btn">I'm ready</div>
+        <div style="height:4px"></div>
+        <div class="btn ghost">Why we need this</div>
+      </div>
+    </div>
+    <div class="cap">C3 · Face explainer → capture</div>
+    <div class="sub">animation: liveness prompts</div>
+  </div>
+
+</div>
+</body></html>

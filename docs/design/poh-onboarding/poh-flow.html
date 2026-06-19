@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+  :root{
+    --bg:#0a0e27; --surface:#0f1636; --surface2:#111b41; --border:#1e2a5a;
+    --muted:#9aa3c7; --text:#ffffff; --green:#34d399; --cyan:#22d3ee;
+    --voice:#818cf8; --share:#2dd4bf; --market:#22d3ee;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;}
+  body{background:#070a1c;padding:46px 38px;}
+  .row{display:flex;gap:34px;justify-content:center;align-items:flex-start;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:13px;width:288px;}
+  .phone{width:288px;height:624px;border-radius:46px;border:11px solid #161d33;
+    background:var(--bg);overflow:hidden;position:relative;box-shadow:0 26px 60px rgba(0,0,0,.5);}
+  .notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:92px;height:25px;background:#000;border-radius:13px;z-index:5;}
+  .screen{position:absolute;inset:0;padding:46px 22px 26px;display:flex;flex-direction:column;color:var(--text);}
+  .h1{color:var(--text);}
+  .wm{color:var(--text);}
+  .cap{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.2px;text-align:center;}
+  .sub{color:var(--muted);font-size:11px;text-align:center;}
+  /* shared bits */
+  .lockup{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:4px;}
+  .shield{width:20px;height:24px;background:var(--green);
+    -webkit-mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5z"/></svg>') center/contain no-repeat;}
+  .wm{font-size:17px;font-weight:800;}
+  .wm b{color:var(--green);font-weight:800;}
+  .h1{font-size:25px;font-weight:800;line-height:1.12;letter-spacing:-.4px;}
+  .body{color:#c2cae8;font-size:13.5px;line-height:1.45;}
+  .muted{color:var(--muted);}
+  .btn{background:var(--green);color:#062014;font-weight:700;font-size:15px;text-align:center;padding:14px;border-radius:14px;}
+  .btn.ghost{background:transparent;color:var(--muted);font-weight:600;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 14px;}
+  .chk{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:#d6ddf4;line-height:1.35;}
+  .chk .i{color:var(--green);font-weight:800;flex:none;margin-top:1px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,.13);color:var(--green);
+    font-size:11px;font-weight:700;padding:6px 11px;border-radius:999px;}
+  .spacer{flex:1;}
+  /* screen 2 camera */
+  .cam{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 38%,#1a2348 0%,#0a0e27 70%);}
+  .doc{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:206px;height:132px;border-radius:12px;
+    background:linear-gradient(135deg,#243056,#1a2241);box-shadow:0 10px 30px rgba(0,0,0,.5);overflow:hidden;}
+  .doc .ph{position:absolute;left:13px;top:16px;width:46px;height:58px;border-radius:6px;background:#3a4674;}
+  .doc .ln{position:absolute;height:7px;border-radius:3px;background:#46508a;}
+  .mrz{position:absolute;left:10px;right:10px;bottom:9px;height:20px;border-radius:4px;
+    background:repeating-linear-gradient(90deg,#5b6aa8 0 7px,transparent 7px 11px);opacity:.7;}
+  .bracket{position:absolute;width:30px;height:30px;border:3px solid var(--green);}
+  .scanline{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:210px;height:3px;background:var(--green);box-shadow:0 0 14px 2px var(--green);opacity:.9;}
+  /* screen 3 nfc */
+  .nfc{position:relative;width:100%;height:230px;}
+  .pp{position:absolute;left:42px;top:62px;width:120px;height:150px;border-radius:10px;background:linear-gradient(135deg,#243056,#161d33);border:1px solid var(--border);}
+  .pp .chip{position:absolute;right:14px;bottom:16px;width:26px;height:20px;border-radius:4px;background:linear-gradient(135deg,var(--cyan),var(--green));}
+  .miniphone{position:absolute;right:34px;top:30px;width:78px;height:158px;border-radius:18px;border:4px solid #2b3566;}
+  .ring{position:absolute;border-radius:50%;border:2px solid var(--cyan);opacity:.5;}
+  .stepitem{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#cdd5ee;}
+  .dot{width:18px;height:18px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+  .dot.ok{background:var(--green);color:#062014;}
+  .dot.run{border:2px solid var(--cyan);color:var(--cyan);}
+  .dot.todo{border:2px solid var(--border);color:var(--muted);}
+  .bar{height:6px;border-radius:6px;background:var(--border);overflow:hidden;}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:6px;}
+  .tier{font-size:11px;font-weight:800;letter-spacing:.5px;padding:5px 10px;border-radius:8px;}
+  .badgewrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .seal{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#3ee6a6,#0f9d6e);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px rgba(52,211,153,.12);}
+  .seal span{font-size:46px;color:#06231a;font-weight:900;}
+  .unlock{display:flex;gap:9px;align-items:center;font-size:12px;color:#d6ddf4;}
+  .unlock .i{color:var(--green);font-weight:800;}
+</style></head>
+<body>
+<div class="row">
+
+  <!-- 1 — Intro / trust -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="lockup"><div class="shield"></div><div class="wm">Found<b>ation</b></div></div>
+        <div style="height:18px"></div>
+        <div class="pill">● Private verification</div>
+        <div style="height:14px"></div>
+        <div class="h1">Confirm you're a<br>real, unique person</div>
+        <div style="height:12px"></div>
+        <div class="body">One quick check so your voice counts exactly once — no duplicates, no bots.</div>
+        <div style="height:20px"></div>
+        <div class="card" style="display:flex;flex-direction:column;gap:11px;">
+          <div class="chk"><span class="i">✓</span><span>Your biometrics <b style="color:#fff">never leave your phone</b></span></div>
+          <div class="chk"><span class="i">✓</span><span>We store a <b style="color:#fff">cryptographic proof</b>, not your passport photo</span></div>
+          <div class="chk"><span class="i">✓</span><span>Verified on-device — <b style="color:#fff">not on our servers</b></span></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="btn">Begin verification</div>
+        <div style="height:10px"></div>
+        <div class="sub">Takes about a minute · cancel anytime</div>
+      </div>
+    </div>
+    <div class="cap">1 · Why & trust</div>
+    <div class="sub">privacy promise up front</div>
+  </div>
+
+  <!-- 2 — Live document capture -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="cam"></div>
+      <div class="doc">
+        <div class="ph"></div>
+        <div class="ln" style="left:70px;top:20px;width:108px"></div>
+        <div class="ln" style="left:70px;top:34px;width:84px"></div>
+        <div class="ln" style="left:70px;top:48px;width:96px"></div>
+        <div class="mrz"></div>
+      </div>
+      <div class="bracket" style="left:30px;top:28%;border-right:0;border-bottom:0;border-radius:8px 0 0 0"></div>
+      <div class="bracket" style="right:30px;top:28%;border-left:0;border-bottom:0;border-radius:0 8px 0 0"></div>
+      <div class="bracket" style="left:30px;top:58%;border-right:0;border-top:0;border-radius:0 0 0 8px"></div>
+      <div class="bracket" style="right:30px;top:58%;border-left:0;border-top:0;border-radius:0 0 8px 0"></div>
+      <div class="scanline"></div>
+      <div class="screen" style="background:none;justify-content:space-between;">
+        <div class="cap" style="color:#fff;font-size:15px;font-weight:700;">Scan the photo page</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+          <div class="pill" style="background:rgba(52,211,153,.16)">✓ Edges aligned · hold steady</div>
+          <div class="sub" style="color:#c2cae8">Lay the passport flat — good lighting, no glare</div>
+        </div>
+      </div>
+    </div>
+    <div class="cap">2 · Guided capture</div>
+    <div class="sub">live edge + glare detection</div>
+  </div>
+
+  <!-- 3 — NFC tap coaching -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="cap" style="color:#fff;font-size:15px;font-weight:700;">Tap the chip</div>
+        <div style="height:6px"></div>
+        <div class="sub">Reading the secure chip in your passport</div>
+        <div class="nfc">
+          <div class="ring" style="left:96px;top:80px;width:120px;height:120px"></div>
+          <div class="ring" style="left:78px;top:62px;width:156px;height:156px;opacity:.3"></div>
+          <div class="pp"><div class="chip"></div></div>
+          <div style="position:absolute;right:40px;top:34px;width:74px;height:150px;border-radius:18px;border:4px solid #2b3566;background:#0d1431;"></div>
+          <div class="pill" style="position:absolute;left:50%;bottom:6px;transform:translateX(-50%);background:rgba(34,211,238,.15);color:var(--cyan)">● Hold still — reading…</div>
+        </div>
+        <div class="card" style="margin-top:6px;">
+          <div class="body" style="font-size:12.5px"><b style="color:#fff">Hold your phone flat</b> against the photo page until it buzzes. Most passports read in 3–5 seconds.</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="bar"><i style="width:55%"></i></div>
+        <div style="height:8px"></div>
+        <div class="btn ghost">Can't read the chip? Try another way</div>
+      </div>
+    </div>
+    <div class="cap">3 · NFC coaching</div>
+    <div class="sub">no more guessing where to tap</div>
+  </div>
+
+  <!-- 4 — Proof generation (feature-framed) -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="lockup"><div class="shield"></div><div class="wm">Found<b>ation</b></div></div>
+        <div class="spacer"></div>
+        <div class="badgewrap">
+          <div class="seal" style="background:radial-gradient(circle at 38% 32%,#3aa0f0,#22d3ee)"><span style="color:#04283a">⛨</span></div>
+          <div class="h1" style="text-align:center;font-size:21px">Building your proof</div>
+          <div class="body" style="text-align:center;font-size:12.5px;padding:0 6px">Checking your document against <b style="color:#fff">180 government registries</b> — right here on your phone. Nothing is uploaded.</div>
+        </div>
+        <div style="height:20px"></div>
+        <div class="card" style="display:flex;flex-direction:column;gap:12px">
+          <div class="stepitem"><span class="dot ok">✓</span> Document signature verified</div>
+          <div class="stepitem"><span class="dot ok">✓</span> Chip authenticity confirmed</div>
+          <div class="stepitem"><span class="dot run">◴</span> Generating zero-knowledge proof…</div>
+          <div class="stepitem muted"><span class="dot todo">○</span> <span class="muted">Anchoring your unique ID</span></div>
+        </div>
+        <div class="spacer"></div>
+        <div class="sub">About 15 seconds · safe to keep the app open</div>
+      </div>
+    </div>
+    <div class="cap">4 · Proof wait = feature</div>
+    <div class="sub">never a blank spinner</div>
+  </div>
+
+  <!-- 5 — Success + trust tier -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="spacer"></div>
+        <div class="badgewrap">
+          <div class="seal"><span>✓</span></div>
+          <div class="h1" style="text-align:center">You're verified</div>
+          <div><span class="tier" style="background:rgba(52,211,153,.16);color:var(--green)">HI-SECURITY · PASSPORT-GRADE</span></div>
+        </div>
+        <div style="height:22px"></div>
+        <div class="card" style="display:flex;flex-direction:column;gap:11px">
+          <div class="sub" style="text-align:left;color:var(--muted);font-weight:700;letter-spacing:.3px">THIS UNLOCKS</div>
+          <div class="unlock"><span class="i">✓</span> Cast binding votes on any proposal</div>
+          <div class="unlock"><span class="i">✓</span> Propose & support initiatives</div>
+          <div class="unlock"><span class="i">✓</span> Reuse across every Foundation community</div>
+        </div>
+        <div style="height:12px"></div>
+        <div class="body" style="font-size:12px;text-align:center" class="muted"><span class="muted">Your proof lives on-chain. Your passport never touched our servers.</span></div>
+        <div class="spacer"></div>
+        <div class="btn">Enter Foundation</div>
+      </div>
+    </div>
+    <div class="cap">5 · Verified + tier</div>
+    <div class="sub">shows what the tier unlocks</div>
+  </div>
+
+</div>
+</body></html>
