@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- PLACEHOLDER square logo (dark-palette variant — inverted).
-       Replace with the real MoMA-supplied logo. -->
-  <rect width="400" height="400" rx="40" fill="#ffffff"/>
-  <text x="200" y="248" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
-        font-weight="700" font-size="120" letter-spacing="-4" fill="#0a0e27">MoMA</text>
-</svg>
