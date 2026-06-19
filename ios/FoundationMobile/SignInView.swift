@@ -57,16 +57,7 @@ struct SignInView: View {
 
     private var header: some View {
         HStack {
-            HStack(spacing: 10) {
-                Image(systemName: "shield.lefthalf.filled")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(Theme.brandGreen)
-                HStack(spacing: 0) {
-                    Text("Found").foregroundStyle(Theme.text)
-                    Text("ation").foregroundStyle(Theme.brandGreen)
-                }
-                .font(.system(size: 22, weight: .bold))
-            }
+            BrandLockup()
             Spacer()
             if phase == .enterEmail {
                 // Gear visible only on the email entry screen — the cancel

@@ -154,16 +154,7 @@ struct WebHomeView: View {
 
     private var chrome: some View {
         HStack(spacing: 14) {
-            HStack(spacing: 8) {
-                Image(systemName: "shield.lefthalf.filled")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(Theme.brandGreen)
-                HStack(spacing: 0) {
-                    Text("Found").foregroundStyle(Theme.text)
-                    Text("ation").foregroundStyle(Theme.brandGreen)
-                }
-                .font(.system(size: 16, weight: .bold))
-            }
+            BrandLockup(iconSize: 18, textSize: 16, spacing: 8)
             Spacer()
             // Pair-desktop button gated by AppConfig.shared.pairing.enabled.
             // Sheet + QRScannerView code stays compiled.

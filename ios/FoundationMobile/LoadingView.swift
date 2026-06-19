@@ -59,16 +59,7 @@ struct LoadingView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "shield.lefthalf.filled")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(Theme.brandGreen)
-            HStack(spacing: 0) {
-                Text("Found").foregroundStyle(Theme.text)
-                Text("ation").foregroundStyle(Theme.brandGreen)
-            }
-            .font(.system(size: 22, weight: .bold))
-        }
+        BrandLockup()
     }
 
     // SolanaPill + PillarsHero live in PillarsHero.swift — shared with

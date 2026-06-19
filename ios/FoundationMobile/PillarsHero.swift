@@ -72,3 +72,46 @@ struct PillarsHero: View {
         }
     }
 }
+
+// The Foundation wordmark lockup, shared across the SignIn / Home / WebHome /
+// Loading headers. A white-label profile (e.g. mDL-NYC-MoMA) replaces the
+// built-in shield + "Foundation" wordmark with a bundled logo image by setting
+// theme.branding.logo in its profile JSON; the default edition renders the
+// built-in lockup byte-for-byte as before. Same palette-aware dark/light
+// asset resolution as PillarsHero's branded hero.
+struct BrandLockup: View {
+    var iconSize: CGFloat = 24
+    var textSize: CGFloat = 22
+    var spacing: CGFloat = 10
+
+    // Resolved branded logo imageset name, or nil for the default edition.
+    private var brandedAsset: String? {
+        guard let logo = AppConfig.shared.theme?.branding?.logo else { return nil }
+        return Theme.palette.isDark ? (logo.darkAsset ?? logo.asset) : logo.asset
+    }
+
+    var body: some View {
+        if let assetName = brandedAsset {
+            Image(assetName)
+                .resizable()
+                .scaledToFit()
+                .frame(height: textSize * 1.5)
+                .accessibilityLabel("Foundation")
+        } else {
+            defaultLockup
+        }
+    }
+
+    private var defaultLockup: some View {
+        HStack(spacing: spacing) {
+            Image(systemName: "shield.lefthalf.filled")
+                .font(.system(size: iconSize, weight: .semibold))
+                .foregroundStyle(Theme.brandGreen)
+            HStack(spacing: 0) {
+                Text("Found").foregroundStyle(Theme.text)
+                Text("ation").foregroundStyle(Theme.brandGreen)
+            }
+            .font(.system(size: textSize, weight: .bold))
+        }
+    }
+}
