@@ -5,7 +5,8 @@
     "label": "Standard Security",
     "description": "Document-only flow for credentials without an RFID chip (older passports, US driver licenses, many state IDs). Requires App Attest + active liveness + anti-spoof + face match against a back-camera capture of the document photo. NFC is skipped.",
     "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],
-    "faceMatchSource": "documentPhoto"
+    "faceMatchSource": "documentPhoto",
+    "document": { "noun": "identity document", "short": "ID" }
   },
   "splash": {
     "minDurationMs": 900

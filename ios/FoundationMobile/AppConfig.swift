@@ -35,12 +35,29 @@ struct AppConfig: Decodable, Sendable {
         let description: String
         let requiredPhases: [String]
         let faceMatchSource: FaceMatchSource
+        // The credential this edition verifies, used to fill in onboarding /
+        // verified-screen copy per white-label edition. Optional so existing
+        // profiles and older bundles still decode; read via `documentNoun`.
+        let document: Document?
 
         enum FaceMatchSource: String, Decodable, Sendable {
             case dg2            // ePassport NFC chip face image
             case documentPhoto  // back-camera capture of the document
             case none           // no face match in this profile
         }
+
+        // Profile-injected document vocabulary for white-label copy, e.g.
+        // "passport", "driving licence", "membership card". Possessive phrasing
+        // in the UI ("your <noun>'s chip") keeps strings grammatical for any noun.
+        struct Document: Decodable, Sendable {
+            let noun: String    // full term, e.g. "passport"
+            let short: String?  // compact form for chips/buttons, e.g. "ID"
+        }
+
+        // Display noun with a safe default, so any edition (or a profile
+        // predating this field) still produces grammatical copy.
+        var documentNoun: String { document?.noun ?? "identity document" }
+        var documentShort: String { document?.short ?? "ID" }
 
         func requires(_ kind: ProofArtifact.Kind) -> Bool {
             requiredPhases.contains(kind.rawValue)

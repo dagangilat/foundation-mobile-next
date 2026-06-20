@@ -5,7 +5,8 @@
     "label": "High Security — Global",
     "description": "Full credentialed identity. Requires App Attest + ePassport NFC + active liveness + anti-spoof + face match against the on-chip DG2 photo. Suitable for global civic identity and financial-grade identity claims.",
     "requiredPhases": ["appAttest", "nfcZk", "liveness", "antiSpoof", "faceMatch"],
-    "faceMatchSource": "dg2"
+    "faceMatchSource": "dg2",
+    "document": { "noun": "passport", "short": "passport" }
   },
   "splash": {
     "minDurationMs": 900

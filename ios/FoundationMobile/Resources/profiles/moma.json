@@ -5,7 +5,8 @@
     "label": "MoMA Member",
     "description": "White-label MoMA membership identity for NYC. Intended to verify a New York State mobile driver's license (ISO 18013-5 mDL); until the mDL producer ships, this profile runs the document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Light palette with MoMA logo + hero branding.",
     "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],
-    "faceMatchSource": "documentPhoto"
+    "faceMatchSource": "documentPhoto",
+    "document": { "noun": "driver's license", "short": "ID" }
   },
   "splash": {
     "minDurationMs": 900

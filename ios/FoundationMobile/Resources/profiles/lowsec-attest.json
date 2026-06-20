@@ -5,7 +5,8 @@
     "label": "Low Security — Device Attest + Liveness",
     "description": "Pure device-uniqueness + warm-body signal. App Attest + active liveness only — no document, no anti-spoof, no face match. Suitable for low-stakes Sybil-resistance use cases (comment moderation, surveys, polls).",
     "requiredPhases": ["appAttest", "liveness"],
-    "faceMatchSource": "none"
+    "faceMatchSource": "none",
+    "document": { "noun": "identity document", "short": "ID" }
   },
   "splash": {
     "minDurationMs": 900

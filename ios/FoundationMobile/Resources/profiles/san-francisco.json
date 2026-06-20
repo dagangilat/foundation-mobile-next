@@ -5,7 +5,8 @@
     "label": "San Francisco",
     "description": "White-label civic identity Edition for San Francisco. Document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Sunset palette with a Golden Gate hero + launch mark.",
     "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],
-    "faceMatchSource": "documentPhoto"
+    "faceMatchSource": "documentPhoto",
+    "document": { "noun": "identity card", "short": "ID" }
   },
   "splash": {
     "minDurationMs": 900
