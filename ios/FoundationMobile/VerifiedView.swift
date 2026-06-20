@@ -77,18 +77,18 @@ struct VerifiedView: View {
 
     private var ladder: some View {
         VStack(spacing: 8) {
-            rungRow(.high)
-            rungRow(.standard)
-            rungRow(.low)
+            ForEach(TrustTierLadder.rungs(achieved: tier), id: \.tier) { rung in
+                rungRow(rung)
+            }
         }
     }
 
-    private func rungRow(_ rung: AppConfig.Profile.TrustTier) -> some View {
-        let status = rungStatus(rung)
+    private func rungRow(_ rung: LadderRung) -> some View {
+        let status = rung.status
         return HStack(spacing: 11) {
             ZStack {
                 Circle()
-                    .fill(status == .locked ? Color.clear : rungAccent(rung))
+                    .fill(status == .locked ? Color.clear : rungAccent(rung.tier))
                     .overlay(
                         Circle().stroke(status == .locked ? Theme.border : Color.clear, lineWidth: 2)
                     )
@@ -98,10 +98,10 @@ struct VerifiedView: View {
                     .foregroundStyle(status == .locked ? Theme.muted : Theme.onAccent)
             }
             VStack(alignment: .leading, spacing: 1) {
-                Text(rungName(rung))
+                Text(rungName(rung.tier))
                     .font(.system(size: 13, weight: .bold))
                     .foregroundStyle(status == .locked ? Theme.muted : Theme.text)
-                Text(rungMeta(rung, status))
+                Text(rungMeta(rung.tier, status))
                     .font(.system(size: 10.5))
                     .foregroundStyle(Theme.muted)
             }
@@ -109,29 +109,22 @@ struct VerifiedView: View {
             if status == .current {
                 Text("YOU'RE HERE")
                     .font(.system(size: 9.5, weight: .heavy))
-                    .foregroundStyle(rungAccent(rung))
+                    .foregroundStyle(rungAccent(rung.tier))
                     .padding(.horizontal, 7).padding(.vertical, 3)
-                    .background(rungAccent(rung).opacity(0.18))
+                    .background(rungAccent(rung.tier).opacity(0.18))
                     .clipShape(Capsule())
             }
         }
         .padding(.horizontal, 12).padding(.vertical, 11)
         .background(
             RoundedRectangle(cornerRadius: 13)
-                .fill(status == .current ? rungAccent(rung).opacity(0.10) : Theme.surface)
+                .fill(status == .current ? rungAccent(rung.tier).opacity(0.10) : Theme.surface)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 13)
-                .stroke(status == .current ? rungAccent(rung) : Theme.border, lineWidth: 1)
+                .stroke(status == .current ? rungAccent(rung.tier) : Theme.border, lineWidth: 1)
         )
         .opacity(status == .locked ? 0.55 : 1)
-    }
-
-    private enum RungStatus { case done, current, locked }
-
-    private func rungStatus(_ rung: AppConfig.Profile.TrustTier) -> RungStatus {
-        if rung == tier { return .current }
-        return rung < tier ? .done : .locked
     }
 
     private func rungName(_ rung: AppConfig.Profile.TrustTier) -> String {

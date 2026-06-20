@@ -26,6 +26,7 @@
 		4367E2AE0ADEA723C5193B9A /* CoreMLFaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */; };
 		4E1E2B3C4D5E6F7A8B9C0D1E /* EnclaveSeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */; };
 		52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */; };
+		53B9F3B01F4728B7B3F59617 /* TrustTierLadderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB64230F76206419608A442E /* TrustTierLadderTests.swift */; };
 		5D22B61434305A98BFF847C5 /* SupportSessionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */; };
 		5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */ = {isa = PBXBuildFile; productRef = BEF059432CE00682A25A1D51 /* NFCPassportReader */; };
 		5F1E2B3C4D5E6F7A8B9C0D1E /* MoproSmokeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */; };
@@ -40,9 +41,10 @@
 		7B1E2B3C4D5E6F7A8B9C0D1E /* PassportNFCReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */; };
 		7C1E2B3C4D5E6F7A8B9C0D1E /* NFCScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */; };
 		7D11AA22BB33CC44DD55EE61 /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */; };
+		7D1E2B3C4D5E6F7A8B9C0D1E /* PassportNfcProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */; };
 		7E22BB33CC44DD55EE66FF71 /* VerificationStepPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E22BB33CC44DD55EE66FF72 /* VerificationStepPlan.swift */; };
 		7F33CC44DD55EE66FF77AA81 /* VerificationOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F33CC44DD55EE66FF77AA82 /* VerificationOverviewView.swift */; };
-		7D1E2B3C4D5E6F7A8B9C0D1E /* PassportNfcProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */; };
+		8044DD55EE66FF77AA88BB91 /* TrustTierLadder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8044DD55EE66FF77AA88BB92 /* TrustTierLadder.swift */; };
 		8E1E2B3C4D5E6F7A8B9C0D1E /* FaceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */; };
 		8F1E2B3C4D5E6F7A8B9C0D1E /* FaceEllipseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */; };
 		8F665D9EC7DFA3178F5B1961 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C3AA1F49BD15F0794B52679 /* RootView.swift */; };
@@ -133,9 +135,10 @@
 		7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNFCReader.swift; path = FoundationMobile/PassportNFCReader.swift; sourceTree = "<group>"; };
 		7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NFCScanView.swift; path = FoundationMobile/NFCScanView.swift; sourceTree = "<group>"; };
 		7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerifiedView.swift; path = FoundationMobile/VerifiedView.swift; sourceTree = "<group>"; };
+		7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNfcProducer.swift; path = FoundationMobile/PassportNfcProducer.swift; sourceTree = "<group>"; };
 		7E22BB33CC44DD55EE66FF72 /* VerificationStepPlan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationStepPlan.swift; path = FoundationMobile/VerificationStepPlan.swift; sourceTree = "<group>"; };
 		7F33CC44DD55EE66FF77AA82 /* VerificationOverviewView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationOverviewView.swift; path = FoundationMobile/VerificationOverviewView.swift; sourceTree = "<group>"; };
-		7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNfcProducer.swift; path = FoundationMobile/PassportNfcProducer.swift; sourceTree = "<group>"; };
+		8044DD55EE66FF77AA88BB92 /* TrustTierLadder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrustTierLadder.swift; path = FoundationMobile/TrustTierLadder.swift; sourceTree = "<group>"; };
 		8351F183C8FF3D833804FC09 /* SolanaRPC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SolanaRPC.swift; path = FoundationMobile/SolanaRPC.swift; sourceTree = "<group>"; };
 		8C89AE70968D788F056BF64B /* ProfileTierTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ProfileTierTests.swift; path = FoundationMobileTests/ProfileTierTests.swift; sourceTree = "<group>"; };
 		8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTracker.swift; path = FoundationMobile/FaceTracker.swift; sourceTree = "<group>"; };
@@ -151,6 +154,7 @@
 		B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceMatchProducer.swift; path = FoundationMobile/FaceMatchProducer.swift; sourceTree = "<group>"; };
 		B8C3D4E5F6789012345678AB /* Reachability.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Reachability.swift; path = FoundationMobile/Reachability.swift; sourceTree = "<group>"; };
 		BB3C48CBE0357E5145A601C5 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = FoundationMobile/HomeView.swift; sourceTree = "<group>"; };
+		BB64230F76206419608A442E /* TrustTierLadderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrustTierLadderTests.swift; path = FoundationMobileTests/TrustTierLadderTests.swift; sourceTree = "<group>"; };
 		BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SupportSheet.swift; path = FoundationMobile/SupportSheet.swift; sourceTree = "<group>"; };
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
 		CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "FoundationMobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -223,6 +227,7 @@
 				7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */,
 				7E22BB33CC44DD55EE66FF72 /* VerificationStepPlan.swift */,
 				7F33CC44DD55EE66FF77AA82 /* VerificationOverviewView.swift */,
+				8044DD55EE66FF77AA88BB92 /* TrustTierLadder.swift */,
 				7A2F3A4B5C6D7E8F9A0B1C2D /* MRZScanView.swift */,
 				7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */,
 				7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */,
@@ -289,6 +294,7 @@
 				46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */,
 				8C89AE70968D788F056BF64B /* ProfileTierTests.swift */,
 				DA08D0125FEDE35EF00B0E79 /* VerificationStepPlanTests.swift */,
+				BB64230F76206419608A442E /* TrustTierLadderTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -503,6 +509,7 @@
 				7D11AA22BB33CC44DD55EE61 /* VerifiedView.swift in Sources */,
 				7E22BB33CC44DD55EE66FF71 /* VerificationStepPlan.swift in Sources */,
 				7F33CC44DD55EE66FF77AA81 /* VerificationOverviewView.swift in Sources */,
+				8044DD55EE66FF77AA88BB91 /* TrustTierLadder.swift in Sources */,
 				7A1E2B3C4D5E6F7A8B9C0D1E /* MRZScanView.swift in Sources */,
 				7B1E2B3C4D5E6F7A8B9C0D1E /* PassportNFCReader.swift in Sources */,
 				7C1E2B3C4D5E6F7A8B9C0D1E /* NFCScanView.swift in Sources */,
@@ -542,6 +549,7 @@
 				2EC1942400F85EFB78C396BE /* SmokeTests.swift in Sources */,
 				5F5EF541748BEB192766D1A8 /* ProfileTierTests.swift in Sources */,
 				29B0B336E671E234AFCBE048 /* VerificationStepPlanTests.swift in Sources */,
+				53B9F3B01F4728B7B3F59617 /* TrustTierLadderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
