@@ -18,6 +18,7 @@
 		2171B4F30FFE85A02B5ADE02 /* MobileFaceNet.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */; };
 		224B28A8AA45C15BEF8745E6 /* SolanaRPC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8351F183C8FF3D833804FC09 /* SolanaRPC.swift */; };
 		2C1E2B3C4D5E6F7A8B9C0D1E /* CameraSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2F3A4B5C6D7E8F9A0B1C2D /* CameraSession.swift */; };
+		2EC1942400F85EFB78C396BE /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */; };
 		31E5AD17CC664B4B4E4D713B /* DocumentPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */; };
 		31E971ED85C6B73368C32032 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEEB0A53E04ED338BAE4E31 /* AuthService.swift */; };
 		3F60C53D026EDD9B2EBAB77B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */; };
@@ -25,16 +26,18 @@
 		4E1E2B3C4D5E6F7A8B9C0D1E /* EnclaveSeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */; };
 		52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */; };
 		5D22B61434305A98BFF847C5 /* SupportSessionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */; };
+		5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */ = {isa = PBXBuildFile; productRef = BEF059432CE00682A25A1D51 /* NFCPassportReader */; };
 		5F1E2B3C4D5E6F7A8B9C0D1E /* MoproSmokeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */; };
 		5FE07A47373B2A0BFC93A828 /* PairingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E8BCD934051CD421D01402 /* PairingCoordinator.swift */; };
 		6A1E2B3C4D5E6F7A8B9C0D1E /* LivenessFrameProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */; };
 		6B1E2B3C4D5E6F7A8B9C0D1E /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F3A4B5C6D7E8F9A0B1C2D /* CaptureCoordinator.swift */; };
 		6C1E2B3C4D5E6F7A8B9C0D1E /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2F3A4B5C6D7E8F9A0B1C2D /* CaptureView.swift */; };
-		7D11AA22BB33CC44DD55EE61 /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */; };
+		70D67935BF748C8ADD538B79 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EFE593E6DAA0E2D74BAB232 /* Foundation.framework */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		7A1E2B3C4D5E6F7A8B9C0D1E /* MRZScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2F3A4B5C6D7E8F9A0B1C2D /* MRZScanView.swift */; };
 		7B1E2B3C4D5E6F7A8B9C0D1E /* PassportNFCReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */; };
 		7C1E2B3C4D5E6F7A8B9C0D1E /* NFCScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */; };
+		7D11AA22BB33CC44DD55EE61 /* VerifiedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */; };
 		7D1E2B3C4D5E6F7A8B9C0D1E /* PassportNfcProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */; };
 		8E1E2B3C4D5E6F7A8B9C0D1E /* FaceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */; };
 		8F1E2B3C4D5E6F7A8B9C0D1E /* FaceEllipseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */; };
@@ -43,32 +46,41 @@
 		916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */; };
 		93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12EE774A53B41BB88310159 /* BiometricConsentView.swift */; };
 		9552FC4EC18D904838A878DB /* SilentFaceMiniFASNetV2.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */; };
+		9BC3F8FAF9D45796BA10F4AD /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */; };
 		A01E2B3C4D5E6F7A8B9C0D1E /* FaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */; };
 		A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C3D4E5F6789012345678AB /* Reachability.swift */; };
 		ACCE88CCFDE53CDF9A9FB6B3 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */; };
 		B01E2B3C4D5E6F7A8B9C0D1E /* FaceMatchProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */; };
 		C0C0F9DE03F0A12B16EFBA0A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DC6490D5D01BDE8C366453 /* QRScannerView.swift */; };
+		CA87B1A4A5369C4994958DF6 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */; };
 		CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */; };
 		CF5CE0747DA47027EE13A3DA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		D3004DB63F1FC1FB03713F58 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3C48CBE0357E5145A601C5 /* HomeView.swift */; };
 		D3E6C2976FBC54C0F756AD37 /* SilentFaceMiniFASNetV1SE.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 96BC2836F465D61E7AEC7F7F /* SilentFaceMiniFASNetV1SE.mlpackage */; };
 		D4EA0AD49BDD537F13A9FD0C /* FunctionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E345E6207D916EE710C97076 /* FunctionsService.swift */; };
-		DC04C58E0C52A69163A08B86 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */; };
-		DE347E00A21678F8334E84F4 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEDDEC186D8993801244BC5 /* AppConfig.swift */; };
-		F0E1D2C3B4A596877869001A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */; };
-		F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */; };
-		F28CF907F668041EC3C9B7FC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */; };
-		FA79B59EBC18DD4B12CA2402 /* SupportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */; };
-		FB116A53DCD4836E5B91D7FC /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8C681943614A55B4EC0094 /* FirestoreService.swift */; };
-		F42C6A932E8FA1D48025E73D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B1F0A3DECBA42456766175EE /* FirebaseAuth */; };
-		CA87B1A4A5369C4994958DF6 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */; };
-		EBC4E1FF1D6354DE03F1A287 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 2CA6FEF9C22F199624B2DDB5 /* FirebaseFunctions */; };
-		9BC3F8FAF9D45796BA10F4AD /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */; };
-		5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */ = {isa = PBXBuildFile; productRef = BEF059432CE00682A25A1D51 /* NFCPassportReader */; };
 		DA1110000000000000000004 /* GoogleService-Info-staging.plist in Resources */ = {isa = PBXBuildFile; fileRef = DA1110000000000000000001 /* GoogleService-Info-staging.plist */; };
 		DA1110000000000000000005 /* DeploymentConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1110000000000000000002 /* DeploymentConfig.swift */; };
 		DA1110000000000000000006 /* DeploymentPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1110000000000000000003 /* DeploymentPickerView.swift */; };
+		DC04C58E0C52A69163A08B86 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */; };
+		DE347E00A21678F8334E84F4 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEDDEC186D8993801244BC5 /* AppConfig.swift */; };
+		EBC4E1FF1D6354DE03F1A287 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 2CA6FEF9C22F199624B2DDB5 /* FirebaseFunctions */; };
+		F0E1D2C3B4A596877869001A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */; };
+		F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */; };
+		F28CF907F668041EC3C9B7FC /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */; };
+		F42C6A932E8FA1D48025E73D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = B1F0A3DECBA42456766175EE /* FirebaseAuth */; };
+		FA79B59EBC18DD4B12CA2402 /* SupportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEFE88EFFE12ECFCCCB01B7E /* SupportSheet.swift */; };
+		FB116A53DCD4836E5B91D7FC /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F8C681943614A55B4EC0094 /* FirestoreService.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D40D27AF23624E33788EF4A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = FoundationMobile;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		CB1D44AC2F9B36A4006DE63D /* Embed Frameworks */ = {
@@ -97,6 +109,7 @@
 		1ECB49D63F54BFCD60E737FB /* hisec-global.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = "hisec-global.json"; path = "FoundationMobile/Resources/profiles/hisec-global.json"; sourceTree = "<group>"; };
 		257D88861F1B9A2298427239 /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = FoundationMobile/Theme.swift; sourceTree = "<group>"; };
 		2C2F3A4B5C6D7E8F9A0B1C2D /* CameraSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraSession.swift; path = FoundationMobile/CameraSession.swift; sourceTree = "<group>"; };
+		46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SmokeTests.swift; path = FoundationMobileTests/SmokeTests.swift; sourceTree = "<group>"; };
 		4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Keychain.swift; path = FoundationMobile/Keychain.swift; sourceTree = "<group>"; };
 		4CF78D776018C0FA5ED867A3 /* MobileFaceNet.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = MobileFaceNet.mlpackage; path = FoundationMobile/Resources/MobileFaceNet.mlpackage; sourceTree = "<group>"; };
 		4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EnclaveSeal.swift; path = FoundationMobile/EnclaveSeal.swift; sourceTree = "<group>"; };
@@ -109,13 +122,13 @@
 		6AEDDEC186D8993801244BC5 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppConfig.swift; path = FoundationMobile/AppConfig.swift; sourceTree = "<group>"; };
 		6B2F3A4B5C6D7E8F9A0B1C2D /* CaptureCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CaptureCoordinator.swift; path = FoundationMobile/CaptureCoordinator.swift; sourceTree = "<group>"; };
 		6C2F3A4B5C6D7E8F9A0B1C2D /* CaptureView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CaptureView.swift; path = FoundationMobile/CaptureView.swift; sourceTree = "<group>"; };
-		7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerifiedView.swift; path = FoundationMobile/VerifiedView.swift; sourceTree = "<group>"; };
 		6C3AA1F49BD15F0794B52679 /* RootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RootView.swift; path = FoundationMobile/RootView.swift; sourceTree = "<group>"; };
 		6F386497A9D21385AEED2BD7 /* standardsec.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = standardsec.json; path = FoundationMobile/Resources/profiles/standardsec.json; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = FoundationMobile/AppDelegate.swift; sourceTree = "<group>"; };
 		7A2F3A4B5C6D7E8F9A0B1C2D /* MRZScanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MRZScanView.swift; path = FoundationMobile/MRZScanView.swift; sourceTree = "<group>"; };
 		7B2F3A4B5C6D7E8F9A0B1C2D /* PassportNFCReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNFCReader.swift; path = FoundationMobile/PassportNFCReader.swift; sourceTree = "<group>"; };
 		7C2F3A4B5C6D7E8F9A0B1C2D /* NFCScanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NFCScanView.swift; path = FoundationMobile/NFCScanView.swift; sourceTree = "<group>"; };
+		7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerifiedView.swift; path = FoundationMobile/VerifiedView.swift; sourceTree = "<group>"; };
 		7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNfcProducer.swift; path = FoundationMobile/PassportNfcProducer.swift; sourceTree = "<group>"; };
 		8351F183C8FF3D833804FC09 /* SolanaRPC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SolanaRPC.swift; path = FoundationMobile/SolanaRPC.swift; sourceTree = "<group>"; };
 		8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTracker.swift; path = FoundationMobile/FaceTracker.swift; sourceTree = "<group>"; };
@@ -124,6 +137,7 @@
 		902F3A4B5C6D7E8F9A0B1C2D /* PosePromptBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PosePromptBar.swift; path = FoundationMobile/PosePromptBar.swift; sourceTree = "<group>"; };
 		96BC2836F465D61E7AEC7F7F /* SilentFaceMiniFASNetV1SE.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = SilentFaceMiniFASNetV1SE.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV1SE.mlpackage; sourceTree = "<group>"; };
 		98DC6490D5D01BDE8C366453 /* QRScannerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = QRScannerView.swift; path = FoundationMobile/QRScannerView.swift; sourceTree = "<group>"; };
+		9EFE593E6DAA0E2D74BAB232 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		A02F3A4B5C6D7E8F9A0B1C2D /* FaceEmbedder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEmbedder.swift; path = FoundationMobile/FaceEmbedder.swift; sourceTree = "<group>"; };
 		A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SupportSessionTracker.swift; path = FoundationMobile/SupportSessionTracker.swift; sourceTree = "<group>"; };
 		AEBD92C6C9B0EF5C73FE3B8A /* SilentFaceMiniFASNetV2.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper; name = SilentFaceMiniFASNetV2.mlpackage; path = FoundationMobile/Resources/SilentFaceMiniFASNetV2.mlpackage; sourceTree = "<group>"; };
@@ -134,6 +148,9 @@
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
 		CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "FoundationMobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentPhotoView.swift; path = FoundationMobile/DocumentPhotoView.swift; sourceTree = "<group>"; };
+		DA1110000000000000000001 /* GoogleService-Info-staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-staging.plist"; path = "FoundationMobile/GoogleService-Info-staging.plist"; sourceTree = "<group>"; };
+		DA1110000000000000000002 /* DeploymentConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentConfig.swift; path = FoundationMobile/DeploymentConfig.swift; sourceTree = "<group>"; };
+		DA1110000000000000000003 /* DeploymentPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentPickerView.swift; path = FoundationMobile/DeploymentPickerView.swift; sourceTree = "<group>"; };
 		DAEFADE8C48F15AFCAB702E7 /* LoadingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoadingView.swift; path = FoundationMobile/LoadingView.swift; sourceTree = "<group>"; };
 		DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FoundationMobileApp.swift; path = FoundationMobile/FoundationMobileApp.swift; sourceTree = "<group>"; };
 		E12EE774A53B41BB88310159 /* BiometricConsentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricConsentView.swift; path = FoundationMobile/BiometricConsentView.swift; sourceTree = "<group>"; };
@@ -142,11 +159,9 @@
 		ECD6D17AB7D898E4655B9C2B /* lowsec-attest.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = "lowsec-attest.json"; path = "FoundationMobile/Resources/profiles/lowsec-attest.json"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F0E1D2C3B4A596877869001B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FoundationMobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F22A1B65600E9A7E7B6F1442 /* FoundationMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoundationMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CoreMLFaceEmbedder.swift; path = FoundationMobile/CoreMLFaceEmbedder.swift; sourceTree = "<group>"; };
 		FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SignInView.swift; path = FoundationMobile/SignInView.swift; sourceTree = "<group>"; };
-		DA1110000000000000000001 /* GoogleService-Info-staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-staging.plist"; path = "FoundationMobile/GoogleService-Info-staging.plist"; sourceTree = "<group>"; };
-		DA1110000000000000000002 /* DeploymentConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentConfig.swift; path = FoundationMobile/DeploymentConfig.swift; sourceTree = "<group>"; };
-		DA1110000000000000000003 /* DeploymentPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentPickerView.swift; path = FoundationMobile/DeploymentPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +174,14 @@
 				EBC4E1FF1D6354DE03F1A287 /* FirebaseFunctions in Frameworks */,
 				9BC3F8FAF9D45796BA10F4AD /* FirebaseAppCheck in Frameworks */,
 				5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C253DB3579071AF0F461C4C9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				70D67935BF748C8ADD538B79 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,7 +247,7 @@
 				A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */,
 				5DDE1AD2ECAD46DC93697583 /* PillarsHero.swift */,
 				638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */,
-					E12EE774A53B41BB88310159 /* BiometricConsentView.swift */,
+				E12EE774A53B41BB88310159 /* BiometricConsentView.swift */,
 				B8C3D4E5F6789012345678AB /* Reachability.swift */,
 				DA1110000000000000000001 /* GoogleService-Info-staging.plist */,
 				DA1110000000000000000002 /* DeploymentConfig.swift */,
@@ -237,8 +260,25 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+				6E0924079ADC2A888A0E65F6 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6E0924079ADC2A888A0E65F6 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				9EFE593E6DAA0E2D74BAB232 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		7826EA053A606A08E1BCF54E /* FoundationMobileTests */ = {
+			isa = PBXGroup;
+			children = (
+				46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */,
+			);
+			name = FoundationMobileTests;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -255,6 +295,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				7826EA053A606A08E1BCF54E /* FoundationMobileTests */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -265,6 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* FoundationMobile.app */,
+				F22A1B65600E9A7E7B6F1442 /* FoundationMobileTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -288,9 +330,6 @@
 			dependencies = (
 			);
 			name = FoundationMobile;
-			productName = FoundationMobile;
-			productReference = 13B07F961A680F5B00A75B9A /* FoundationMobile.app */;
-			productType = "com.apple.product-type.application";
 			packageProductDependencies = (
 				B1F0A3DECBA42456766175EE /* FirebaseAuth */,
 				4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */,
@@ -298,6 +337,27 @@
 				0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */,
 				BEF059432CE00682A25A1D51 /* NFCPassportReader */,
 			);
+			productName = FoundationMobile;
+			productReference = 13B07F961A680F5B00A75B9A /* FoundationMobile.app */;
+			productType = "com.apple.product-type.application";
+		};
+		77CCD37C4ABA02A4C2D2FC3E /* FoundationMobileTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DFBE3A55F65741C8F6092590 /* Build configuration list for PBXNativeTarget "FoundationMobileTests" */;
+			buildPhases = (
+				CFF1299F57D34539EDA289B5 /* Sources */,
+				C253DB3579071AF0F461C4C9 /* Frameworks */,
+				A440DC913F771BA4E55F1C1C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0485BCB43C63833B43F8216D /* PBXTargetDependency */,
+			);
+			name = FoundationMobileTests;
+			productName = FoundationMobileTests;
+			productReference = F22A1B65600E9A7E7B6F1442 /* FoundationMobileTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -322,15 +382,16 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
-			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
 			packageReferences = (
 				AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				28E33A0E77F8A9A2EA0726E2 /* XCRemoteSwiftPackageReference "NFCPassportReader" */,
 			);
+			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* FoundationMobile */,
+				77CCD37C4ABA02A4C2D2FC3E /* FoundationMobileTests */,
 			);
 		};
 /* End PBXProject section */
@@ -351,28 +412,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		0A1B2C3D4E5F60718293A4B5 /* Select launch logo */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
+		A440DC913F771BA4E55F1C1C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Select launch logo";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/scripts/select-launch-logo.sh\"";
 		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
 		061B1DC0B5E5505152428502 /* Select Foundation profile JSON */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -394,6 +443,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/scripts/select-profile.sh\"";
+		};
+		0A1B2C3D4E5F60718293A4B5 /* Select launch logo */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Select launch logo";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/scripts/select-launch-logo.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -449,11 +517,28 @@
 				52004CAFC09F462AAB5DD05E /* PillarsHero.swift in Sources */,
 				F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */,
 				93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */,
-					A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */,
+				A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFF1299F57D34539EDA289B5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2EC1942400F85EFB78C396BE /* SmokeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0485BCB43C63833B43F8216D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FoundationMobile;
+			target = 13B07F861A680F5B00A75B9A /* FoundationMobile */;
+			targetProxy = D40D27AF23624E33788EF4A2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -493,7 +578,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile-Release.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "FoundationMobile/FoundationMobile-Release.entitlements";
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = F9F26FQW95;
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
@@ -516,6 +601,39 @@
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
+		};
+		2D1A55E16F2396C849A6F508 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoundationMobile.app/FoundationMobile";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		709279F172B0806DD3894132 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationglobal.mobile.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoundationMobile.app/FoundationMobile";
+			};
+			name = Debug;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -732,15 +850,18 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-/* Begin XCRemoteSwiftPackageReference section */
-		AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.0.0;
-			};
+		DFBE3A55F65741C8F6092590 /* Build configuration list for PBXNativeTarget "FoundationMobileTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D1A55E16F2396C849A6F508 /* Release */,
+				709279F172B0806DD3894132 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
 		28E33A0E77F8A9A2EA0726E2 /* XCRemoteSwiftPackageReference "NFCPassportReader" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AndyQ/NFCPassportReader";
@@ -749,28 +870,36 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B1F0A3DECBA42456766175EE /* FirebaseAuth */ = {
+		0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
+			productName = FirebaseAppCheck;
 		};
 		2CA6FEF9C22F199624B2DDB5 /* FirebaseFunctions */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFunctions;
 		};
-		0895D3A4602B3B4C54F8080B /* FirebaseAppCheck */ = {
+		4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAppCheck;
+			productName = FirebaseFirestore;
+		};
+		B1F0A3DECBA42456766175EE /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB21A9CE3EB656010E44D0E8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 		BEF059432CE00682A25A1D51 /* NFCPassportReader */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -778,8 +907,6 @@
 			productName = NFCPassportReader;
 		};
 /* End XCSwiftPackageProductDependency section */
-
-	/* End XCConfigurationList section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
