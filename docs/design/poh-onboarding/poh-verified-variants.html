@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!--
+  Verified + trust-tier screen — design variants (iteration 2).
+  Follows Decision #1 (tiered fallback). Tiers map to the existing zk security
+  classification (the profile ids), NOT invented grades:
+    High Security    (hisec-global)  — App Attest + ePassport NFC + liveness +
+                                        anti-spoof + face match vs on-chip DG2.
+    Standard Security (standardsec)   — App Attest + liveness + anti-spoof +
+                                        face match vs document photo. NFC skipped.
+    Low Security     (lowsec-attest)  — App Attest + liveness only. No document.
+  The E2 chip-unreadable fallback is exactly High Security -> Standard Security.
+  The ladder variant (B) is shown in both states so the fallback reads clearly.
+
+  DOCUMENT NOUN IS PROFILE-INJECTED. The word for the credential ("identity
+  document" by default) is wrapped in <span class="docnoun"> and meant to come from
+  the active edition, e.g. a new profile field:
+      "document": { "noun": "identity document", "short": "ID" }
+  Editions override it: hisec-global -> "passport", a civic edition ->
+  "identity card" / "driving licence", an org edition -> "membership card".
+  Copy uses possessive ("your <doc>'s chip") to stay grammatical for any noun
+  (no "a/an" agreement problem). Tier availability still follows requiredPhases:
+  an edition whose phases omit nfcZk simply can't reach High Security.
+  Source for the row layout + tokens: poh-flow.html (screen 5).
+-->
+<html><head><meta charset="utf-8"><style>
+  :root{
+    --bg:#0a0e27; --surface:#0f1636; --surface2:#111b41; --border:#1e2a5a;
+    --muted:#9aa3c7; --text:#ffffff; --green:#34d399; --cyan:#22d3ee;
+    --amber:#fbbf24;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;}
+  body{background:#070a1c;padding:46px 38px;}
+  .row{display:flex;gap:34px;justify-content:center;align-items:flex-start;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:13px;width:288px;}
+  .phone{width:288px;height:624px;border-radius:46px;border:11px solid #161d33;
+    background:var(--bg);overflow:hidden;position:relative;box-shadow:0 26px 60px rgba(0,0,0,.5);}
+  .notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:92px;height:25px;background:#000;border-radius:13px;z-index:5;}
+  .screen{position:absolute;inset:0;padding:46px 22px 26px;display:flex;flex-direction:column;color:var(--text);}
+  .cap{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.2px;text-align:center;}
+  .sub{color:var(--muted);font-size:11px;text-align:center;}
+  .h1{font-size:25px;font-weight:800;line-height:1.12;letter-spacing:-.4px;color:var(--text);}
+  .body{color:#c2cae8;font-size:13.5px;line-height:1.45;}
+  .muted{color:var(--muted);}
+  .btn{background:var(--green);color:#062014;font-weight:700;font-size:15px;text-align:center;padding:14px;border-radius:14px;}
+  .btn.ghost{background:transparent;color:var(--muted);font-weight:600;padding:11px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;}
+  .spacer{flex:1;}
+  .badgewrap{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .seal{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#3ee6a6,#0f9d6e);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px rgba(52,211,153,.12);}
+  .seal span{font-size:46px;color:#06231a;font-weight:900;}
+  .seal.sm{width:72px;height:72px;box-shadow:0 0 0 6px rgba(52,211,153,.12);}
+  .seal.sm span{font-size:34px;}
+  .seal.cyan{background:radial-gradient(circle at 38% 32%,#5fe0f0,#0e8aa0);box-shadow:0 0 0 6px rgba(34,211,238,.12);}
+  .seal.cyan span{color:#04283a;}
+  .tier{font-size:11px;font-weight:800;letter-spacing:.5px;padding:5px 10px;border-radius:8px;}
+  .unlock{display:flex;gap:9px;align-items:center;font-size:12px;color:#d6ddf4;}
+  .unlock .i{color:var(--green);font-weight:800;flex:none;}
+  .unlock.off{color:var(--muted);}
+  .unlock.off .i{color:var(--muted);}
+  .label{font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--muted);text-align:left;}
+  /* tier ladder */
+  .ladder{display:flex;flex-direction:column;gap:8px;width:100%;}
+  .rung{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:13px;border:1px solid var(--border);background:var(--surface);}
+  .rung .ico{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+  .rung .name{font-size:13px;font-weight:700;color:#d6ddf4;}
+  .rung .meta{font-size:10.5px;color:var(--muted);margin-top:1px;}
+  .rung.done .ico{background:var(--green);color:#062014;}
+  .rung.done .name{color:#aeb8da;}
+  .rung.curG{border-color:var(--green);background:rgba(52,211,153,.10);box-shadow:0 0 0 1px var(--green) inset;}
+  .rung.curG .ico{background:var(--green);color:#062014;}
+  .rung.curG .name{color:#fff;}
+  .rung.curC{border-color:var(--cyan);background:rgba(34,211,238,.10);box-shadow:0 0 0 1px var(--cyan) inset;}
+  .rung.curC .ico{background:var(--cyan);color:#04283a;}
+  .rung.curC .name{color:#fff;}
+  .rung.locked{opacity:.55;}
+  .rung.locked .ico{border:2px solid var(--border);color:var(--muted);}
+  .rung .now{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.4px;padding:3px 7px;border-radius:6px;}
+  .now.g{background:rgba(52,211,153,.18);color:var(--green);}
+  .now.c{background:rgba(34,211,238,.18);color:var(--cyan);}
+  .upsell{display:flex;gap:9px;align-items:center;background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.32);
+    border-radius:12px;padding:11px 12px;font-size:12px;color:#f4e3bd;line-height:1.35;}
+  .upsell .i{color:var(--amber);font-weight:800;flex:none;}
+  .chip-sm{display:inline-flex;align-items:center;gap:6px;background:rgba(52,211,153,.13);color:var(--green);
+    font-size:10.5px;font-weight:700;padding:5px 10px;border-radius:999px;}
+  .chip-sm .q{opacity:.7;font-weight:700;}
+</style></head>
+<body>
+<div class="row">
+
+  <!-- ============================================================ -->
+  <!-- Variant A — Refined seal + tier badge (celebratory)          -->
+  <!-- ============================================================ -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="spacer"></div>
+        <div class="badgewrap">
+          <div class="seal"><span>✓</span></div>
+          <div class="h1" style="text-align:center">You're verified</div>
+          <div><span class="tier" style="background:rgba(52,211,153,.16);color:var(--green)">HIGH SECURITY · GLOBAL</span></div>
+        </div>
+        <div style="height:22px"></div>
+        <div class="card" style="display:flex;flex-direction:column;gap:11px">
+          <div class="label">THIS UNLOCKS</div>
+          <div class="unlock"><span class="i">✓</span> Cast binding votes on any proposal</div>
+          <div class="unlock"><span class="i">✓</span> Propose &amp; support initiatives</div>
+          <div class="unlock"><span class="i">✓</span> Reuse across every Foundation community</div>
+        </div>
+        <div style="height:12px"></div>
+        <div class="body muted" style="font-size:12px;text-align:center">Your proof lives on this device. Your <span class="docnoun">identity document</span> never touched our servers.</div>
+        <div class="spacer"></div>
+        <div class="btn">Enter Foundation</div>
+      </div>
+    </div>
+    <div class="cap">A · Seal + badge</div>
+    <div class="sub">celebratory · tier as a label</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Variant B (state 1) — Tier ladder, High Security reached      -->
+  <!-- ============================================================ -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div style="height:6px"></div>
+        <div class="badgewrap">
+          <div class="seal sm"><span>✓</span></div>
+          <div class="h1" style="text-align:center;font-size:22px">You're verified</div>
+          <div class="sub" style="font-size:12px">Highest assurance — your <span class="docnoun">identity document</span>'s chip checked out</div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="ladder">
+          <div class="rung curG">
+            <div class="ico">✓</div>
+            <div><div class="name">High Security</div><div class="meta">Chip authenticated · face matched to your <span class="docnoun">identity document</span></div></div>
+            <div class="now g">YOU'RE HERE</div>
+          </div>
+          <div class="rung done">
+            <div class="ico">✓</div>
+            <div><div class="name">Standard Security</div><div class="meta">Document verified</div></div>
+          </div>
+          <div class="rung done">
+            <div class="ico">✓</div>
+            <div><div class="name">Low Security</div><div class="meta">Device + liveness</div></div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="body muted" style="font-size:11.5px;text-align:center">Proof stored on this device · nothing on our servers</div>
+        <div style="height:10px"></div>
+        <div class="btn">Enter Foundation</div>
+      </div>
+    </div>
+    <div class="cap">B · Tier ladder — <span style="color:var(--green)">High Security</span></div>
+    <div class="sub">chip read · top rung reached</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Variant B (state 2) — Tier ladder, Standard (chip skipped)   -->
+  <!-- This is the Decision #1 fallback outcome.                    -->
+  <!-- ============================================================ -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div style="height:6px"></div>
+        <div class="badgewrap">
+          <div class="seal sm cyan"><span>✓</span></div>
+          <div class="h1" style="text-align:center;font-size:22px">You're verified</div>
+          <div class="sub" style="font-size:12px">Standard assurance — verified from your document</div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="ladder">
+          <div class="rung locked">
+            <div class="ico">🔒</div>
+            <div><div class="name">High Security</div><div class="meta">Needs your <span class="docnoun">identity document</span>'s chip</div></div>
+          </div>
+          <div class="rung curC">
+            <div class="ico">✓</div>
+            <div><div class="name">Standard Security</div><div class="meta">Document verified · you can vote</div></div>
+            <div class="now c">YOU'RE HERE</div>
+          </div>
+          <div class="rung done">
+            <div class="ico">✓</div>
+            <div><div class="name">Low Security</div><div class="meta">Device + liveness</div></div>
+          </div>
+        </div>
+        <div style="height:11px"></div>
+        <div class="upsell"><span class="i">↑</span><span>Scan your <span class="docnoun">identity document</span>'s chip anytime to reach <b style="color:#fff">High Security</b>.</span></div>
+        <div class="spacer"></div>
+        <div class="btn">Enter Foundation</div>
+        <div style="height:4px"></div>
+        <div class="btn ghost">Upgrade now</div>
+      </div>
+    </div>
+    <div class="cap">B · Tier ladder — <span style="color:var(--cyan)">Standard Security</span></div>
+    <div class="sub">chip skipped · upgrade path shown</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Variant C — Capability-forward / minimal ceremony            -->
+  <!-- ============================================================ -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="screen">
+        <div class="spacer"></div>
+        <div class="seal sm" style="align-self:flex-start"><span>✓</span></div>
+        <div style="height:16px"></div>
+        <div class="h1">You're in.</div>
+        <div style="height:8px"></div>
+        <div class="body">Your humanity is proven — your voice now counts exactly once, everywhere in Foundation.</div>
+        <div style="height:10px"></div>
+        <div><span class="chip-sm">🛡 High Security <span class="q">· how?</span></span></div>
+        <div style="height:20px"></div>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <div class="unlock" style="font-size:13px"><span class="i">✓</span> Cast binding votes</div>
+          <div class="unlock" style="font-size:13px"><span class="i">✓</span> Propose &amp; support initiatives</div>
+          <div class="unlock" style="font-size:13px"><span class="i">✓</span> Carry your proof to every community</div>
+        </div>
+        <div class="spacer"></div>
+        <div class="body muted" style="font-size:11.5px">Stored on this device · never on our servers</div>
+        <div style="height:10px"></div>
+        <div class="btn">Start participating</div>
+      </div>
+    </div>
+    <div class="cap">C · Capability-forward</div>
+    <div class="sub">leads with what you can do · tier subtle</div>
+  </div>
+
+</div>
+</body></html>
