@@ -8,6 +8,10 @@ struct CaptureView: View {
     @State private var warmupTask: Task<Void, Never>?
     @State private var isShowingMRZScan = false
     @State private var isShowingDocPhoto = false
+    // Explain-before-you-do: present the matching explainer once when entering
+    // each capture stage. `shownExplainers` latches so it never repeats.
+    @State private var shownExplainers: Set<ExplainerKind> = []
+    @State private var pendingExplainer: ExplainerKind?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -77,6 +81,29 @@ struct CaptureView: View {
                     coordinator.documentPhotoCaptured(capture)
                 },
                 onCancel: { isShowingDocPhoto = false }
+            )
+        }
+        // Present the stage explainer the first time we enter each capture
+        // stage. Separate from the dismiss-on-verify onChange above so neither
+        // disturbs the other. The cover sits over the capture UI; "I'm ready"
+        // dismisses it to reveal the stage the user just read about.
+        .onChange(of: coordinator.state) { newValue in
+            let kind: ExplainerKind?
+            switch newValue {
+            case .readyForPose:          kind = .face
+            case .readyForPassport:      kind = .chip
+            case .readyForDocumentPhoto: kind = .scan
+            default:                     kind = nil
+            }
+            if let kind, !shownExplainers.contains(kind) {
+                shownExplainers.insert(kind)
+                pendingExplainer = kind
+            }
+        }
+        .fullScreenCover(item: $pendingExplainer) { kind in
+            StepExplainerView(
+                step: ExplainerCatalog.step(kind, profile: AppConfig.shared.profile),
+                onReady: { pendingExplainer = nil }
             )
         }
     }
