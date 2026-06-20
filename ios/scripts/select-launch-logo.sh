@@ -44,7 +44,8 @@ PROFILE="${FOUNDATION_PROFILE:-}"
 if [ -z "$PROFILE" ]; then
     PBXPROJ="${SRCROOT}/FoundationMobile.xcodeproj/project.pbxproj"
     if [ -f "$PBXPROJ" ]; then
-        PROFILE=$(sed -n -E 's/^[[:space:]]*FOUNDATION_PROFILE[[:space:]]*=[[:space:]]*([A-Za-z0-9_.-]+);.*/\1/p' "$PBXPROJ" | head -n1)
+        # Xcode quotes hyphenated values (e.g. "tel-aviv"); match quoted or bare.
+        PROFILE=$(sed -n -E 's/^[[:space:]]*FOUNDATION_PROFILE[[:space:]]*=[[:space:]]*"?([A-Za-z0-9_.-]+)"?;.*/\1/p' "$PBXPROJ" | head -n1)
     fi
 fi
 PROFILE="${PROFILE:-hisec-global}"

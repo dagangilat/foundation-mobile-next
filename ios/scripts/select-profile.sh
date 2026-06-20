@@ -67,7 +67,9 @@ is_valid_profile() {
 # FOUNDATION_PROFILE build setting). Empty if the setting isn't present.
 current_profile() {
     [ -f "$PBXPROJ" ] || return 0
-    sed -n -E "s/^[[:space:]]*${SETTING}[[:space:]]*=[[:space:]]*([A-Za-z0-9_.-]+);.*/\1/p" "$PBXPROJ" \
+    # Xcode quotes values containing characters like '-' (e.g. "tel-aviv"),
+    # leaves simple identifiers unquoted (moma) — match either.
+    sed -n -E "s/^[[:space:]]*${SETTING}[[:space:]]*=[[:space:]]*\"?([A-Za-z0-9_.-]+)\"?;.*/\1/p" "$PBXPROJ" \
         | head -n1
 }
 
@@ -191,10 +193,20 @@ if [ "$PREVIOUS" = "$PROFILE" ]; then
     exit 0
 fi
 
-# In-place edit, with a temp file so a failure can't corrupt the project.
+# Quote the value the way Xcode would: bare for simple identifiers, quoted for
+# anything with special characters (notably the '-' in hisec-global, tel-aviv,
+# san-francisco, lowsec-attest). Writing it pre-normalized keeps Xcode from
+# re-churning the line on next open.
+case "$PROFILE" in
+    *[!A-Za-z0-9_.]*) NEW_VALUE="\"${PROFILE}\"" ;;
+    *)                NEW_VALUE="$PROFILE" ;;
+esac
+
+# In-place edit, with a temp file so a failure can't corrupt the project. The
+# match tolerates an existing quoted or unquoted value.
 TMP=$(mktemp "${TMPDIR:-/tmp}/select-profile.XXXXXX")
 trap 'rm -f "$TMP"' EXIT
-sed -E "s/(${SETTING}[[:space:]]*=[[:space:]]*)[A-Za-z0-9_.-]+;/\1${PROFILE};/" "$PBXPROJ" > "$TMP"
+sed -E "s/(${SETTING}[[:space:]]*=[[:space:]]*)\"?[A-Za-z0-9_.-]+\"?;/\1${NEW_VALUE};/" "$PBXPROJ" > "$TMP"
 cat "$TMP" > "$PBXPROJ"
 
 echo "Switched profile: $PREVIOUS → $PROFILE"
