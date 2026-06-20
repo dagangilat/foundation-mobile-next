@@ -43,6 +43,22 @@ struct HomeView: View {
     @State private var isShowingVerified = false
     @State private var hasShownVerified = false
 
+    #if DEBUG
+    // DEBUG-only: force a specific tier into VerifiedView so the screen can be
+    // exercised without completing capture. nil = present the real achieved
+    // tier (and behave like the live flow). Never compiled into release.
+    @State private var debugVerifiedTier: AppConfig.Profile.TrustTier?
+    #endif
+
+    // Tier handed to the presented VerifiedView. Real achieved tier in release;
+    // a DEBUG override takes precedence when set from the debug trigger.
+    private var presentedVerifiedTier: AppConfig.Profile.TrustTier {
+        #if DEBUG
+        if let debugVerifiedTier { return debugVerifiedTier }
+        #endif
+        return AppConfig.shared.profile.trustTier
+    }
+
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
         guard let ring else { return nil }
@@ -89,6 +105,9 @@ struct HomeView: View {
                 preVerifyHome
             }
         }
+        #if DEBUG
+        .overlay(alignment: .topTrailing) { debugVerifiedTrigger }
+        #endif
         .onAppear {
             firestore.observeUser(uid: claims.uid)
             attestation.start()
@@ -129,17 +148,43 @@ struct HomeView: View {
             }
         }
         .fullScreenCover(isPresented: $isShowingVerified) {
-            let profile = AppConfig.shared.profile
             VerifiedView(
-                tier: profile.trustTier,
-                documentNoun: profile.documentNoun,
+                tier: presentedVerifiedTier,
+                documentNoun: AppConfig.shared.profile.documentNoun,
                 onEnter: {
                     isShowingVerified = false
+                    #if DEBUG
+                    // A forced-tier debug preview just dismisses, so the screen
+                    // can be reopened; only the real flow connects through.
+                    if debugVerifiedTier != nil { debugVerifiedTier = nil; return }
+                    #endif
                     hasConnected = true
                 }
             )
         }
     }
+
+    #if DEBUG
+    // Hidden dev affordance: present VerifiedView in any tier without running
+    // capture. Top-trailing, pre-connect only. Compiled out of release builds.
+    @ViewBuilder private var debugVerifiedTrigger: some View {
+        if !hasConnected {
+            Menu {
+                Button("High Security")     { debugVerifiedTier = .high;     isShowingVerified = true }
+                Button("Standard Security") { debugVerifiedTier = .standard; isShowingVerified = true }
+                Button("Low Security")      { debugVerifiedTier = .low;      isShowingVerified = true }
+                Button("Active profile")    { debugVerifiedTier = nil;       isShowingVerified = true }
+            } label: {
+                Image(systemName: "checkmark.seal")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Theme.muted)
+                    .padding(9)
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+            .padding(.top, 6).padding(.trailing, 14)
+        }
+    }
+    #endif
 
     private var preVerifyHome: some View {
         NavigationStack(path: $captureNavigationPath) {
