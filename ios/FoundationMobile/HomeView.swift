@@ -36,6 +36,13 @@ struct HomeView: View {
     // root preVerifyHome; [.capture] = pushed into the capture flow.
     @State private var captureNavigationPath = NavigationPath()
 
+    // Drives the one-time "You're verified" trust-tier screen (VerifiedView).
+    // Presented the first time capture.state reaches .sealed; the latch keeps
+    // it from re-appearing as the state re-publishes during anchoring or on a
+    // later return to this view.
+    @State private var isShowingVerified = false
+    @State private var hasShownVerified = false
+
     private var ringText: String? {
         let ring = firestore.userDoc?.ring ?? claims.ring
         guard let ring else { return nil }
@@ -109,6 +116,28 @@ struct HomeView: View {
                 }
             )
             .interactiveDismissDisabled()
+        }
+        // Celebrate + show the achieved trust tier the moment humanity is
+        // sealed. Additive to the existing seal/anchor flow: CaptureView has
+        // already dismissed at .verifying, the anchor task keeps running in
+        // the background, and this cover sits on top of preVerifyHome until
+        // the user taps through.
+        .onChange(of: capture.state) { newValue in
+            if case .sealed = newValue, !hasShownVerified {
+                hasShownVerified = true
+                isShowingVerified = true
+            }
+        }
+        .fullScreenCover(isPresented: $isShowingVerified) {
+            let profile = AppConfig.shared.profile
+            VerifiedView(
+                tier: profile.trustTier,
+                documentNoun: profile.documentNoun,
+                onEnter: {
+                    isShowingVerified = false
+                    hasConnected = true
+                }
+            )
         }
     }
 

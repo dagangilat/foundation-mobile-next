@@ -59,6 +59,26 @@ struct AppConfig: Decodable, Sendable {
         var documentNoun: String { document?.noun ?? "identity document" }
         var documentShort: String { document?.short ?? "ID" }
 
+        // The zk security classification this edition verifies to, named to
+        // match the canonical profiles (hisec-global / standardsec /
+        // lowsec-attest). Derived from the face-match source, which is the
+        // distinguishing phase: an on-chip DG2 match means the NFC chip was
+        // authenticated (High); a document-photo match is the chipless flow
+        // (Standard); no match at all is device-attest + liveness only (Low).
+        // Surfaced on the verified screen as the achieved trust tier.
+        enum TrustTier: Int, Comparable, Sendable {
+            case low = 0, standard = 1, high = 2
+            static func < (a: TrustTier, b: TrustTier) -> Bool { a.rawValue < b.rawValue }
+        }
+
+        var trustTier: TrustTier {
+            switch faceMatchSource {
+            case .dg2:           return .high
+            case .documentPhoto: return .standard
+            case .none:          return .low
+            }
+        }
+
         func requires(_ kind: ProofArtifact.Kind) -> Bool {
             requiredPhases.contains(kind.rawValue)
         }
