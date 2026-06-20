@@ -19,6 +19,12 @@ struct NFCScanView: View {
     // scan goes straight back into MRZ entry without an extra tap.
     let onScanTap: () -> Void
 
+    // The chip-bearing credential for this edition ("passport" for hisec-global,
+    // "identity card" for a chipped-eID edition, …). NFC only runs for editions
+    // that require nfcZk, so there is always a real chipped document here.
+    private var docNoun: String { AppConfig.shared.profile.documentNoun }
+    private var docNounCap: String { docNoun.prefix(1).uppercased() + docNoun.dropFirst() }
+
     var body: some View {
         VStack(spacing: 18) {
             stepIndicator
@@ -45,7 +51,7 @@ struct NFCScanView: View {
         HStack(spacing: 6) {
             Image(systemName: "2.circle.fill")
                 .foregroundStyle(Theme.brandGreen)
-            Text("Step 2 of 3 — passport scan")
+            Text("Step 2 of 3 — \(docNoun) scan")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Theme.brandGreen)
         }
@@ -53,7 +59,7 @@ struct NFCScanView: View {
         .padding(.vertical, 6)
         .background(Theme.pillBg)
         .clipShape(Capsule())
-        .accessibilityLabel("Step 2 of 3, passport scan")
+        .accessibilityLabel("Step 2 of 3, \(docNoun) scan")
     }
 
     // MARK: — hero (large illustrative icon)
@@ -92,17 +98,17 @@ struct NFCScanView: View {
         switch coordinator.state {
         case .readyForPassport:
             VStack(spacing: 8) {
-                Text("Scan your passport")
+                Text("Scan your \(docNoun)")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(Theme.text)
-                Text("Two steps: first, point your camera at the passport photo page to read the MRZ. Then hold the passport against the top-back of your iPhone for the chip read.")
+                Text("Two steps: first, point your camera at the \(docNoun) photo page to read the MRZ. Then hold the \(docNoun) against the top-back of your iPhone for the chip read.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)
             }
         case .scanningPassport:
             VStack(spacing: 8) {
-                Text("Hold your passport")
+                Text("Hold your \(docNoun)")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(Theme.text)
                 Text("near the top of your iPhone, under the camera bump. Keep still until the chip read completes.")
@@ -112,10 +118,10 @@ struct NFCScanView: View {
             }
         case .passportReady(_, let result):
             VStack(spacing: 8) {
-                Text("Passport scanned")
+                Text("\(docNounCap) scanned")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(Theme.text)
-                Text("\(prettyCountry(result.issuingCountryCode)) passport \(result.passportNumberMasked). Tap verify to sign and seal the commitment.")
+                Text("\(prettyCountry(result.issuingCountryCode)) \(docNoun) \(result.passportNumberMasked). Tap verify to sign and seal the commitment.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)
@@ -125,7 +131,7 @@ struct NFCScanView: View {
                 Text("Verification failed")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.orange)
-                Text("We couldn't sign and seal your verification. Tap retry to scan your passport again — sometimes the chip read needs a second attempt to capture the face photo cleanly.")
+                Text("We couldn't sign and seal your verification. Tap retry to scan your \(docNoun) again — sometimes the chip read needs a second attempt to capture the face photo cleanly.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)
@@ -135,7 +141,7 @@ struct NFCScanView: View {
                 Text("Scan failed")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.orange)
-                Text("Tap retry to re-scan the MRZ and try the chip read again. If it keeps failing, make sure the passport photo page is well lit and the chip is against the very top of your iPhone.")
+                Text("Tap retry to re-scan the MRZ and try the chip read again. If it keeps failing, make sure the \(docNoun) photo page is well lit and the chip is against the very top of your iPhone.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)
@@ -153,7 +159,7 @@ struct NFCScanView: View {
         case .scanningPassport:
             HStack(spacing: 12) {
                 ProgressView().progressViewStyle(.circular).tint(Theme.brandGreen)
-                Text("Reading passport chip…")
+                Text("Reading the chip…")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
             }

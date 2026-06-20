@@ -847,7 +847,7 @@ struct HomeView: View {
             // per artifact + final seal) is still running in the
             // background while they're free to navigate the home
             // screen. Capture / anchor badges are also pulsing pending.
-            backgroundProgressButton(text: "Sealing your verification…")
+            backgroundProgressButton(text: "Building your proof…")
         case .anchorPending:
             backgroundProgressButton(text: "Anchoring on devnet…")
         case .connect:

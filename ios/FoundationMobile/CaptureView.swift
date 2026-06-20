@@ -202,7 +202,7 @@ struct CaptureView: View {
                 Image(systemName: "checkmark.seal")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(Theme.brandGreen)
-                Text("\(n) frames captured — scan your passport next")
+                Text("\(n) frames captured — scan your \(AppConfig.shared.profile.documentNoun) next")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(Theme.text)
                 Spacer()
@@ -210,7 +210,7 @@ struct CaptureView: View {
         case .scanningPassport:
             HStack(spacing: 12) {
                 ProgressView().progressViewStyle(.circular).tint(Theme.brandGreen)
-                Text("Reading passport chip…")
+                Text("Reading the chip…")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Theme.text)
                 Spacer()
