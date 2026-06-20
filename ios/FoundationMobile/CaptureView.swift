@@ -12,7 +12,11 @@ struct CaptureView: View {
     // each capture stage. `shownExplainers` latches so it never repeats.
     @State private var shownExplainers: Set<ExplainerKind> = []
     @State private var pendingExplainer: ExplainerKind?
-    @Environment(\.dismiss) private var dismiss
+    // Ends the whole capture flow back to the home root. Must clear the entire
+    // navigation path — a plain `dismiss()` only pops one level, which (with the
+    // overview screen now in the stack) would strand the user on the overview
+    // checklist mid-verification instead of returning home.
+    let onFinish: () -> Void
 
     var body: some View {
         ZStack {
@@ -53,11 +57,11 @@ struct CaptureView: View {
             // the .verifying transition.
             switch newValue {
             case .verifying:
-                dismiss()
+                onFinish()
             case .sealed:
                 Task {
                     try? await Task.sleep(for: .milliseconds(AppConfig.shared.captureView.postSealDismissMs))
-                    dismiss()
+                    onFinish()
                 }
             default:
                 break
@@ -103,7 +107,14 @@ struct CaptureView: View {
         .fullScreenCover(item: $pendingExplainer) { kind in
             StepExplainerView(
                 step: ExplainerCatalog.step(kind, profile: AppConfig.shared.profile),
-                onReady: { pendingExplainer = nil }
+                onReady: {
+                    pendingExplainer = nil
+                    // The scan explainer leads straight into the rear-camera
+                    // document capture — so the back camera opens only after
+                    // the user has read the page and tapped "I'm ready", never
+                    // lingering on the front camera first.
+                    if kind == .scan { isShowingDocPhoto = true }
+                }
             )
         }
     }
@@ -119,20 +130,39 @@ struct CaptureView: View {
         case .failed(let msg):
             failedBanner(msg)
         default:
-            // Once we leave the pose-capture phase the live camera
-            // preview isn't useful — swap to the NFC host view, passing
-            // the MRZ-sheet trigger closure so the "Scan passport" CTA
-            // and the retry path can open MRZScanView without CaptureView
-            // knowing the NFC panel's internal state machine.
+            // Show the front-camera preview ONLY during the live pose loop.
+            // Lingering on the selfie camera while waiting to scan a document
+            // reads as creepy, so other stages get the NFC host (chip flow) or
+            // a calm static panel — the rear camera opens on demand in its own
+            // sheet, after the user has read the explainer and tapped through.
             if shouldShowNFCPanel {
                 NFCScanView(coordinator: coordinator) {
                     isShowingMRZScan = true
                 }
-            } else {
+            } else if shouldShowLiveCamera {
                 liveCapturePanel
+            } else {
+                staticPanel
             }
         }
         #endif
+    }
+
+    // Front-camera preview is only meaningful during the active-liveness pose
+    // loop. Every other non-NFC stage hides it (see `content`).
+    private var shouldShowLiveCamera: Bool {
+        if case .readyForPose = coordinator.state { return true }
+        return false
+    }
+
+    // Camera-free panel for stages that don't need the selfie preview
+    // (document hand-off, verifying, sealed, failed). Just the prompt + action.
+    private var staticPanel: some View {
+        VStack(spacing: 16) {
+            promptBlock
+            primaryButton
+            Spacer(minLength: 0)
+        }
     }
 
     // True once we've left the pose-capture path — i.e. we're in the
@@ -333,7 +363,7 @@ struct CaptureView: View {
             // re-enters in .sealed state, .onChange never fires and the
             // user is stuck. Make Done tappable so manual exit always
             // works.
-            bigGreenButton(title: "Done") { dismiss() }
+            bigGreenButton(title: "Done") { onFinish() }
         case .idle, .needsAttestation, .unsupported:
             EmptyView()
         }

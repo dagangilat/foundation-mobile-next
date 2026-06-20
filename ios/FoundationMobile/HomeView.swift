@@ -251,7 +251,10 @@ struct HomeView: View {
                 case .overview:
                     VerificationOverviewView(onStart: { captureNavigationPath.append(Route.capture) })
                 case .capture:
-                    CaptureView()
+                    // Finish clears the WHOLE path (overview + capture) back to
+                    // the home root — not a one-level pop, which would land on
+                    // the overview checklist mid-verification.
+                    CaptureView(onFinish: { captureNavigationPath = NavigationPath() })
                 }
             }
         }

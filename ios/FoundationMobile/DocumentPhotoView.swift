@@ -115,6 +115,12 @@ final class DocumentPhotoSession: NSObject, ObservableObject {
     private static let HOLD_DURATION_MS: Int = 500
     private static let STABILITY_FRACTION: CGFloat = 0.04  // ~4% of frame width
 
+    // Don't auto-capture for the first few seconds after the camera opens, so
+    // the user has time to line the document's photo page up in frame. Manual
+    // "Capture now" still fires immediately.
+    private static let ARMING_DELAY_S: TimeInterval = 3
+    private var armedAt: Date?
+
     private var stableSince: Date?
     private var lastCenter: CGPoint?
     private var pendingManualCapture = false
@@ -122,6 +128,7 @@ final class DocumentPhotoSession: NSObject, ObservableObject {
     private var lastFaceBBox: CGRect?
 
     func start() {
+        armedAt = Date().addingTimeInterval(Self.ARMING_DELAY_S)
         Task { await ensureRunning() }
     }
 
@@ -237,9 +244,12 @@ final class DocumentPhotoSession: NSObject, ObservableObject {
         lastCenter = center
 
         let elapsedMs = stableSince.map { Int(Date().timeIntervalSince($0) * 1000) } ?? 0
-        if elapsedMs >= Self.HOLD_DURATION_MS || pendingManualCapture {
+        let armed = armedAt.map { Date() >= $0 } ?? true
+        if (elapsedMs >= Self.HOLD_DURATION_MS && armed) || pendingManualCapture {
             pendingManualCapture = false
             performCapture(pixelBuffer: pixelBuffer, faceBBox: detection.boundingBox)
+        } else if !armed {
+            onStatus?("Line up the photo page…")
         } else {
             onStatus?("Hold steady… (\(elapsedMs)ms)")
         }
