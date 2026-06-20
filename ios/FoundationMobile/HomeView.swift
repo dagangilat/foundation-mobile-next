@@ -44,19 +44,27 @@ struct HomeView: View {
     @State private var hasShownVerified = false
 
     #if DEBUG
-    // DEBUG-only: force a specific tier into VerifiedView so the screen can be
-    // exercised without completing capture. nil = present the real achieved
-    // tier (and behave like the live flow). Never compiled into release.
+    // DEBUG-only overrides so VerifiedView can be previewed as any edition
+    // without completing capture or rebuilding for that profile. nil = present
+    // the real baked profile (and behave like the live flow). Never compiled
+    // into release. Set together from the gear menu's edition picker.
     @State private var debugVerifiedTier: AppConfig.Profile.TrustTier?
+    @State private var debugVerifiedNoun: String?
     #endif
 
-    // Tier handed to the presented VerifiedView. Real achieved tier in release;
-    // a DEBUG override takes precedence when set from the debug trigger.
+    // Tier / document noun handed to the presented VerifiedView. Real baked
+    // profile in release; DEBUG overrides take precedence when set.
     private var presentedVerifiedTier: AppConfig.Profile.TrustTier {
         #if DEBUG
         if let debugVerifiedTier { return debugVerifiedTier }
         #endif
         return AppConfig.shared.profile.trustTier
+    }
+    private var presentedVerifiedNoun: String {
+        #if DEBUG
+        if let debugVerifiedNoun { return debugVerifiedNoun }
+        #endif
+        return AppConfig.shared.profile.documentNoun
     }
 
     private var ringText: String? {
@@ -150,13 +158,15 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $isShowingVerified) {
             VerifiedView(
                 tier: presentedVerifiedTier,
-                documentNoun: AppConfig.shared.profile.documentNoun,
+                documentNoun: presentedVerifiedNoun,
                 onEnter: {
                     isShowingVerified = false
                     #if DEBUG
-                    // A forced-tier debug preview just dismisses, so the screen
-                    // can be reopened; only the real flow connects through.
-                    if debugVerifiedTier != nil { debugVerifiedTier = nil; return }
+                    // A debug edition preview just dismisses, so the screen can
+                    // be reopened; only the real flow connects through.
+                    if debugVerifiedTier != nil || debugVerifiedNoun != nil {
+                        debugVerifiedTier = nil; debugVerifiedNoun = nil; return
+                    }
                     #endif
                     hasConnected = true
                 }
@@ -165,17 +175,46 @@ struct HomeView: View {
     }
 
     #if DEBUG
-    // Hidden dev affordance: present VerifiedView in any tier without running
-    // capture. Top-trailing, pre-connect only. Compiled out of release builds.
+    // Edition vocabulary for the debug preview, mirroring the 7 profile JSONs
+    // (id → menu label, document noun, achieved tier). Lets the verified screen
+    // be viewed as any edition without rebuilding for that profile. DEBUG only.
+    private struct DebugEdition: Identifiable {
+        let id: String
+        let label: String
+        let noun: String
+        let tier: AppConfig.Profile.TrustTier
+    }
+    private static let debugEditions: [DebugEdition] = [
+        .init(id: "hisec-global",  label: "High Security — Global", noun: "passport",          tier: .high),
+        .init(id: "standardsec",   label: "Standard Security",      noun: "identity document", tier: .standard),
+        .init(id: "lowsec-attest", label: "Low Security",           noun: "identity document", tier: .low),
+        .init(id: "foundation",    label: "Foundation",             noun: "identity document", tier: .standard),
+        .init(id: "moma",          label: "MoMA Member",            noun: "driver's license",  tier: .standard),
+        .init(id: "tel-aviv",      label: "Tel Aviv",               noun: "identity card",     tier: .standard),
+        .init(id: "san-francisco", label: "San Francisco",          noun: "identity card",     tier: .standard),
+    ]
+
+    // Hidden dev affordance: gear menu to preview VerifiedView as any edition
+    // without running capture. Top-trailing, pre-connect only. Release-stripped.
     @ViewBuilder private var debugVerifiedTrigger: some View {
         if !hasConnected {
             Menu {
-                Button("High Security")     { debugVerifiedTier = .high;     isShowingVerified = true }
-                Button("Standard Security") { debugVerifiedTier = .standard; isShowingVerified = true }
-                Button("Low Security")      { debugVerifiedTier = .low;      isShowingVerified = true }
-                Button("Active profile")    { debugVerifiedTier = nil;       isShowingVerified = true }
+                Section("Preview verified — edition") {
+                    ForEach(Self.debugEditions) { ed in
+                        Button(ed.label) {
+                            debugVerifiedTier = ed.tier
+                            debugVerifiedNoun = ed.noun
+                            isShowingVerified = true
+                        }
+                    }
+                }
+                Button("Active profile (live)") {
+                    debugVerifiedTier = nil
+                    debugVerifiedNoun = nil
+                    isShowingVerified = true
+                }
             } label: {
-                Image(systemName: "checkmark.seal")
+                Image(systemName: "gearshape.fill")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(Theme.muted)
                     .padding(9)
