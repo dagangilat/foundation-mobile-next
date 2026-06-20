@@ -28,6 +28,7 @@
 		5D22B61434305A98BFF847C5 /* SupportSessionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1163C5E52DF2BDF32EE7D10 /* SupportSessionTracker.swift */; };
 		5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */ = {isa = PBXBuildFile; productRef = BEF059432CE00682A25A1D51 /* NFCPassportReader */; };
 		5F1E2B3C4D5E6F7A8B9C0D1E /* MoproSmokeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */; };
+		5F5EF541748BEB192766D1A8 /* ProfileTierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89AE70968D788F056BF64B /* ProfileTierTests.swift */; };
 		5FE07A47373B2A0BFC93A828 /* PairingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E8BCD934051CD421D01402 /* PairingCoordinator.swift */; };
 		6A1E2B3C4D5E6F7A8B9C0D1E /* LivenessFrameProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */; };
 		6B1E2B3C4D5E6F7A8B9C0D1E /* CaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2F3A4B5C6D7E8F9A0B1C2D /* CaptureCoordinator.swift */; };
@@ -131,6 +132,7 @@
 		7D11AA22BB33CC44DD55EE62 /* VerifiedView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerifiedView.swift; path = FoundationMobile/VerifiedView.swift; sourceTree = "<group>"; };
 		7D2F3A4B5C6D7E8F9A0B1C2D /* PassportNfcProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PassportNfcProducer.swift; path = FoundationMobile/PassportNfcProducer.swift; sourceTree = "<group>"; };
 		8351F183C8FF3D833804FC09 /* SolanaRPC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SolanaRPC.swift; path = FoundationMobile/SolanaRPC.swift; sourceTree = "<group>"; };
+		8C89AE70968D788F056BF64B /* ProfileTierTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ProfileTierTests.swift; path = FoundationMobileTests/ProfileTierTests.swift; sourceTree = "<group>"; };
 		8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceTracker.swift; path = FoundationMobile/FaceTracker.swift; sourceTree = "<group>"; };
 		8F2F3A4B5C6D7E8F9A0B1C2D /* FaceEllipseOverlay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FaceEllipseOverlay.swift; path = FoundationMobile/FaceEllipseOverlay.swift; sourceTree = "<group>"; };
 		8F8C681943614A55B4EC0094 /* FirestoreService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FirestoreService.swift; path = FoundationMobile/FirestoreService.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 			isa = PBXGroup;
 			children = (
 				46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */,
+				8C89AE70968D788F056BF64B /* ProfileTierTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -526,6 +529,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EC1942400F85EFB78C396BE /* SmokeTests.swift in Sources */,
+				5F5EF541748BEB192766D1A8 /* ProfileTierTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
