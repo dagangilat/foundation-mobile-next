@@ -27,7 +27,28 @@ set -e
 # clean). Building a branded profile (e.g. MoMA) overwrites them; building a
 # default profile restores them.
 
-PROFILE="${FOUNDATION_PROFILE:-hisec-global}"
+# Locate the project. Under Xcode, SRCROOT points at the ios/ dir. Run from a
+# terminal it's empty, so derive it from this script's location (scripts/ lives
+# directly under the project root) — letting the tool work from any directory,
+# matching select-profile.sh.
+if [ -z "${SRCROOT:-}" ]; then
+    SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+    SRCROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+fi
+
+# Pick the profile. Xcode sets FOUNDATION_PROFILE from the build settings. From
+# the CLI it's usually unset, so fall back to the profile currently selected in
+# the Xcode project (so a manual run mirrors what the next build would do)
+# before finally defaulting to hisec-global.
+PROFILE="${FOUNDATION_PROFILE:-}"
+if [ -z "$PROFILE" ]; then
+    PBXPROJ="${SRCROOT}/FoundationMobile.xcodeproj/project.pbxproj"
+    if [ -f "$PBXPROJ" ]; then
+        PROFILE=$(sed -n -E 's/^[[:space:]]*FOUNDATION_PROFILE[[:space:]]*=[[:space:]]*([A-Za-z0-9_.-]+);.*/\1/p' "$PBXPROJ" | head -n1)
+    fi
+fi
+PROFILE="${PROFILE:-hisec-global}"
+
 LOGOS_ROOT="${SRCROOT}/FoundationMobile/Resources/launch-logos"
 BACKGROUNDS_ROOT="${SRCROOT}/FoundationMobile/Resources/launch-backgrounds"
 IMAGESET="${SRCROOT}/FoundationMobile/Images.xcassets/LaunchLogo.imageset"
