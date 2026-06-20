@@ -248,6 +248,8 @@ struct HomeView: View {
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: HomeView.Route.self) { route in
                 switch route {
+                case .overview:
+                    VerificationOverviewView(onStart: { captureNavigationPath.append(Route.capture) })
                 case .capture:
                     CaptureView()
                 }
@@ -256,6 +258,7 @@ struct HomeView: View {
     }
 
     enum Route: Hashable {
+        case overview
         case capture
     }
 
@@ -933,7 +936,7 @@ struct HomeView: View {
             return
         }
         guard BiometricSealer.shared.isAvailable else {
-            captureNavigationPath.append(Route.capture)
+            captureNavigationPath.append(Route.overview)
             return
         }
         // Sign uid + the current second so the signature is bound to
@@ -961,7 +964,7 @@ struct HomeView: View {
             // own per-step protections still apply.
             print("[HomeView] biometric gate skipped: \(error)")
         }
-        captureNavigationPath.append(Route.capture)
+        captureNavigationPath.append(Route.overview)
     }
 
     private func shortHash(_ hex: String) -> String {
