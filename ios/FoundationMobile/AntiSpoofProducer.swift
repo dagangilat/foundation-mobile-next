@@ -68,7 +68,15 @@ struct AntiSpoofProducer: ProofProducer {
     func produce() async throws -> ProofArtifact {
         var perFrameRealProb: [Float] = []
         for jpeg in selfieJpegs {
-            guard let cg = Self.decodeJPEG(jpeg) else { throw Failure.decodeFailed }
+            guard let raw = Self.decodeJPEG(jpeg) else { throw Failure.decodeFailed }
+            // Liveness JPEGs are stored in raw front-camera sensor orientation
+            // (sideways-mirrored) — LivenessFrameEncoder bakes no rotation in,
+            // and FaceTracker interprets them as `.leftMirrored`. Silent-Face
+            // MiniFAS expects UPRIGHT faces, so a sideways crop scores ~0 "real"
+            // on every frame. Re-orient to upright before crop + inference.
+            // (faceMatch survives the raw orientation because it embeds the
+            // whole frame and MobileFaceNet is orientation-tolerant.)
+            let cg = Self.uprightFromLeftMirrored(raw)
             let faceCG = (try? Self.cropFace(cg)) ?? Self.centreCrop(cg)
             guard let resized = Self.resize(faceCG, width: 80, height: 80) else {
                 throw Failure.decodeFailed
@@ -146,6 +154,15 @@ struct AntiSpoofProducer: ProofProducer {
     private static func decodeJPEG(_ data: Data) -> CGImage? {
         guard let src = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
         return CGImageSourceCreateImageAtIndex(src, 0, nil)
+    }
+
+    // Re-orient a raw front-camera liveness frame to upright. `.leftMirrored`
+    // matches the orientation FaceTracker passes to Vision for the same frames,
+    // so the result is the upright, correctly-handed face MiniFAS expects.
+    private static func uprightFromLeftMirrored(_ image: CGImage) -> CGImage {
+        let oriented = CIImage(cgImage: image).oriented(.leftMirrored)
+        let ctx = CIContext(options: nil)
+        return ctx.createCGImage(oriented, from: oriented.extent) ?? image
     }
 
     // Vision returns bounding boxes in normalized image coords with the
