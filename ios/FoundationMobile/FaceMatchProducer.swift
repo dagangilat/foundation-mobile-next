@@ -3,6 +3,7 @@ import CoreGraphics
 import CryptoKit
 import UIKit
 import CoreImage
+import Vision
 
 // Phase 6 — real `.faceMatch` artifact. Replaces MockFaceMatchProducer when
 // the active profile requires .faceMatch.
@@ -78,6 +79,7 @@ struct FaceMatchProducer: ProofProducer {
 
         let distance = type(of: embedder).cosineDistance(refEmbedding, selfieEmbedding)
         let accepted = distance <= threshold
+        print("[FaceMatch] distance=\(String(format: "%.4f", distance)) threshold=\(threshold) accepted=\(accepted)")
         guard accepted else { throw FaceEmbedderError.faceMatchRejected(distance) }
 
         let selfieHash = Data(SHA256.hash(data: selfieJpeg))
@@ -112,8 +114,42 @@ struct FaceMatchProducer: ProofProducer {
     }
 
     private static func decodeSelfie(jpeg: Data) -> CGImage? {
-        guard let src = CGImageSourceCreateWithData(jpeg as CFData, nil) else { return nil }
-        return CGImageSourceCreateImageAtIndex(src, 0, nil)
+        guard let src = CGImageSourceCreateWithData(jpeg as CFData, nil),
+              let raw = CGImageSourceCreateImageAtIndex(src, 0, nil) else { return nil }
+        // Liveness JPEGs are stored in raw front-camera sensor orientation
+        // (sideways-mirrored). Re-orient to upright (.leftMirrored, matching
+        // FaceTracker) and crop to the face so the embedding aligns with the
+        // upright, face-cropped reference — embedding the whole sideways frame
+        // drifts the cosine distance above threshold (observed ~0.63 > 0.55).
+        let upright = CIImage(cgImage: raw).oriented(.leftMirrored)
+        guard let uprightCG = CIContext(options: nil).createCGImage(upright, from: upright.extent) else {
+            return raw
+        }
+        return (try? cropFace(uprightCG)) ?? uprightCG
+    }
+
+    // Tightest face box + 25% padding, matching the document-photo reference
+    // crop. Falls back (via the caller) to the whole upright frame on a miss.
+    private static func cropFace(_ image: CGImage) throws -> CGImage {
+        let request = VNDetectFaceRectanglesRequest()
+        request.revision = VNDetectFaceRectanglesRequestRevision3
+        try VNImageRequestHandler(cgImage: image, options: [:]).perform([request])
+        guard let face = (request.results ?? []).max(by: { $0.confidence < $1.confidence }) else {
+            throw FaceEmbedderError.imageRenderFailed
+        }
+        let w = CGFloat(image.width), h = CGFloat(image.height)
+        let bb = face.boundingBox
+        let pad: CGFloat = 0.25
+        let rect = CGRect(
+            x: (bb.minX - pad * bb.width) * w,
+            y: (1 - bb.maxY - pad * bb.height) * h,
+            width: (1 + 2 * pad) * bb.width * w,
+            height: (1 + 2 * pad) * bb.height * h
+        ).intersection(CGRect(x: 0, y: 0, width: w, height: h))
+        guard rect.width > 1, rect.height > 1, let cropped = image.cropping(to: rect) else {
+            throw FaceEmbedderError.imageRenderFailed
+        }
+        return cropped
     }
 }
 
