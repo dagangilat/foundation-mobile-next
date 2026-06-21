@@ -78,6 +78,11 @@ struct AntiSpoofProducer: ProofProducer {
             perFrameRealProb.append((p2 + p1se) / 2)
         }
         let score: Float = perFrameRealProb.reduce(0, +) / Float(perFrameRealProb.count)
+        // Diagnostic (unconditional — staging/TF are Release): per-frame "real"
+        // probabilities + mean. A uniformly near-zero spread points at a
+        // systematic preprocessing problem (crop / colour / orientation), not
+        // lighting; a mixed spread points at a few bad frames.
+        print("[AntiSpoof] frames=\(selfieJpegs.count) perFrameReal=\(perFrameRealProb.map { String(format: "%.3f", $0) }) mean=\(String(format: "%.4f", score)) threshold=\(threshold)")
         let accepted = score >= threshold
         guard accepted else { throw Failure.rejected(score) }
 

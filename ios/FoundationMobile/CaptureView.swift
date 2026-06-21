@@ -12,6 +12,10 @@ struct CaptureView: View {
     // each capture stage. `shownExplainers` latches so it never repeats.
     @State private var shownExplainers: Set<ExplainerKind> = []
     @State private var pendingExplainer: ExplainerKind?
+    // Set when the scan explainer is dismissed; the rear-camera sheet is then
+    // presented from the cover's onDismiss (after it's fully gone) so the two
+    // presentations don't race and stall the camera session.
+    @State private var openDocAfterExplainer = false
     // Ends the whole capture flow back to the home root. Must clear the entire
     // navigation path — a plain `dismiss()` only pops one level, which (with the
     // overview screen now in the stack) would strand the user on the overview
@@ -104,16 +108,25 @@ struct CaptureView: View {
                 pendingExplainer = kind
             }
         }
-        .fullScreenCover(item: $pendingExplainer) { kind in
+        .fullScreenCover(item: $pendingExplainer, onDismiss: {
+            // Open the rear-camera sheet only AFTER the explainer cover is fully
+            // gone. Presenting it in the same runloop tick as the dismiss raced
+            // the AVCaptureSession startup, so the first open showed a dead
+            // preview ("Capture now" disabled) until a cancel + retry.
+            if openDocAfterExplainer {
+                openDocAfterExplainer = false
+                isShowingDocPhoto = true
+            }
+        }) { kind in
             StepExplainerView(
                 step: ExplainerCatalog.step(kind, profile: AppConfig.shared.profile),
                 onReady: {
-                    pendingExplainer = nil
                     // The scan explainer leads straight into the rear-camera
-                    // document capture — so the back camera opens only after
-                    // the user has read the page and tapped "I'm ready", never
-                    // lingering on the front camera first.
-                    if kind == .scan { isShowingDocPhoto = true }
+                    // document capture (opened in onDismiss above), so the back
+                    // camera appears only after the user taps "I'm ready" — and
+                    // never lingers on the front camera first.
+                    if kind == .scan { openDocAfterExplainer = true }
+                    pendingExplainer = nil
                 }
             )
         }
