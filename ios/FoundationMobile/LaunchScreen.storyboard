@@ -22,10 +22,10 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="LaunchBackground"/>
                         <constraints>
-                            <constraint firstItem="logo" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="lcx"/>
-                            <constraint firstItem="logo" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="lcy"/>
-                            <constraint firstItem="logo" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" multiplier="0.7" id="lw"/>
-                            <constraint firstItem="logo" firstAttribute="height" secondItem="logo" secondAttribute="width" id="lh"/>
+                            <constraint firstItem="logo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="llead"/>
+                            <constraint firstItem="logo" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="ltop"/>
+                            <constraint firstItem="logo" firstAttribute="height" constant="33" id="lh"/>
+                            <constraint firstItem="logo" firstAttribute="width" secondItem="logo" secondAttribute="height" multiplier="4.9224137931034484" id="lw"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -35,9 +35,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchLogo" width="400" height="400"/>
+        <image name="LaunchLogo" width="571" height="116"/>
         <namedColor name="LaunchBackground">
-            <color red="0.039215686274509803" green="0.054901960784313725" blue="0.15294117647058825" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.039215686274509803" green="0.074509803921568626" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

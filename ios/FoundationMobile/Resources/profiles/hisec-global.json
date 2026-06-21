@@ -78,8 +78,11 @@
     "scanBudgetSeconds": 3
   },
   "theme": {
-    "palette": "obsidian",
+    "palette": "steel",
     "branding": {
+      "logo": {
+        "asset": "HiSecLogo"
+      },
       "hero": {
         "mode": "pillars"
       }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- Hand-authored mark concepts for the High Security — Global edition.
+     Neutral platinum-on-slate so the FORM reads; palette applied after a pick. -->
+<html><head><meta charset="utf-8"><style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;}
+  body{background:#070a10;padding:40px;}
+  .row{display:flex;gap:28px;justify-content:center;align-items:flex-start;flex-wrap:wrap;}
+  .card{width:240px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+  .tile{width:240px;height:240px;border-radius:28px;background:#11141b;
+    border:1px solid #232a36;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  svg{width:140px;height:140px;}
+  .pl{stroke:#e3e8ef;}            /* platinum stroke */
+  .pl-d{stroke:#9aa3b2;}          /* dimmer secondary */
+  .name{color:#fff;font-size:16px;font-weight:700;letter-spacing:.2px;}
+  .desc{color:#8a93a3;font-size:12px;text-align:center;line-height:1.4;}
+  .wm{display:flex;align-items:center;gap:9px;margin-top:2px;}
+  .wm svg{width:26px;height:26px;}
+  .wm .t{color:#e3e8ef;font-size:15px;font-weight:800;letter-spacing:.5px;}
+  .wm .t b{color:#fff;}
+</style></head>
+<body>
+<div class="row">
+
+  <!-- A — AEGIS: shield + globe meridians (global + protected) -->
+  <div class="card">
+    <div class="tile">
+      <svg viewBox="0 0 100 100" fill="none" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path class="pl" d="M50 7 L85 19 V49 C85 72 70 87 50 94 C30 87 15 72 15 49 V19 Z"/>
+        <circle class="pl-d" cx="50" cy="49" r="20" stroke-width="2.4"/>
+        <ellipse class="pl-d" cx="50" cy="49" rx="8" ry="20" stroke-width="2.4"/>
+        <path class="pl-d" d="M31 42 H69 M31 56 H69" stroke-width="2.4"/>
+      </svg>
+    </div>
+    <div class="name">A · Aegis</div>
+    <div class="desc">Shield + globe meridians — "global, protected." Closest to the Foundation shield, elevated.</div>
+    <div class="wm">
+      <svg viewBox="0 0 100 100" fill="none" stroke-width="6" stroke-linejoin="round">
+        <path class="pl" d="M50 7 L85 19 V49 C85 72 70 87 50 94 C30 87 15 72 15 49 V19 Z"/>
+        <circle class="pl-d" cx="50" cy="49" r="20"/><ellipse class="pl-d" cx="50" cy="49" rx="8" ry="20"/>
+      </svg>
+      <div class="t">FOUNDATION<b> · HS</b></div>
+    </div>
+  </div>
+
+  <!-- B — SENTINEL: hexagon + verified chevron (secure container + verified) -->
+  <div class="card">
+    <div class="tile">
+      <svg viewBox="0 0 100 100" fill="none" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path class="pl" d="M50 8 L84 28 V72 L50 92 L16 72 V28 Z"/>
+        <path class="pl-d" d="M33 52 L45 64 L70 37" stroke-width="3.4"/>
+      </svg>
+    </div>
+    <div class="name">B · Sentinel</div>
+    <div class="desc">Hexagon + verified chevron — "secured + verified." Modern, crypto-native, no shield.</div>
+    <div class="wm">
+      <svg viewBox="0 0 100 100" fill="none" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+        <path class="pl" d="M50 8 L84 28 V72 L50 92 L16 72 V28 Z"/>
+        <path class="pl-d" d="M33 52 L45 64 L70 37"/>
+      </svg>
+      <div class="t">FOUNDATION<b> · HS</b></div>
+    </div>
+  </div>
+
+  <!-- C — MERIDIAN: globe + keyhole (global identity, secured) -->
+  <div class="card">
+    <div class="tile">
+      <svg viewBox="0 0 100 100" fill="none" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <circle class="pl" cx="50" cy="50" r="38"/>
+        <ellipse class="pl-d" cx="50" cy="50" rx="15" ry="38" stroke-width="2.4"/>
+        <path class="pl-d" d="M14 38 H86 M12 62 H88" stroke-width="2.4"/>
+        <circle class="pl" cx="50" cy="46" r="7"/>
+        <path class="pl" d="M50 53 V64" stroke-width="4"/>
+      </svg>
+    </div>
+    <div class="name">C · Meridian</div>
+    <div class="desc">Globe + keyhole — "global identity, locked." Most distinct; reads financial/institutional.</div>
+    <div class="wm">
+      <svg viewBox="0 0 100 100" fill="none" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+        <circle class="pl" cx="50" cy="50" r="38"/><ellipse class="pl-d" cx="50" cy="50" rx="15" ry="38"/>
+        <circle class="pl" cx="50" cy="46" r="7"/><path class="pl" d="M50 53 V64"/>
+      </svg>
+      <div class="t">FOUNDATION<b> · HS</b></div>
+    </div>
+  </div>
+
+</div>
+</body></html>

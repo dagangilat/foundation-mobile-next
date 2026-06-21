@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- Faithful mock of the result: launch screen (storyboard) vs in-app LoadingView.
+     Both = same Aegis lockup, top-left ~33pt, on steel. -->
+<html><head><meta charset="utf-8"><style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;}
+  body{background:#05070b;padding:44px;}
+  .row{display:flex;gap:40px;justify-content:center;align-items:flex-start;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .phone{width:300px;height:650px;border-radius:48px;border:11px solid #161d33;background:#0a1320;
+    position:relative;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.55);}
+  .notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:96px;height:26px;background:#000;border-radius:14px;z-index:5;}
+  .lockup{position:absolute;left:20px;top:62px;height:34px;}     /* top-left ~33pt below safe area */
+  .lockup img{height:34px;display:block;}
+  /* loading extras */
+  .pillars{position:absolute;left:20px;top:150px;right:20px;display:flex;flex-direction:column;gap:14px;}
+  .pill{height:74px;border-radius:18px;background:#102236;border:1px solid #1e3a5a;display:flex;align-items:center;padding:0 16px;gap:12px;}
+  .dot{width:30px;height:30px;border-radius:9px;}
+  .pl-t{color:#eaf2fb;font-weight:700;font-size:14px;}
+  .pl-s{color:#8aa0bd;font-size:11px;}
+  .footer{position:absolute;left:0;right:0;bottom:42px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .ftxt{color:#8aa0bd;font-size:12px;}
+  .bar{width:160px;height:2px;border-radius:2px;background:#102236;overflow:hidden;position:relative;}
+  .bar i{position:absolute;left:10%;width:40%;height:100%;background:#38bdf8;border-radius:2px;}
+  .cap{color:#9aa3c7;font-size:13px;font-weight:600;}
+  .sub{color:#6b7488;font-size:11px;}
+</style></head>
+<body>
+<div class="row">
+
+  <!-- FIRST: launch screen (storyboard) -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="lockup"><img src="lockup@2x.png"></div>
+    </div>
+    <div class="cap">1 · Launch screen (storyboard)</div>
+    <div class="sub">lockup top-left · steel bg</div>
+  </div>
+
+  <!-- SECOND: in-app LoadingView -->
+  <div class="col">
+    <div class="phone"><div class="notch"></div>
+      <div class="lockup"><img src="lockup@2x.png"></div>
+      <div class="pillars">
+        <div class="pill"><div class="dot" style="background:#38bdf8"></div><div><div class="pl-t">Your Voice</div><div class="pl-s">verified, counted once</div></div></div>
+        <div class="pill"><div class="dot" style="background:#22d3ee"></div><div><div class="pl-t">Share</div><div class="pl-s">propose &amp; support</div></div></div>
+        <div class="pill"><div class="dot" style="background:#5eead4"></div><div><div class="pl-t">Market</div><div class="pl-s">across communities</div></div></div>
+      </div>
+      <div class="footer">
+        <div class="ftxt">Loading Foundation…</div>
+        <div class="bar"><i></i></div>
+      </div>
+    </div>
+    <div class="cap">2 · In-app LoadingView</div>
+    <div class="sub">same lockup top-left → seamless</div>
+  </div>
+
+</div>
+</body></html>
