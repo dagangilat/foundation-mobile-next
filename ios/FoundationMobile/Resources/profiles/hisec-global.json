@@ -2,30 +2,73 @@
   "schemaVersion": 4,
   "profile": {
     "id": "hisec-global",
-    "label": "High Security — Global",
+    "label": "High Security \u2014 Global",
     "description": "Full credentialed identity. Requires App Attest + ePassport NFC + active liveness + anti-spoof + face match against the on-chip DG2 photo. Suitable for global civic identity and financial-grade identity claims.",
-    "requiredPhases": ["appAttest", "nfcZk", "liveness", "antiSpoof", "faceMatch"],
+    "requiredPhases": [
+      "appAttest",
+      "nfcZk",
+      "liveness",
+      "antiSpoof",
+      "faceMatch"
+    ],
     "faceMatchSource": "dg2",
-    "document": { "noun": "passport", "short": "passport" }
+    "document": {
+      "noun": "passport",
+      "short": "passport"
+    }
   },
   "splash": {
     "minDurationMs": 900
   },
   "loading": {
-    "phaseThresholdsMs": [0, 1500, 3500, 7000]
+    "phaseThresholdsMs": [
+      0,
+      1500,
+      3500,
+      7000
+    ]
   },
   "liveness": {
     "scanBudgetSeconds": 15,
     "poseHoldMs": 250,
-    "activePoses": ["straight", "left", "right"],
+    "activePoses": [
+      "straight",
+      "left",
+      "right"
+    ],
     "frameStride": 2,
     "minConfidence": 0.5,
     "poses": {
-      "straight": {"yaw":  0.00, "pitch":  0.00, "yawTolerance": 0.18, "pitchTolerance": 0.18},
-      "left":     {"yaw": -0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
-      "right":    {"yaw":  0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
-      "up":       {"yaw":  0.00, "pitch":  0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15},
-      "down":     {"yaw":  0.00, "pitch": -0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15}
+      "straight": {
+        "yaw": 0.0,
+        "pitch": 0.0,
+        "yawTolerance": 0.18,
+        "pitchTolerance": 0.18
+      },
+      "left": {
+        "yaw": -0.45,
+        "pitch": 0.0,
+        "yawTolerance": 0.15,
+        "pitchTolerance": 0.3
+      },
+      "right": {
+        "yaw": 0.45,
+        "pitch": 0.0,
+        "yawTolerance": 0.15,
+        "pitchTolerance": 0.3
+      },
+      "up": {
+        "yaw": 0.0,
+        "pitch": 0.35,
+        "yawTolerance": 0.25,
+        "pitchTolerance": 0.15
+      },
+      "down": {
+        "yaw": 0.0,
+        "pitch": -0.35,
+        "yawTolerance": 0.25,
+        "pitchTolerance": 0.15
+      }
     }
   },
   "camera": {
@@ -35,7 +78,12 @@
     "scanBudgetSeconds": 3
   },
   "theme": {
-    "palette": "midnight"
+    "palette": "obsidian",
+    "branding": {
+      "hero": {
+        "mode": "pillars"
+      }
+    }
   },
   "captureView": {
     "postSealDismissMs": 900
@@ -60,7 +108,7 @@
     {
       "id": "production",
       "name": "Production",
-      "description": "Live platform — foundation-global.com",
+      "description": "Live platform \u2014 foundation-global.com",
       "version": "1.0",
       "webUrl": "https://foundation-global.com",
       "plist": "GoogleService-Info"
@@ -68,7 +116,7 @@
     {
       "id": "staging",
       "name": "Staging",
-      "description": "Test environment — staging.foundation-global.com",
+      "description": "Test environment \u2014 staging.foundation-global.com",
       "version": "1.0-rc",
       "webUrl": "https://staging.foundation-global.com",
       "plist": "GoogleService-Info-staging"

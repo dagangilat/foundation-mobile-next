@@ -110,13 +110,25 @@ extension ThemePalette {
         text: Color(hex: 0xfdf2f8), onAccent: Color(hex: 0x2a0a00), isDark: true
     )
 
+    // obsidian = the High Security — Global edition. Near-black "vault" base
+    // with a gold primary accent + platinum/steel secondaries — financial-grade,
+    // distinct from both the Foundation green and the MoMA light theme.
+    static let obsidian = ThemePalette(
+        bg: Color(hex: 0x0b0d12), surface: Color(hex: 0x15171e),
+        border: Color(hex: 0x2c3142), muted: Color(hex: 0x9aa3b2),
+        brandGreen: Color(hex: 0xe8b54d), brandCyan: Color(hex: 0xc7ced9),
+        voice: Color(hex: 0xe8b54d), share: Color(hex: 0xc7ced9), market: Color(hex: 0x8aa0bd),
+        text: Color(hex: 0xf5f6f8), onAccent: Color(hex: 0x1a1206), isDark: true
+    )
+
     static func named(_ name: String) -> ThemePalette {
         switch name.lowercased() {
-        case "light":  return .light
-        case "ocean":  return .ocean
-        case "forest": return .forest
-        case "sunset": return .sunset
-        default:       return .midnight
+        case "light":    return .light
+        case "ocean":    return .ocean
+        case "forest":   return .forest
+        case "sunset":   return .sunset
+        case "obsidian": return .obsidian
+        default:         return .midnight
         }
     }
 }
