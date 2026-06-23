@@ -115,7 +115,7 @@ jobs:
           # may not exist on a future runner image (Xcode 15 had iPhone 15,
           # Xcode 16 has iPhone 16, ...). Build doesn't need a concrete device.
           xcodebuild \
-            -workspace FoundationMobile.xcworkspace \
+            -project FoundationMobile.xcodeproj \
             -scheme FoundationMobile \
             -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
@@ -133,12 +133,12 @@ jobs:
           FOUNDATION_PROFILE: ${{ env.FOUNDATION_PROFILE }}
         run: |
           set -o pipefail
-          if xcodebuild -workspace FoundationMobile.xcworkspace -list 2>/dev/null | grep -qE 'Test|Tests'; then
+          if xcodebuild -project FoundationMobile.xcodeproj -list 2>/dev/null | grep -qE 'Test|Tests'; then
             # Tests need a concrete booted simulator — pick the latest iPhone 16
             # on the runner. xcrun simctl list shows what's available if this
             # ever stops resolving on a future image bump.
             xcodebuild \
-              -workspace FoundationMobile.xcworkspace \
+              -project FoundationMobile.xcodeproj \
               -scheme FoundationMobile \
               -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
               -derivedDataPath build \
