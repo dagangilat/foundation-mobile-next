@@ -197,6 +197,11 @@ final class AuthService: ObservableObject {
         AttestationCoordinator.shared.reset()
         SupportSessionTracker.shared.reset()
         BiometricConsentState.shared.clear()
+        // Detach the user/commitments listeners and clear the cached
+        // humanity-verified state. Without this the @Published flag stays
+        // latched from session 1, so a different (or reset) user signing in
+        // on the same device sees stale green until the listeners re-fire.
+        FirestoreService.shared.stopObserving()
         // Clear the persisted "user has tapped Connect to Foundation"
         // affirmation. Without this, a different user signing in on
         // the same device would auto-jump into WebHomeView with the

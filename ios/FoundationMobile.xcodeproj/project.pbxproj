@@ -59,6 +59,7 @@
 		A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C3D4E5F6789012345678AB /* Reachability.swift */; };
 		ACCE88CCFDE53CDF9A9FB6B3 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA3F0D1C7F521B0B3D4D913 /* SignInView.swift */; };
 		B01E2B3C4D5E6F7A8B9C0D1E /* FaceMatchProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02F3A4B5C6D7E8F9A0B1C2D /* FaceMatchProducer.swift */; };
+		BA98905910066C8D90883B52 /* HumanityVerificationStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B9D70871074778E5E086A6 /* HumanityVerificationStateTests.swift */; };
 		C0C0F9DE03F0A12B16EFBA0A /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DC6490D5D01BDE8C366453 /* QRScannerView.swift */; };
 		CA87B1A4A5369C4994958DF6 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4BA8BC942233F2CB7824AC13 /* FirebaseFirestore */; };
 		CB0FADCD2F9A509100703E87 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */; };
@@ -128,6 +129,7 @@
 		5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MoproSmokeBridge.swift; path = FoundationMobile/MoproSmokeBridge.swift; sourceTree = "<group>"; };
 		638C622FE2FB44EB9C574F16 /* BiometricSealer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricSealer.swift; path = FoundationMobile/BiometricSealer.swift; sourceTree = "<group>"; };
 		6708CB95D66318FFEFDD77D6 /* AppCheckFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppCheckFactory.swift; path = FoundationMobile/AppCheckFactory.swift; sourceTree = "<group>"; };
+		68B9D70871074778E5E086A6 /* HumanityVerificationStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HumanityVerificationStateTests.swift; path = FoundationMobileTests/HumanityVerificationStateTests.swift; sourceTree = "<group>"; };
 		6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LivenessFrameProducer.swift; path = FoundationMobile/LivenessFrameProducer.swift; sourceTree = "<group>"; };
 		6AEDDEC186D8993801244BC5 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppConfig.swift; path = FoundationMobile/AppConfig.swift; sourceTree = "<group>"; };
 		6B2F3A4B5C6D7E8F9A0B1C2D /* CaptureCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CaptureCoordinator.swift; path = FoundationMobile/CaptureCoordinator.swift; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 				DA08D0125FEDE35EF00B0E79 /* VerificationStepPlanTests.swift */,
 				BB64230F76206419608A442E /* TrustTierLadderTests.swift */,
 				3B576E1AFF6FFD779C4AA940 /* ExplainerStepTests.swift */,
+				68B9D70871074778E5E086A6 /* HumanityVerificationStateTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -562,6 +565,7 @@
 				29B0B336E671E234AFCBE048 /* VerificationStepPlanTests.swift in Sources */,
 				53B9F3B01F4728B7B3F59617 /* TrustTierLadderTests.swift in Sources */,
 				E3301604D48480CCB0C6915D /* ExplainerStepTests.swift in Sources */,
+				BA98905910066C8D90883B52 /* HumanityVerificationStateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
