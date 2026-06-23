@@ -112,18 +112,6 @@ jobs:
           fi
           echo "Release entitlements verified at appattest-environment=production"
 
-      - name: Cache CocoaPods
-        uses: actions/cache@v4
-        with:
-          path: |
-            ios/Pods
-            ~/Library/Caches/CocoaPods
-          key: pods-macos15-${{ hashFiles('ios/Podfile.lock') }}
-
-      - name: pod install
-        working-directory: ios
-        run: bundle exec pod install
-
       - name: Cache Cargo registry + git
         if: hashFiles('mopro-smoke/**') != ''
         uses: actions/cache@v4
