@@ -1,8 +1,24 @@
 name: iOS TestFlight
 
 # Heavy-pipeline workflow: archive + sign + upload to TestFlight.
-# Triggered manually or by tags. Uses fastlane lane `beta` from
-# ios/fastlane/Fastfile (already set up for App Store Connect API key auth).
+#
+# ⚠️  THIS COSTS MONEY. It runs on a GitHub-hosted macOS runner (billed
+#     ~$0.08/min, and macOS minutes count ~10x against any included quota —
+#     a full archive is several dollars to ~$10+ per run). The PREFERRED
+#     day-to-day deploy is a FREE local build on the M5 Mac:
+#         cd ios && bundle exec fastlane beta
+#     or Xcode → Product → Archive → Organizer → Distribute → TestFlight.
+#     See docs/ios-deploy.md. This CI exists ONLY as a no-Mac fallback.
+#
+# Manual-only + guarded against accidental spend:
+#   • the `tf-*` tag trigger was removed, so a routine tag push can't
+#     silently start a paid run;
+#   • workflow_dispatch requires the `confirm` input = `yes-run-paid-ci`.
+#     A free ubuntu `confirm-gate` job fails fast otherwise, before any
+#     billed macOS runner starts.
+#
+# Uses fastlane lane `beta` from ios/fastlane/Fastfile (App Store Connect
+# API key auth).
 #
 # Required repo secrets (Settings -> Secrets -> Actions):
 #   APP_STORE_CONNECT_API_KEY_KEY_ID       — 10-char key id
@@ -19,8 +35,18 @@ name: iOS TestFlight
 # https://github.blog/security/vulnerability-research/how-to-catch-github-actions-workflow-injections-before-attackers-do/
 
 on:
+  # Manual dispatch ONLY. The `tf-*` tag trigger was intentionally removed
+  # so a routine tag push can't start a paid macOS run by mistake.
   workflow_dispatch:
     inputs:
+      confirm:
+        description: 'Confirm a PAID CI build? (local `bundle exec fastlane beta` is free)'
+        type: choice
+        required: true
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes-run-paid-ci'
       profile:
         description: 'Foundation security profile'
         type: choice
@@ -35,16 +61,31 @@ on:
         type: string
         required: false
         default: 'Internal build'
-  push:
-    tags:
-      - 'tf-*'
 
 concurrency:
   group: ios-testflight
   cancel-in-progress: false
 
 jobs:
+  # Free gate: runs on ubuntu so an accidental dispatch (confirm left at its
+  # 'no' default) fails here in seconds WITHOUT ever starting a billed macOS
+  # runner. The archive job `needs:` this, so it only proceeds on explicit
+  # confirmation.
+  confirm-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require explicit paid-build confirmation
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$CONFIRM" != "yes-run-paid-ci" ]; then
+            echo "::error::TestFlight CI is a PAID macOS run. Set the 'confirm' input to 'yes-run-paid-ci' to proceed, or build for free locally: cd ios && bundle exec fastlane beta"
+            exit 1
+          fi
+          echo "Confirmed — proceeding to the billed archive job."
+
   archive-and-upload:
+    needs: confirm-gate
     # macos-15 ships Xcode 16.x. Firebase 12.x requires Swift 6
     # (`sending`, access-level-on-imports), which Xcode 15.4 on macos-14
     # can't compile.
