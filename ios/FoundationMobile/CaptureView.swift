@@ -16,6 +16,10 @@ struct CaptureView: View {
     // presented from the cover's onDismiss (after it's fully gone) so the two
     // presentations don't race and stall the camera session.
     @State private var openDocAfterExplainer = false
+    // Holds the parsed MRZ key while the phase-3 chip explainer is shown. The
+    // NFC read (scanPassport) is deferred until the explainer is dismissed, so
+    // "Read the chip" appears as its own phase before the chip engages.
+    @State private var pendingChipKey: MRZKey?
     // Ends the whole capture flow back to the home root. Must clear the entire
     // navigation path — a plain `dismiss()` only pops one level, which (with the
     // overview screen now in the stack) would strand the user on the overview
@@ -75,7 +79,16 @@ struct CaptureView: View {
             MRZScanView(
                 onParsed: { key in
                     isShowingMRZScan = false
-                    coordinator.scanPassport(mrzKey: key)
+                    // Phase 3 (chip): show the "Read the chip" explainer once,
+                    // then engage NFC from the cover's onDismiss. If already
+                    // shown (a retry), go straight to the read.
+                    if shownExplainers.contains(.chip) {
+                        coordinator.scanPassport(mrzKey: key)
+                    } else {
+                        shownExplainers.insert(.chip)
+                        pendingChipKey = key
+                        pendingExplainer = .chip
+                    }
                 },
                 onCancel: {
                     isShowingMRZScan = false
@@ -99,7 +112,7 @@ struct CaptureView: View {
             let kind: ExplainerKind?
             switch newValue {
             case .readyForPose:          kind = .face
-            case .readyForPassport:      kind = .chip
+            case .readyForPassport:      kind = .scan   // phase 2 — scan the document (MRZ/photo page)
             case .readyForDocumentPhoto: kind = .scan
             default:                     kind = nil
             }
@@ -117,15 +130,26 @@ struct CaptureView: View {
                 openDocAfterExplainer = false
                 isShowingDocPhoto = true
             }
+            // Engage NFC only after the chip explainer is fully gone, mirroring
+            // the doc-photo deferral so the cover dismiss and the NFC session
+            // don't race.
+            if let key = pendingChipKey {
+                pendingChipKey = nil
+                coordinator.scanPassport(mrzKey: key)
+            }
         }) { kind in
             StepExplainerView(
                 step: ExplainerCatalog.step(kind, profile: AppConfig.shared.profile),
                 onReady: {
-                    // The scan explainer leads straight into the rear-camera
-                    // document capture (opened in onDismiss above), so the back
-                    // camera appears only after the user taps "I'm ready" — and
-                    // never lingers on the front camera first.
-                    if kind == .scan { openDocAfterExplainer = true }
+                    // The document-photo (back-camera) flow leads straight into
+                    // the rear-camera capture, opened in onDismiss above so the
+                    // back camera appears only after "I'm ready". Gate on the
+                    // actual state, not the kind: the passport flow ALSO uses the
+                    // .scan explainer but must NOT open the doc-photo sheet (it
+                    // scans the MRZ via the NFC panel instead).
+                    if case .readyForDocumentPhoto = coordinator.state {
+                        openDocAfterExplainer = true
+                    }
                     pendingExplainer = nil
                 }
             )
