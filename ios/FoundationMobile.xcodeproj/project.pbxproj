@@ -22,6 +22,7 @@
 		2EC1942400F85EFB78C396BE /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */; };
 		31E5AD17CC664B4B4E4D713B /* DocumentPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */; };
 		31E971ED85C6B73368C32032 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEEB0A53E04ED338BAE4E31 /* AuthService.swift */; };
+		3CAC048EFD7B9F4F2DC9E9D8 /* DocumentProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */; };
 		3F60C53D026EDD9B2EBAB77B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */; };
 		4367E2AE0ADEA723C5193B9A /* CoreMLFaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */; };
 		4E1E2B3C4D5E6F7A8B9C0D1E /* EnclaveSeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2F3A4B5C6D7E8F9A0B1C2D /* EnclaveSeal.swift */; };
@@ -45,6 +46,7 @@
 		7E22BB33CC44DD55EE66FF71 /* VerificationStepPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E22BB33CC44DD55EE66FF72 /* VerificationStepPlan.swift */; };
 		7F33CC44DD55EE66FF77AA81 /* VerificationOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F33CC44DD55EE66FF77AA82 /* VerificationOverviewView.swift */; };
 		8044DD55EE66FF77AA88BB91 /* TrustTierLadder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8044DD55EE66FF77AA88BB92 /* TrustTierLadder.swift */; };
+		808EFE04383E1223E21A7D2B /* DocumentProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AFE5CBAAF899E46A73E66EE /* DocumentProfile.swift */; };
 		8155EE66FF77AA88BB99CCA1 /* ExplainerStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8155EE66FF77AA88BB99CCA2 /* ExplainerStep.swift */; };
 		8266FF77AA88BB99CCAADDB1 /* StepExplainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8266FF77AA88BB99CCAADDB2 /* StepExplainerView.swift */; };
 		8E1E2B3C4D5E6F7A8B9C0D1E /* FaceTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2F3A4B5C6D7E8F9A0B1C2D /* FaceTracker.swift */; };
@@ -118,6 +120,7 @@
 		1BEEB0A53E04ED338BAE4E31 /* AuthService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AuthService.swift; path = FoundationMobile/AuthService.swift; sourceTree = "<group>"; };
 		1ECB49D63F54BFCD60E737FB /* hisec-global.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = "hisec-global.json"; path = "FoundationMobile/Resources/profiles/hisec-global.json"; sourceTree = "<group>"; };
 		257D88861F1B9A2298427239 /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = FoundationMobile/Theme.swift; sourceTree = "<group>"; };
+		2AFE5CBAAF899E46A73E66EE /* DocumentProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentProfile.swift; path = FoundationMobile/DocumentProfile.swift; sourceTree = "<group>"; };
 		2C2F3A4B5C6D7E8F9A0B1C2D /* CameraSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraSession.swift; path = FoundationMobile/CameraSession.swift; sourceTree = "<group>"; };
 		3B576E1AFF6FFD779C4AA940 /* ExplainerStepTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExplainerStepTests.swift; path = FoundationMobileTests/ExplainerStepTests.swift; sourceTree = "<group>"; };
 		46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SmokeTests.swift; path = FoundationMobileTests/SmokeTests.swift; sourceTree = "<group>"; };
@@ -167,6 +170,7 @@
 		C4A1C216FE07660C1AEE3797 /* AttestationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AttestationService.swift; path = FoundationMobile/AttestationService.swift; sourceTree = "<group>"; };
 		CB0FADCC2F9A509100703E87 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "FoundationMobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentPhotoView.swift; path = FoundationMobile/DocumentPhotoView.swift; sourceTree = "<group>"; };
+		D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentProfileTests.swift; path = FoundationMobileTests/DocumentProfileTests.swift; sourceTree = "<group>"; };
 		DA08D0125FEDE35EF00B0E79 /* VerificationStepPlanTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationStepPlanTests.swift; path = FoundationMobileTests/VerificationStepPlanTests.swift; sourceTree = "<group>"; };
 		DA1110000000000000000001 /* GoogleService-Info-staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-staging.plist"; path = "FoundationMobile/GoogleService-Info-staging.plist"; sourceTree = "<group>"; };
 		DA1110000000000000000002 /* DeploymentConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentConfig.swift; path = FoundationMobile/DeploymentConfig.swift; sourceTree = "<group>"; };
@@ -277,6 +281,7 @@
 				DA1110000000000000000001 /* GoogleService-Info-staging.plist */,
 				DA1110000000000000000002 /* DeploymentConfig.swift */,
 				DA1110000000000000000003 /* DeploymentPickerView.swift */,
+				2AFE5CBAAF899E46A73E66EE /* DocumentProfile.swift */,
 			);
 			name = FoundationMobile;
 			sourceTree = "<group>";
@@ -307,6 +312,7 @@
 				BB64230F76206419608A442E /* TrustTierLadderTests.swift */,
 				3B576E1AFF6FFD779C4AA940 /* ExplainerStepTests.swift */,
 				68B9D70871074778E5E086A6 /* HumanityVerificationStateTests.swift */,
+				D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -553,6 +559,7 @@
 				F15B9A32DE4A40A397571DD9 /* BiometricSealer.swift in Sources */,
 				93933EE585934D84B1BF8012 /* BiometricConsentView.swift in Sources */,
 				A7B2C3D4E5F6789012345678 /* Reachability.swift in Sources */,
+				808EFE04383E1223E21A7D2B /* DocumentProfile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,6 +573,7 @@
 				53B9F3B01F4728B7B3F59617 /* TrustTierLadderTests.swift in Sources */,
 				E3301604D48480CCB0C6915D /* ExplainerStepTests.swift in Sources */,
 				BA98905910066C8D90883B52 /* HumanityVerificationStateTests.swift in Sources */,
+				3CAC048EFD7B9F4F2DC9E9D8 /* DocumentProfileTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
