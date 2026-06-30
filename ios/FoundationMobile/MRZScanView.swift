@@ -46,6 +46,7 @@ struct MRZKey: Equatable, Sendable {
 }
 
 struct MRZScanView: View {
+    let profile: DocumentProfile
     let onParsed: (MRZKey) -> Void
     let onCancel: () -> Void
 
@@ -54,10 +55,19 @@ struct MRZScanView: View {
     @State private var manualDOB: String = ""
     @State private var manualExpiry: String = ""
     @State private var manualError: String?
-    @State private var ocrStatus: String = "Align the photo page’s bottom two lines inside the frame"
+    @State private var ocrStatus: String
     @StateObject private var ocr = MRZOCRSession()
 
     enum Mode { case camera, manual }
+
+    init(profile: DocumentProfile, onParsed: @escaping (MRZKey) -> Void, onCancel: @escaping () -> Void) {
+        self.profile = profile
+        self.onParsed = onParsed
+        self.onCancel = onCancel
+        _ocrStatus = State(initialValue: profile.mrzFormat == .td1
+            ? "Align the back of your \(profile.displayName) inside the frame"
+            : "Align the photo page's bottom two lines inside the frame")
+    }
 
     var body: some View {
         NavigationStack {
@@ -68,7 +78,7 @@ struct MRZScanView: View {
                 case .manual: manualView
                 }
             }
-            .navigationTitle("Scan passport MRZ")
+            .navigationTitle("Scan \(profile.displayName) MRZ")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -85,6 +95,7 @@ struct MRZScanView: View {
         }
         .onAppear {
             ocr.scanBudgetSeconds = AppConfig.shared.mrzScanBudgetSeconds
+            ocr.expectedFormat = profile.mrzFormat
             ocr.onParsed = { key in
                 ocr.stop()
                 onParsed(key)
@@ -210,6 +221,7 @@ final class MRZOCRSession: NSObject, ObservableObject {
 
     var onParsed: ((MRZKey) -> Void)?
     var onStatus: ((String) -> Void)?
+    var expectedFormat: DocumentProfile.MRZFormat = .td3
 
     // Confirmation window. The first checksum-valid TD3 read locks a
     // candidate and starts a per-second countdown; later clean reads
@@ -308,11 +320,16 @@ extension MRZOCRSession: AVCaptureVideoDataOutputSampleBufferDelegate {
     ) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let request = VNRecognizeTextRequest { [weak self] req, _ in
-            guard let obs = req.results as? [VNRecognizedTextObservation] else { return }
+            guard let self, let obs = req.results as? [VNRecognizedTextObservation] else { return }
             let lines: [String] = obs.compactMap { $0.topCandidates(1).first?.string }
-            if let key = MRZParser.parseTD3(lines: lines) {
+            let key: MRZKey?
+            switch self.expectedFormat {
+            case .td3: key = MRZParser.parseTD3(lines: lines) ?? MRZParser.parseTD1(lines: lines)
+            case .td1: key = MRZParser.parseTD1(lines: lines) ?? MRZParser.parseTD3(lines: lines)
+            }
+            if let key {
                 Task { @MainActor in
-                    self?.lockCandidate(key)
+                    self.lockCandidate(key)
                 }
             }
         }
@@ -452,6 +469,65 @@ enum MRZParser {
             )
         }
         return nil
+    }
+
+    // Parse a TD1 (3x30-char) MRZ — national ID card format — from a set
+    // of OCR-recognized lines. Unlike TD3 (where every needed field sits
+    // on one line), TD1 splits document number (line 1) from DOB/expiry
+    // (line 2), so we scan all candidate lines for each piece
+    // independently and combine the first valid match of each. Field
+    // offsets per ICAO 9303 Part 5: line 1 = doc code(2) + issuing
+    // state(3) + doc number(9) + check digit(1) + optional(15); line 2 =
+    // DOB(6) + check(1) + sex(1) + expiry(6) + check(1) + nationality(3)
+    // + optional(11) + composite check(1).
+    static func parseTD1(lines: [String]) -> MRZKey? {
+        let cleaned = lines.map { line -> String in
+            let up = line.uppercased()
+            return up.filter { ch in
+                (ch >= "A" && ch <= "Z") || (ch >= "0" && ch <= "9") || ch == "<"
+            }
+        }.filter { !$0.isEmpty }
+
+        var documentNumber: String?
+        var dateOfBirth: String?
+        var dateOfExpiry: String?
+
+        for candidate in cleaned where candidate.count >= 30 {
+            let chars = Array(String(candidate.prefix(30)))
+
+            if documentNumber == nil {
+                let docNumberRaw = String(chars[5..<14])
+                let docNumberCheck = chars[14]
+                if docNumberCheck.isASCII,
+                   let checkDigit = docNumberCheck.wholeNumberValue,
+                   checkDigit == MRZKey.checkDigit(docNumberRaw) {
+                    documentNumber = docNumberRaw
+                }
+            }
+
+            if dateOfBirth == nil || dateOfExpiry == nil {
+                let dob = String(chars[0..<6])
+                let dobCheck = chars[6]
+                let expiry = String(chars[8..<14])
+                let expCheck = chars[14]
+                if dobCheck.isASCII, let dobCheckDigit = dobCheck.wholeNumberValue,
+                   dobCheckDigit == MRZKey.checkDigit(dob),
+                   dob.allSatisfy({ $0.isNumber }),
+                   expCheck.isASCII, let expCheckDigit = expCheck.wholeNumberValue,
+                   expCheckDigit == MRZKey.checkDigit(expiry),
+                   expiry.allSatisfy({ $0.isNumber }) {
+                    dateOfBirth = dob
+                    dateOfExpiry = expiry
+                }
+            }
+        }
+
+        guard let documentNumber, let dateOfBirth, let dateOfExpiry else { return nil }
+        return MRZKey(
+            passportNumber: documentNumber,
+            dateOfBirth: dateOfBirth,
+            dateOfExpiry: dateOfExpiry
+        )
     }
 
     // Manual-entry fallback: uppercase, pad passport to 9 with '<', basic

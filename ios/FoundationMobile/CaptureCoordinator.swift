@@ -31,7 +31,7 @@ final class CaptureCoordinator: ObservableObject {
         // MRZ key; the system NFC modal is drawn by CoreNFC.
         case scanningPassport(framesCount: Int)
         // NFC read completed. Waiting for the user to tap Verify.
-        case passportReady(framesCount: Int, passport: PassportReadResult)
+        case passportReady(framesCount: Int, passport: DocumentReadResult)
         // standardsec branch — profile requires faceMatch with source=
         // documentPhoto. DocumentPhotoView opens the back camera; user holds
         // their ID/passport up; Vision auto-captures the face crop.
@@ -298,7 +298,7 @@ final class CaptureCoordinator: ObservableObject {
     // Phase 3a — NFC chip read step. Called from CaptureView once
     // MRZScanView hands back a parsed MRZ key. Transitions through
     // .scanningPassport → .passportReady(...) → (user taps Verify).
-    func scanPassport(mrzKey: MRZKey) {
+    func scanPassport(mrzKey: MRZKey, profile: DocumentProfile) {
         // Accept from readyForPassport (fresh NFC scan) or failed at the
         // passport/verify stage (retry). Reject failures from earlier stages
         // (e.g. poseCapture) where lastFramesCount may be 0, which would
@@ -316,13 +316,12 @@ final class CaptureCoordinator: ObservableObject {
         passportScanTask = Task { [weak self] in
             guard let self else { return }
             do {
-                // Phase 6 — request DG2 (face photo) only when the face-match
-                // flag is on. DG2 roughly doubles chip dwell time (~4-6s →
-                // ~10-12s); leave it off until the producer actually consumes it.
-                let result = try await PassportNFCReader.shared.readPassport(
+                let result = try await DocumentNFCReader.shared.readDocument(
                     mrzKey: mrzKey,
+                    profile: profile,
                     includeFacePhoto: AppConfig.shared.profile.requires(.faceMatch) &&
-                                      AppConfig.shared.profile.faceMatchSource == .dg2
+                                      AppConfig.shared.profile.faceMatchSource == .dg2 &&
+                                      profile.dg2Accessible
                 )
                 self.state = .passportReady(framesCount: frames, passport: result)
             } catch {
@@ -373,7 +372,7 @@ final class CaptureCoordinator: ObservableObject {
     // first run is normal.
     func verify() {
         let framesCount: Int
-        let passportData: PassportReadResult?
+        let passportData: DocumentReadResult?
         let docPhotoJpeg: Data?
         let docPhotoHash: Data?
         switch state {
@@ -441,7 +440,7 @@ final class CaptureCoordinator: ObservableObject {
                 // requires it AND the user came through the NFC-scan funnel.
                 if AppConfig.shared.profile.requires(.nfcZk), let passport = passportData {
                     step = "nfcZk-artifact"
-                    let nfcArtifact = try await PassportNfcProducer(passportData: passport).produce()
+                    let nfcArtifact = try await PassportNfcProducer(documentData: passport).produce()
                     artifacts.append(nfcArtifact)
                 }
 

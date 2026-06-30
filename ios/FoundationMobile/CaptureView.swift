@@ -8,6 +8,8 @@ struct CaptureView: View {
     @State private var warmupTask: Task<Void, Never>?
     @State private var isShowingMRZScan = false
     @State private var isShowingDocPhoto = false
+    @State private var isShowingDocumentPicker = false
+    @State private var selectedDocumentProfile: DocumentProfile?
     // Explain-before-you-do: present the matching explainer once when entering
     // each capture stage. `shownExplainers` latches so it never repeats.
     @State private var shownExplainers: Set<ExplainerKind> = []
@@ -77,13 +79,14 @@ struct CaptureView: View {
         }
         .sheet(isPresented: $isShowingMRZScan) {
             MRZScanView(
+                profile: selectedDocumentProfile ?? .passport,
                 onParsed: { key in
                     isShowingMRZScan = false
                     // Phase 3 (chip): show the "Read the chip" explainer once,
                     // then engage NFC from the cover's onDismiss. If already
                     // shown (a retry), go straight to the read.
                     if shownExplainers.contains(.chip) {
-                        coordinator.scanPassport(mrzKey: key)
+                        coordinator.scanPassport(mrzKey: key, profile: selectedDocumentProfile ?? .passport)
                     } else {
                         shownExplainers.insert(.chip)
                         pendingChipKey = key
@@ -93,6 +96,17 @@ struct CaptureView: View {
                 onCancel: {
                     isShowingMRZScan = false
                 }
+            )
+        }
+        .sheet(isPresented: $isShowingDocumentPicker) {
+            DocumentPickerView(
+                buildProfile: AppConfig.shared.profile,
+                onSelected: { profile in
+                    selectedDocumentProfile = profile
+                    isShowingDocumentPicker = false
+                    isShowingMRZScan = true
+                },
+                onCancel: { isShowingDocumentPicker = false }
             )
         }
         .sheet(isPresented: $isShowingDocPhoto) {
@@ -135,7 +149,7 @@ struct CaptureView: View {
             // don't race.
             if let key = pendingChipKey {
                 pendingChipKey = nil
-                coordinator.scanPassport(mrzKey: key)
+                coordinator.scanPassport(mrzKey: key, profile: selectedDocumentProfile ?? .passport)
             }
         }) { kind in
             StepExplainerView(
@@ -173,8 +187,12 @@ struct CaptureView: View {
             // a calm static panel — the rear camera opens on demand in its own
             // sheet, after the user has read the explainer and tapped through.
             if shouldShowNFCPanel {
-                NFCScanView(coordinator: coordinator) {
-                    isShowingMRZScan = true
+                NFCScanView(coordinator: coordinator, selectedProfile: selectedDocumentProfile) {
+                    if selectedDocumentProfile != nil {
+                        isShowingMRZScan = true
+                    } else {
+                        isShowingDocumentPicker = true
+                    }
                 }
             } else if shouldShowLiveCamera {
                 liveCapturePanel
@@ -287,7 +305,7 @@ struct CaptureView: View {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(Theme.brandGreen)
-                Text("Passport scanned (\(passport.issuingCountryCode) \(passport.passportNumberMasked)) — ready to verify")
+                Text("Passport scanned (\(passport.issuingCountryCode) \(passport.documentNumberMasked)) — ready to verify")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Theme.text)
                 Spacer()

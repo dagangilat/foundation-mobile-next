@@ -14,10 +14,10 @@ import Foundation
 
 struct PassportNfcProducer: ProofProducer {
     let kind: ProofArtifact.Kind = .nfcZk
-    let passportData: PassportReadResult
+    let documentData: DocumentReadResult
 
     func produce() async throws -> ProofArtifact {
-        // passportData.dg1Hash is already SHA-256(DG1 raw bytes).
+        // documentData.dg1Hash is already SHA-256(DG1 raw bytes).
         // ProofArtifactBuilder will hash the payload again (that's its
         // contract for every artifact kind — inputs are whatever raw
         // bytes a producer wants to bind into the commitment). Net result:
@@ -26,7 +26,7 @@ struct PassportNfcProducer: ProofProducer {
         // stable means no special-case code in EnclaveSeal.
         return try await ProofArtifactBuilder.build(
             kind: .nfcZk,
-            payload: passportData.dg1Hash
+            payload: documentData.dg1Hash
         )
     }
 }
