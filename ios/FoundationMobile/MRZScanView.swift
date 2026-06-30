@@ -454,6 +454,65 @@ enum MRZParser {
         return nil
     }
 
+    // Parse a TD1 (3x30-char) MRZ — national ID card format — from a set
+    // of OCR-recognized lines. Unlike TD3 (where every needed field sits
+    // on one line), TD1 splits document number (line 1) from DOB/expiry
+    // (line 2), so we scan all candidate lines for each piece
+    // independently and combine the first valid match of each. Field
+    // offsets per ICAO 9303 Part 5: line 1 = doc code(2) + issuing
+    // state(3) + doc number(9) + check digit(1) + optional(15); line 2 =
+    // DOB(6) + check(1) + sex(1) + expiry(6) + check(1) + nationality(3)
+    // + optional(11) + composite check(1).
+    static func parseTD1(lines: [String]) -> MRZKey? {
+        let cleaned = lines.map { line -> String in
+            let up = line.uppercased()
+            return up.filter { ch in
+                (ch >= "A" && ch <= "Z") || (ch >= "0" && ch <= "9") || ch == "<"
+            }
+        }.filter { !$0.isEmpty }
+
+        var documentNumber: String?
+        var dateOfBirth: String?
+        var dateOfExpiry: String?
+
+        for candidate in cleaned where candidate.count >= 30 {
+            let chars = Array(String(candidate.prefix(30)))
+
+            if documentNumber == nil {
+                let docNumberRaw = String(chars[5..<14])
+                let docNumberCheck = chars[14]
+                if docNumberCheck.isASCII,
+                   let checkDigit = docNumberCheck.wholeNumberValue,
+                   checkDigit == MRZKey.checkDigit(docNumberRaw) {
+                    documentNumber = docNumberRaw
+                }
+            }
+
+            if dateOfBirth == nil || dateOfExpiry == nil {
+                let dob = String(chars[0..<6])
+                let dobCheck = chars[6]
+                let expiry = String(chars[8..<14])
+                let expCheck = chars[14]
+                if dobCheck.isASCII, let dobCheckDigit = dobCheck.wholeNumberValue,
+                   dobCheckDigit == MRZKey.checkDigit(dob),
+                   dob.allSatisfy({ $0.isNumber }),
+                   expCheck.isASCII, let expCheckDigit = expCheck.wholeNumberValue,
+                   expCheckDigit == MRZKey.checkDigit(expiry),
+                   expiry.allSatisfy({ $0.isNumber }) {
+                    dateOfBirth = dob
+                    dateOfExpiry = expiry
+                }
+            }
+        }
+
+        guard let documentNumber, let dateOfBirth, let dateOfExpiry else { return nil }
+        return MRZKey(
+            passportNumber: documentNumber,
+            dateOfBirth: dateOfBirth,
+            dateOfExpiry: dateOfExpiry
+        )
+    }
+
     // Manual-entry fallback: uppercase, pad passport to 9 with '<', basic
     // shape checks. Returns nil on invalid inputs (no silent defaults).
     static func normalize(passport: String, dob: String, expiry: String) -> MRZKey? {

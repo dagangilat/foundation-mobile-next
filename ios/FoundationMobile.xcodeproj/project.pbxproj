@@ -22,6 +22,7 @@
 		2EC1942400F85EFB78C396BE /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46D6F4DF70EFC7CE87C38F0A /* SmokeTests.swift */; };
 		31E5AD17CC664B4B4E4D713B /* DocumentPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */; };
 		31E971ED85C6B73368C32032 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BEEB0A53E04ED338BAE4E31 /* AuthService.swift */; };
+		370151CB582DE7504ACC7D22 /* MRZParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B7D83D5FA7418416DF4079 /* MRZParserTests.swift */; };
 		3CAC048EFD7B9F4F2DC9E9D8 /* DocumentProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */; };
 		3F60C53D026EDD9B2EBAB77B /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */; };
 		4367E2AE0ADEA723C5193B9A /* CoreMLFaceEmbedder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E08D948C660618E06D5EA9 /* CoreMLFaceEmbedder.swift */; };
@@ -149,6 +150,7 @@
 		7F33CC44DD55EE66FF77AA82 /* VerificationOverviewView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationOverviewView.swift; path = FoundationMobile/VerificationOverviewView.swift; sourceTree = "<group>"; };
 		8044DD55EE66FF77AA88BB92 /* TrustTierLadder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrustTierLadder.swift; path = FoundationMobile/TrustTierLadder.swift; sourceTree = "<group>"; };
 		8155EE66FF77AA88BB99CCA2 /* ExplainerStep.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExplainerStep.swift; path = FoundationMobile/ExplainerStep.swift; sourceTree = "<group>"; };
+		81B7D83D5FA7418416DF4079 /* MRZParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MRZParserTests.swift; path = FoundationMobileTests/MRZParserTests.swift; sourceTree = "<group>"; };
 		8266FF77AA88BB99CCAADDB2 /* StepExplainerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StepExplainerView.swift; path = FoundationMobile/StepExplainerView.swift; sourceTree = "<group>"; };
 		8351F183C8FF3D833804FC09 /* SolanaRPC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SolanaRPC.swift; path = FoundationMobile/SolanaRPC.swift; sourceTree = "<group>"; };
 		8C89AE70968D788F056BF64B /* ProfileTierTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ProfileTierTests.swift; path = FoundationMobileTests/ProfileTierTests.swift; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				3B576E1AFF6FFD779C4AA940 /* ExplainerStepTests.swift */,
 				68B9D70871074778E5E086A6 /* HumanityVerificationStateTests.swift */,
 				D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */,
+				81B7D83D5FA7418416DF4079 /* MRZParserTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -574,6 +577,7 @@
 				E3301604D48480CCB0C6915D /* ExplainerStepTests.swift in Sources */,
 				BA98905910066C8D90883B52 /* HumanityVerificationStateTests.swift in Sources */,
 				3CAC048EFD7B9F4F2DC9E9D8 /* DocumentProfileTests.swift in Sources */,
+				370151CB582DE7504ACC7D22 /* MRZParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
