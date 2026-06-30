@@ -14,15 +14,15 @@ import SwiftUI
 
 struct NFCScanView: View {
     @ObservedObject var coordinator: CaptureCoordinator
+    let selectedProfile: DocumentProfile?
     // CaptureView owns the MRZ sheet's presentation state; this closure
     // flips it open. Same closure is used by the retry path so a failed
     // scan goes straight back into MRZ entry without an extra tap.
     let onScanTap: () -> Void
 
-    // The chip-bearing credential for this edition ("passport" for hisec-global,
-    // "identity card" for a chipped-eID edition, …). NFC only runs for editions
-    // that require nfcZk, so there is always a real chipped document here.
-    private var docNoun: String { AppConfig.shared.profile.documentNoun }
+    // Until the user has picked a document, fall back to the build
+    // profile's generic noun ("identity document", "passport", …).
+    private var docNoun: String { selectedProfile?.displayName ?? AppConfig.shared.profile.documentNoun }
     private var docNounCap: String { docNoun.prefix(1).uppercased() + docNoun.dropFirst() }
 
     var body: some View {

@@ -46,6 +46,7 @@ struct MRZKey: Equatable, Sendable {
 }
 
 struct MRZScanView: View {
+    let profile: DocumentProfile
     let onParsed: (MRZKey) -> Void
     let onCancel: () -> Void
 
@@ -54,10 +55,19 @@ struct MRZScanView: View {
     @State private var manualDOB: String = ""
     @State private var manualExpiry: String = ""
     @State private var manualError: String?
-    @State private var ocrStatus: String = "Align the photo page’s bottom two lines inside the frame"
+    @State private var ocrStatus: String
     @StateObject private var ocr = MRZOCRSession()
 
     enum Mode { case camera, manual }
+
+    init(profile: DocumentProfile, onParsed: @escaping (MRZKey) -> Void, onCancel: @escaping () -> Void) {
+        self.profile = profile
+        self.onParsed = onParsed
+        self.onCancel = onCancel
+        _ocrStatus = State(initialValue: profile.mrzFormat == .td1
+            ? "Align the back of your \(profile.displayName) inside the frame"
+            : "Align the photo page's bottom two lines inside the frame")
+    }
 
     var body: some View {
         NavigationStack {
@@ -68,7 +78,7 @@ struct MRZScanView: View {
                 case .manual: manualView
                 }
             }
-            .navigationTitle("Scan passport MRZ")
+            .navigationTitle("Scan \(profile.displayName) MRZ")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -85,6 +95,7 @@ struct MRZScanView: View {
         }
         .onAppear {
             ocr.scanBudgetSeconds = AppConfig.shared.mrzScanBudgetSeconds
+            ocr.expectedFormat = profile.mrzFormat
             ocr.onParsed = { key in
                 ocr.stop()
                 onParsed(key)
@@ -210,6 +221,7 @@ final class MRZOCRSession: NSObject, ObservableObject {
 
     var onParsed: ((MRZKey) -> Void)?
     var onStatus: ((String) -> Void)?
+    var expectedFormat: DocumentProfile.MRZFormat = .td3
 
     // Confirmation window. The first checksum-valid TD3 read locks a
     // candidate and starts a per-second countdown; later clean reads
@@ -308,11 +320,16 @@ extension MRZOCRSession: AVCaptureVideoDataOutputSampleBufferDelegate {
     ) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let request = VNRecognizeTextRequest { [weak self] req, _ in
-            guard let obs = req.results as? [VNRecognizedTextObservation] else { return }
+            guard let self, let obs = req.results as? [VNRecognizedTextObservation] else { return }
             let lines: [String] = obs.compactMap { $0.topCandidates(1).first?.string }
-            if let key = MRZParser.parseTD3(lines: lines) {
+            let key: MRZKey?
+            switch self.expectedFormat {
+            case .td3: key = MRZParser.parseTD3(lines: lines) ?? MRZParser.parseTD1(lines: lines)
+            case .td1: key = MRZParser.parseTD1(lines: lines) ?? MRZParser.parseTD3(lines: lines)
+            }
+            if let key {
                 Task { @MainActor in
-                    self?.lockCandidate(key)
+                    self.lockCandidate(key)
                 }
             }
         }
