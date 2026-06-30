@@ -32,4 +32,23 @@ final class MRZParserTests: XCTestCase {
         corrupted[0] = "I<UTOD231458901<<<<<<<<<<<<<<<"   // check digit 7 -> 1
         XCTAssertNil(MRZParser.parseTD1(lines: corrupted))
     }
+
+    // USA passports go through the same generic, country-agnostic TD3 format
+    // as every other ICAO passport — no USA-specific parsing code exists or
+    // is needed. This fixture exists to make that explicit rather than
+    // leaving it implicit: passport number 123456789, DOB 1990-01-01,
+    // expiry 2030-01-01, check digits computed per ICAO 9303 Part 3 §4.9.
+    private let usPassportTD3Lines = [
+        "P<USASMITH<<JOHN<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+        "1234567897USA9001011M3001019<<<<<<<<<<<<<<<<",
+    ]
+
+    func testParseTD3ExtractsUSPassportFields() {
+        let key = MRZParser.parseTD3(lines: usPassportTD3Lines)
+        XCTAssertEqual(key, MRZKey(
+            passportNumber: "123456789",
+            dateOfBirth: "900101",
+            dateOfExpiry: "300101"
+        ))
+    }
 }
