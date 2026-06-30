@@ -83,7 +83,7 @@ struct CaptureView: View {
                     // then engage NFC from the cover's onDismiss. If already
                     // shown (a retry), go straight to the read.
                     if shownExplainers.contains(.chip) {
-                        coordinator.scanPassport(mrzKey: key)
+                        coordinator.scanPassport(mrzKey: key, profile: .passport)
                     } else {
                         shownExplainers.insert(.chip)
                         pendingChipKey = key
@@ -135,7 +135,7 @@ struct CaptureView: View {
             // don't race.
             if let key = pendingChipKey {
                 pendingChipKey = nil
-                coordinator.scanPassport(mrzKey: key)
+                coordinator.scanPassport(mrzKey: key, profile: .passport)
             }
         }) { kind in
             StepExplainerView(
@@ -287,7 +287,7 @@ struct CaptureView: View {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(Theme.brandGreen)
-                Text("Passport scanned (\(passport.issuingCountryCode) \(passport.passportNumberMasked)) — ready to verify")
+                Text("Passport scanned (\(passport.issuingCountryCode) \(passport.documentNumberMasked)) — ready to verify")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Theme.text)
                 Spacer()

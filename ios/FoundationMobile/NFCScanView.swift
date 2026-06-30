@@ -121,7 +121,7 @@ struct NFCScanView: View {
                 Text("\(docNounCap) scanned")
                     .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(Theme.text)
-                Text("\(prettyCountry(result.issuingCountryCode)) \(docNoun) \(result.passportNumberMasked). Tap verify to sign and seal the commitment.")
+                Text("\(prettyCountry(result.issuingCountryCode)) \(docNoun) \(result.documentNumberMasked). Tap verify to sign and seal the commitment.")
                     .font(.callout)
                     .foregroundStyle(Theme.muted)
                     .multilineTextAlignment(.center)
