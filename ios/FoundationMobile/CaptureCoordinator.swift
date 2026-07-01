@@ -86,6 +86,7 @@ final class CaptureCoordinator: ObservableObject {
     private var task: Task<Void, Never>?
     private var anchorTask: Task<Void, Never>?
     private var passportScanTask: Task<Void, Never>?
+    private var walletScanTask: Task<Void, Never>?
 
     // Live Firestore subscription on the commitment doc that the server
     // writes during the queued → anchored → (anchor-failed) lifecycle.
@@ -363,7 +364,8 @@ final class CaptureCoordinator: ObservableObject {
     func scanWalletDocument(profile: DocumentProfile) {
         guard case .readyForWalletDocument(let framesCount) = state else { return }
         state = .scanningWalletDocument(framesCount: framesCount)
-        Task {
+        walletScanTask?.cancel()
+        walletScanTask = Task {
             do {
                 let includeFacePhoto = AppConfig.shared.profile.faceMatchSource == .mdl
                 let result = try await WalletDocumentReader.shared.readDocument(
@@ -541,7 +543,11 @@ final class CaptureCoordinator: ObservableObject {
                             throw CaptureCoordinatorError.faceMatchInputsMissing
                         }
                         referenceImage = portrait
-                        referenceHash = walletData?.portraitHash ?? Data()
+                        guard let walletPortraitHash = walletData?.portraitHash,
+                              !walletPortraitHash.isEmpty else {
+                            throw CaptureCoordinatorError.faceMatchInputsMissing
+                        }
+                        referenceHash = walletPortraitHash
                         producerSource = .dg2  // reuse dg2 embedding path (chip-style photo)
                     }
                     guard let selfieJpeg = jpegs.first else {
@@ -735,10 +741,12 @@ final class CaptureCoordinator: ObservableObject {
         task?.cancel()
         anchorTask?.cancel()
         passportScanTask?.cancel()
+        walletScanTask?.cancel()
         scanBudgetTask?.cancel()
         task = nil
         anchorTask = nil
         passportScanTask = nil
+        walletScanTask = nil
         scanBudgetTask = nil
         commitmentListener?.remove()
         commitmentListener = nil
