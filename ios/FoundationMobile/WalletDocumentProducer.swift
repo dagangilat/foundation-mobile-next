@@ -14,14 +14,18 @@ struct WalletDocumentProducer: ProofProducer {
     let kind: ProofArtifact.Kind = .nfcZk
     let walletData: WalletDocumentReadResult
 
+    /// SHA-256(documentNumberRaw_utf8 + issuingState_utf8).
+    /// Extracted for unit-testability; `produce()` is the authoritative caller.
+    func payloadBytes() -> Data {
+        let combined = Data(walletData.documentNumberRaw.utf8)
+            + Data((walletData.issuingState ?? "").utf8)
+        return Data(SHA256.hash(data: combined))
+    }
+
     func produce() async throws -> ProofArtifact {
-        let docNumberBytes = Data(walletData.documentNumberRaw.utf8)
-        let stateBytes = Data((walletData.issuingState ?? "").utf8)
-        let combined = docNumberBytes + stateBytes
-        let payload = Data(SHA256.hash(data: combined))
         return try await ProofArtifactBuilder.build(
             kind: .nfcZk,
-            payload: payload
+            payload: payloadBytes()
         )
     }
 }

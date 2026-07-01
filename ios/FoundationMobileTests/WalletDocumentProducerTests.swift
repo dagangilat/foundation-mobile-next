@@ -20,13 +20,6 @@ final class WalletDocumentProducerTests: XCTestCase {
         )
     }
 
-    /// Compute the same SHA-256(docNumber_utf8 + state_utf8) the producer uses,
-    /// so tests can assert on the expected payload without calling produce().
-    private func expectedPayload(docNumber: String, state: String?) -> Data {
-        let combined = Data(docNumber.utf8) + Data((state ?? "").utf8)
-        return Data(SHA256.hash(data: combined))
-    }
-
     // MARK: - Tests
 
     func testProducerKindIsNfcZk() {
@@ -34,36 +27,50 @@ final class WalletDocumentProducerTests: XCTestCase {
         XCTAssertEqual(producer.kind, .nfcZk)
     }
 
-    func testPayloadIsDeterministic() {
-        // Same input must produce the same SHA-256 payload each time.
-        let r = makeResult()
-        let p1 = expectedPayload(docNumber: r.documentNumberRaw, state: r.issuingState)
-        let p2 = expectedPayload(docNumber: r.documentNumberRaw, state: r.issuingState)
+    /// produce() must be reachable and route through ProofArtifactBuilder.
+    /// In the test environment there is no attested key, so the builder throws
+    /// noAttestedKey — confirming produce() was called (not a local reimplementation).
+    func testProduceThrowsNoAttestedKeyInTestEnvironment() async {
+        let producer = WalletDocumentProducer(walletData: makeResult())
+        do {
+            _ = try await producer.produce()
+            XCTFail("Expected produce() to throw ProofArtifactBuilderError.noAttestedKey")
+        } catch ProofArtifactBuilderError.noAttestedKey {
+            // Expected: confirms produce() was called and reached ProofArtifactBuilder
+        } catch {
+            XCTFail("Unexpected error from produce(): \(error)")
+        }
+    }
+
+    func testPayloadIsDeterministic() async throws {
+        let result = makeResult()
+        let p1 = WalletDocumentProducer(walletData: result).payloadBytes()
+        let p2 = WalletDocumentProducer(walletData: result).payloadBytes()
         XCTAssertEqual(p1, p2)
         XCTAssertEqual(p1.count, 32)
     }
 
-    func testPayloadDiffersOnDifferentDocumentNumber() {
-        let r1 = makeResult(docNumber: "DL1234567", state: "AZ")
-        let r2 = makeResult(docNumber: "DL9999999", state: "AZ")
-        let p1 = expectedPayload(docNumber: r1.documentNumberRaw, state: r1.issuingState)
-        let p2 = expectedPayload(docNumber: r2.documentNumberRaw, state: r2.issuingState)
+    func testPayloadDiffersOnDifferentDocumentNumber() async throws {
+        let r1 = makeResult(docNumber: "DL1234567")
+        let r2 = makeResult(docNumber: "DL9999999")
+        let p1 = WalletDocumentProducer(walletData: r1).payloadBytes()
+        let p2 = WalletDocumentProducer(walletData: r2).payloadBytes()
         XCTAssertNotEqual(p1, p2)
     }
 
-    func testPayloadDiffersOnDifferentIssuingState() {
-        let r1 = makeResult(docNumber: "DL1234567", state: "AZ")
-        let r2 = makeResult(docNumber: "DL1234567", state: "CA")
-        let p1 = expectedPayload(docNumber: r1.documentNumberRaw, state: r1.issuingState)
-        let p2 = expectedPayload(docNumber: r2.documentNumberRaw, state: r2.issuingState)
+    func testPayloadDiffersOnDifferentIssuingState() async throws {
+        let r1 = makeResult(state: "AZ")
+        let r2 = makeResult(state: "CA")
+        let p1 = WalletDocumentProducer(walletData: r1).payloadBytes()
+        let p2 = WalletDocumentProducer(walletData: r2).payloadBytes()
         XCTAssertNotEqual(p1, p2)
     }
 
-    func testNilIssuingStateEqualsEmptyString() {
-        let rNil   = makeResult(docNumber: "DL1234567", state: nil)
-        let rEmpty = makeResult(docNumber: "DL1234567", state: "")
-        let pNil   = expectedPayload(docNumber: rNil.documentNumberRaw,   state: rNil.issuingState)
-        let pEmpty = expectedPayload(docNumber: rEmpty.documentNumberRaw, state: rEmpty.issuingState)
-        XCTAssertEqual(pNil, pEmpty)
+    func testNilIssuingStateEqualsEmptyString() async throws {
+        let r1 = makeResult(state: nil)
+        let r2 = makeResult(state: "")
+        let p1 = WalletDocumentProducer(walletData: r1).payloadBytes()
+        let p2 = WalletDocumentProducer(walletData: r2).payloadBytes()
+        XCTAssertEqual(p1, p2)
     }
 }
