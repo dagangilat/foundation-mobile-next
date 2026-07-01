@@ -7,6 +7,7 @@ struct CaptureView: View {
     @StateObject private var coordinator = CaptureCoordinator.shared
     @State private var warmupTask: Task<Void, Never>?
     @State private var isShowingMRZScan = false
+    @State private var isShowingWalletDocScan = false
     @State private var isShowingDocPhoto = false
     @State private var isShowingDocumentPicker = false
     @State private var selectedDocumentProfile: DocumentProfile?
@@ -66,6 +67,8 @@ struct CaptureView: View {
             // .sealed as a defensive fallback in case any path skips
             // the .verifying transition.
             switch newValue {
+            case .walletDocumentReady:
+                coordinator.verify()
             case .verifying:
                 onFinish()
             case .sealed:
@@ -104,10 +107,22 @@ struct CaptureView: View {
                 onSelected: { profile in
                     selectedDocumentProfile = profile
                     isShowingDocumentPicker = false
-                    isShowingMRZScan = true
+                    if profile.readingMethod == .walletDocument {
+                        isShowingWalletDocScan = true
+                    } else {
+                        isShowingMRZScan = true
+                    }
                 },
                 onCancel: { isShowingDocumentPicker = false }
             )
+        }
+        .sheet(isPresented: $isShowingWalletDocScan) {
+            if let profile = selectedDocumentProfile {
+                WalletDocumentScanView(profile: profile) {
+                    coordinator.scanWalletDocument(profile: profile)
+                    isShowingWalletDocScan = false
+                }
+            }
         }
         .sheet(isPresented: $isShowingDocPhoto) {
             DocumentPhotoView(
@@ -433,7 +448,7 @@ struct CaptureView: View {
         case .scanningWalletDocument:
             bigGreenButton(title: "Reading from Wallet…", enabled: false) { }
         case .walletDocumentReady:
-            bigGreenButton(title: "Verify") { coordinator.verify() }
+            bigGreenButton(title: "Verifying…", enabled: false) { }
         case .readyForDocumentPhoto:
             bigGreenButton(title: "Capture document") { isShowingDocPhoto = true }
         case .documentPhotoReady, .readyForVerification:
