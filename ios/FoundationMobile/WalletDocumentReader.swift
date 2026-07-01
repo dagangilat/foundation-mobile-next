@@ -35,6 +35,7 @@ enum WalletDocumentError: Error {
     case invalidProfile
     case sessionExpired   // caller should retry once
     case cancelled
+    case readFailed       // all other MobileDocumentReaderError cases
 }
 
 // MARK: - Masking helper
@@ -92,7 +93,7 @@ final class WalletDocumentReader {
             case .sessionExpired:
                 throw WalletDocumentError.sessionExpired
             default:
-                throw err
+                throw WalletDocumentError.readFailed
             }
         }
     }
@@ -172,12 +173,7 @@ final class WalletDocumentReader {
         issuingState: String?,
         walletDocumentType: DocumentProfile.WalletDocumentType
     ) -> WalletDocumentReadResult {
-        let portraitHash: Data
-        if let bytes = portraitBytes {
-            portraitHash = Data(SHA256.hash(data: bytes))
-        } else {
-            portraitHash = Data(SHA256.hash(data: Data()))
-        }
+        let portraitHash: Data = portraitBytes.map { Data(SHA256.hash(data: $0)) } ?? Data()
         let portraitImage: UIImage? = (includeFacePhoto ? portraitBytes : nil).flatMap { UIImage(data: $0) }
 
         return WalletDocumentReadResult(
