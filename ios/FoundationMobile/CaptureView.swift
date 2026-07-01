@@ -119,9 +119,12 @@ struct CaptureView: View {
         .sheet(isPresented: $isShowingWalletDocScan) {
             if let profile = selectedDocumentProfile {
                 WalletDocumentScanView(profile: profile) {
-                    coordinator.scanWalletDocument(profile: profile)
                     isShowingWalletDocScan = false
+                    coordinator.scanWalletDocument(profile: profile)
                 }
+            } else {
+                // Programming error: sheet opened without a selected profile
+                Color.clear.onAppear { isShowingWalletDocScan = false }
             }
         }
         .sheet(isPresented: $isShowingDocPhoto) {
@@ -443,7 +446,7 @@ struct CaptureView: View {
             bigGreenButton(title: "Verify") { coordinator.verify() }
         case .readyForWalletDocument:
             bigGreenButton(title: "Read from Wallet") {
-                coordinator.scanWalletDocument(profile: selectedDocumentProfile ?? .usaMDL)
+                isShowingWalletDocScan = true
             }
         case .scanningWalletDocument:
             bigGreenButton(title: "Reading from Wallet…", enabled: false) { }
