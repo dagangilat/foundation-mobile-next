@@ -478,6 +478,9 @@ final class CaptureCoordinator: ObservableObject {
                         producerSource = .documentPhoto
                     case .none:
                         throw CaptureCoordinatorError.faceMatchInputsMissing
+                    case .mdl:
+                        // Task 3: mDL portrait retrieval via ProximityReader
+                        throw CaptureCoordinatorError.faceMatchInputsMissing
                     }
                     guard let selfieJpeg = jpegs.first else {
                         throw CaptureCoordinatorError.faceMatchInputsMissing

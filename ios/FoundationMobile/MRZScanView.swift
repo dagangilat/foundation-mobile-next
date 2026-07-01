@@ -95,7 +95,7 @@ struct MRZScanView: View {
         }
         .onAppear {
             ocr.scanBudgetSeconds = AppConfig.shared.mrzScanBudgetSeconds
-            ocr.expectedFormat = profile.mrzFormat
+            ocr.expectedFormat = profile.mrzFormat ?? .td3
             ocr.onParsed = { key in
                 ocr.stop()
                 onParsed(key)

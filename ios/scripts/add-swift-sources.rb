@@ -28,6 +28,7 @@ sources = %w[
   LoadingView.swift
   SignInView.swift
   HomeView.swift
+  WalletDocumentReader.swift
 ]
 
 resources = %w[
