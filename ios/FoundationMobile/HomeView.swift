@@ -301,7 +301,8 @@ struct HomeView: View {
         case .failed: return "exclamationmark.triangle.fill"
         case .verifying, .scanningPassport, .readyForPose, .readyForPassport,
              .passportReady, .readyForDocumentPhoto, .documentPhotoReady,
-             .readyForVerification:
+             .readyForVerification, .readyForWalletDocument, .scanningWalletDocument,
+             .walletDocumentReady:
             return "hourglass"
         case .needsAttestation: return "lock.shield"
         case .unsupported: return "iphone.slash"
@@ -332,7 +333,8 @@ struct HomeView: View {
         case .needsAttestation: return "Setting up your secure session…"
         case .unsupported: return "Verification needs a real iPhone (not a simulator)"
         case .readyForPose, .readyForPassport, .scanningPassport, .passportReady,
-             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification:
+             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification,
+             .readyForWalletDocument, .scanningWalletDocument, .walletDocumentReady:
             return "Verification in progress — finish in the camera step"
         case .verifying: return "Sealing your humanity proof…"
         case .sealed:
@@ -532,7 +534,8 @@ struct HomeView: View {
         case .failed: return .failed
         case .readyForPose, .readyForPassport, .scanningPassport,
              .passportReady, .readyForDocumentPhoto, .documentPhotoReady,
-             .readyForVerification, .verifying:
+             .readyForVerification, .verifying, .readyForWalletDocument,
+             .scanningWalletDocument, .walletDocumentReady:
             return .pending
         case .idle, .needsAttestation, .unsupported: return .locked
         }
@@ -608,7 +611,8 @@ struct HomeView: View {
         case .unsupported: return "iphone.slash"
         case .needsAttestation: return "hourglass"
         case .readyForPose, .readyForPassport, .scanningPassport, .passportReady,
-             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification, .verifying:
+             .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification, .verifying,
+             .readyForWalletDocument, .scanningWalletDocument, .walletDocumentReady:
             return "hourglass"
         case .sealed: return "checkmark.seal.fill"
         case .failed: return "exclamationmark.triangle.fill"
@@ -633,6 +637,9 @@ struct HomeView: View {
         case .readyForPassport: return "Humanity — ready to scan passport"
         case .scanningPassport: return "Humanity — scanning passport…"
         case .passportReady: return "Humanity — passport scanned, ready to verify"
+        case .readyForWalletDocument: return "Humanity — ready to read Wallet ID"
+        case .scanningWalletDocument: return "Humanity — reading from Wallet…"
+        case .walletDocumentReady: return "Humanity — Wallet ID read, ready to verify"
         case .readyForDocumentPhoto: return "Humanity — ready to capture document"
         case .documentPhotoReady: return "Humanity — document photo captured, ready to verify"
         case .readyForVerification: return "Humanity — ready to verify"

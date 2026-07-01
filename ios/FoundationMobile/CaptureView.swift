@@ -310,6 +310,34 @@ struct CaptureView: View {
                     .foregroundStyle(Theme.text)
                 Spacer()
             }
+        case .readyForWalletDocument(let n):
+            HStack(spacing: 12) {
+                Image(systemName: "wallet.pass")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("\(n) frames captured — read your Wallet ID next")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(Theme.text)
+                Spacer()
+            }
+        case .scanningWalletDocument:
+            HStack(spacing: 12) {
+                ProgressView().progressViewStyle(.circular).tint(Theme.brandGreen)
+                Text("Reading from Wallet…")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Theme.text)
+                Spacer()
+            }
+        case .walletDocumentReady(_, let wallet):
+            HStack(spacing: 12) {
+                Image(systemName: "checkmark.seal.fill")
+                    .font(.system(size: 22, weight: .bold))
+                    .foregroundStyle(Theme.brandGreen)
+                Text("Wallet ID read (\(wallet.documentNumberMasked)) — ready to verify")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Theme.text)
+                Spacer()
+            }
         case .readyForDocumentPhoto(let n):
             HStack(spacing: 12) {
                 Image(systemName: "doc.text.viewfinder")
@@ -397,6 +425,14 @@ struct CaptureView: View {
         case .scanningPassport:
             bigGreenButton(title: "Reading chip…", enabled: false) { }
         case .passportReady:
+            bigGreenButton(title: "Verify") { coordinator.verify() }
+        case .readyForWalletDocument:
+            bigGreenButton(title: "Read from Wallet") {
+                coordinator.scanWalletDocument(profile: selectedDocumentProfile ?? .usaMDL)
+            }
+        case .scanningWalletDocument:
+            bigGreenButton(title: "Reading from Wallet…", enabled: false) { }
+        case .walletDocumentReady:
             bigGreenButton(title: "Verify") { coordinator.verify() }
         case .readyForDocumentPhoto:
             bigGreenButton(title: "Capture document") { isShowingDocPhoto = true }

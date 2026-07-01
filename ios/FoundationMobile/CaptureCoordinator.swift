@@ -32,6 +32,13 @@ final class CaptureCoordinator: ObservableObject {
         case scanningPassport(framesCount: Int)
         // NFC read completed. Waiting for the user to tap Verify.
         case passportReady(framesCount: Int, passport: DocumentReadResult)
+        // Wallet/mDL flow — all poses captured, waiting for the user to tap
+        // "Read from Wallet". Entered when readingMethod == .walletDocument.
+        case readyForWalletDocument(framesCount: Int)
+        // Apple ProximityReader session in flight.
+        case scanningWalletDocument(framesCount: Int)
+        // Wallet read completed. Waiting for the user to tap Verify.
+        case walletDocumentReady(framesCount: Int, walletResult: WalletDocumentReadResult)
         // standardsec branch — profile requires faceMatch with source=
         // documentPhoto. DocumentPhotoView opens the back camera; user holds
         // their ID/passport up; Vision auto-captures the face crop.
@@ -349,11 +356,42 @@ final class CaptureCoordinator: ObservableObject {
         )
     }
 
+    // Phase 3b — Wallet/mDL read step. Called from CaptureView once the user
+    // taps "Read from Wallet". Transitions through .scanningWalletDocument →
+    // .walletDocumentReady(...) → (user taps Verify).
+    @MainActor
+    func scanWalletDocument(profile: DocumentProfile) {
+        guard case .readyForWalletDocument(let framesCount) = state else { return }
+        state = .scanningWalletDocument(framesCount: framesCount)
+        Task {
+            do {
+                let includeFacePhoto = AppConfig.shared.profile.faceMatchSource == .mdl
+                let result = try await WalletDocumentReader.shared.readDocument(
+                    profile: profile, includeFacePhoto: includeFacePhoto
+                )
+                state = .walletDocumentReady(framesCount: framesCount, walletResult: result)
+            } catch WalletDocumentError.cancelled {
+                state = .failed(stage: .passportScan, message: "Document read cancelled")
+            } catch WalletDocumentError.sessionExpired {
+                state = .readyForWalletDocument(framesCount: framesCount)
+            } catch {
+                state = .failed(stage: .passportScan, message: error.localizedDescription)
+            }
+        }
+    }
+
     // Branches the post-poses transition based on the active profile.
-    // Hisec (NFC) → readyForPassport; standardsec (documentPhoto) →
-    // readyForDocumentPhoto; lowsec-attest → readyForVerification.
+    // Hisec (NFC) → readyForPassport; walletDocument → readyForWalletDocument;
+    // standardsec (documentPhoto) → readyForDocumentPhoto;
+    // lowsec-attest → readyForVerification.
     private func afterPosesState(framesCount: Int) -> State {
         let profile = AppConfig.shared.profile
+        // Wallet/mDL path: faceMatchSource == .mdl signals the Apple ProximityReader
+        // Verifier flow. Must also require .nfcZk so lowsec bundles that happen to
+        // set .mdl (a misconfiguration) fall through to the regular passport path.
+        if profile.faceMatchSource == .mdl && profile.requires(.nfcZk) {
+            return .readyForWalletDocument(framesCount: framesCount)
+        }
         if profile.requires(.nfcZk) {
             return .readyForPassport(framesCount: framesCount)
         }
@@ -373,22 +411,32 @@ final class CaptureCoordinator: ObservableObject {
     func verify() {
         let framesCount: Int
         let passportData: DocumentReadResult?
+        let walletData: WalletDocumentReadResult?
         let docPhotoJpeg: Data?
         let docPhotoHash: Data?
         switch state {
         case .passportReady(let n, let passport):
             framesCount = n
             passportData = passport
+            walletData = nil
+            docPhotoJpeg = nil
+            docPhotoHash = nil
+        case .walletDocumentReady(let n, let wallet):
+            framesCount = n
+            passportData = nil
+            walletData = wallet
             docPhotoJpeg = nil
             docPhotoHash = nil
         case .documentPhotoReady(let n, let jpeg, let hash):
             framesCount = n
             passportData = nil
+            walletData = nil
             docPhotoJpeg = jpeg
             docPhotoHash = hash
         case .readyForVerification(let n):
             framesCount = n
             passportData = nil
+            walletData = nil
             docPhotoJpeg = nil
             docPhotoHash = nil
         default:
@@ -444,6 +492,13 @@ final class CaptureCoordinator: ObservableObject {
                     artifacts.append(nfcArtifact)
                 }
 
+                // Phase 3b — real .nfcZk artifact from Wallet/mDL read.
+                if AppConfig.shared.profile.requires(.nfcZk), let wallet = walletData {
+                    step = "nfcZk-wallet-artifact"
+                    let walletArtifact = try await WalletDocumentProducer(walletData: wallet).produce()
+                    artifacts.append(walletArtifact)
+                }
+
                 // Phase 6 — real .faceMatch artifact when the active profile
                 // requires it. Reference image source is profile-driven:
                 //   .dg2           → bind selfie ↔ chip's DG2 photo
@@ -479,8 +534,15 @@ final class CaptureCoordinator: ObservableObject {
                     case .none:
                         throw CaptureCoordinatorError.faceMatchInputsMissing
                     case .mdl:
-                        // Task 3: mDL portrait retrieval via ProximityReader
-                        throw CaptureCoordinatorError.faceMatchInputsMissing
+                        // Phase 3b — use Wallet/mDL portrait as face-match reference.
+                        guard
+                            let portrait = walletData?.portraitImage
+                        else {
+                            throw CaptureCoordinatorError.faceMatchInputsMissing
+                        }
+                        referenceImage = portrait
+                        referenceHash = walletData?.portraitHash ?? Data()
+                        producerSource = .dg2  // reuse dg2 embedding path (chip-style photo)
                     }
                     guard let selfieJpeg = jpegs.first else {
                         throw CaptureCoordinatorError.faceMatchInputsMissing
@@ -694,6 +756,19 @@ final class CaptureCoordinator: ObservableObject {
     var isAfterPoseCapture: Bool {
         lastFramesCount > 0
     }
+
+    // MARK: - Test support
+
+    // Exposed for unit tests that need to pre-position the coordinator into a
+    // specific state (e.g. .readyForWalletDocument) without running the full
+    // pose-capture loop. Only available in debug builds; never call from
+    // production code.
+    #if DEBUG
+    func _forTesting_setState(_ newState: State, framesCount: Int = 0) {
+        state = newState
+        lastFramesCount = framesCount
+    }
+    #endif
 }
 
 enum CaptureCoordinatorError: Error {
