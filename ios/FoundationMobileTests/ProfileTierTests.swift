@@ -26,4 +26,11 @@ final class ProfileTierTests: XCTestCase {
         let p = try profile(#"{"id":"x","label":"X","description":"d","requiredPhases":["appAttest","liveness"],"faceMatchSource":"none"}"#)
         XCTAssertEqual(p.trustTier, .low)
     }
+
+    func testMdlFaceMatchSourceIsTierHigh() throws {
+        let p = try profile(#"{"id":"x","label":"X","description":"d","requiredPhases":["appAttest","nfcZk","liveness","antiSpoof","faceMatch"],"faceMatchSource":"mdl","document":{"noun":"driving licence or Wallet ID","short":"Wallet ID"}}"#)
+        XCTAssertEqual(p.trustTier, .high)
+        XCTAssertEqual(p.documentNoun, "driving licence or Wallet ID")
+        XCTAssertEqual(p.documentShort, "Wallet ID")
+    }
 }
