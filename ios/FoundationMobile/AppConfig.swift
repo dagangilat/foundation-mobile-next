@@ -44,6 +44,7 @@ struct AppConfig: Decodable, Sendable {
             case dg2            // ePassport NFC chip face image
             case documentPhoto  // back-camera capture of the document
             case none           // no face match in this profile
+            case mdl            // Apple ProximityReader Verifier API portrait → .high
         }
 
         // Profile-injected document vocabulary for white-label copy, e.g.
@@ -74,6 +75,7 @@ struct AppConfig: Decodable, Sendable {
         var trustTier: TrustTier {
             switch faceMatchSource {
             case .dg2:           return .high
+            case .mdl:           return .high
             case .documentPhoto: return .standard
             case .none:          return .low
             }

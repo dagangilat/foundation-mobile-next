@@ -11,18 +11,23 @@ final class DocumentProfileTests: XCTestCase {
 
     func testHisecGlobalOnlyOffersDg2AccessibleDocuments() {
         let available = DocumentProfile.available(for: buildProfile(faceMatchSource: .dg2))
-        XCTAssertEqual(available.count, DocumentProfile.all.count)
+        // Wallet entries (dg2Accessible: false) are excluded; count matches dg2-accessible subset.
+        let dg2Entries = DocumentProfile.all.filter(\.dg2Accessible)
+        XCTAssertEqual(available.count, dg2Entries.count)
         XCTAssertTrue(available.allSatisfy(\.dg2Accessible))
     }
 
-    func testStandardsecOffersAllDocuments() {
+    func testStandardsecOffersAllNfcDocuments() {
         let available = DocumentProfile.available(for: buildProfile(faceMatchSource: .documentPhoto))
-        XCTAssertEqual(Set(available.map(\.id)), Set(DocumentProfile.all.map(\.id)))
+        // Wallet entries are excluded when WalletDocumentReader.isSupported == false (simulator/iOS <17).
+        let nfcEntries = DocumentProfile.all.filter { $0.readingMethod == .nfcChip }
+        XCTAssertEqual(Set(available.map(\.id)), Set(nfcEntries.map(\.id)))
     }
 
-    func testLowsecAttestOffersAllDocuments() {
+    func testLowsecAttestOffersAllNfcDocuments() {
         let available = DocumentProfile.available(for: buildProfile(faceMatchSource: .none))
-        XCTAssertEqual(Set(available.map(\.id)), Set(DocumentProfile.all.map(\.id)))
+        let nfcEntries = DocumentProfile.all.filter { $0.readingMethod == .nfcChip }
+        XCTAssertEqual(Set(available.map(\.id)), Set(nfcEntries.map(\.id)))
     }
 
     func testRegionMatchFindsIsrael() {
@@ -45,5 +50,28 @@ final class DocumentProfileTests: XCTestCase {
     func testAllSeededIdsAreUnique() {
         let ids = DocumentProfile.all.map(\.id)
         XCTAssertEqual(ids.count, Set(ids).count)
+    }
+
+    func testWalletEntriesHaveNilMRZFormat() {
+        XCTAssertNil(DocumentProfile.usaMDL.mrzFormat)
+        XCTAssertNil(DocumentProfile.usaWalletID.mrzFormat)
+    }
+
+    func testWalletEntriesReadingMethod() {
+        XCTAssertEqual(DocumentProfile.usaMDL.readingMethod, .walletDocument)
+        XCTAssertEqual(DocumentProfile.usaWalletID.readingMethod, .walletDocument)
+        XCTAssertEqual(DocumentProfile.usaMDL.walletDocumentType, .mobileDriversLicense)
+        XCTAssertEqual(DocumentProfile.usaWalletID.walletDocumentType, .nationalIdCard)
+    }
+
+    func testNfcEntriesHaveNonNilMRZFormat() {
+        let nfcEntries = DocumentProfile.all.filter { $0.readingMethod == .nfcChip }
+        XCTAssertTrue(nfcEntries.allSatisfy { $0.mrzFormat != nil })
+    }
+
+    func testAllEntriesInAllArray() {
+        let ids = Set(DocumentProfile.all.map(\.id))
+        XCTAssertTrue(ids.contains("usa-mdl"))
+        XCTAssertTrue(ids.contains("usa-walletid"))
     }
 }
