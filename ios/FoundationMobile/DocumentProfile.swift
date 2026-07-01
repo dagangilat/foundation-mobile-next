@@ -110,9 +110,17 @@ struct DocumentProfile: Identifiable, Equatable {
         }
 
         // Filter wallet entries on devices/OS versions that don't support MobileDocumentReader.
-        if #available(iOS 17, *) {
+        if #available(iOS 18, *) {
+            // All wallet entries are OK on iOS 18+.
             return filtered.filter { p in
                 p.readingMethod == .nfcChip || WalletDocumentReader.isSupported
+            }
+        } else if #available(iOS 17, *) {
+            // nationalIdCard (usa-walletid) requires iOS 18 — exclude it on iOS 17
+            // to prevent a dead-end where the user selects it and gets unsupportedOS.
+            return filtered.filter { p in
+                (p.readingMethod == .nfcChip || WalletDocumentReader.isSupported) &&
+                !(p.readingMethod == .walletDocument && p.walletDocumentType == .nationalIdCard)
             }
         } else {
             return filtered.filter { $0.readingMethod == .nfcChip }

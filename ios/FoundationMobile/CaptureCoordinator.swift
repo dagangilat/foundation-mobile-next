@@ -360,8 +360,11 @@ final class CaptureCoordinator: ObservableObject {
     // Phase 3b — Wallet/mDL read step. Called from CaptureView once the user
     // taps "Read from Wallet". Transitions through .scanningWalletDocument →
     // .walletDocumentReady(...) → (user taps Verify).
+    // `retried` allows one automatic retry on sessionExpired per the spec:
+    // "sessionExpired → prepare() is re-called and scan retried once
+    // automatically before surfacing as a failure."
     @MainActor
-    func scanWalletDocument(profile: DocumentProfile) {
+    func scanWalletDocument(profile: DocumentProfile, retried: Bool = false) {
         guard case .readyForWalletDocument(let framesCount) = state else { return }
         state = .scanningWalletDocument(framesCount: framesCount)
         walletScanTask?.cancel()
@@ -375,7 +378,13 @@ final class CaptureCoordinator: ObservableObject {
             } catch WalletDocumentError.cancelled {
                 state = .failed(stage: .passportScan, message: "Document read cancelled")
             } catch WalletDocumentError.sessionExpired {
-                state = .readyForWalletDocument(framesCount: framesCount)
+                if !retried {
+                    // Spec: retry once automatically before surfacing as failure.
+                    state = .readyForWalletDocument(framesCount: framesCount)
+                    scanWalletDocument(profile: profile, retried: true)
+                } else {
+                    state = .failed(stage: .passportScan, message: "Session expired — please try again")
+                }
             } catch {
                 state = .failed(stage: .passportScan, message: error.localizedDescription)
             }

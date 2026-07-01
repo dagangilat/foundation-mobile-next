@@ -117,6 +117,12 @@ final class WalletDocumentReader {
         } else {
             docNumberRaw = ""
         }
+        // An empty document number produces SHA-256("") — the same constant
+        // hash for every user on iOS <18.4 (a degenerate commitment). Fail
+        // explicitly so the retry/error path surfaces a clean message instead.
+        guard !docNumberRaw.isEmpty else {
+            throw WalletDocumentError.readFailed  // document_number requires iOS 18.4+
+        }
 
         return buildResult(
             portraitBytes: portraitBytes,
@@ -155,6 +161,12 @@ final class WalletDocumentReader {
             docNumberRaw = elements.documentNumber ?? ""
         } else {
             docNumberRaw = ""
+        }
+        // An empty document number produces SHA-256("") — the same constant
+        // hash for every user on iOS <18.4 (a degenerate commitment). Fail
+        // explicitly so the retry/error path surfaces a clean message instead.
+        guard !docNumberRaw.isEmpty else {
+            throw WalletDocumentError.readFailed  // document_number requires iOS 18.4+
         }
 
         return buildResult(
