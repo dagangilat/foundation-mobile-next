@@ -83,6 +83,13 @@ final class CaptureCoordinator: ObservableObject {
     // `verify()`; never written to disk, never uploaded. Honors the
     // "nothing identifying leaves this device" invariant.
     private var capturedJpegs: [Data] = []
+
+    // Persisted so a failed anchor submission can be retried without
+    // redoing the multi-minute capture flow. Cleared on success or a
+    // fresh begin()/reset().
+    private var lastSealedCommitment: EnclaveSeal.Commitment?
+    private var lastSealedArtifacts: [ProofArtifact]?
+
     private var task: Task<Void, Never>?
     private var anchorTask: Task<Void, Never>?
     private var passportScanTask: Task<Void, Never>?
@@ -154,6 +161,8 @@ final class CaptureCoordinator: ObservableObject {
         capturedJpegs.removeAll()
         lastFramesCount = 0
         anchorStatus = .notAttempted
+        lastSealedCommitment = nil
+        lastSealedArtifacts = nil
 
         // Phase 4 — reset tracker state for the new run.
         tearDownPoseWatchers()
@@ -659,6 +668,8 @@ final class CaptureCoordinator: ObservableObject {
     // arrives — @Published anchorStatus drives live HomeView updates without
     // blocking the user's return-home transition.
     private func submitAnchor(commitment: EnclaveSeal.Commitment, artifacts: [ProofArtifact]) {
+        lastSealedCommitment = commitment
+        lastSealedArtifacts = artifacts
         anchorStatus = .pending
         anchorTask = Task { [weak self] in
             // 2026-04-26 security review M-H-4: build the biometric seal
@@ -693,6 +704,8 @@ final class CaptureCoordinator: ObservableObject {
             do {
                 let result = try await FunctionsService.shared.anchorCommitment(req)
                 self?.anchorStatus = .completed(result)
+                self?.lastSealedCommitment = nil
+                self?.lastSealedArtifacts = nil
                 if result.status == "queued", let path = result.commitmentDocPath {
                     self?.observeCommitmentDoc(at: path, baseResult: result)
                 }
@@ -700,6 +713,18 @@ final class CaptureCoordinator: ObservableObject {
                 self?.anchorStatus = .failed(String(describing: error))
             }
         }
+    }
+
+    /// User-facing retry for a failed anchor submission — resubmits the
+    /// already-sealed commitment/artifacts without re-running the capture
+    /// flow. No-op if there's nothing to retry (already succeeded, or a
+    /// fresh begin()/reset() cleared it).
+    func retryAnchorSubmission() {
+        guard case .failed = anchorStatus,
+              let commitment = lastSealedCommitment,
+              let artifacts = lastSealedArtifacts
+        else { return }
+        submitAnchor(commitment: commitment, artifacts: artifacts)
     }
 
     @MainActor
@@ -791,6 +816,8 @@ final class CaptureCoordinator: ObservableObject {
         capturedJpegs.removeAll()
         lastFramesCount = 0
         anchorStatus = .notAttempted
+        lastSealedCommitment = nil
+        lastSealedArtifacts = nil
         tearDownPoseWatchers()
         faceTracker.stop()
         state = .idle
@@ -814,6 +841,8 @@ final class CaptureCoordinator: ObservableObject {
         state = newState
         lastFramesCount = framesCount
     }
+
+    var _forTesting_hasSealedCommitmentToRetry: Bool { lastSealedCommitment != nil }
     #endif
 }
 

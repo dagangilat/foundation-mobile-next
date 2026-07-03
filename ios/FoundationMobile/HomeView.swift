@@ -687,6 +687,7 @@ struct HomeView: View {
         case verify
         case verifying          // PoH in flight (capture state non-idle, non-sealed)
         case anchorPending      // sealed, waiting for chain anchor
+        case anchorFailed(String) // sealed, but the server submit call failed — retryable
         case connect            // anchored, ready to enter Foundation
     }
 
@@ -701,7 +702,14 @@ struct HomeView: View {
         if !isAttested && attestation.tier != .unattested { return .attestPending }
         if humanityVerified { return .connect }
         switch capture.state {
-        case .sealed: return .anchorPending
+        case .sealed:
+            // The commitment sealed locally but the submit-to-server call
+            // (submitAnchor) can still fail — e.g. a network blip on the
+            // final round-trip. Short to a retry CTA rather than the
+            // "Anchoring on devnet…" spinner, which would otherwise imply
+            // work is still in flight when it has actually stopped.
+            if case .failed(let msg) = capture.anchorStatus { return .anchorFailed(msg) }
+            return .anchorPending
         case .readyForPose, .readyForPassport, .scanningPassport, .passportReady,
              .readyForDocumentPhoto, .documentPhotoReady, .readyForVerification, .verifying:
             return .verifying
@@ -784,6 +792,35 @@ struct HomeView: View {
             backgroundProgressButton(text: "Building your proof…")
         case .anchorPending:
             backgroundProgressButton(text: "Anchoring on devnet…")
+        case .anchorFailed(let msg):
+            // The sealed commitment/artifacts are preserved by the
+            // coordinator (CaptureCoordinator.lastSealedCommitment /
+            // lastSealedArtifacts) so retrying resubmits them directly —
+            // no need to redo the multi-minute capture flow.
+            Button {
+                capture.retryAnchorSubmission()
+            } label: {
+                VStack(spacing: 4) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.clockwise.circle.fill")
+                        Text("Retry submission")
+                    }
+                    .font(.headline)
+                    .foregroundStyle(Theme.onAccent)
+                    Text(msg)
+                        .font(.caption2)
+                        .foregroundStyle(Theme.onAccent.opacity(0.75))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 12)
+                .background(Color.orange)
+                .cornerRadius(10)
+            }
+            .accessibilityLabel("Retry anchor submission")
         case .connect:
             if !reachability.isReachable {
                 disabledGreenButton(text: "Waiting for network…")

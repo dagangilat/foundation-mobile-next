@@ -149,4 +149,14 @@ final class CaptureCoordinatorTests: XCTestCase {
             )
         )
     }
+
+    // MARK: - Anchor submission retry (2026-07-03 review, quality-mobile #2)
+
+    func testRetryAnchorSubmissionIsNoOpWithNothingToRetry() {
+        let coordinator = CaptureCoordinator()
+        // Fresh coordinator: no commitment was ever sealed, and anchorStatus
+        // is .notAttempted, not .failed — retry must not crash or do anything.
+        coordinator.retryAnchorSubmission()
+        XCTAssertFalse(coordinator._forTesting_hasSealedCommitmentToRetry)
+    }
 }
