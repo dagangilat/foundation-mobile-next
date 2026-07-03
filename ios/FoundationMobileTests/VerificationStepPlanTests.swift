@@ -48,4 +48,16 @@ final class VerificationStepPlanTests: XCTestCase {
         let steps = VerificationStepPlan.steps(for: p)
         XCTAssertEqual(steps.last?.title, "Apple Biometric Seal")
     }
+
+    // Wallet/mDL: the real flow is a single Apple ProximityReader "Read from
+    // Wallet" tap, not the MRZ photo-page scan + separate NFC chip read that
+    // dg2/documentPhoto profiles show. The checklist must not promise a chip
+    // tap that never happens for this profile.
+    func testMdlProfileGetsWalletCopyNotChipInstructions() throws {
+        let p = try profile(#"{"id":"x","label":"X","description":"d","requiredPhases":["appAttest","nfcZk","liveness","antiSpoof","faceMatch"],"faceMatchSource":"mdl","document":{"noun":"driving licence or Wallet ID","short":"Wallet ID"}}"#)
+        let steps = VerificationStepPlan.steps(for: p)
+
+        XCTAssertTrue(steps.contains { $0.title.contains("Wallet") })
+        XCTAssertFalse(steps.contains { $0.title == "Read the chip" })
+    }
 }

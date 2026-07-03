@@ -470,13 +470,23 @@ struct HomeView: View {
             ))
         }
 
-        // ePassport NFC — book of pages = passport silhouette.
+        // ePassport NFC — book of pages = passport silhouette. Wallet/mDL
+        // editions verify via a ProximityReader Wallet read, not an NFC chip
+        // tap, so they get wallet-appropriate copy/icon instead.
         if profile.requires(.nfcZk) {
-            out.append(BadgeData(
-                icon: "book.pages.fill",
-                label: "ePassport",
-                state: captureBadgeState
-            ))
+            if profile.faceMatchSource == .mdl {
+                out.append(BadgeData(
+                    icon: "wallet.pass.fill",
+                    label: "Wallet ID",
+                    state: captureBadgeState
+                ))
+            } else {
+                out.append(BadgeData(
+                    icon: "book.pages.fill",
+                    label: "ePassport",
+                    state: captureBadgeState
+                ))
+            }
         }
 
         // Anti-spoof — open eye = "we see the real you, not a print".
