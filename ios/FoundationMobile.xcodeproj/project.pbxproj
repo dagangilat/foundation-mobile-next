@@ -393,6 +393,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				CB1D44AC2F9B36A4006DE63D /* Embed Frameworks */,
 				061B1DC0B5E5505152428502 /* Select Foundation profile JSON */,
+				AC5E17B0C0FFEE0100000001 /* Assert Foundation profile consistency */,
 			);
 			buildRules = (
 			);
@@ -531,6 +532,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/scripts/select-launch-logo.sh\"";
+		};
+		AC5E17B0C0FFEE0100000001 /* Assert Foundation profile consistency */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/scripts/assert-profile-consistency.sh",
+			);
+			name = "Assert Foundation profile consistency";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/scripts/assert-profile-consistency.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -673,6 +694,7 @@
 				CODE_SIGN_ENTITLEMENTS = "FoundationMobile/FoundationMobile-Release.entitlements";
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = F9F26FQW95;
+				FOUNDATION_PROFILE = "hisec-global";
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (

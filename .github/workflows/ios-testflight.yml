@@ -47,6 +47,14 @@ on:
         options:
           - 'no'
           - 'yes-run-paid-ci'
+      # Intentionally scoped to the 3 security-tier profiles only. Branded
+      # editions (moma / tel-aviv / san-francisco / foundation) are
+      # demo/local-only for now — they ship via `bundle exec fastlane beta`
+      # or a manual Xcode archive, not this paid CI path. Whether to make
+      # them CI-shippable is a real decision, deferred to the foundation
+      # repo's Phase 5 editions-coherence work (see
+      # docs/superpowers/plans/2026-07-03-full-review-remediation-roadmap.md,
+      # Phase 5 section, in the foundation repo) — not silently expanded here.
       profile:
         description: 'Foundation security profile'
         type: choice
