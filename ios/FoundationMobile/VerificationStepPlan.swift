@@ -19,13 +19,23 @@ enum VerificationStepPlan {
             steps.append(VerificationStep(title: "Quick face check",
                                           subtitle: "A short look at the camera"))
         }
+        // Wallet/mDL editions verify via a single Apple ProximityReader "Read
+        // from Wallet" tap — there's no MRZ photo-page scan and no separate
+        // NFC chip read, so neither step should be promised for this profile.
+        let usesWalletDocument = profile.faceMatchSource == .mdl
+
         // A document scan yields the MRZ key for the chip read and the
         // document-photo face match, so it precedes both.
         if profile.requires(.nfcZk) || profile.faceMatchSource == .documentPhoto {
-            steps.append(VerificationStep(title: "Scan your \(profile.documentNoun)",
-                                          subtitle: "Photo page, laid flat"))
+            if usesWalletDocument {
+                steps.append(VerificationStep(title: "Read your \(profile.documentNoun) from Wallet",
+                                              subtitle: "Hold your phone near your device"))
+            } else {
+                steps.append(VerificationStep(title: "Scan your \(profile.documentNoun)",
+                                              subtitle: "Photo page, laid flat"))
+            }
         }
-        if profile.requires(.nfcZk) {
+        if profile.requires(.nfcZk) && !usesWalletDocument {
             steps.append(VerificationStep(title: "Read the chip",
                                           subtitle: "Hold the back of your phone"))
         }

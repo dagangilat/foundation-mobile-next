@@ -5,6 +5,7 @@ import UIKit
 struct CaptureView: View {
     @StateObject private var camera = CameraSession.shared
     @StateObject private var coordinator = CaptureCoordinator.shared
+    @StateObject private var attestation = AttestationCoordinator.shared
     @State private var warmupTask: Task<Void, Never>?
     @State private var isShowingMRZScan = false
     @State private var isShowingWalletDocScan = false
@@ -39,7 +40,7 @@ struct CaptureView: View {
         .navigationTitle("Verify humanity")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            coordinator.begin()
+            coordinator.begin(attestationTier: attestation.tier)
             #if !targetEnvironment(simulator)
             // Hold an open subscription so the AVCaptureSession starts and the
             // preview layer has frames to render. Cancelling on disappear lets
@@ -464,7 +465,7 @@ struct CaptureView: View {
             if coordinator.isAfterPoseCapture {
                 EmptyView()
             } else {
-                bigGreenButton(title: "Retry") { coordinator.begin() }
+                bigGreenButton(title: "Retry") { coordinator.begin(attestationTier: attestation.tier) }
             }
         case .sealed:
             // Auto-dismiss is set up in .onChange above, but it relies on

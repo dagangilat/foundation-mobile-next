@@ -105,4 +105,58 @@ final class CaptureCoordinatorTests: XCTestCase {
             CaptureCoordinator.State.walletDocumentReady(framesCount: 3, walletResult: walletResult)
         )
     }
+
+    // MARK: - Unattested-tier attestation skip (2026-07-03 review, arch-mobile #1)
+
+    func testShouldRequireAttestation_standardTierNoKey_isTrue() {
+        XCTAssertTrue(
+            CaptureCoordinator.shouldRequireAttestation(tier: .standard, hasKeychainKey: false)
+        )
+    }
+
+    func testShouldRequireAttestation_standardTierWithKey_isFalse() {
+        XCTAssertFalse(
+            CaptureCoordinator.shouldRequireAttestation(tier: .standard, hasKeychainKey: true)
+        )
+    }
+
+    func testShouldRequireAttestation_unattestedTierNoKey_isFalse() {
+        // The bug: previously begin() had no branch for this and stranded
+        // the user in .needsAttestation forever, since an unattested-tier
+        // run never writes a Keychain key.
+        XCTAssertFalse(
+            CaptureCoordinator.shouldRequireAttestation(tier: .unattested, hasKeychainKey: false)
+        )
+    }
+
+    // MARK: - Scan-budget race (2026-07-03 review, quality-mobile #1)
+
+    func testCapturePoseResultStillApplies_trueWhenStillReadyForPose() {
+        let pose = LivenessPose.active[0]
+        XCTAssertTrue(
+            CaptureCoordinator.capturePoseResultStillApplies(
+                currentState: .readyForPose(pose: pose, captured: 1, total: 3)
+            )
+        )
+    }
+
+    func testCapturePoseResultStillApplies_falseAfterScanBudgetAlreadyAdvanced() {
+        // Simulates handleScanBudgetExpiry having already moved the
+        // coordinator on while a capturePose() Task was suspended.
+        XCTAssertFalse(
+            CaptureCoordinator.capturePoseResultStillApplies(
+                currentState: .readyForPassport(framesCount: 2)
+            )
+        )
+    }
+
+    // MARK: - Anchor submission retry (2026-07-03 review, quality-mobile #2)
+
+    func testRetryAnchorSubmissionIsNoOpWithNothingToRetry() {
+        let coordinator = CaptureCoordinator()
+        // Fresh coordinator: no commitment was ever sealed, and anchorStatus
+        // is .notAttempted, not .failed — retry must not crash or do anything.
+        coordinator.retryAnchorSubmission()
+        XCTAssertFalse(coordinator._forTesting_hasSealedCommitmentToRetry)
+    }
 }
