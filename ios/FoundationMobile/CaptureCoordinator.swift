@@ -132,6 +132,15 @@ final class CaptureCoordinator: ObservableObject {
         tier != .unattested && !hasKeychainKey
     }
 
+    /// True if a just-completed pose capture should still apply its state
+    /// transition. False if the scan-budget deadline already moved the
+    /// coordinator elsewhere while this capture was in flight — that
+    /// transition wins; the resuming capturePose() must not clobber it.
+    static func capturePoseResultStillApplies(currentState: State) -> Bool {
+        if case .readyForPose = currentState { return true }
+        return false
+    }
+
     // Begin a fresh capture run. Call from CaptureView.onAppear.
     func begin(attestationTier: AttestationTier = .standard) {
         task?.cancel()
@@ -192,6 +201,11 @@ final class CaptureCoordinator: ObservableObject {
                 let frame = try await CameraSession.shared.captureOneFrame()
                 let jpeg = try LivenessFrameEncoder.encodeJpeg(frame)
                 self.capturedJpegs.append(jpeg)
+
+                // The scan-budget deadline may have fired while this
+                // capture was suspended and already advanced the state —
+                // if so, don't clobber it.
+                guard Self.capturePoseResultStillApplies(currentState: self.state) else { return }
 
                 let next = captured + 1
                 if next < total {

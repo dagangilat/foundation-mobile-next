@@ -128,4 +128,25 @@ final class CaptureCoordinatorTests: XCTestCase {
             CaptureCoordinator.shouldRequireAttestation(tier: .unattested, hasKeychainKey: false)
         )
     }
+
+    // MARK: - Scan-budget race (2026-07-03 review, quality-mobile #1)
+
+    func testCapturePoseResultStillApplies_trueWhenStillReadyForPose() {
+        let pose = LivenessPose.active[0]
+        XCTAssertTrue(
+            CaptureCoordinator.capturePoseResultStillApplies(
+                currentState: .readyForPose(pose: pose, captured: 1, total: 3)
+            )
+        )
+    }
+
+    func testCapturePoseResultStillApplies_falseAfterScanBudgetAlreadyAdvanced() {
+        // Simulates handleScanBudgetExpiry having already moved the
+        // coordinator on while a capturePose() Task was suspended.
+        XCTAssertFalse(
+            CaptureCoordinator.capturePoseResultStillApplies(
+                currentState: .readyForPassport(framesCount: 2)
+            )
+        )
+    }
 }
