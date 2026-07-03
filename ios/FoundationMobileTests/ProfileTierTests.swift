@@ -33,4 +33,37 @@ final class ProfileTierTests: XCTestCase {
         XCTAssertEqual(p.documentNoun, "driving licence or Wallet ID")
         XCTAssertEqual(p.documentShort, "Wallet ID")
     }
+
+    // MARK: - Real bundled profiles decode cleanly against the full AppConfig schema
+
+    /// AppConfig.load() decodes the ENTIRE AppConfig struct and fatalErrors on
+    /// failure. This decodes every checked-in profile JSON the same way, so a
+    /// schema change or a hand-edit typo in any of the 8 profiles fails a fast
+    /// unit test instead of a runtime crash reachable only by building with
+    /// that specific profile selected.
+    func testAllBundledProfilesDecodeAgainstFullAppConfigSchema() throws {
+        let thisFile = URL(fileURLWithPath: #filePath)
+        let profilesDir = thisFile
+            .deletingLastPathComponent()  // FoundationMobileTests/
+            .deletingLastPathComponent()  // ios/
+            .appendingPathComponent("FoundationMobile/Resources/profiles")
+
+        let fm = FileManager.default
+        let files = try fm.contentsOfDirectory(at: profilesDir, includingPropertiesForKeys: nil)
+            .filter { $0.pathExtension == "json" }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+
+        XCTAssertEqual(
+            files.count, 8,
+            "expected 8 profile JSONs in Resources/profiles — update this count if a profile was added/removed"
+        )
+
+        for file in files {
+            let data = try Data(contentsOf: file)
+            XCTAssertNoThrow(
+                try JSONDecoder().decode(AppConfig.self, from: data),
+                "\(file.lastPathComponent) failed to decode as AppConfig"
+            )
+        }
+    }
 }
