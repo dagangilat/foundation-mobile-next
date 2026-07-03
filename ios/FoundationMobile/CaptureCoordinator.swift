@@ -120,8 +120,20 @@ final class CaptureCoordinator: ObservableObject {
     // countdown. One subscription per pose; torn down on stop.
     private var faceTrackerCancellable: AnyCancellable?
 
+    /// True if the coordinator must hard-gate on an attested Keychain key
+    /// before proceeding. False for the unattested tier (the user
+    /// explicitly chose "Continue without attestation" — no Keychain key
+    /// will ever be written for that run, so gating on one strands the
+    /// user permanently) or when a key is already present.
+    static func shouldRequireAttestation(
+        tier: AttestationTier,
+        hasKeychainKey: Bool
+    ) -> Bool {
+        tier != .unattested && !hasKeychainKey
+    }
+
     // Begin a fresh capture run. Call from CaptureView.onAppear.
-    func begin() {
+    func begin(attestationTier: AttestationTier = .standard) {
         task?.cancel()
         anchorTask?.cancel()
         passportScanTask?.cancel()
@@ -144,7 +156,10 @@ final class CaptureCoordinator: ObservableObject {
             state = .unsupported
             return
         }
-        guard Keychain.getAttestedKeyId() != nil else {
+        guard !Self.shouldRequireAttestation(
+            tier: attestationTier,
+            hasKeychainKey: Keychain.getAttestedKeyId() != nil
+        ) else {
             state = .needsAttestation
             return
         }

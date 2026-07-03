@@ -105,4 +105,27 @@ final class CaptureCoordinatorTests: XCTestCase {
             CaptureCoordinator.State.walletDocumentReady(framesCount: 3, walletResult: walletResult)
         )
     }
+
+    // MARK: - Unattested-tier attestation skip (2026-07-03 review, arch-mobile #1)
+
+    func testShouldRequireAttestation_standardTierNoKey_isTrue() {
+        XCTAssertTrue(
+            CaptureCoordinator.shouldRequireAttestation(tier: .standard, hasKeychainKey: false)
+        )
+    }
+
+    func testShouldRequireAttestation_standardTierWithKey_isFalse() {
+        XCTAssertFalse(
+            CaptureCoordinator.shouldRequireAttestation(tier: .standard, hasKeychainKey: true)
+        )
+    }
+
+    func testShouldRequireAttestation_unattestedTierNoKey_isFalse() {
+        // The bug: previously begin() had no branch for this and stranded
+        // the user in .needsAttestation forever, since an unattested-tier
+        // run never writes a Keychain key.
+        XCTAssertFalse(
+            CaptureCoordinator.shouldRequireAttestation(tier: .unattested, hasKeychainKey: false)
+        )
+    }
 }
