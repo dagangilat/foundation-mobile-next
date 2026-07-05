@@ -133,6 +133,53 @@ if [ -n "${BUILT_PRODUCTS_DIR:-}" ]; then
 
     cp "$SRC" "$DST"
     echo "Bundled Foundation profile: $PROFILE → foundationmobile.json"
+
+    # -----------------------------------------------------------------------
+    # Brand overlay — FOUNDATION_BRAND is orthogonal to FOUNDATION_PROFILE
+    # (the tier). When set and its own profile JSON exists, overlay ONLY that
+    # brand's `theme` key on top of the tier JSON already baked into DST above,
+    # leaving every tier-specific field (faceMatchSource, document, liveness,
+    # etc.) untouched. Empty/unset FOUNDATION_BRAND (the default) is a no-op —
+    # today's behaviour is preserved byte-for-byte.
+    # -----------------------------------------------------------------------
+    BRAND="${FOUNDATION_BRAND:-}"
+    if [ -n "$BRAND" ]; then
+        BRAND_SRC="${PROFILES_DIR}/${BRAND}.json"
+        if [ -f "$BRAND_SRC" ]; then
+            if command -v jq >/dev/null 2>&1; then
+                TMP_JSON=$(mktemp "${TMPDIR:-/tmp}/select-profile-merge.XXXXXX")
+                # Use `+` (shallow merge — right side fully replaces a matching
+                # key) rather than `*` (recursive deep-merge). `*` would splice
+                # tier-only sub-fields (e.g. a stale nested `asset` key) into
+                # the brand's theme wherever the brand's object doesn't name
+                # every key the tier's did — this must be a full replacement
+                # of `theme`, not a field-by-field merge.
+                jq -s '.[0] + {theme: .[1].theme}' "$DST" "$BRAND_SRC" > "$TMP_JSON"
+                mv "$TMP_JSON" "$DST"
+            else
+                python3 - "$DST" "$BRAND_SRC" <<'PYEOF'
+import json, sys
+dst_path, brand_path = sys.argv[1], sys.argv[2]
+with open(dst_path) as f:
+    tier = json.load(f)
+with open(brand_path) as f:
+    brand = json.load(f)
+if "theme" in brand:
+    tier["theme"] = brand["theme"]
+with open(dst_path, "w") as f:
+    json.dump(tier, f, indent=2)
+PYEOF
+            fi
+            echo "Brand override: ${BRAND} (theme only)"
+        else
+            echo "error: Foundation brand JSON not found: $BRAND_SRC" >&2
+            echo "error: Valid profiles: $(profiles_csv)" >&2
+            exit 1
+        fi
+    else
+        echo "No brand override — using ${PROFILE}'s own branding"
+    fi
+
     exit 0
 fi
 

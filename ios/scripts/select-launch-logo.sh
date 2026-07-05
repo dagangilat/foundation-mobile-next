@@ -50,14 +50,27 @@ if [ -z "$PROFILE" ]; then
 fi
 PROFILE="${PROFILE:-hisec-global}"
 
+# FOUNDATION_BRAND is orthogonal to FOUNDATION_PROFILE (the tier): when set,
+# it claims first precedence for launch assets, ahead of the tier's own
+# assets (which remain the fallback — this is what keeps hisec-global's
+# bespoke steel/Aegis launch branding intact for standalone builds), which in
+# turn falls back to the shared "foundation" default. Empty/unset
+# FOUNDATION_BRAND (the default) means this adds nothing to the resolution
+# order below and today's behaviour is unchanged.
+BRAND="${FOUNDATION_BRAND:-}"
+
 LOGOS_ROOT="${SRCROOT}/FoundationMobile/Resources/launch-logos"
 BACKGROUNDS_ROOT="${SRCROOT}/FoundationMobile/Resources/launch-backgrounds"
 IMAGESET="${SRCROOT}/FoundationMobile/Images.xcassets/LaunchLogo.imageset"
 COLORSET="${SRCROOT}/FoundationMobile/Images.xcassets/LaunchBackground.colorset"
 
 # --- Launch logo mark ---
-BRAND_DIR="${LOGOS_ROOT}/${PROFILE}"
-if [ ! -d "$BRAND_DIR" ]; then
+BRAND_DIR=""
+if [ -n "$BRAND" ] && [ -d "${LOGOS_ROOT}/${BRAND}" ]; then
+    BRAND_DIR="${LOGOS_ROOT}/${BRAND}"
+elif [ -d "${LOGOS_ROOT}/${PROFILE}" ]; then
+    BRAND_DIR="${LOGOS_ROOT}/${PROFILE}"
+else
     BRAND_DIR="${LOGOS_ROOT}/foundation"
 fi
 
@@ -72,8 +85,12 @@ cp "${BRAND_DIR}/LaunchLogo@3x.png"  "${IMAGESET}/LaunchLogo@3x.png"
 echo "Launch logo brand: $(basename "$BRAND_DIR") → LaunchLogo.imageset"
 
 # --- Launch background color ---
-BG_DIR="${BACKGROUNDS_ROOT}/${PROFILE}"
-if [ ! -d "$BG_DIR" ]; then
+BG_DIR=""
+if [ -n "$BRAND" ] && [ -d "${BACKGROUNDS_ROOT}/${BRAND}" ]; then
+    BG_DIR="${BACKGROUNDS_ROOT}/${BRAND}"
+elif [ -d "${BACKGROUNDS_ROOT}/${PROFILE}" ]; then
+    BG_DIR="${BACKGROUNDS_ROOT}/${PROFILE}"
+else
     BG_DIR="${BACKGROUNDS_ROOT}/foundation"
 fi
 
