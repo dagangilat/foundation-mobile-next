@@ -38,6 +38,7 @@
 		5DA6718BC9EC53EAEA826794 /* NFCPassportReader in Frameworks */ = {isa = PBXBuildFile; productRef = BEF059432CE00682A25A1D51 /* NFCPassportReader */; };
 		5F1E2B3C4D5E6F7A8B9C0D1E /* MoproSmokeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */; };
 		5F5EF541748BEB192766D1A8 /* ProfileTierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89AE70968D788F056BF64B /* ProfileTierTests.swift */; };
+		C307078B53400CFBBD51C3AC /* ThemePaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED5628C49CC245A2C128625 /* ThemePaletteTests.swift */; };
 		5FE07A47373B2A0BFC93A828 /* PairingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E8BCD934051CD421D01402 /* PairingCoordinator.swift */; };
 		60F9E74122E441D1F0467458 /* DocumentNFCReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB6EDABB47EE23E49FE6AE8 /* DocumentNFCReaderTests.swift */; };
 		6A1E2B3C4D5E6F7A8B9C0D1E /* LivenessFrameProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */; };
@@ -192,6 +193,7 @@
 		CBF98FD5A2BE36F0502F713C /* DocumentPhotoView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentPhotoView.swift; path = FoundationMobile/DocumentPhotoView.swift; sourceTree = "<group>"; };
 		D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentProfileTests.swift; path = FoundationMobileTests/DocumentProfileTests.swift; sourceTree = "<group>"; };
 		D6D365FE65853E1C6C141BE3 /* WalletDocumentProducerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WalletDocumentProducerTests.swift; path = FoundationMobileTests/WalletDocumentProducerTests.swift; sourceTree = "<group>"; };
+		DED5628C49CC245A2C128625 /* ThemePaletteTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ThemePaletteTests.swift; path = FoundationMobileTests/ThemePaletteTests.swift; sourceTree = "<group>"; };
 		DA08D0125FEDE35EF00B0E79 /* VerificationStepPlanTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationStepPlanTests.swift; path = FoundationMobileTests/VerificationStepPlanTests.swift; sourceTree = "<group>"; };
 		DA1110000000000000000001 /* GoogleService-Info-staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-staging.plist"; path = "FoundationMobile/GoogleService-Info-staging.plist"; sourceTree = "<group>"; };
 		DA1110000000000000000002 /* DeploymentConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentConfig.swift; path = FoundationMobile/DeploymentConfig.swift; sourceTree = "<group>"; };
@@ -346,6 +348,7 @@
 				3F9D2B9D275AD2B4649B3555 /* CaptureCoordinatorTests.swift */,
 				4961CF469D27CDAC97299FD5 /* WalletDocumentReaderTests.swift */,
 				D6D365FE65853E1C6C141BE3 /* WalletDocumentProducerTests.swift */,
+				DED5628C49CC245A2C128625 /* ThemePaletteTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -618,6 +621,7 @@
 				6EBE2584B91E70421512E722 /* WalletDocumentReaderTests.swift in Sources */,
 				0A31A3FCB931166EC1D0D757 /* WalletDocumentProducerTests.swift in Sources */,
 				0E69215C0722B61EB4435DAF /* CaptureCoordinatorTests.swift in Sources */,
+				C307078B53400CFBBD51C3AC /* ThemePaletteTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
