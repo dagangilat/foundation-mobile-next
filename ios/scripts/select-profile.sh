@@ -154,7 +154,13 @@ if [ -n "${BUILT_PRODUCTS_DIR:-}" ]; then
                 # the brand's theme wherever the brand's object doesn't name
                 # every key the tier's did — this must be a full replacement
                 # of `theme`, not a field-by-field merge.
-                jq -s '.[0] + {theme: .[1].theme}' "$DST" "$BRAND_SRC" > "$TMP_JSON"
+                #
+                # Guard the case where the brand JSON has no `theme` key at
+                # all: `.[1].theme` would then be `null`, and `.[0] + {theme:
+                # null}` would NULL OUT the tier's own theme entirely rather
+                # than leaving it untouched — mirror the Python fallback's
+                # `if "theme" in brand` guard here too.
+                jq -s 'if (.[1] | has("theme")) then .[0] + {theme: .[1].theme} else .[0] end' "$DST" "$BRAND_SRC" > "$TMP_JSON"
                 mv "$TMP_JSON" "$DST"
             else
                 python3 - "$DST" "$BRAND_SRC" <<'PYEOF'
