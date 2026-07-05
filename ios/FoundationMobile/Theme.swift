@@ -80,18 +80,22 @@ extension ThemePalette {
 
     static let light = ThemePalette(
         bg: Color(hex: 0xf6f8fc), surface: Color(hex: 0xffffff),
-        border: Color(hex: 0xe2e7f0), muted: Color(hex: 0x64708c),
-        brandGreen: Color(hex: 0x0fb37d), brandCyan: Color(hex: 0x0891b2),
+        border: Color(hex: 0xe2e8f0), muted: Color(hex: 0x64748b),
+        brandGreen: Color(hex: 0x34d399), brandCyan: Color(hex: 0x22d3ee),
         voice: Color(hex: 0x6366f1), share: Color(hex: 0x0d9488), market: Color(hex: 0x0891b2),
-        text: Color(hex: 0x0a0e27), onAccent: Color(hex: 0xffffff), isDark: false
+        text: Color(hex: 0x0a0e27), onAccent: Color(hex: 0x000000), isDark: false
     )
 
+    // ocean = the Tel Aviv edition. Light mode, matching the web
+    // @plantagoai/editions tel-aviv.json kit exactly. Name kept as `ocean`
+    // (no longer a dark "ocean" look) to avoid touching tel-aviv.json's
+    // `theme.palette: "ocean"` string — see Theme.swift task notes.
     static let ocean = ThemePalette(
-        bg: Color(hex: 0x041e2e), surface: Color(hex: 0x07293c),
-        border: Color(hex: 0x11455c), muted: Color(hex: 0x8fb6c7),
-        brandGreen: Color(hex: 0x22d3ee), brandCyan: Color(hex: 0x5eead4),
+        bg: Color(hex: 0xeef6fb), surface: Color(hex: 0xffffff),
+        border: Color(hex: 0xd6e6f2), muted: Color(hex: 0x5b7184),
+        brandGreen: Color(hex: 0x0ea5b7), brandCyan: Color(hex: 0x38bdf8),
         voice: Color(hex: 0x38bdf8), share: Color(hex: 0x2dd4bf), market: Color(hex: 0x22d3ee),
-        text: Color(hex: 0xeaf6fb), onAccent: Color(hex: 0x042027), isDark: true
+        text: Color(hex: 0x0a1a2e), onAccent: Color(hex: 0xffffff), isDark: false
     )
 
     static let forest = ThemePalette(
@@ -102,12 +106,16 @@ extension ThemePalette {
         text: Color(hex: 0xf0fdf4), onAccent: Color(hex: 0x052e16), isDark: true
     )
 
+    // sunset = the San Francisco edition. Light mode, matching the web
+    // @plantagoai/editions san-francisco.json kit exactly. Name kept as
+    // `sunset` (no longer a dark "sunset" look) to avoid touching
+    // san-francisco.json's `theme.palette: "sunset"` string.
     static let sunset = ThemePalette(
-        bg: Color(hex: 0x1c1018), surface: Color(hex: 0x271521),
-        border: Color(hex: 0x45283a), muted: Color(hex: 0xc7a3b4),
-        brandGreen: Color(hex: 0xfb923c), brandCyan: Color(hex: 0xf472b6),
+        bg: Color(hex: 0xfff7f2), surface: Color(hex: 0xffffff),
+        border: Color(hex: 0xf1ddd0), muted: Color(hex: 0x8a6f60),
+        brandGreen: Color(hex: 0xfb7185), brandCyan: Color(hex: 0xfbbf24),
         voice: Color(hex: 0xc084fc), share: Color(hex: 0xfb7185), market: Color(hex: 0xfbbf24),
-        text: Color(hex: 0xfdf2f8), onAccent: Color(hex: 0x2a0a00), isDark: true
+        text: Color(hex: 0x2a160c), onAccent: Color(hex: 0xffffff), isDark: false
     )
 
     // steel = the High Security — Global edition. Dark steel-navy base with an
