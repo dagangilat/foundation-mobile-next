@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0234470E89B3B3C730DD40F6 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 257D88861F1B9A2298427239 /* Theme.swift */; };
 		055B2A9AF8EF61699C7E8A2A /* WebHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBA9375FD4DABA14059C332 /* WebHomeView.swift */; };
+		2B9C4F1E2A3D4E5F6A7B8C9D /* AnimatedMeshHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0D5E1F2A3B4C5D6E7F8A9B /* AnimatedMeshHero.swift */; };
 		07A4980EBF784B52F1044B82 /* AttestationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A1C216FE07660C1AEE3797 /* AttestationService.swift */; };
 		0A1E2B3C4D5E6F7A8B9C0D1E /* AttestationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F3A4B5C6D7E8F9A0B1C2D /* AttestationCoordinator.swift */; };
 		0A31A3FCB931166EC1D0D757 /* WalletDocumentProducerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6D365FE65853E1C6C141BE3 /* WalletDocumentProducerTests.swift */; };
@@ -39,6 +40,7 @@
 		5F1E2B3C4D5E6F7A8B9C0D1E /* MoproSmokeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2F3A4B5C6D7E8F9A0B1C2D /* MoproSmokeBridge.swift */; };
 		5F5EF541748BEB192766D1A8 /* ProfileTierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C89AE70968D788F056BF64B /* ProfileTierTests.swift */; };
 		C307078B53400CFBBD51C3AC /* ThemePaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED5628C49CC245A2C128625 /* ThemePaletteTests.swift */; };
+		2A8B3F0E1A2C4D5E6F7A8B9C /* AnimatedMeshHeroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D4E5F6A7B8C9D0E1F2A3B4C /* AnimatedMeshHeroTests.swift */; };
 		5FE07A47373B2A0BFC93A828 /* PairingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E8BCD934051CD421D01402 /* PairingCoordinator.swift */; };
 		60F9E74122E441D1F0467458 /* DocumentNFCReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EB6EDABB47EE23E49FE6AE8 /* DocumentNFCReaderTests.swift */; };
 		6A1E2B3C4D5E6F7A8B9C0D1E /* LivenessFrameProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A2F3A4B5C6D7E8F9A0B1C2D /* LivenessFrameProducer.swift */; };
@@ -134,6 +136,7 @@
 		1BEEB0A53E04ED338BAE4E31 /* AuthService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AuthService.swift; path = FoundationMobile/AuthService.swift; sourceTree = "<group>"; };
 		1ECB49D63F54BFCD60E737FB /* hisec-global.json */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json; name = "hisec-global.json"; path = "FoundationMobile/Resources/profiles/hisec-global.json"; sourceTree = "<group>"; };
 		257D88861F1B9A2298427239 /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = FoundationMobile/Theme.swift; sourceTree = "<group>"; };
+		3C0D5E1F2A3B4C5D6E7F8A9B /* AnimatedMeshHero.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnimatedMeshHero.swift; path = FoundationMobile/AnimatedMeshHero.swift; sourceTree = "<group>"; };
 		2AFE5CBAAF899E46A73E66EE /* DocumentProfile.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentProfile.swift; path = FoundationMobile/DocumentProfile.swift; sourceTree = "<group>"; };
 		2C2F3A4B5C6D7E8F9A0B1C2D /* CameraSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CameraSession.swift; path = FoundationMobile/CameraSession.swift; sourceTree = "<group>"; };
 		3B576E1AFF6FFD779C4AA940 /* ExplainerStepTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExplainerStepTests.swift; path = FoundationMobileTests/ExplainerStepTests.swift; sourceTree = "<group>"; };
@@ -194,6 +197,7 @@
 		D2BC38E97B8C9E826C10BDF5 /* DocumentProfileTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentProfileTests.swift; path = FoundationMobileTests/DocumentProfileTests.swift; sourceTree = "<group>"; };
 		D6D365FE65853E1C6C141BE3 /* WalletDocumentProducerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WalletDocumentProducerTests.swift; path = FoundationMobileTests/WalletDocumentProducerTests.swift; sourceTree = "<group>"; };
 		DED5628C49CC245A2C128625 /* ThemePaletteTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ThemePaletteTests.swift; path = FoundationMobileTests/ThemePaletteTests.swift; sourceTree = "<group>"; };
+		1D4E5F6A7B8C9D0E1F2A3B4C /* AnimatedMeshHeroTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnimatedMeshHeroTests.swift; path = FoundationMobileTests/AnimatedMeshHeroTests.swift; sourceTree = "<group>"; };
 		DA08D0125FEDE35EF00B0E79 /* VerificationStepPlanTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationStepPlanTests.swift; path = FoundationMobileTests/VerificationStepPlanTests.swift; sourceTree = "<group>"; };
 		DA1110000000000000000001 /* GoogleService-Info-staging.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info-staging.plist"; path = "FoundationMobile/GoogleService-Info-staging.plist"; sourceTree = "<group>"; };
 		DA1110000000000000000002 /* DeploymentConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeploymentConfig.swift; path = FoundationMobile/DeploymentConfig.swift; sourceTree = "<group>"; };
@@ -247,6 +251,7 @@
 				17C4E8248B7835DC81FE642C /* FoundationMobile.entitlements */,
 				DF04FA9C0D00CAD3F39266D8 /* FoundationMobileApp.swift */,
 				257D88861F1B9A2298427239 /* Theme.swift */,
+				3C0D5E1F2A3B4C5D6E7F8A9B /* AnimatedMeshHero.swift */,
 				4B75C5E3C618B31A8E9C58D5 /* Keychain.swift */,
 				1BEEB0A53E04ED338BAE4E31 /* AuthService.swift */,
 				8F8C681943614A55B4EC0094 /* FirestoreService.swift */,
@@ -349,6 +354,7 @@
 				4961CF469D27CDAC97299FD5 /* WalletDocumentReaderTests.swift */,
 				D6D365FE65853E1C6C141BE3 /* WalletDocumentProducerTests.swift */,
 				DED5628C49CC245A2C128625 /* ThemePaletteTests.swift */,
+				1D4E5F6A7B8C9D0E1F2A3B4C /* AnimatedMeshHeroTests.swift */,
 			);
 			name = FoundationMobileTests;
 			sourceTree = "<group>";
@@ -568,6 +574,7 @@
 				DA1110000000000000000006 /* DeploymentPickerView.swift in Sources */,
 				916EBB67882EC0D0D8E981B9 /* FoundationMobileApp.swift in Sources */,
 				0234470E89B3B3C730DD40F6 /* Theme.swift in Sources */,
+				2B9C4F1E2A3D4E5F6A7B8C9D /* AnimatedMeshHero.swift in Sources */,
 				3F60C53D026EDD9B2EBAB77B /* Keychain.swift in Sources */,
 				31E971ED85C6B73368C32032 /* AuthService.swift in Sources */,
 				FB116A53DCD4836E5B91D7FC /* FirestoreService.swift in Sources */,
@@ -643,6 +650,7 @@
 				0A31A3FCB931166EC1D0D757 /* WalletDocumentProducerTests.swift in Sources */,
 				0E69215C0722B61EB4435DAF /* CaptureCoordinatorTests.swift in Sources */,
 				C307078B53400CFBBD51C3AC /* ThemePaletteTests.swift in Sources */,
+				2A8B3F0E1A2C4D5E6F7A8B9C /* AnimatedMeshHeroTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
