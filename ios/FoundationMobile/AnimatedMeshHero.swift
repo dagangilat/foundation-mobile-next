@@ -4,7 +4,7 @@ import Foundation
 // Native SwiftUI equivalent of the web app's animated MeshHero (see
 // docs/superpowers/specs/2026-08-09-light-editions-redesign-design.md §3).
 // Wraps hero content in a living gradient mesh with an angled bottom cut,
-// sourced from the active edition's Theme.palette.meshBase/meshBlobs.
+// sourced from the active edition's Theme.meshBase/meshBlobs.
 // Editions without mesh data (the mobile-only security editions) render
 // their content with no background layer at all — pixel-identical to
 // pre-redesign behavior.
