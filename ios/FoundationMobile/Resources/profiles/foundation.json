@@ -3,7 +3,7 @@
   "profile": {
     "id": "foundation",
     "label": "Foundation",
-    "description": "The default Foundation look — the base Edition every white-label derives from. Document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Midnight palette with the composed Your Voice / Share / Market pillar hero.",
+    "description": "The default Foundation look — the base Edition every white-label derives from. Document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Light palette with the composed Your Voice / Share / Market pillar hero.",
     "requiredPhases": [
       "appAttest",
       "liveness",

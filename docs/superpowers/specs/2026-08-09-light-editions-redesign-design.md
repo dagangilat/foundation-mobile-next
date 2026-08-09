@@ -79,7 +79,7 @@ existing `ocean`/`sunset` presets — preserved here):
 - **Reduced motion:** reads `@Environment(\.accessibilityReduceMotion)` — freezes to a static mesh (no
   `TimelineView` ticking) when enabled, matching the web's `prefers-reduced-motion` behavior.
 - **Graceful fallback:** when `Theme.palette.meshBase` is `nil` (the 4 out-of-scope editions), renders
-  today's flat `Theme.bg` rectangle — zero behavior change for `steel`/`midnight`.
+  no background layer at all — zero visual change — for `steel`/`midnight`.
 
 **Where it renders:** wraps the hero content at its two existing call sites — `PillarsHero`
 (`HomeView.swift:157`, `LoadingView.swift:31`) — replacing the flat background behind both the "pillars" and
