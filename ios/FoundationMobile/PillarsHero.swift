@@ -19,10 +19,19 @@ import SwiftUI
 
 struct PillarsHero: View {
     var body: some View {
-        // A white-label profile (e.g. MoMA) can replace the
-        // composed three-pillar wordmark with a single bundled hero image
-        // by setting theme.branding.hero.mode = "image" in its profile JSON.
-        // Falls through to the built-in pillars otherwise.
+        AnimatedMeshHero {
+            heroContent
+        }
+    }
+
+    // A white-label profile (e.g. MoMA) can replace the composed
+    // three-pillar wordmark with a single bundled hero image by setting
+    // theme.branding.hero.mode = "image" in its profile JSON. Falls through
+    // to the built-in pillars otherwise. Wrapped in AnimatedMeshHero above
+    // so both modes get the same living-mesh background for editions that
+    // carry mesh data.
+    @ViewBuilder
+    private var heroContent: some View {
         if let hero = AppConfig.shared.theme?.branding?.hero,
            hero.mode == "image",
            let assetName = Theme.palette.isDark ? (hero.darkAsset ?? hero.asset) : hero.asset {
