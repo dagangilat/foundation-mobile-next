@@ -36,5 +36,15 @@ final class AnimatedMeshHeroTests: XCTestCase {
         XCTAssertEqual(path.boundingRect.maxX, 300, accuracy: 0.01)
         XCTAssertEqual(path.boundingRect.minY, 0, accuracy: 0.01)
         XCTAssertEqual(path.boundingRect.maxY, 200, accuracy: 0.01)
+        XCTAssertFalse(path.contains(CGPoint(x: 299, y: 199)), "bottom-right corner must be cut away by the angled clip")
+        XCTAssertTrue(path.contains(CGPoint(x: 1, y: 199)), "bottom-left corner must be kept")
+    }
+
+    func testMeshDriftsAtRealisticWallClockTimes() {
+        let t = Date().timeIntervalSinceReferenceDate
+        let a = AnimatedMeshHero<EmptyView>.meshPoints(at: t)
+        let b = AnimatedMeshHero<EmptyView>.meshPoints(at: t + 0.5)
+        XCTAssertNotEqual(a[4], b[4], "center control point must drift between frames 0.5s apart")
+        XCTAssertNotEqual(a[1], b[1], "top-mid control point must drift between frames 0.5s apart")
     }
 }

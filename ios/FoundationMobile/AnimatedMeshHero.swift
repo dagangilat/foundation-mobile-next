@@ -22,8 +22,8 @@ struct AnimatedMeshHero<Content: View>: View {
     @ViewBuilder
     private var meshBackground: some View {
         if #available(iOS 18, *) {
-            if let base = Theme.palette.meshBase,
-               let blobs = Theme.palette.meshBlobs,
+            if let base = Theme.meshBase,
+               let blobs = Theme.meshBlobs,
                blobs.count == 4 {
                 TimelineView(.animation(paused: reduceMotion)) { timeline in
                     MeshGradient(
@@ -45,9 +45,8 @@ struct AnimatedMeshHero<Content: View>: View {
     /// independent sine phases for an organic, non-repeating feel — the
     /// SwiftUI-native equivalent of the web mesh's 21-30s blob drift.
     static func meshPoints(at time: TimeInterval) -> [SIMD2<Float>] {
-        let t = Float(time)
-        func wobble(_ seed: Float, amplitude: Float = 0.05, speed: Float = 0.25) -> Float {
-            amplitude * sin(t * speed + seed)
+        func wobble(_ seed: Double, amplitude: Double = 0.05, speed: Double = 0.25) -> Float {
+            Float(amplitude * sin(time * speed + seed))
         }
         return [
             SIMD2(0, 0),
@@ -66,7 +65,8 @@ struct AnimatedMeshHero<Content: View>: View {
     /// edge-midpoints (the points that actually drift), base fills the
     /// corners and center.
     static func meshColors(base: Color, blobs: [Color]) -> [Color] {
-        [
+        guard blobs.count == 4 else { return Array(repeating: base, count: 9) }
+        return [
             base, blobs[0], base,
             blobs[1], base, blobs[2],
             base, blobs[3], base,
