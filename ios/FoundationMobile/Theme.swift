@@ -52,6 +52,8 @@ enum Theme {
     static var market: Color { palette.market }
     static var text: Color { palette.text }
     static var onAccent: Color { palette.onAccent }
+    static var meshBase: Color? { palette.meshBase }
+    static var meshBlobs: [Color]? { palette.meshBlobs }
     static var pillBg: Color { palette.brandGreen.opacity(0.12) }
 
     static let ringLabels: [Int: String] = [
