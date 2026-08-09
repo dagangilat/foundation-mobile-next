@@ -9,8 +9,7 @@ import Foundation
 // their content with no background layer at all — pixel-identical to
 // pre-redesign behavior.
 //
-// Requires iOS 18 (SwiftUI's MeshGradient).
-@available(iOS 18, *)
+// MeshGradient requires iOS 18; pre-iOS-18 renders gracefully without gradient.
 struct AnimatedMeshHero<Content: View>: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ViewBuilder var content: () -> Content
@@ -22,21 +21,22 @@ struct AnimatedMeshHero<Content: View>: View {
 
     @ViewBuilder
     private var meshBackground: some View {
-        if let base = Theme.palette.meshBase,
-           let blobs = Theme.palette.meshBlobs,
-           blobs.count == 4 {
-            TimelineView(.animation(paused: reduceMotion)) { timeline in
-                MeshGradient(
-                    width: 3,
-                    height: 3,
-                    points: Self.meshPoints(at: timeline.date.timeIntervalSinceReferenceDate),
-                    colors: Self.meshColors(base: base, blobs: blobs)
-                )
+        if #available(iOS 18, *) {
+            if let base = Theme.palette.meshBase,
+               let blobs = Theme.palette.meshBlobs,
+               blobs.count == 4 {
+                TimelineView(.animation(paused: reduceMotion)) { timeline in
+                    MeshGradient(
+                        width: 3,
+                        height: 3,
+                        points: Self.meshPoints(at: timeline.date.timeIntervalSinceReferenceDate),
+                        colors: Self.meshColors(base: base, blobs: blobs)
+                    )
+                }
+                .clipShape(AngledCutShape())
             }
-            .clipShape(AngledCutShape())
         }
-        // else: no background layer — out-of-scope editions render exactly
-        // as they did before this component existed.
+        // else (pre-iOS-18, or no mesh data): no background layer at all.
     }
 
     /// 3x3 control-point grid for MeshGradient, in unit-square (0...1)

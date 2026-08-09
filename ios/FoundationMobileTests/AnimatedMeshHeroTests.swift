@@ -2,7 +2,6 @@ import SwiftUI
 import XCTest
 @testable import FoundationMobile
 
-@available(iOS 18, *)
 final class AnimatedMeshHeroTests: XCTestCase {
     func testMeshPointsKeepCornersPinnedAtAnyTime() {
         for t: TimeInterval in [0.0, 5.0, 12.3, 100.0] {
