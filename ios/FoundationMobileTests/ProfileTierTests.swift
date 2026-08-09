@@ -66,4 +66,29 @@ final class ProfileTierTests: XCTestCase {
             )
         }
     }
+
+    // MARK: - theme.palette strings resolve to their intended v2 Theme names
+
+    /// Reads each web-matched profile JSON straight off disk (same pattern as
+    /// the schema test above) and asserts its theme.palette string is the
+    /// v2-renamed value, not a leftover pre-redesign name.
+    func testWebMatchedEditionsUseTheirV2PaletteNames() throws {
+        let thisFile = URL(fileURLWithPath: #filePath)
+        let profilesDir = thisFile
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("FoundationMobile/Resources/profiles")
+
+        let expected: [String: String] = [
+            "foundation.json": "foundation",
+            "moma.json": "moma",
+            "tel-aviv.json": "ocean",
+            "san-francisco.json": "sunset",
+        ]
+        for (file, expectedPaletteName) in expected {
+            let data = try Data(contentsOf: profilesDir.appendingPathComponent(file))
+            let config = try JSONDecoder().decode(AppConfig.self, from: data)
+            XCTAssertEqual(config.themePaletteName, expectedPaletteName, "\(file) theme.palette")
+        }
+    }
 }

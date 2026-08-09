@@ -84,7 +84,7 @@
     "cosineThreshold": 0.55
   },
   "theme": {
-    "palette": "midnight",
+    "palette": "foundation",
     "branding": {
       "hero": {
         "mode": "pillars"
