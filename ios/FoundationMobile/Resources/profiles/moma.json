@@ -4,28 +4,70 @@
     "id": "moma",
     "label": "MoMA Member",
     "description": "White-label MoMA membership identity for NYC. Intended to verify a New York State mobile driver's license (ISO 18013-5 mDL); until the mDL producer ships, this profile runs the document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Light palette with MoMA logo + hero branding.",
-    "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],
+    "requiredPhases": [
+      "appAttest",
+      "liveness",
+      "antiSpoof",
+      "faceMatch"
+    ],
     "faceMatchSource": "documentPhoto",
-    "document": { "noun": "driver's license", "short": "ID" }
+    "document": {
+      "noun": "driver's license",
+      "short": "ID"
+    }
   },
   "splash": {
     "minDurationMs": 900
   },
   "loading": {
-    "phaseThresholdsMs": [0, 1500, 3500, 7000]
+    "phaseThresholdsMs": [
+      0,
+      1500,
+      3500,
+      7000
+    ]
   },
   "liveness": {
     "scanBudgetSeconds": 15,
     "poseHoldMs": 250,
-    "activePoses": ["straight", "left", "right"],
+    "activePoses": [
+      "straight",
+      "left",
+      "right"
+    ],
     "frameStride": 2,
     "minConfidence": 0.5,
     "poses": {
-      "straight": {"yaw":  0.00, "pitch":  0.00, "yawTolerance": 0.18, "pitchTolerance": 0.18},
-      "left":     {"yaw": -0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
-      "right":    {"yaw":  0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
-      "up":       {"yaw":  0.00, "pitch":  0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15},
-      "down":     {"yaw":  0.00, "pitch": -0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15}
+      "straight": {
+        "yaw": 0,
+        "pitch": 0,
+        "yawTolerance": 0.18,
+        "pitchTolerance": 0.18
+      },
+      "left": {
+        "yaw": -0.45,
+        "pitch": 0,
+        "yawTolerance": 0.15,
+        "pitchTolerance": 0.3
+      },
+      "right": {
+        "yaw": 0.45,
+        "pitch": 0,
+        "yawTolerance": 0.15,
+        "pitchTolerance": 0.3
+      },
+      "up": {
+        "yaw": 0,
+        "pitch": 0.35,
+        "yawTolerance": 0.25,
+        "pitchTolerance": 0.15
+      },
+      "down": {
+        "yaw": 0,
+        "pitch": -0.35,
+        "yawTolerance": 0.25,
+        "pitchTolerance": 0.15
+      }
     }
   },
   "camera": {
@@ -44,8 +86,13 @@
   "theme": {
     "palette": "light",
     "branding": {
-      "logo": { "asset": "MoMALogo" },
-      "hero": { "mode": "image", "asset": "MoMAHero" }
+      "logo": {
+        "asset": "MoMALogo"
+      },
+      "hero": {
+        "mode": "image",
+        "asset": "MoMAHero"
+      }
     }
   },
   "session": {
@@ -74,5 +121,24 @@
       "webUrl": "https://staging.foundation-global.com",
       "plist": "GoogleService-Info-staging"
     }
-  ]
+  ],
+  "palette": {
+    "canvas": "#ffffff",
+    "surface": "#f6f7f8",
+    "border": "#e5e7eb",
+    "ink": "#0f0f10",
+    "muted": "#6b7280",
+    "brand": "#ef4444",
+    "brandAlt": "#9ca3af",
+    "brandInk": "#b91c1c",
+    "brandInkHover": "#991b1b",
+    "gradient": "linear-gradient(100deg, #1f2937, #6b7280 70%, #ef4444)",
+    "meshBase": "#f3f4f6",
+    "meshBlobs": [
+      "#d1d5db",
+      "#9ca3af",
+      "#e5e7eb",
+      "#ef4444"
+    ]
+  }
 }
