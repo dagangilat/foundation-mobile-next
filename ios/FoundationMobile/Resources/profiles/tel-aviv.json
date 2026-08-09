@@ -4,28 +4,70 @@
     "id": "tel-aviv",
     "label": "Tel Aviv",
     "description": "White-label smart-city digital identity Edition for Tel Aviv. Document-capture flow (App Attest + active liveness + anti-spoof + face match against a back-camera capture). Ocean palette with a Mediterranean sun/sea hero + launch mark.",
-    "requiredPhases": ["appAttest", "liveness", "antiSpoof", "faceMatch"],
+    "requiredPhases": [
+      "appAttest",
+      "liveness",
+      "antiSpoof",
+      "faceMatch"
+    ],
     "faceMatchSource": "documentPhoto",
-    "document": { "noun": "identity card", "short": "ID" }
+    "document": {
+      "noun": "identity card",
+      "short": "ID"
+    }
   },
   "splash": {
     "minDurationMs": 900
   },
   "loading": {
-    "phaseThresholdsMs": [0, 1500, 3500, 7000]
+    "phaseThresholdsMs": [
+      0,
+      1500,
+      3500,
+      7000
+    ]
   },
   "liveness": {
     "scanBudgetSeconds": 15,
     "poseHoldMs": 250,
-    "activePoses": ["straight", "left", "right"],
+    "activePoses": [
+      "straight",
+      "left",
+      "right"
+    ],
     "frameStride": 2,
     "minConfidence": 0.5,
     "poses": {
-      "straight": {"yaw":  0.00, "pitch":  0.00, "yawTolerance": 0.18, "pitchTolerance": 0.18},
-      "left":     {"yaw": -0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
-      "right":    {"yaw":  0.45, "pitch":  0.00, "yawTolerance": 0.15, "pitchTolerance": 0.30},
-      "up":       {"yaw":  0.00, "pitch":  0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15},
-      "down":     {"yaw":  0.00, "pitch": -0.35, "yawTolerance": 0.25, "pitchTolerance": 0.15}
+      "straight": {
+        "yaw": 0,
+        "pitch": 0,
+        "yawTolerance": 0.18,
+        "pitchTolerance": 0.18
+      },
+      "left": {
+        "yaw": -0.45,
+        "pitch": 0,
+        "yawTolerance": 0.15,
+        "pitchTolerance": 0.3
+      },
+      "right": {
+        "yaw": 0.45,
+        "pitch": 0,
+        "yawTolerance": 0.15,
+        "pitchTolerance": 0.3
+      },
+      "up": {
+        "yaw": 0,
+        "pitch": 0.35,
+        "yawTolerance": 0.25,
+        "pitchTolerance": 0.15
+      },
+      "down": {
+        "yaw": 0,
+        "pitch": -0.35,
+        "yawTolerance": 0.25,
+        "pitchTolerance": 0.15
+      }
     }
   },
   "camera": {
@@ -44,8 +86,13 @@
   "theme": {
     "palette": "ocean",
     "branding": {
-      "logo": { "asset": "TelAvivLogo" },
-      "hero": { "mode": "image", "asset": "TelAvivHero" }
+      "logo": {
+        "asset": "TelAvivLogo"
+      },
+      "hero": {
+        "mode": "image",
+        "asset": "TelAvivHero"
+      }
     }
   },
   "session": {
@@ -74,5 +121,24 @@
       "webUrl": "https://staging.foundation-global.com",
       "plist": "GoogleService-Info-staging"
     }
-  ]
+  ],
+  "palette": {
+    "canvas": "#ffffff",
+    "surface": "#eef6fb",
+    "border": "#d6e6f2",
+    "ink": "#0a1a2e",
+    "muted": "#5b7184",
+    "brand": "#0ea5b7",
+    "brandAlt": "#38bdf8",
+    "brandInk": "#0e7490",
+    "brandInkHover": "#155e75",
+    "gradient": "linear-gradient(100deg, #0ea5b7, #38bdf8 50%, #2563eb)",
+    "meshBase": "#e6f6fb",
+    "meshBlobs": [
+      "#0ea5b7",
+      "#38bdf8",
+      "#2563eb",
+      "#67e8f9"
+    ]
+  }
 }
