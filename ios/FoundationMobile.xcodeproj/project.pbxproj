@@ -675,7 +675,7 @@
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_BITCODE = NO;
-				FOUNDATION_PROFILE = moma;
+				FOUNDATION_PROFILE = foundation;
 				FOUNDATION_BRAND = "";
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -707,7 +707,7 @@
 				CODE_SIGN_ENTITLEMENTS = "FoundationMobile/FoundationMobile-Release.entitlements";
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = F9F26FQW95;
-				FOUNDATION_PROFILE = "hisec-global";
+				FOUNDATION_PROFILE = foundation;
 				INFOPLIST_FILE = FoundationMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
