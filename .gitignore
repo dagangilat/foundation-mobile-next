@@ -1,6 +1,12 @@
 # Firebase — contain live API keys; injected at build time from CI secret / local keychain
 ios/FoundationMobile/GoogleService-Info.plist
 ios/FoundationMobile/GoogleService-Info-staging.plist
+# Task A2 quarantined the old ios/ tree to legacy-ios-shell/ (git mv) without
+# updating these paths — the files above are now dead entries and these two
+# are what's actually needed. Kept both: the old paths are harmless if the
+# B-track port later recreates a similarly-named target under the new ios/.
+legacy-ios-shell/FoundationMobile/GoogleService-Info.plist
+legacy-ios-shell/FoundationMobile/GoogleService-Info-staging.plist
 
 # OSX
 #
