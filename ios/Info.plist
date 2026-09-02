@@ -90,6 +90,10 @@
 	</array>
 	<key>EVM_RPC_URL</key>
 	<string>${EVM_RPC_URL}</string>
+	<key>FOUNDATION_FUNCTIONS_REGION</key>
+	<string>${FOUNDATION_FUNCTIONS_REGION}</string>
+	<key>FOUNDATION_APP_SCHEME</key>
+	<string>${FOUNDATION_APP_SCHEME}</string>
 	<key>FREEDOM_TOOL_RPC_URL</key>
 	<string>${FREEDOM_TOOL_RPC_URL}</string>
 	<key>FEEDBACK_EMAIL</key>
