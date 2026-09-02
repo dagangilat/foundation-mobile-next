@@ -16,14 +16,14 @@ private enum HomeOnboardingStep: Int, CaseIterable {
         switch self {
         case .welcome: String(localized: "This app is where you privately store your digital identities, enabling you to go incognito across the web")
         case .privacy: String(localized: "No one can trace your actions\nNo system can connect the dots\nNo data ever leaves your phone")
-        case .identity: String(localized: "Rarimo lets you prove your identity - without giving anything away")
+        case .identity: String(localized: "Foundation lets you prove your identity — without giving anything away")
         case .widgets: String(localized: "Add different type of applications that you can intersect with anonymously")
         }
     }
 
     // No Foundation-specific onboarding illustrations exist yet (Open Decision
-    // OD-6), so each step uses a plain icon glyph instead of shipping Rarimo's
-    // artwork.
+    // OD-6), so each step uses a plain icon glyph instead of shipping the
+    // upstream fork's artwork.
     var icon: ImageResource {
         switch self {
         case .welcome: .globeSimple

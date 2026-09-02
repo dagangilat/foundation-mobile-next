@@ -75,7 +75,7 @@ struct IntroView: View {
                     Text("Welcome To")
                         .subtitle4()
                         .foregroundStyle(.textSecondary)
-                    Text("RariMe")
+                    Text("Foundation")
                         .h1()
                         .foregroundStyle(.textPrimary)
                 }

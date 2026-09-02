@@ -1,6 +1,9 @@
 import Foundation
 import CloudKit
 
+// Rarimo's iCloud container identifier. Retained deliberately: re-pointing it
+// requires a new CloudKit container + entitlement under our own Apple
+// developer account, which is out of scope here. See Open Decision OD-5.
 class CloudStorage {
     static let shared = CloudStorage()
 

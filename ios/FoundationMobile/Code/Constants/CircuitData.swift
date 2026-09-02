@@ -1,5 +1,7 @@
 import Foundation
 
+// Rarimo-hosted circuit artifacts. Retained deliberately: our proofs are
+// verified against Rarimo's L2 registration state. See Open Decision OD-5.
 let CIRCUIT_DATA_URLS: [String: URL] = [
     "registerIdentity_2_256_3_6_336_264_21_2448_6_2008": URL(string: "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.0/registerIdentity_2_256_3_6_336_264_21_2448_6_2008-download.zip")!,
     "registerIdentity_2_256_3_6_336_248_1_2432_3_256": URL(string: "https://storage.googleapis.com/rarimo-store/passport-zk-circuits/v0.2.1/registerIdentity_2_256_3_6_336_248_1_2432_3_256-download.zip")!,

@@ -1,5 +1,8 @@
 import Foundation
 
+// Rarimo's zero-knowledge proving SDK. Retained deliberately: our passport
+// circuits are compiled against this library and our proofs are verified
+// against Rarimo's L2 registration state. See Open Decision OD-5.
 import RarimeIOSUtils
 
 #if targetEnvironment(simulator)

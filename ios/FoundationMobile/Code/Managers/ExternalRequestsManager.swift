@@ -1,7 +1,7 @@
 import Foundation
 import Web3
 
-enum RarimeUrlHosts: String {
+enum FoundationUrlHosts: String {
     case external
 }
 
@@ -30,8 +30,8 @@ class ExternalRequestsManager: ObservableObject {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let params = components.queryItems
         else {
-            LoggerUtil.common.error("Invalid RariMe app URL: \(url.absoluteString, privacy: .public)")
-            AlertManager.shared.emitError(.unknown("Invalid RariMe app URL"))
+            LoggerUtil.common.error("Invalid app link: \(url.absoluteString, privacy: .public)")
+            AlertManager.shared.emitError(.unknown("Invalid app link"))
             return
         }
 
@@ -40,7 +40,7 @@ class ExternalRequestsManager: ObservableObject {
             return
         }
 
-        LoggerUtil.common.error("Invalid RariMe URL host: \(url.host ?? "nil", privacy: .public)")
+        LoggerUtil.common.error("Invalid app link host: \(url.host ?? "nil", privacy: .public)")
     }
 
     private func handleRefferalCode(_ url: URL) {

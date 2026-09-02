@@ -20,6 +20,13 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #  - Frameworks/ and cpp/lib/: upstream GPL binaries, named by their own project
 #  - NOTICE / THIRD_PARTY_LICENSES.md: attribution MUST name Rarimo
 #  - .git, build outputs
+#  - CircuitData.swift, ZKUtils.swift, CloudStorage.swift, NotificationManager.swift
+#    (Task B4 / Open Decision OD-5): these reference Rarimo INFRASTRUCTURE that is
+#    retained deliberately, not rebranded — circuit-artifact download URLs, the
+#    Rarimo ZK-proving SDK import, and the app's iCloud container / App Group
+#    identifiers (re-pointing those needs our own Apple developer account
+#    entitlements, which is out of scope for the copy rebrand). Each file carries
+#    an inline comment explaining the specific retention.
 EXCLUDES=(
   --exclude-dir=.git
   --exclude-dir=Frameworks
@@ -31,6 +38,10 @@ EXCLUDES=(
   --exclude=THIRD_PARTY_LICENSES.md
   --exclude='*.a'
   --exclude='*.so'
+  --exclude=CircuitData.swift
+  --exclude=ZKUtils.swift
+  --exclude=CloudStorage.swift
+  --exclude=NotificationManager.swift
 )
 
 hits=$(grep -rniE "$PATTERN" "${EXCLUDES[@]}" "${ROOTS[@]}" 2>/dev/null)

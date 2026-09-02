@@ -5,6 +5,9 @@ import Foundation
 import SwiftUI
 import UserNotifications
 
+// Rarimo's app group identifier. Retained deliberately: re-pointing it
+// requires a new App Group entitlement under our own Apple developer
+// account, which is out of scope here. See Open Decision OD-5.
 class NotificationManager: ObservableObject {
     static let userDefaults = UserDefaults(suiteName: "group.rarilabs.rarime")!
     
