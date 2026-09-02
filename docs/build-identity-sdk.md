@@ -7,7 +7,7 @@ build output — gitignored, never committed.
 ## Prerequisites
 
 - Go toolchain on `PATH` (`/usr/local/go/bin` and `$HOME/go/bin`, which
-  `prebuild.sh` prepends).
+  `prebuild.sh` appends to `PATH`).
 - `gomobile` (`go install golang.org/x/mobile/cmd/gomobile@latest` then
   `gomobile init`).
 - Xcode command line tools.
@@ -30,7 +30,18 @@ Expected tail: `✅ Build completed successfully`, and
 
 ## If the build fails
 
-`gomobile bind` failing on the cgo patch is the known failure mode. Check the
-SDK's `build/patch.sh` ran, and that `go env CC` points at the patched
-toolchain. Do not work around it by stubbing the framework: without the real
-`Identity` module the app cannot prove anything.
+`prebuild.sh` does not invoke the SDK's `build/patch.sh` — the cgo-patching
+step only matters if you're calling `gomobile bind` some other way. The
+failure actually seen (and fixed) via this script was a Go module conflict:
+`gomobile bind`'s internal `go mod tidy` failed with `ambiguous import: found
+package github.com/btcsuite/btcd/chaincfg/chainhash in multiple modules`,
+caused by the SDK's `go.mod` pinning a `github.com/btcsuite/btcd` version
+that still bundled `chaincfg/chainhash` internally, colliding with the
+standalone `chaincfg/chainhash` module pulled in transitively via
+`go-ethereum`. Fixed by bumping the `replace` directive to a version that
+splits `chainhash` out cleanly (`v0.22.3`) — see the SDK fork's own commit
+history (`dagangilat/rarime-mobile-identity-sdk`) for the exact change if
+this regresses on a future upstream merge.
+
+Do not work around any build failure by stubbing the framework: without the
+real `Identity` module the app cannot prove anything.
