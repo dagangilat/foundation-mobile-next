@@ -1,5 +1,5 @@
 import BigInt
-@testable import Rarime
+@testable import FoundationMobile
 import Web3
 import XCTest
 

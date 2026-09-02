@@ -309,7 +309,7 @@
 		CE937B032DC8B65300D254D1 /* TensorFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE937B022DC8B64F00D254D1 /* TensorFlow.swift */; };
 		CE937B052DC8B6EC00D254D1 /* TensorFlowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE937B042DC8B6E000D254D1 /* TensorFlowManager.swift */; };
 		CE937B082DC8B98900D254D1 /* TensorFlowLiteSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CE937B072DC8B98900D254D1 /* TensorFlowLiteSwift */; };
-		CE9E82B62BA881F400AAF885 /* RarimeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9E82B52BA881F400AAF885 /* RarimeApp.swift */; };
+		CE9E82B62BA881F400AAF885 /* FoundationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9E82B52BA881F400AAF885 /* FoundationApp.swift */; };
 		CE9E82B82BA881F400AAF885 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9E82B72BA881F400AAF885 /* AppView.swift */; };
 		CE9E82BA2BA881F500AAF885 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE9E82B92BA881F500AAF885 /* Assets.xcassets */; };
 		CEA03F0A2C7C7A17002F218A /* View+IsLoading.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA03F092C7C7A17002F218A /* View+IsLoading.swift */; };
@@ -370,7 +370,7 @@
 			containerPortal = CE9E82AA2BA881F400AAF885 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = CE9E82B12BA881F400AAF885;
-			remoteInfo = Rarime;
+			remoteInfo = FoundationMobile;
 		};
 		CE3D41CA2C779BC400D0AA65 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -412,7 +412,7 @@
 		561C3C382BADE64B00FBB3B9 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		561DA2EA2DDC7FCA004BC001 /* HiddenKeysStatusChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenKeysStatusChip.swift; sourceTree = "<group>"; };
 		562241422C107E16000239FA /* AppDropdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDropdown.swift; sourceTree = "<group>"; };
-		56296A2A2DE848AC004D87EC /* RarimeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RarimeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		56296A2A2DE848AC004D87EC /* FoundationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoundationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		56337CE22DBA3D1500973721 /* LikenessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikenessManager.swift; sourceTree = "<group>"; };
 		563529E82BB072B80027C910 /* IdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityView.swift; sourceTree = "<group>"; };
 		563529EA2BB072FD0027C910 /* UINavigationController+HiddenNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+HiddenNavBar.swift"; sourceTree = "<group>"; };
@@ -644,8 +644,8 @@
 		CE8FEB612C1B03C10008381A /* AuthCircuitInputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCircuitInputs.swift; sourceTree = "<group>"; };
 		CE937B022DC8B64F00D254D1 /* TensorFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TensorFlow.swift; sourceTree = "<group>"; };
 		CE937B042DC8B6E000D254D1 /* TensorFlowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TensorFlowManager.swift; sourceTree = "<group>"; };
-		CE9E82B22BA881F400AAF885 /* Rarime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rarime.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE9E82B52BA881F400AAF885 /* RarimeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RarimeApp.swift; sourceTree = "<group>"; };
+		CE9E82B22BA881F400AAF885 /* FoundationMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoundationMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE9E82B52BA881F400AAF885 /* FoundationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationApp.swift; sourceTree = "<group>"; };
 		CE9E82B72BA881F400AAF885 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		CE9E82B92BA881F500AAF885 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE9E82E02BA8974C00AAF885 /* Development.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Development.xcconfig; sourceTree = "<group>"; };
@@ -705,7 +705,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		56296A2B2DE848AC004D87EC /* RarimeTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RarimeTests; sourceTree = "<group>"; };
+		56296A2B2DE848AC004D87EC /* FoundationTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = FoundationTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1450,9 +1450,9 @@
 			isa = PBXGroup;
 			children = (
 				CE3D41C62C779BC400D0AA65 /* NotificationBackgroundProcessor */,
-				56296A2B2DE848AC004D87EC /* RarimeTests */,
+				56296A2B2DE848AC004D87EC /* FoundationTests */,
 				CEC562122BD92804002D4954 /* Frameworks */,
-				CE9E82B42BA881F400AAF885 /* Rarime */,
+				CE9E82B42BA881F400AAF885 /* FoundationMobile */,
 				CE9E82B32BA881F400AAF885 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -1460,14 +1460,14 @@
 		CE9E82B32BA881F400AAF885 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CE9E82B22BA881F400AAF885 /* Rarime.app */,
+				CE9E82B22BA881F400AAF885 /* FoundationMobile.app */,
 				CE3D41C52C779BC400D0AA65 /* NotificationBackgroundProcessor.appex */,
-				56296A2A2DE848AC004D87EC /* RarimeTests.xctest */,
+				56296A2A2DE848AC004D87EC /* FoundationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CE9E82B42BA881F400AAF885 /* Rarime */ = {
+		CE9E82B42BA881F400AAF885 /* FoundationMobile */ = {
 			isa = PBXGroup;
 			children = (
 				56A6C75D2BBC2FE900992562 /* Rarime.entitlements */,
@@ -1477,7 +1477,7 @@
 				CE9E82C42BA8850800AAF885 /* Resources */,
 				CE9E82C32BA884B900AAF885 /* SupportingFiles */,
 			);
-			path = Rarime;
+			path = FoundationMobile;
 			sourceTree = "<group>";
 		};
 		CE9E82C32BA884B900AAF885 /* SupportingFiles */ = {
@@ -1503,7 +1503,7 @@
 		CE9E82C62BA8851B00AAF885 /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				CE9E82B52BA881F400AAF885 /* RarimeApp.swift */,
+				CE9E82B52BA881F400AAF885 /* FoundationApp.swift */,
 				CE3D41BB2C7796B800D0AA65 /* DataModels */,
 				5655E4262BD2C3F500B86C5C /* Models */,
 				5655E41D2BD2C38E00B86C5C /* Managers */,
@@ -1696,9 +1696,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		56296A292DE848AC004D87EC /* RarimeTests */ = {
+		56296A292DE848AC004D87EC /* FoundationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56296A302DE848AC004D87EC /* Build configuration list for PBXNativeTarget "RarimeTests" */;
+			buildConfigurationList = 56296A302DE848AC004D87EC /* Build configuration list for PBXNativeTarget "FoundationTests" */;
 			buildPhases = (
 				56296A262DE848AC004D87EC /* Sources */,
 				56296A272DE848AC004D87EC /* Frameworks */,
@@ -1710,13 +1710,13 @@
 				56296A2F2DE848AC004D87EC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				56296A2B2DE848AC004D87EC /* RarimeTests */,
+				56296A2B2DE848AC004D87EC /* FoundationTests */,
 			);
-			name = RarimeTests;
+			name = FoundationTests;
 			packageProductDependencies = (
 			);
-			productName = RarimeTests;
-			productReference = 56296A2A2DE848AC004D87EC /* RarimeTests.xctest */;
+			productName = FoundationTests;
+			productReference = 56296A2A2DE848AC004D87EC /* FoundationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		CE3D41C42C779BC400D0AA65 /* NotificationBackgroundProcessor */ = {
@@ -1747,9 +1747,9 @@
 			productReference = CE3D41C52C779BC400D0AA65 /* NotificationBackgroundProcessor.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		CE9E82B12BA881F400AAF885 /* Rarime */ = {
+		CE9E82B12BA881F400AAF885 /* FoundationMobile */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE9E82C02BA881F500AAF885 /* Build configuration list for PBXNativeTarget "Rarime" */;
+			buildConfigurationList = CE9E82C02BA881F500AAF885 /* Build configuration list for PBXNativeTarget "FoundationMobile" */;
 			buildPhases = (
 				CE9E82AE2BA881F400AAF885 /* Sources */,
 				CE9E82AF2BA881F400AAF885 /* Frameworks */,
@@ -1761,7 +1761,7 @@
 			dependencies = (
 				CE3D41CB2C779BC400D0AA65 /* PBXTargetDependency */,
 			);
-			name = Rarime;
+			name = FoundationMobile;
 			packageProductDependencies = (
 				56E2D9312BD01E71006E725D /* NFCPassportReader */,
 				560F0C1C2BD0234300067054 /* QRCode */,
@@ -1782,8 +1782,8 @@
 				CE937B072DC8B98900D254D1 /* TensorFlowLiteSwift */,
 				56D7FC9B2DFC3F1100B13A61 /* WrappingHStack */,
 			);
-			productName = Rarime;
-			productReference = CE9E82B22BA881F400AAF885 /* Rarime.app */;
+			productName = FoundationMobile;
+			productReference = CE9E82B22BA881F400AAF885 /* FoundationMobile.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1808,7 +1808,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CE9E82AD2BA881F400AAF885 /* Build configuration list for PBXProject "Rarime" */;
+			buildConfigurationList = CE9E82AD2BA881F400AAF885 /* Build configuration list for PBXProject "FoundationMobile" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1838,9 +1838,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CE9E82B12BA881F400AAF885 /* Rarime */,
+				CE9E82B12BA881F400AAF885 /* FoundationMobile */,
 				CE3D41C42C779BC400D0AA65 /* NotificationBackgroundProcessor */,
-				56296A292DE848AC004D87EC /* RarimeTests */,
+				56296A292DE848AC004D87EC /* FoundationTests */,
 			);
 		};
 /* End PBXProject section */
@@ -2023,7 +2023,7 @@
 				CEDC578F2CA2C9EB00F02132 /* MRZScanView+ViewModel.swift in Sources */,
 				564CE3002DD4C88000D03E6D /* GuessCelebrityService.swift in Sources */,
 				CEDC57962CA30A9D00F02132 /* CIImage+Extension.swift in Sources */,
-				CE9E82B62BA881F400AAF885 /* RarimeApp.swift in Sources */,
+				CE9E82B62BA881F400AAF885 /* FoundationApp.swift in Sources */,
 				561C3C392BADE64B00FBB3B9 /* Fonts.swift in Sources */,
 				56CF56602DF06A83005BCD5E /* HomeWidget.swift in Sources */,
 				CEFF68BF2CB6A3E7008769EA /* CircuitBuilderManager.swift in Sources */,
@@ -2204,7 +2204,7 @@
 /* Begin PBXTargetDependency section */
 		56296A2F2DE848AC004D87EC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CE9E82B12BA881F400AAF885 /* Rarime */;
+			target = CE9E82B12BA881F400AAF885 /* FoundationMobile */;
 			targetProxy = 56296A2E2DE848AC004D87EC /* PBXContainerItemProxy */;
 		};
 		CE3D41CB2C779BC400D0AA65 /* PBXTargetDependency */ = {
@@ -2253,7 +2253,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2279,7 +2279,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -2287,7 +2287,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rarime.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Rarime";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoundationMobile.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FoundationMobile";
 			};
 			name = "Debug (Development)";
 		};
@@ -2329,7 +2329,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2355,7 +2355,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
@@ -2363,7 +2363,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rarime.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Rarime";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoundationMobile.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FoundationMobile";
 			};
 			name = "Debug (Production)";
 		};
@@ -2405,7 +2405,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2424,14 +2424,14 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rarime.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Rarime";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoundationMobile.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FoundationMobile";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (Development)";
@@ -2474,7 +2474,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2493,14 +2493,14 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Rarime.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Rarime";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FoundationMobile.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FoundationMobile";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release (Production)";
@@ -2543,7 +2543,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2576,7 +2576,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime.NotificationBackgroundProcessor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile.NotificationBackgroundProcessor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2626,7 +2626,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2659,7 +2659,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime.NotificationBackgroundProcessor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile.NotificationBackgroundProcessor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2709,7 +2709,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2735,7 +2735,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime.NotificationBackgroundProcessor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile.NotificationBackgroundProcessor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2785,7 +2785,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2811,7 +2811,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime.NotificationBackgroundProcessor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile.NotificationBackgroundProcessor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2958,14 +2958,14 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Rarime/Rarime.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FoundationMobile/Rarime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Rarimo;
+				INFOPLIST_KEY_CFBundleDisplayName = Foundation;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NFCReaderUsageDescription = "You need to authenticate on your phone to unlock the app";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to read the MRZ from the document";
@@ -2993,7 +2993,7 @@
 					"-lc++",
 					"$(PROJECT_DIR)/Frameworks/libbionet.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3015,14 +3015,14 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Rarime/Rarime.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FoundationMobile/Rarime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Rarimo;
+				INFOPLIST_KEY_CFBundleDisplayName = Foundation;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NFCReaderUsageDescription = "You need to authenticate on your phone to unlock the app";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to read the MRZ from the document";
@@ -3050,7 +3050,7 @@
 					"-lc++",
 					"$(PROJECT_DIR)/Frameworks/libbionet.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3138,14 +3138,14 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Rarime/Rarime.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FoundationMobile/Rarime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Rarimo;
+				INFOPLIST_KEY_CFBundleDisplayName = Foundation;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NFCReaderUsageDescription = "You need to authenticate on your phone to unlock the app";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to read the MRZ from the document";
@@ -3173,7 +3173,7 @@
 					"-lc++",
 					"$(PROJECT_DIR)/Frameworks/libbionet.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3254,14 +3254,14 @@
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Rarime/Rarime.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FoundationMobile/Rarime.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = P7Z93A3C8U;
+				DEVELOPMENT_TEAM = F9F26FQW95;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Rarimo;
+				INFOPLIST_KEY_CFBundleDisplayName = Foundation;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NFCReaderUsageDescription = "You need to authenticate on your phone to unlock the app";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Used to read the MRZ from the document";
@@ -3289,7 +3289,7 @@
 					"-lc++",
 					"$(PROJECT_DIR)/Frameworks/libbionet.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Rarilabs.Rarime;
+				PRODUCT_BUNDLE_IDENTIFIER = com.foundationnext.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -3306,7 +3306,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56296A302DE848AC004D87EC /* Build configuration list for PBXNativeTarget "RarimeTests" */ = {
+		56296A302DE848AC004D87EC /* Build configuration list for PBXNativeTarget "FoundationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56296A312DE848AC004D87EC /* Debug (Development) */,
@@ -3328,7 +3328,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Release (Development)";
 		};
-		CE9E82AD2BA881F400AAF885 /* Build configuration list for PBXProject "Rarime" */ = {
+		CE9E82AD2BA881F400AAF885 /* Build configuration list for PBXProject "FoundationMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE9E82BE2BA881F500AAF885 /* Debug (Development) */,
@@ -3339,7 +3339,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Release (Development)";
 		};
-		CE9E82C02BA881F500AAF885 /* Build configuration list for PBXNativeTarget "Rarime" */ = {
+		CE9E82C02BA881F500AAF885 /* Build configuration list for PBXNativeTarget "FoundationMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE9E82C12BA881F500AAF885 /* Debug (Development) */,

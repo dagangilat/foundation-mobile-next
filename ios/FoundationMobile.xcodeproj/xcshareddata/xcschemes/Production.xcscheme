@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1540"
-   version = "2.2">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -15,24 +15,15 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CE9E82B12BA881F400AAF885"
-               BuildableName = "Rarime.app"
-               BlueprintName = "Rarime"
-               ReferencedContainer = "container:Rarime.xcodeproj">
+               BuildableName = "FoundationMobile.app"
+               BlueprintName = "FoundationMobile"
+               ReferencedContainer = "container:FoundationMobile.xcodeproj">
             </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <AutocreatedTestPlanReference>
-            </AutocreatedTestPlanReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug (Development)"
+      buildConfiguration = "Debug (Production)"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
@@ -44,18 +35,17 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "56296A292DE848AC004D87EC"
-               BuildableName = "RarimeTests.xctest"
-               BlueprintName = "RarimeTests"
-               ReferencedContainer = "container:Rarime.xcodeproj">
+               BuildableName = "FoundationTests.xctest"
+               BlueprintName = "FoundationTests"
+               ReferencedContainer = "container:FoundationMobile.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Debug (Development)"
+      buildConfiguration = "Debug (Production)"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      enableASanStackUseAfterReturn = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -67,21 +57,14 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CE9E82B12BA881F400AAF885"
-            BuildableName = "Rarime.app"
-            BlueprintName = "Rarime"
-            ReferencedContainer = "container:Rarime.xcodeproj">
+            BuildableName = "FoundationMobile.app"
+            BlueprintName = "FoundationMobile"
+            ReferencedContainer = "container:FoundationMobile.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "IDEPreferLogStreaming"
-            value = "Yes"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Release (Development)"
+      buildConfiguration = "Release (Production)"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
@@ -91,17 +74,17 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CE9E82B12BA881F400AAF885"
-            BuildableName = "Rarime.app"
-            BlueprintName = "Rarime"
-            ReferencedContainer = "container:Rarime.xcodeproj">
+            BuildableName = "FoundationMobile.app"
+            BlueprintName = "FoundationMobile"
+            ReferencedContainer = "container:FoundationMobile.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Debug (Development)">
+      buildConfiguration = "Debug (Production)">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "Release (Development)"
+      buildConfiguration = "Release (Production)"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

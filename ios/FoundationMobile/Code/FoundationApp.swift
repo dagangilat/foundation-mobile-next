@@ -4,7 +4,7 @@ import FirebaseMessaging
 import SwiftUI
 
 @main
-struct RarimeApp: App {
+struct FoundationApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {

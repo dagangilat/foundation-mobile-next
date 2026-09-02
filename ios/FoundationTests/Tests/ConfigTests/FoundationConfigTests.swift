@@ -1,5 +1,5 @@
 import XCTest
-@testable import Rarime
+@testable import FoundationMobile
 
 /// Guards the fork's build configuration against two regressions:
 ///  1. re-inheriting Rarimo's hosted endpoints (analytics/referrals would

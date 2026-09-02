@@ -1,4 +1,4 @@
-@testable import Rarime
+@testable import FoundationMobile
 import XCTest
 
 final class GuessGameParamCalculation: XCTestCase {

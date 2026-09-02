@@ -81,10 +81,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>CFBundleURLName</key>
-			<string>Rarilabs.RariMe</string>
+			<string>com.foundationnext.mobile</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>rarime</string>
+				<string>foundationmobile</string>
 			</array>
 		</dict>
 	</array>
