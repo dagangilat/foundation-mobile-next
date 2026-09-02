@@ -83,7 +83,7 @@ struct HomeWidgetsView: View {
                 HomeCardView(
                     foregroundGradient: Gradients.darkerGreenText,
                     foregroundColor: .invertedDark,
-                    topIcon: .rarime,
+                    topIcon: .foundationMark,
                     bottomIcon: .arrowRightUpLine,
                     imageContent: {
                         Image(.earnBg)
@@ -139,7 +139,7 @@ struct HomeWidgetsView: View {
                 HomeCardView(
                     foregroundGradient: Gradients.purpleText,
                     foregroundColor: .invertedDark,
-                    topIcon: .rarime,
+                    topIcon: .foundationMark,
                     bottomIcon: .arrowRightUpLine,
                     imageContent: {
                         Image(.hiddenKeysBg)
@@ -165,7 +165,7 @@ struct HomeWidgetsView: View {
                 HomeCardView(
                     foregroundGradient: Gradients.greenText,
                     foregroundColor: .invertedDark,
-                    topIcon: .rarime,
+                    topIcon: .foundationMark,
                     bottomIcon: .arrowRightUpLine,
                     imageContent: {
                         Image(.recoveryBg)
@@ -198,7 +198,7 @@ struct HomeWidgetsView: View {
                 HomeCardView(
                     foregroundGradient: Gradients.limeText,
                     foregroundColor: .invertedDark,
-                    topIcon: .rarime,
+                    topIcon: .foundationMark,
                     bottomIcon: .arrowRightUpLine,
                     imageContent: {
                         Image(.likenessBg)

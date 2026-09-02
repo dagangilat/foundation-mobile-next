@@ -21,12 +21,15 @@ private enum HomeOnboardingStep: Int, CaseIterable {
         }
     }
 
-    var image: ImageResource {
+    // No Foundation-specific onboarding illustrations exist yet (Open Decision
+    // OD-6), so each step uses a plain icon glyph instead of shipping Rarimo's
+    // artwork.
+    var icon: ImageResource {
         switch self {
-        case .welcome: .introWelcome
-        case .privacy: .introPrivacy
-        case .identity: .introIdentity
-        case .widgets: .introWidgets
+        case .welcome: .globeSimple
+        case .privacy: .shieldKeyholeLine
+        case .identity: .identificationCard
+        case .widgets: .box3Line
         }
     }
 }
@@ -102,18 +105,16 @@ private struct StepView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
-            ZStack(alignment: .topLeading) {
-                Image(step.image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity, maxHeight: 287)
-                Image(.rarime)
-                    .iconLarge()
-                    .foregroundStyle(.textPrimary)
-                    .padding(8)
-                    .background(.bgComponentBasePrimary, in: Circle())
-                    .padding(24)
-            }
+            RoundedRectangle(cornerRadius: 24)
+                .fill(.bgComponentBasePrimary)
+                .frame(maxWidth: .infinity, maxHeight: 287)
+                .overlay(
+                    Image(step.icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 96, height: 96)
+                        .foregroundStyle(Gradients.gradientFirst)
+                )
             VStack(alignment: .leading, spacing: 16) {
                 Text(step.title)
                     .h2()

@@ -105,7 +105,7 @@ struct ProfileView: View {
                                 )
                                 if appIconManager.isAppIconsSupported {
                                     ProfileRow(
-                                        icon: .rarime,
+                                        icon: .foundationMark,
                                         title: String(localized: "App Icon"),
                                         value: appIconManager.appIcon.title,
                                         action: { path.append(.appIcon) }

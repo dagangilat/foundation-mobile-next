@@ -9,7 +9,7 @@ struct PassportChipErrorView: View {
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            Image(.rarime)
+            Image(.foundationMark)
                 .square(128)
                 .foregroundStyle(.textPrimary)
             VStack(spacing: 8) {

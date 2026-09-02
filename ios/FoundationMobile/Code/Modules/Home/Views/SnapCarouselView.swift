@@ -182,7 +182,7 @@ private struct PreviewView: View {
                 nextCardScaleFactor: 0.9,
                 bottomContentHeight: 56
             ) {
-                Image(.rarime)
+                Image(.foundationMark)
                     .iconMedium()
             }
             .frame(height: UIScreen.main.bounds.height * 0.9)

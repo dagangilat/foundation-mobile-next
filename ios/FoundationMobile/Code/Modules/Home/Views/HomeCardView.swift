@@ -102,7 +102,7 @@ struct HomeCardView<Content: View, TopContent: View, BottomContent: View>: View 
     HomeCardView(
         foregroundGradient: Gradients.darkerGreenText,
         foregroundColor: .invertedDark,
-        topIcon: .rarime,
+        topIcon: .foundationMark,
         bottomIcon: .arrowRightUpLine,
         imageContent: {
             Image(.earnBg)

@@ -6,7 +6,6 @@ enum AppIcon: String, CaseIterable {
     case green = "GreenIcon"
     case gradient = "GradientIcon"
     case white = "WhiteIcon"
-    case cat = "CatIcon"
 }
 
 extension AppIcon {
@@ -22,7 +21,6 @@ extension AppIcon {
         case .green: return String(localized: "Green")
         case .gradient: return String(localized: "Gradient")
         case .white: return String(localized: "White")
-        case .cat: return String(localized: "Cat")
         }
     }
 }
@@ -34,7 +32,6 @@ extension AppIcon {
         case .green: return .greenIcon
         case .gradient: return .gradientIcon
         case .white: return .whiteIcon
-        case .cat: return .catIcon
         }
     }
 }

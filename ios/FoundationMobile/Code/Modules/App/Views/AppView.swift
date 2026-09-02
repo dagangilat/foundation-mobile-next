@@ -44,7 +44,7 @@ struct AppView: View {
             } else {
                 VStack {
                     Spacer()
-                    Image(.rarime)
+                    Image(.foundationMark)
                         .square(96)
                         .foregroundStyle(Gradients.gradientFirst)
                         .padding(.all, 44)

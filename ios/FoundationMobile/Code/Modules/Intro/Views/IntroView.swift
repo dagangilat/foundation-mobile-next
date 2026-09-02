@@ -63,7 +63,7 @@ struct IntroView: View {
         GeometryReader { geometry in
             ZStack(alignment: .center) {
                 Spacer()
-                Image(.rarime)
+                Image(.foundationMark)
                     .square(96)
                     .foregroundStyle(Gradients.gradientFirst)
                     .padding(.all, 44)
