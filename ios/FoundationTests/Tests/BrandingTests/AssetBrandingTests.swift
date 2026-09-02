@@ -32,4 +32,28 @@ final class AssetBrandingTests: XCTestCase {
         XCTAssertEqual(Double(g), 120.0 / 255.0, accuracy: 0.01)   // 0x78
         XCTAssertEqual(Double(b), 87.0 / 255.0, accuracy: 0.01)    // 0x57
     }
+
+    /// `Gradients.gradientFirst` (`AdditionalGradientFirstStart`/`End`) tints
+    /// the FoundationMark splash logo (AppView.swift), the welcome screen
+    /// (IntroView.swift), and the home onboarding step icon
+    /// (HomeOnboardingView.swift) — the app's most prominent brand surfaces.
+    /// A static asset-existence check can't catch this gradient still
+    /// carrying Rarimo's old neon-lime hex values under a renamed symbol, so
+    /// this test asserts the actual rendered color.
+    func testSplashGradientMatchesFoundationBrand() throws {
+        let start = try XCTUnwrap(UIColor(named: "AdditionalGradientFirstStart"))
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        start.getRed(&r, green: &g, blue: &b, alpha: &a)
+        // brandGreen #047857
+        XCTAssertEqual(Double(r), 4.0 / 255.0, accuracy: 0.01)     // 0x04
+        XCTAssertEqual(Double(g), 120.0 / 255.0, accuracy: 0.01)   // 0x78
+        XCTAssertEqual(Double(b), 87.0 / 255.0, accuracy: 0.01)    // 0x57
+
+        let end = try XCTUnwrap(UIColor(named: "AdditionalGradientFirstEnd"))
+        end.getRed(&r, green: &g, blue: &b, alpha: &a)
+        // brandFill #34D399
+        XCTAssertEqual(Double(r), 52.0 / 255.0, accuracy: 0.01)    // 0x34
+        XCTAssertEqual(Double(g), 211.0 / 255.0, accuracy: 0.01)   // 0xD3
+        XCTAssertEqual(Double(b), 153.0 / 255.0, accuracy: 0.01)   // 0x99
+    }
 }
