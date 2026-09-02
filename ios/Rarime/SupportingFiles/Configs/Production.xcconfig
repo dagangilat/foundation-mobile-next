@@ -22,10 +22,10 @@ GENERAL_NOTIFICATION_TOPIC="foundation"
 CLAIMABLE_NOTIFICATION_TOPIC="foundation-rewardable"
 
 // MARK: Contracts
-// RETAINED FROM UPSTREAM. Passport registration is anchored on Rarimo's L2 and
-// our verificator-svc validates against that same registration state, so these
-// addresses must keep matching Rarimo's mainnet deployment. See Open Decision
-// OD-5 before changing any of them.
+// RETAINED FROM UPSTREAM (except GUESS_CELEBRITY below). Passport registration
+// is anchored on Rarimo's L2 and our verificator-svc validates against that
+// same registration state, so these addresses must keep matching Rarimo's
+// mainnet deployment. See Open Decision OD-5 before changing any of them.
 REGISTRATION2_CONTRACT_ADDRESS="0x11BB4B14AA6e4b836580F3DBBa741dD89423B971"
 REGISTRATION_SIMPLE_CONTRACT_ADRRESS="0x497D6957729d3a39D43843BD27E6cbD12310F273"
 CERTIFICATES_SMT_CONTRACT_ADDRESS="0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
@@ -35,6 +35,8 @@ MULTICALL3_CONTRACT_ADDRESS="0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
 VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS="0x479F84502Db545FA8d2275372E0582425204A879"
 PROPOSALS_STATE_CONTRACT_ADDRESS="0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
 FACE_REGISTRY_CONTRACT_ADDRESS="0x15DCd57B70D97F1D1F220ccb4e6B8E886aF3e3B9"
+// Zeroed, NOT retained: the Guess-the-Celebrity mini-game isn't part of
+// Foundation's product surface, so this address is deliberately dead.
 GUESS_CELEBRITY_CONTRACT_ADDRESS="0x0000000000000000000000000000000000000000"
 
 // MARK: EVM

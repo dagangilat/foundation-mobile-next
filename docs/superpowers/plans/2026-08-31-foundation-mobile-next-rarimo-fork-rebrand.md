@@ -821,7 +821,7 @@ cd ios && xcodebuild test \
   -only-testing:RarimeTests/FoundationConfigTests 2>&1 | tail -20
 ```
 
-Expected: FAIL — `testAppsFlyerIsDisabled` (`"FsxpXXrjsFBLiF6jMe7jZY"` ≠ `""`),
+Expected: FAIL — `testAppsFlyerIsDisabled` (Rarimo's committed AppsFlyer dev key ≠ `""`),
 `testNoInheritedPrivateKeys`, `testFoundationFunctionsRegionIsSet` (key absent),
 and the legal-URL assertions.
 
