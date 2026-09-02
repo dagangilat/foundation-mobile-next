@@ -24,13 +24,12 @@ ios/FoundationMobile/GoogleService-Info-staging.plist
 legacy-ios-shell/FoundationMobile/GoogleService-Info.plist
 legacy-ios-shell/FoundationMobile/GoogleService-Info-staging.plist
 # Task A2's subtree import brought in Rarimo's own GoogleService-Info.plist
-# at this path, tracked (it's their own already-public Firebase config, not
-# a leak) - untracked here pre-emptively because a future B-track task WILL
-# overwrite this file's content with Foundation's real foundation-next-app
-# credentials, and a plain `git add`/commit at that point would otherwise
-# push a real secret straight into this now-public repo. If B-track renames
-# this file/path during rebrand, add the new path here too.
-ios/Rarime/GoogleService-Info.plist
+# at ios/Rarime/GoogleService-Info.plist, tracked (it's their own already-
+# public Firebase config, not a leak) - untracked pre-emptively there
+# because a future B-track task would overwrite its content with
+# Foundation's real foundation-next-app credentials. Task B2 renamed
+# ios/Rarime/ -> ios/FoundationMobile/, so that path is now covered by
+# line 18 above instead - no separate entry needed.
 
 # OSX
 #

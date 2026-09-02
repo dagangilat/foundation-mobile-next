@@ -12,7 +12,7 @@ Upstream's `Development.xcconfig` contains **live Rarimo private keys**
 (`LIGHT_SIGNATURE_PRIVATE_KEY`, `JOIN_REWARDS_KEY`) and their AppsFlyer dev key.
 This is a public repository. `scripts/brand-sweep.sh` catches the AppsFlyer key
 by name; the private keys are guarded by
-`RarimeTests/Tests/ConfigTests/FoundationConfigTests.swift`.
+`FoundationTests/Tests/ConfigTests/FoundationConfigTests.swift`.
 
 ## `about:blank`, not `""`, for the stripped Freedom Tool URLs
 
