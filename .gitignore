@@ -5,6 +5,14 @@
 docs-reference/
 HANDOFF.md
 .claude/
+CLAUDE.md
+
+# .github/workflows/ removed 2026-09-02: both workflows targeted the old
+# pre-fork ios/FoundationMobile.xcodeproj (gone since Task A2 replaced ios/
+# with Rarimo's real source) and referenced live App Store Connect /
+# distribution-cert secrets for the LIVE foundation-mobile app - stale and
+# actively dangerous to leave dispatchable. A fresh CI setup for the actual
+# Rarimo-fork build belongs in a later task, not resurrected from this.
 
 # Firebase — contain live API keys; injected at build time from CI secret / local keychain
 ios/FoundationMobile/GoogleService-Info.plist
