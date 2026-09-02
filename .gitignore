@@ -1,3 +1,11 @@
+# Internal-only working notes and Claude Code session state — not meant for a
+# public repo. docs-reference/ in particular held a full internal security
+# review of the LIVE production platforms (foundation/foundation-mobile),
+# removed 2026-09-02 after this repo went public.
+docs-reference/
+HANDOFF.md
+.claude/
+
 # Firebase — contain live API keys; injected at build time from CI secret / local keychain
 ios/FoundationMobile/GoogleService-Info.plist
 ios/FoundationMobile/GoogleService-Info-staging.plist
