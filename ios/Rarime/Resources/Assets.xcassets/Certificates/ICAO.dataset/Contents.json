@@ -1,0 +1,13 @@
+{
+  "data" : [
+    {
+      "filename" : "master_000316.pem",
+      "idiom" : "universal",
+      "universal-type-identifier" : "public.x509-certificate"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
