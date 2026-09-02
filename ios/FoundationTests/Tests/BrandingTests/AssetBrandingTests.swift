@@ -56,4 +56,32 @@ final class AssetBrandingTests: XCTestCase {
         XCTAssertEqual(Double(g), 211.0 / 255.0, accuracy: 0.01)   // 0xD3
         XCTAssertEqual(Double(b), 153.0 / 255.0, accuracy: 0.01)   // 0x99
     }
+
+    /// Regression guard: an earlier pass of this same rebrand accidentally
+    /// flattened `DarkerGreenTextGradient`'s dark-appearance value to equal
+    /// its light-appearance value (#024A36 for both) while remapping it off
+    /// Rarimo's palette. That colorset tints the "RMO" subtitle text over a
+    /// near-black background image (HomeWidgetsView.swift), so flattening it
+    /// dropped WCAG contrast from ~8.8:1 to ~1.9:1 — unreadable in Dark Mode.
+    /// The two appearances must resolve to genuinely different colors, not
+    /// just both be off-Rarimo.
+    func testDarkerGreenTextGradientHasDistinctDarkAppearance() throws {
+        let base = try XCTUnwrap(UIColor(named: "DarkerGreenTextGradient1"))
+        let lightColor = base.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        let darkColor = base.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
+
+        var lr: CGFloat = 0, lg: CGFloat = 0, lb: CGFloat = 0, la: CGFloat = 0
+        var dr: CGFloat = 0, dg: CGFloat = 0, db: CGFloat = 0, da: CGFloat = 0
+        lightColor.getRed(&lr, green: &lg, blue: &lb, alpha: &la)
+        darkColor.getRed(&dr, green: &dg, blue: &db, alpha: &da)
+
+        // The dark-appearance value must be meaningfully LIGHTER than the
+        // light-appearance value (legible text on a dark background needs a
+        // brighter color, not the same dark one) — not just "different by
+        // any amount," which a 1-unit rounding difference would trivially
+        // satisfy without actually fixing legibility.
+        let lightLuminance = 0.2126 * lr + 0.7152 * lg + 0.0722 * lb
+        let darkLuminance = 0.2126 * dr + 0.7152 * dg + 0.0722 * db
+        XCTAssertGreaterThan(darkLuminance, lightLuminance + 0.2, "dark-appearance must be substantially brighter than light-appearance for legibility on a dark background")
+    }
 }
