@@ -1,0 +1,1930 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ years old" : {
+
+    },
+    "%lld" : {
+
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "%lld active task%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld active task%2$@"
+          }
+        }
+      }
+    },
+    "%lld questions" : {
+
+    },
+    "%lld." : {
+
+    },
+    "%lld/%lld invited" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld invited"
+          }
+        }
+      }
+    },
+    "%lldm %llds" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lldm %2$llds"
+          }
+        }
+      }
+    },
+    "%llu days" : {
+
+    },
+    "%lluh" : {
+
+    },
+    "%llum" : {
+
+    },
+    "%llus" : {
+
+    },
+    "+1 scan" : {
+
+    },
+    "1 day" : {
+
+    },
+    "1. Save passport data on your device" : {
+
+    },
+    "2. Send the saved file to the email address below" : {
+
+    },
+    "3. When we support your country, you will be notified in the app" : {
+
+    },
+    "Account" : {
+
+    },
+    "Account Locked" : {
+
+    },
+    "Active" : {
+
+    },
+    "Add" : {
+
+    },
+    "Add different type of applications that you can intersect with anonymously" : {
+
+    },
+    "Add widgets" : {
+
+    },
+    "Address" : {
+
+    },
+    "Address: %@" : {
+
+    },
+    "Afghanistan" : {
+
+    },
+    "Age" : {
+
+    },
+    "AI can now replicate your face, voice, and identity without asking for your permission. But you never agreed to that, raising a fundamental question: who owns your likeness?\n\nRarimo is building the infrastructure to give you back that control. With this app, you can create a private, verifiable record that defines how your likeness can and can’t be used.\n\nYour face stays on your device. No company owns it. And over time, no AI model will be able to ignore your rule." : {
+
+    },
+    "Aland Islands" : {
+
+    },
+    "Albania" : {
+
+    },
+    "Algeria" : {
+
+    },
+    "Already voted" : {
+
+    },
+    "American Samoa" : {
+
+    },
+    "Amount" : {
+
+    },
+    "Amount must be greater than 0" : {
+
+    },
+    "An error has occured, please try again" : {
+
+    },
+    "Andorra" : {
+
+    },
+    "Angola" : {
+
+    },
+    "Anguilla" : {
+
+    },
+    "Antarctica" : {
+
+    },
+    "Antigua and Barbuda" : {
+
+    },
+    "App Icon" : {
+
+    },
+    "App version: %@" : {
+
+    },
+    "Applying ZK" : {
+
+    },
+    "Argentina" : {
+
+    },
+    "Armenia" : {
+
+    },
+    "Aruba" : {
+
+    },
+    "Ask me first" : {
+
+    },
+    "ASSETS (%lld)" : {
+
+    },
+    "Australia" : {
+
+    },
+    "Austria" : {
+
+    },
+    "Auth Method" : {
+
+    },
+    "Authenticating with passport..." : {
+
+    },
+    "Authenticating with passport...\n\n%@" : {
+
+    },
+    "Authentication Failed" : {
+
+    },
+    "Available" : {
+
+    },
+    "Available:" : {
+
+    },
+    "Azerbaijan" : {
+
+    },
+    "Back up manually" : {
+
+    },
+    "Back up with iCloud" : {
+
+    },
+    "Back up your account" : {
+
+    },
+    "Backup already exists, try restore instead" : {
+
+    },
+    "Backup key stored in iCloud" : {
+
+    },
+    "Bahamas" : {
+
+    },
+    "Bahrain" : {
+
+    },
+    "Bangladesh" : {
+
+    },
+    "Barbados" : {
+
+    },
+    "Become an ambassador" : {
+
+    },
+    "Belarus" : {
+
+    },
+    "Belgium" : {
+
+    },
+    "Belize" : {
+
+    },
+    "Benin" : {
+
+    },
+    "Bermuda" : {
+
+    },
+    "Bhutan" : {
+
+    },
+    "Biometric facial key" : {
+
+    },
+    "Birth date" : {
+
+    },
+    "Black" : {
+
+    },
+    "Bolivia" : {
+
+    },
+    "Bonaire" : {
+
+    },
+    "Bonus scan" : {
+
+    },
+    "Bosnia and Herzegovina" : {
+
+    },
+    "Botswana" : {
+
+    },
+    "Bouvet Island" : {
+
+    },
+    "Brazil" : {
+
+    },
+    "British Indian Ocean Territory" : {
+
+    },
+    "Brunei Darussalam" : {
+
+    },
+    "Bulgaria" : {
+
+    },
+    "Burkina Faso" : {
+
+    },
+    "Burundi" : {
+
+    },
+    "By checking this box, you are agreeing to share the data groups of the passport and the government signature" : {
+
+    },
+    "Cabo Verde" : {
+
+    },
+    "Cambodia" : {
+
+    },
+    "Camera Permission" : {
+
+    },
+    "Cameroon" : {
+
+    },
+    "Canada" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "CARD VISUAL" : {
+
+    },
+    "Cast secure, anonymous votes from anywhere, just using your passport" : {
+
+    },
+    "Cat" : {
+
+    },
+    "Cayman Islands" : {
+
+    },
+    "Center the person's face" : {
+
+    },
+    "Center your face" : {
+
+    },
+    "Central African Republic" : {
+
+    },
+    "Chad" : {
+
+    },
+    "Chile" : {
+
+    },
+    "China" : {
+
+    },
+    "Choose your method" : {
+
+    },
+    "Christmas Island" : {
+
+    },
+    "Close" : {
+
+    },
+    "Cocos Islands" : {
+
+    },
+    "Colombia" : {
+
+    },
+    "Comoros" : {
+
+    },
+    "Complete various tasks and get rewarded with\nRarimo tokens" : {
+
+    },
+    "Complete various tasks and get rewarded with Rarimo tokens" : {
+
+    },
+    "Confirm" : {
+
+    },
+    "Congo" : {
+
+    },
+    "Congrats!" : {
+
+    },
+    "Connection error. Please try again." : {
+
+    },
+    "Continue" : {
+
+    },
+    "Cook Islands" : {
+
+    },
+    "Copied" : {
+
+    },
+    "Copy" : {
+
+    },
+    "Copy to clipboard" : {
+
+    },
+    "Costa Rica" : {
+
+    },
+    "Cote d'Ivoire" : {
+
+    },
+    "Could not authenticate with Face ID. Please try again." : {
+
+    },
+    "Create a poll" : {
+
+    },
+    "Create new identity" : {
+
+    },
+    "Creating" : {
+
+    },
+    "Criteria" : {
+
+    },
+    "Croatia" : {
+
+    },
+    "Cuba" : {
+
+    },
+    "Curacao" : {
+
+    },
+    "Cyprus" : {
+
+    },
+    "Czechia" : {
+
+    },
+    "Dark Mode" : {
+
+    },
+    "Data" : {
+
+    },
+    "Date of birth (dd/mm/yy)" : {
+
+    },
+    "Date of expiry (dd/mm/yy)" : {
+
+    },
+    "Debug Options" : {
+      "comment" : "A label displayed above the debug options in the preview.",
+      "isCommentAutoGenerated" : true
+    },
+    "Delete Account" : {
+
+    },
+    "Delete your account?" : {
+
+    },
+    "Democratic People's Republic of Korea" : {
+
+    },
+    "Democratic Republic of the Congo" : {
+
+    },
+    "Denmark" : {
+
+    },
+    "Development" : {
+      "comment" : "A label that appears in the top-right corner of the app, indicating that it is in development mode.",
+      "isCommentAutoGenerated" : true
+    },
+    "Different photos of the same person return the same result, try scanning a new face" : {
+
+    },
+    "Digital likeness" : {
+
+    },
+    "Digital Likeness" : {
+
+    },
+    "Djibouti" : {
+
+    },
+    "Document ID" : {
+
+    },
+    "Document ID (AB123456)" : {
+
+    },
+    "Dominica" : {
+
+    },
+    "Dominican Republic" : {
+
+    },
+    "Don’t use my face at all" : {
+
+    },
+    "Downloading" : {
+
+    },
+    "Earn" : {
+
+    },
+    "Earn RMO" : {
+
+    },
+    "Ecuador" : {
+
+    },
+    "Edit" : {
+
+    },
+    "Egypt" : {
+
+    },
+    "El Salvador" : {
+
+    },
+    "Enable Face ID in Settings > RariMe." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Face ID in Settings > Rarimo."
+          }
+        }
+      }
+    },
+    "Enable Face ID in Settings > Rarimo." : {
+      "comment" : "A message displayed in an alert when Face ID is not available on the device.",
+      "isCommentAutoGenerated" : true
+    },
+    "Enter" : {
+
+    },
+    "Enter Passcode" : {
+
+    },
+    "Equatorial Guinea" : {
+
+    },
+    "Eritrea" : {
+
+    },
+    "Error" : {
+
+    },
+    "Estonia" : {
+
+    },
+    "Eswatini" : {
+
+    },
+    "Ethiopia" : {
+
+    },
+    "Expiry date" : {
+
+    },
+    "Explore Apps" : {
+
+    },
+    "Face ID" : {
+
+    },
+    "Face ID Disabled" : {
+
+    },
+    "Failed to back up, try again later" : {
+
+    },
+    "Failed to delete backup" : {
+
+    },
+    "Failed to load backup status" : {
+
+    },
+    "Failed to register, try again later" : {
+
+    },
+    "Failed, %lld attempts left" : {
+
+    },
+    "Falkland Islands" : {
+
+    },
+    "Faroe Islands" : {
+
+    },
+    "Fee" : {
+
+    },
+    "Fiji" : {
+
+    },
+    "Fill Manually" : {
+
+    },
+    "Finalizing" : {
+
+    },
+    "Find a face" : {
+
+    },
+    "Finished" : {
+
+    },
+    "Finland" : {
+
+    },
+    "Force light registration" : {
+
+    },
+    "Force registration" : {
+      "comment" : "A toggle that allows toggling whether a user must register their device even if it's not a simulator.",
+      "isCommentAutoGenerated" : true
+    },
+    "Forget traditional methods. Use something truly yours: a personal item, your face, or even a unique gesture. Security has never felt this natural." : {
+
+    },
+    "France" : {
+
+    },
+    "Freedomtool" : {
+
+    },
+    "French Guiana" : {
+
+    },
+    "French Polynesia" : {
+
+    },
+    "French Southern Territories" : {
+
+    },
+    "Gabon" : {
+
+    },
+    "Gambia" : {
+
+    },
+    "Generate Proof" : {
+
+    },
+    "Generating..." : {
+
+    },
+    "Georgia" : {
+
+    },
+    "Germany" : {
+
+    },
+    "Get in touch" : {
+
+    },
+    "Ghana" : {
+
+    },
+    "Gibraltar" : {
+
+    },
+    "Gradient" : {
+
+    },
+    "Greece" : {
+
+    },
+    "Green" : {
+
+    },
+    "Greenland" : {
+
+    },
+    "Grenada" : {
+
+    },
+    "Guadeloupe" : {
+
+    },
+    "Guam" : {
+
+    },
+    "Guatemala" : {
+
+    },
+    "Guernsey" : {
+
+    },
+    "Guinea" : {
+
+    },
+    "Guinea-Bissau" : {
+
+    },
+    "Guyana" : {
+
+    },
+    "Haiti" : {
+
+    },
+    "Heard Island and McDonald Islands" : {
+
+    },
+    "Hi" : {
+
+    },
+    "Hidden face:" : {
+
+    },
+    "Hidden keys" : {
+
+    },
+    "Hold your iPhone near an NFC enabled passport.\n" : {
+
+    },
+    "Holy See" : {
+
+    },
+    "Honduras" : {
+
+    },
+    "Hong Kong" : {
+
+    },
+    "Host" : {
+
+    },
+    "HOW TO SHARE" : {
+
+    },
+    "Hungary" : {
+
+    },
+    "I just set a personal AI-usage rule for my digital likeness in rariMe. Take charge of yours in under a minute—privacy starts with you." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I just set a personal AI-usage rule for my digital likeness in Rarimo. Take charge of yours in under a minute — privacy starts with you."
+          }
+        }
+      }
+    },
+    "Iceland" : {
+
+    },
+    "iCloud backup" : {
+
+    },
+    "iCloud backup already exists" : {
+
+    },
+    "iCloud is not available" : {
+
+    },
+    "ID" : {
+
+    },
+    "If you would like to enroll your country in the early phase, we will need your consent to share some data. Enrolling your country’s passports will entitle you to additional rewards" : {
+
+    },
+    "Import JSON" : {
+      "comment" : "Button text to import a passport from a JSON file.",
+      "isCommentAutoGenerated" : true
+    },
+    "Impossible to revoke your account" : {
+
+    },
+    "Incorrect passcode" : {
+
+    },
+    "India" : {
+
+    },
+    "Indonesia" : {
+
+    },
+    "Insufficient balance" : {
+
+    },
+    "Internet connection is unstable" : {
+
+    },
+    "Invalid address" : {
+
+    },
+    "Invalid amount" : {
+
+    },
+    "Invalid HTTP status code: %lld" : {
+
+    },
+    "Invalid private key" : {
+
+    },
+    "Invalid response body" : {
+
+    },
+    "Invite" : {
+
+    },
+    "Invite a friend" : {
+
+    },
+    "Invite others" : {
+
+    },
+    "Invite to Hidden Keys" : {
+
+    },
+    "Invite to RariMe" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invite to Rarimo"
+          }
+        }
+      }
+    },
+    "Invite to Rarimo" : {
+      "comment" : "The subject line of an invitation email to join Rarimo.",
+      "isCommentAutoGenerated" : true
+    },
+    "Invited: %lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Invited: %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Iran" : {
+
+    },
+    "Iraq" : {
+
+    },
+    "Ireland" : {
+
+    },
+    "Isle of Man" : {
+
+    },
+    "Israel" : {
+
+    },
+    "Italy" : {
+
+    },
+    "Jamaica" : {
+
+    },
+    "Japan" : {
+
+    },
+    "Jersey" : {
+
+    },
+    "Join RariMe with my invite code: %@\n\n%@" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Join Rarimo with my invite code: %1$@\n\n%2$@"
+          }
+        }
+      }
+    },
+    "Join Rarimo with my invite code: %@\n\n%@" : {
+      "comment" : "The message shared when inviting someone to Rarimo using the invite code.",
+      "isCommentAutoGenerated" : true,
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Join Rarimo with my invite code: %1$@\n\n%2$@"
+          }
+        }
+      }
+    },
+    "Join the program" : {
+
+    },
+    "Jordan" : {
+
+    },
+    "Kazakhstan" : {
+
+    },
+    "Kenya" : {
+
+    },
+    "Kiribati" : {
+
+    },
+    "Kuwait" : {
+
+    },
+    "Kyrgyzstan" : {
+
+    },
+    "Laos" : {
+
+    },
+    "Latvia" : {
+
+    },
+    "Learn how to scan passport correctly" : {
+
+    },
+    "Lebanon" : {
+
+    },
+    "Lesotho" : {
+
+    },
+    "Let's Scan" : {
+
+    },
+    "Let's start" : {
+
+    },
+    "Liberia" : {
+
+    },
+    "Libya" : {
+
+    },
+    "Liechtenstein" : {
+
+    },
+    "Light Mode" : {
+
+    },
+    "Lithuania" : {
+
+    },
+    "Luxembourg" : {
+
+    },
+    "Macao" : {
+
+    },
+    "Madagascar" : {
+
+    },
+    "Maintenance in progress" : {
+
+    },
+    "Make any object your key" : {
+
+    },
+    "Make sure you remove the case from the device" : {
+
+    },
+    "Malawi" : {
+
+    },
+    "Malaysia" : {
+
+    },
+    "Maldives" : {
+
+    },
+    "Mali" : {
+
+    },
+    "Malta" : {
+
+    },
+    "Manage widgets" : {
+
+    },
+    "Managing identity" : {
+
+    },
+    "Marshall Islands" : {
+
+    },
+    "Martinique" : {
+
+    },
+    "Mauritania" : {
+
+    },
+    "Mauritius" : {
+
+    },
+    "MAX" : {
+
+    },
+    "Mayotte" : {
+
+    },
+    "Method" : {
+
+    },
+    "Mexico" : {
+
+    },
+    "Micronesia" : {
+
+    },
+    "Moldova" : {
+
+    },
+    "Monaco" : {
+
+    },
+    "Mongolia" : {
+
+    },
+    "Montenegro" : {
+
+    },
+    "Montserrat" : {
+
+    },
+    "More than 1 tag was found. Please present only 1 tag." : {
+
+    },
+    "Morocco" : {
+
+    },
+    "Mozambique" : {
+
+    },
+    "MRZ Key not valid for this document." : {
+
+    },
+    "My face, my rules ✅" : {
+
+    },
+    "My Rule:" : {
+
+    },
+    "Myanmar" : {
+
+    },
+    "Namibia" : {
+
+    },
+    "Nationality" : {
+
+    },
+    "Nauru" : {
+
+    },
+    "Need passport scan" : {
+
+    },
+    "Nepal" : {
+
+    },
+    "Netherlands" : {
+
+    },
+    "New Caledonia" : {
+
+    },
+    "New Zealand" : {
+
+    },
+    "Next" : {
+
+    },
+    "Next one soon" : {
+
+    },
+    "NFC Reader" : {
+
+    },
+    "Nicaragua" : {
+
+    },
+    "Niger" : {
+
+    },
+    "Nigeria" : {
+
+    },
+    "Niue" : {
+
+    },
+    "No" : {
+
+    },
+    "No backup found in iCloud" : {
+
+    },
+    "No internet connection" : {
+
+    },
+    "No notifications" : {
+
+    },
+    "No one can trace your actions\nNo system can connect the dots\nNo data ever leaves your phone" : {
+
+    },
+    "No polls yet" : {
+
+    },
+    "No transactions yet" : {
+
+    },
+    "Norfolk Island" : {
+
+    },
+    "North Macedonia" : {
+
+    },
+    "Northern Mariana Islands" : {
+
+    },
+    "Norway" : {
+
+    },
+    "Notifications" : {
+
+    },
+    "Objects" : {
+
+    },
+    "Oman" : {
+
+    },
+    "One of our services is down, try again later. RequestURL=%@" : {
+
+    },
+    "Open App Store" : {
+
+    },
+    "Open Settings" : {
+
+    },
+    "Operation completed successfully" : {
+
+    },
+    "Other already set" : {
+
+    },
+    "Out of daily scans? Earn extra scans for every friend who joins and a one-time by sharing the hunt" : {
+
+    },
+    "Overwrite your iCloud backup? This will replace the existing backup with the current private key." : {
+
+    },
+    "Pakistan" : {
+
+    },
+    "Palau" : {
+
+    },
+    "Palestine" : {
+
+    },
+    "Panama" : {
+
+    },
+    "Papua New Guinea" : {
+
+    },
+    "Paraguay" : {
+
+    },
+    "Passcode" : {
+
+    },
+    "Passcodes do not match" : {
+
+    },
+    "Passport" : {
+
+    },
+    "PASSPORT" : {
+
+    },
+    "Passport is already registered" : {
+
+    },
+    "Passport read successfully" : {
+
+    },
+    "Passport scanned" : {
+
+    },
+    "Peru" : {
+
+    },
+    "Philippines" : {
+
+    },
+    "Pitcairn" : {
+
+    },
+    "Place your passport cover to the back of your phone" : {
+
+    },
+    "Play video tutorial" : {
+
+    },
+    "Please allow camera access in settings to continue" : {
+
+    },
+    "Please don’t close application" : {
+
+    },
+    "Please fill these fields" : {
+
+    },
+    "Please store the private key safely and do not share it with anyone. If you lose this key, you will not be able to recover the account and will lose access forever." : {
+
+    },
+    "Please try again" : {
+
+    },
+    "Please wait" : {
+
+    },
+    "Please, scan your passport one more time to revoke your previous registration" : {
+
+    },
+    "Poland" : {
+
+    },
+    "Portugal" : {
+
+    },
+    "Position the QR code in the middle of the scanner" : {
+
+    },
+    "Pre-elections polls" : {
+
+    },
+    "Preview Ranking" : {
+
+    },
+    "Privacy" : {
+
+    },
+    "Privacy Policy" : {
+
+    },
+    "Private Key" : {
+
+    },
+    "Prize-pool:" : {
+
+    },
+    "Prize:" : {
+
+    },
+    "Processing" : {
+
+    },
+    "Processing..." : {
+
+    },
+    "Profile" : {
+
+    },
+    "Proof Request" : {
+
+    },
+    "Puerto Rico" : {
+
+    },
+    "Qatar" : {
+
+    },
+    "QR code is expired" : {
+
+    },
+    "Question: %lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Question: %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Rank these options by priority. Drag and drop to sort them from your most preferred to least preferred choice." : {
+      "comment" : "A description below the ranking view, instructing the user to drag and drop to reorder the list.",
+      "isCommentAutoGenerated" : true
+    },
+    "Ranking Based Voting" : {
+      "comment" : "The title of a view that appears when a user selects a poll with a ranking-based voting format.",
+      "isCommentAutoGenerated" : true
+    },
+    "RariMe" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rarimo"
+          }
+        }
+      }
+    },
+    "RariMe lets you prove your identity - without giving anything away" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rarimo lets you prove your identity - without giving anything away"
+          }
+        }
+      }
+    },
+    "Rarimo lets you prove your identity - without giving anything away" : {
+      "comment" : "A description for the \"Managing identity\" onboarding step.",
+      "isCommentAutoGenerated" : true
+    },
+    "Re-activate old profile" : {
+
+    },
+    "Reading passport data (%@)...\n\n%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reading passport data (%1$@)...\n\n%2$@"
+          }
+        }
+      }
+    },
+    "Ready to test faces for hidden keys? Tap my invite, get free scans, and let’s race for the prize!\n\n%@" : {
+
+    },
+    "Receive" : {
+
+    },
+    "Receive %@" : {
+
+    },
+    "Receiver gets" : {
+
+    },
+    "Recommended" : {
+
+    },
+    "Recovery" : {
+
+    },
+    "Recovery Method" : {
+
+    },
+    "Remove" : {
+
+    },
+    "Remove Case" : {
+
+    },
+    "Repeat Passcode" : {
+
+    },
+    "Republic of Korea" : {
+
+    },
+    "Requestor" : {
+
+    },
+    "Reserve" : {
+
+    },
+    "Reserved:" : {
+
+    },
+    "Restore manually" : {
+
+    },
+    "Restore with iCloud" : {
+
+    },
+    "Restore your account" : {
+
+    },
+    "Retry" : {
+
+    },
+    "Reunion" : {
+
+    },
+    "Revealed data" : {
+
+    },
+    "Review Transaction" : {
+
+    },
+    "Revolutionizing polling, surveying\nand election processes" : {
+
+    },
+    "Rewards limit reached" : {
+
+    },
+    "RMO" : {
+
+    },
+    "Romania" : {
+
+    },
+    "Russian Federation" : {
+
+    },
+    "Rwanda" : {
+
+    },
+    "Saint Barthelemy" : {
+
+    },
+    "Saint Helena" : {
+
+    },
+    "Saint Kitts and Nevis" : {
+
+    },
+    "Saint Lucia" : {
+
+    },
+    "Saint Martin" : {
+
+    },
+    "Saint Pierre and Miquelon" : {
+
+    },
+    "Saint Vincent and the Grenadines" : {
+
+    },
+    "Samoa" : {
+
+    },
+    "San Marino" : {
+
+    },
+    "Sao Tome and Principe" : {
+
+    },
+    "Saudi Arabia" : {
+
+    },
+    "Save" : {
+
+    },
+    "Save to files" : {
+
+    },
+    "Save your passport data" : {
+
+    },
+    "Scan" : {
+
+    },
+    "Scan a QR" : {
+
+    },
+    "Scan again" : {
+
+    },
+    "Scan MRZ" : {
+
+    },
+    "Scan passport" : {
+
+    },
+    "Scan your passport" : {
+
+    },
+    "Scan Your Passport" : {
+
+    },
+    "Scan your passport’s first page inside the border" : {
+
+    },
+    "scans" : {
+
+    },
+    "Select an authorization method" : {
+
+    },
+    "Select answer" : {
+
+    },
+    "Send" : {
+
+    },
+    "Send %@" : {
+
+    },
+    "Sending..." : {
+
+    },
+    "Senegal" : {
+
+    },
+    "Serbia" : {
+
+    },
+    "Set a rule" : {
+
+    },
+    "Set up a new way to recover\nyour account" : {
+
+    },
+    "Set up a new way to recover your account" : {
+
+    },
+    "Seychelles" : {
+
+    },
+    "Share" : {
+
+    },
+    "Share on socials" : {
+
+    },
+    "Share your referral link and get bonuses when your friends join" : {
+
+    },
+    "Shared" : {
+
+    },
+    "Sierra Leone" : {
+
+    },
+    "Singapore" : {
+
+    },
+    "Sint Maarten" : {
+
+    },
+    "Slovakia" : {
+
+    },
+    "Slovenia" : {
+
+    },
+    "Solomon Islands" : {
+
+    },
+    "Somalia" : {
+
+    },
+    "Some passports have a problem with chip scans" : {
+
+    },
+    "Somewhere out on the open web, one famous face carries a key sealed inside its ZK-vector" : {
+
+    },
+    "Somewhere out on the open web, one famous face carries a key sealed inside its ZK-vector. Test any image you find, and the first player to prove the match claims the prize. Ready to hunt?" : {
+
+    },
+    "Soon" : {
+
+    },
+    "Sorry, there was a problem reading the passport. %@. Error codes: [0x%u, 0x%u]" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Sorry, there was a problem reading the passport. %1$@. Error codes: [0x%2$u, 0x%3$u]"
+          }
+        }
+      }
+    },
+    "Sorry, there was a problem reading the passport. Please try again" : {
+
+    },
+    "South Africa" : {
+
+    },
+    "South Georgia and the South Sandwich Islands" : {
+
+    },
+    "South Sudan" : {
+
+    },
+    "Spain" : {
+
+    },
+    "Sri Lanka" : {
+
+    },
+    "Stranger" : {
+
+    },
+    "Submit" : {
+
+    },
+    "Submitting..." : {
+
+    },
+    "Success" : {
+
+    },
+    "Sudan" : {
+
+    },
+    "Suriname" : {
+
+    },
+    "Svalbard and Jan Mayen" : {
+
+    },
+    "Sweden" : {
+
+    },
+    "Swing and a miss, this face isn’t hiding the key. Keep scanning!" : {
+
+    },
+    "Switzerland" : {
+
+    },
+    "Syrian Arab Republic" : {
+
+    },
+    "System" : {
+
+    },
+    "Tag not valid." : {
+
+    },
+    "Taiwan" : {
+
+    },
+    "Tajikistan" : {
+
+    },
+    "Take a picture" : {
+
+    },
+    "Tanzania" : {
+
+    },
+    "Terms of Use" : {
+
+    },
+    "Thailand" : {
+
+    },
+    "The rules are yours to change" : {
+
+    },
+    "Theme" : {
+
+    },
+    "This action is irreversible and will delete all your data." : {
+
+    },
+    "This app is where you privately store your digital identities, enabling you to go incognito across the web" : {
+
+    },
+    "This can take up to a minute" : {
+
+    },
+    "Timor-Leste" : {
+
+    },
+    "Tip:" : {
+
+    },
+    "To continue, please install the latest version of the app" : {
+
+    },
+    "Togo" : {
+
+    },
+    "Tokelau" : {
+
+    },
+    "Tonga" : {
+
+    },
+    "Total %@" : {
+
+    },
+    "Total Balance" : {
+
+    },
+    "Transactions" : {
+
+    },
+    "Trinidad and Tobago" : {
+
+    },
+    "Try again later" : {
+
+    },
+    "Try using your previous private key" : {
+
+    },
+    "Tunisia" : {
+
+    },
+    "Turkey" : {
+
+    },
+    "Turkmenistan" : {
+
+    },
+    "Turks and Caicos Islands" : {
+
+    },
+    "Tuvalu" : {
+
+    },
+    "Uganda" : {
+
+    },
+    "Ukraine" : {
+
+    },
+    "Unfortunately, these passports are not eligible for rewards. However, you can use your incognito ID for other upcoming mini apps." : {
+
+    },
+    "Uniqueness" : {
+
+    },
+    "United Arab Emirates" : {
+
+    },
+    "United Kingdom" : {
+
+    },
+    "United States" : {
+
+    },
+    "Unknown" : {
+
+    },
+    "Unknown Country" : {
+
+    },
+    "Unknown error" : {
+
+    },
+    "Unknown service error" : {
+
+    },
+    "Unsupported country" : {
+
+    },
+    "Unsupported for rewards" : {
+
+    },
+    "Update" : {
+
+    },
+    "Update app" : {
+
+    },
+    "Update the rule" : {
+
+    },
+    "Uruguay" : {
+
+    },
+    "Use my likeness and pay me" : {
+
+    },
+    "Used" : {
+
+    },
+    "User creation failed" : {
+
+    },
+    "Uzbekistan" : {
+
+    },
+    "Vanuatu" : {
+
+    },
+    "Venezuela" : {
+
+    },
+    "Verification" : {
+
+    },
+    "Verification Criteria" : {
+
+    },
+    "Verification..." : {
+
+    },
+    "Verify" : {
+
+    },
+    "Vietnam" : {
+
+    },
+    "View Wallet" : {
+
+    },
+    "Virgin Islands, British" : {
+
+    },
+    "Virgin Islands, U.S." : {
+
+    },
+    "Voting" : {
+
+    },
+    "Waitlist passport" : {
+
+    },
+    "Waitlisted country" : {
+
+    },
+    "Wallet" : {
+
+    },
+    "Wallis and Futuna" : {
+
+    },
+    "We're upgrading for a better experience. Back soon!" : {
+
+    },
+    "We’re working on a fix" : {
+
+    },
+    "Welcome To" : {
+
+    },
+    "Welcome!" : {
+
+    },
+    "Western Sahara" : {
+
+    },
+    "White" : {
+
+    },
+    "Winner:" : {
+
+    },
+    "Withdraw the %@ token" : {
+
+    },
+    "Wrong face..." : {
+
+    },
+    "Yemen" : {
+
+    },
+    "Yes" : {
+
+    },
+    "You" : {
+
+    },
+    "You can restore your account using your iCloud backup or private key" : {
+
+    },
+    "You can update it anytime by clicking the title" : {
+
+    },
+    "You can use the QR code or the wallet address to deposit the %@ token to your account" : {
+
+    },
+    "You entered wrong passcode.\nLoading time: %@" : {
+
+    },
+    "You've found the hidden keys" : {
+
+    },
+    "You've successfully set your likeness rule" : {
+
+    },
+    "Your account is not backed up. If you lose your device, you will lose access to your account" : {
+
+    },
+    "Your Address" : {
+
+    },
+    "Your data, your rules" : {
+
+    },
+    "Your internet connection is down" : {
+
+    },
+    "Your passport data will be saved on your device. You can share it with us to expedite the support of your passport." : {
+
+    },
+    "Your private key" : {
+
+    },
+    "Your Private Key" : {
+
+    },
+    "Your prize:" : {
+
+    },
+    "Your vote counts, and you will be rewarded for every participation" : {
+
+    },
+    "Your vote has been counted" : {
+
+    },
+    "Zambia" : {
+
+    },
+    "Zimbabwe" : {
+
+    },
+    "zkFace" : {
+
+    }
+  },
+  "version" : "1.1"
+}
