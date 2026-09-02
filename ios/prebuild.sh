@@ -11,7 +11,7 @@ cd Build
 # Clone repository if it does not exist
 if [ ! -d "rarime-mobile-identity-sdk" ]; then
     echo "⏳ Cloning the repository"
-    git clone git@github.com:rarimo/rarime-mobile-identity-sdk.git
+    git clone https://github.com/dagangilat/rarime-mobile-identity-sdk.git
 fi
 
 # Pull latest changes
