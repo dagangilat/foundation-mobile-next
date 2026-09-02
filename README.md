@@ -1,8 +1,18 @@
-# foundation-mobile
+# Foundation Mobile
 
-Native iOS Swift app for Foundation (Pillar 1 — *Your Voice*). Persona-smooth identity + humanity verification, with zero server-side retention.
+A privacy-preserving identity app for the Foundation governance platform.
+Prove you are a unique human with a passport, without revealing who you are.
 
-> **Canonical plan:** `foundation-global/docs/architecture_identity-humanity-mobile-app-2026-04-23.md`
+**This is a fork of [Rarimo](https://github.com/rarimo)'s
+[rarime-ios-app](https://github.com/rarimo/rarime-ios-app) and
+[rarime-android-app](https://github.com/rarimo/rarime-android-app)**, rebranded
+and integrated with Foundation's backend. See NOTICE for upstream attribution.
+
+## License
+
+GPL-3.0 (see LICENSE). The app statically links GPL-3.0 `witnesscalc` and
+LGPL-3.0 `rapidsnark` proving libraries; see THIRD_PARTY_LICENSES.md.
+This repository is the complete corresponding source.
 
 ## Stack decisions (2026-04-23 PM — amended from AM RN decision)
 
