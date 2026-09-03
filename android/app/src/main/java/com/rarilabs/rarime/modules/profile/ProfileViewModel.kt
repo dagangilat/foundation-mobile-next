@@ -9,6 +9,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.rarilabs.rarime.foundation.DeletionOutcome
+import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
 import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -34,7 +36,8 @@ class ProfileViewModel @Inject constructor(
     val passportManager: PassportManager,
     val dataStoreManager: SecureSharedPrefsManager,
     private val driveBackupManager: DriveBackupManager,
-    private val notificationsRepository: NotificationsRepository
+    private val notificationsRepository: NotificationsRepository,
+    private val accountDeletionManager: FoundationAccountDeletionManager,
 ) : ViewModel() {
 
 
@@ -50,7 +53,57 @@ class ProfileViewModel @Inject constructor(
         return passport?.personDetails?.getPortraitImage()
     }
 
-    suspend fun clearAllData(context: Context) {
+    private val _isDeletingAccount = MutableStateFlow(false)
+    val isDeletingAccount: StateFlow<Boolean> = _isDeletingAccount.asStateFlow()
+
+    private val _deleteAccountError = MutableStateFlow("")
+    val deleteAccountError: StateFlow<String> = _deleteAccountError.asStateFlow()
+
+    /**
+     * "Delete account" - the whole thing, server side first.
+     *
+     * The ordering that makes this correct lives in
+     * [FoundationAccountDeletionManager] (see its doc comment), not here:
+     * `deleteMyAccount` is `requireAuth`-gated, so it must run while the
+     * Firebase session is live, and [eraseLocalState] below must run only once
+     * the server has confirmed. Before this change the local half was ALL this
+     * function did - the dialog promised "all your data" and erased not one
+     * server-side byte, while leaving the previous member's Firebase session
+     * signed in for whoever set the device up next.
+     *
+     * Runs on `viewModelScope` rather than the caller's `rememberCoroutineScope`
+     * so a recomposition cannot drop it, and returns immediately (rather than
+     * suspending the caller) so the confirmation dialog can be dismissed and
+     * [deleteAccountError] rendered underneath it.
+     */
+    fun clearAllData(context: Context) {
+        // iOS's `isAccountDeletionInFlight`. Without it a double-tap fires
+        // `deleteMyAccount` twice.
+        if (_isDeletingAccount.value) return
+        _isDeletingAccount.value = true
+        _deleteAccountError.value = ""
+
+        viewModelScope.launch {
+            try {
+                val outcome = accountDeletionManager.deleteAccount {
+                    eraseLocalState(context)
+                }
+                if (outcome is DeletionOutcome.Failed) {
+                    _deleteAccountError.value = outcome.message
+                }
+            } finally {
+                _isDeletingAccount.value = false
+            }
+        }
+    }
+
+    /**
+     * The local half of deletion - byte for byte the sequence that shipped
+     * before this change, only its trigger moved. Reached ONLY after the server
+     * has confirmed the account is gone, and only from inside
+     * [FoundationAccountDeletionManager]'s `NonCancellable` block.
+     */
+    private suspend fun eraseLocalState(context: Context) {
         dataStoreManager.clearAllData()
 
         notificationsRepository.deleteAllNotifications()

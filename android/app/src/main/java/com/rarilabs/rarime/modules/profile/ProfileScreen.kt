@@ -65,7 +65,8 @@ fun ProfileScreen(
 
     val colorScheme by viewModel.colorScheme.collectAsState()
 
-
+    val isDeletingAccount by viewModel.isDeletingAccount.collectAsState()
+    val deleteAccountError by viewModel.deleteAccountError.collectAsState()
 
     ProfileScreenContent(
         evmAddress = WalletUtil.formatAddress(viewModel.evmAddress),
@@ -73,6 +74,8 @@ fun ProfileScreen(
         navigate = navigate,
         colorScheme = colorScheme,
         appIcon = appIcon,
+        isDeletingAccount = isDeletingAccount,
+        deleteAccountError = deleteAccountError,
         onFeedbackConfirm = {
             val decryptedFile = viewModel.getDecryptedFeedbackFile()
             launcher.launch(SendEmailUtil.sendEmail(decryptedFile, context))
@@ -89,6 +92,9 @@ fun ProfileScreenContent(
     passportImage: Bitmap?,
     navigate: (String) -> Unit,
     colorScheme: AppColorScheme,
+    isDeletingAccount: Boolean = false,
+    /** Non-empty only when the server refused the delete - see below. */
+    deleteAccountError: String = "",
     onFeedbackConfirm: suspend () -> Unit = {},
     onClearConfirm: suspend () -> Unit = {},
 ) {
@@ -220,8 +226,8 @@ fun ProfileScreenContent(
 
                 ProfileRow(
                     iconId = R.drawable.ic_trash_simple,
-                    title = "Delete account",
-                    onClick = { isDeleteAccountDialogShown = true },
+                    title = if (isDeletingAccount) "Deleting account…" else "Delete account",
+                    onClick = { if (!isDeletingAccount) isDeleteAccountDialogShown = true },
                     contentColors = getProfileRowContentColors(
                         leadingIcon = FoundationTheme.colors.errorMain,
                         leadingIconBg = FoundationTheme.colors.errorLighter,
@@ -236,6 +242,14 @@ fun ProfileScreenContent(
                         title = stringResource(R.string.delete_profile_title),
                         subtitle = stringResource(R.string.delete_profile_desc),
                         onConfirm = {
+                            // Dismiss FIRST. Deletion used to be unfailable from
+                            // this screen's point of view - it always ended in a
+                            // process restart - so leaving the dialog up cost
+                            // nothing. Now that a server refusal is a real
+                            // outcome, an undismissed AlertDialog would sit on
+                            // top of the error below and the user would see
+                            // nothing happen at all.
+                            isDeleteAccountDialogShown = false
                             scope.launch {
                                 onClearConfirm.invoke()
                             }
@@ -243,6 +257,17 @@ fun ProfileScreenContent(
                         onCancel = { isDeleteAccountDialogShown = false },
                         cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
                         confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
+                    )
+                }
+
+                // Only ever reached when the server refused: on success the
+                // process restarts before this can recompose.
+                if (deleteAccountError.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier.padding(top = 12.dp),
+                        text = deleteAccountError,
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.errorMain,
                     )
                 }
             }
