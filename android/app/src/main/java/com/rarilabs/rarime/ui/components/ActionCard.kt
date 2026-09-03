@@ -166,18 +166,6 @@ private fun ActionCardPreview() {
             onClick = {}
         )
 
-        ActionCard(
-            title = "Scan passport",
-            description = "Scan your passport to verify your identity",
-            leadingContent = {
-                Image(
-                    modifier = Modifier.size(42.dp),
-                    painter = painterResource(id = R.drawable.reward_coin),
-                    contentDescription = "decor",
-                )
-            },
-            onClick = {}
-        )
 
         ActionCard(
             title = "Scan passport",

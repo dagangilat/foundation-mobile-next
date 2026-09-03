@@ -143,17 +143,6 @@ private fun CircledBadgePreview() {
                 contentSize = 80,
                 contentColor = FoundationTheme.colors.baseBlack
             )
-            CircledBadge(
-                containerSize = 160,
-                painter = painterResource(id = R.drawable.reward_coin),
-                contentSize = 80,
-            )
-            CircledBadge(
-                containerSize = 160,
-                containerColor = FoundationTheme.colors.secondaryMain,
-                painter = painterResource(id = R.drawable.reward_coin),
-                contentSize = 120
-            )
         }
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -174,22 +163,6 @@ private fun CircledBadgePreview() {
                     id = R.drawable.ic_lock,
                     size = 80.dp,
                     tint = FoundationTheme.colors.baseBlack
-                )
-            }
-            CircledBadgeWithCounter(
-                containerSize = 160
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.reward_coin),
-                    contentDescription = ""
-                )
-            }
-            CircledBadgeWithCounter(
-                containerSize = 160, containerColor = FoundationTheme.colors.secondaryMain
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.reward_coin),
-                    contentDescription = ""
                 )
             }
         }

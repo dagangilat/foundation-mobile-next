@@ -23,8 +23,13 @@ interface IConfig {
     val GLOBAL_NOTIFICATION_TOPIC: String
     val GOOGLE_WEB_KEY: String
     val APP_ID_FIREBASE: String
-
-
+    // STRIPPED (Task C5 real merge finding, controller correction): REWARD_NOTIFICATION_TOPIC,
+    // RARIMO_EXPLORER and APPSFLYER_DEV_KEY were deliberately removed by Task C5 - their sole
+    // real consumers (NotificationService.kt's rewards-topic subscribe, WalletTransactionCard.kt,
+    // MainActivity.kt's AppsFlyer init) are gone along with the earn/wallet modules and AppsFlyer
+    // integration. An earlier merge-conflict resolution incorrectly restored these three as
+    // "C4 fixes worth preserving" - they were not; only GLOBAL_NOTIFICATION_TOPIC actually needed
+    // preserving. Left as a comment rather than silently deleted so this isn't rediscovered again.
 
 
 
@@ -210,15 +215,16 @@ object TestNetConfig : IConfig {
     override val APP_ID_FIREBASE = Keys.APP_ID
 
 
-    // Dev/stage tier of the FCM topics, matching iOS Task B1's Development.xcconfig values
-    // exactly - both platforms subscribe to the same topics. Android has no separate
+    // Dev/stage tier of the global FCM topic, matching iOS Task B1's Development.xcconfig
+    // value exactly - both platforms subscribe to the same topic. Android has no separate
     // debug/release xcconfig split; TestNetConfig/MainnetConfig (selected by
     // BuildConfig.isTestnet, pinned false on all default build types per Task C1 and OD-5)
     // is the closest structural analog to iOS's Development/Production split. (Task C5's
     // worktree branched before this Task C4 fix landed on main and still had the old
     // "rarime-stage" value in its own copy - this merge keeps C4's real rebrand.)
     override val GLOBAL_NOTIFICATION_TOPIC = "foundation-dev"
-    override val REWARD_NOTIFICATION_TOPIC: String = "foundation-rewardable-dev"
+    // STRIPPED (Task C5, controller correction): REWARD_NOTIFICATION_TOPIC's only consumer,
+    // NotificationService.kt's rewards-topic subscribe call, is gone with the earn module.
 
 
     // STRIPPED (Task C5): Freedom Tool / Polls / VotingManager.kt deleted entirely.
@@ -477,14 +483,15 @@ object MainnetConfig : IConfig {
     override val CHAIN = RarimoChains.Mainnet
     override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
     override val APP_ID_FIREBASE = Keys.APP_ID
-    override val RARIMO_EXPLORER = "https://scan.rarimo.com/tx"
-    // Production tier of the FCM topics, matching iOS Task B1's Production.xcconfig values
-    // exactly - both platforms subscribe to the same topics. (Task C5's worktree branched
-    // before this Task C4 fix landed on main and still had the old "rarime" value in its
-    // own copy - this merge keeps C4's real rebrand.)
+    // STRIPPED (Task C5, controller correction): RARIMO_EXPLORER's only consumer,
+    // WalletTransactionCard.kt, is gone with the wallet module.
+    // Production tier of the global FCM topic, matching iOS Task B1's Production.xcconfig
+    // value exactly - both platforms subscribe to the same topic. (Task C5's worktree
+    // branched before this Task C4 fix landed on main and still had the old "rarime" value
+    // in its own copy - this merge keeps C4's real rebrand.)
     override val GLOBAL_NOTIFICATION_TOPIC = "foundation"
-    override val REWARD_NOTIFICATION_TOPIC: String = "foundation-rewardable"
-    override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
+    // STRIPPED (Task C5, controller correction): REWARD_NOTIFICATION_TOPIC and
+    // APPSFLYER_DEV_KEY are gone for the same reasons as TestNetConfig above.
 
     // STRIPPED (Task C5): Freedom Tool / Polls (VOTING_*/PROPOSAL/MULTICALL) and
     // digitalLikeness (FACE_REGISTRY_ADDRESS) deleted entirely.
