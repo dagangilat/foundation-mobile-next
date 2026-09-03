@@ -10,6 +10,7 @@ struct FoundationApp: App {
         WindowGroup {
             AppView()
                 .environmentObject(AlertManager.shared)
+                .environmentObject(AuthService.shared)
                 .environmentObject(UserManager.shared)
                 .environmentObject(ConfigManager.shared)
                 .environmentObject(SecurityManager.shared)

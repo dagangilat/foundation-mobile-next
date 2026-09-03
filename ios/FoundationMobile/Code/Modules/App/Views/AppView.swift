@@ -9,6 +9,7 @@ struct AppView: View {
     @EnvironmentObject private var alertManager: AlertManager
     @EnvironmentObject private var securityManager: SecurityManager
     @EnvironmentObject private var settingsManager: SettingsManager
+    @EnvironmentObject private var authService: AuthService
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.scenePhase) var scenePhase
@@ -26,6 +27,16 @@ struct AppView: View {
                     InternetConnectionRequiredView()
                 } else if updateManager.isMaintenance {
                     MaintenanceView()
+                } else if !authService.isSignedIn {
+                    // Sits ahead of BOTH the MainView and LockScreenView
+                    // branches, so MainView is structurally unreachable while
+                    // signed out. It cannot preempt IntroView: every intro exit
+                    // path (IntroView.createNewUser, both ImportIdentityView
+                    // paths) calls securityManager.disablePasscode() before
+                    // onFinish, which moves passcodeState off .unset — so this
+                    // is the first moment a signed-out state is observable, for
+                    // brand-new and returning users alike.
+                    SignInView().transition(.backslide)
                 } else if
                     securityManager.passcodeState != .unset,
                     securityManager.faceIdState != .unset,
@@ -88,4 +99,5 @@ struct AppView: View {
         .environmentObject(SettingsManager())
         .environmentObject(UpdateManager())
         .environmentObject(InternetConnectionManager())
+        .environmentObject(AuthService.shared)
 }

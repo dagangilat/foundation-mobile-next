@@ -11,7 +11,9 @@ enum AppKeychainItemKey: String {
 }
 
 class AppKeychain {
-    private static let keychain = Keychain(service: Bundle.main.bundleIdentifier ?? "undefined.bundle")
+    // Module-qualified: Task B6 introduced a Foundation-owned `enum Keychain`
+    // in this same module, which shadows KeychainAccess's `Keychain` type.
+    private static let keychain = KeychainAccess.Keychain(service: Bundle.main.bundleIdentifier ?? "undefined.bundle")
 
     static func getValue(_ key: AppKeychainItemKey) throws -> Data? {
         try keychain.getData(key.rawValue)

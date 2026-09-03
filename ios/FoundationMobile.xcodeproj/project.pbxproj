@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A7CE7C988B8184A657D7D3C /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB969531739D4B78C5561C5 /* AuthService.swift */; };
+		4C77AFAE77BEA0FE5E4409D2 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3A86E50FD85AD86F0C7CAB /* Keychain.swift */; };
 		56062B9A2C12007A00C9BF9B /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56062B992C12007A00C9BF9B /* Country.swift */; };
 		56062B9C2C12032700C9BF9B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56062B9B2C12032700C9BF9B /* Constants.swift */; };
 		56062BA02C120B3400C9BF9B /* WaitlistPassportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56062B9F2C120B3400C9BF9B /* WaitlistPassportView.swift */; };
@@ -111,6 +113,9 @@
 		56F22B302E059A9200456A7B /* DocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F22B2E2E059A9200456A7B /* DocumentType.swift */; };
 		56F48BBE2BC02E82001F3AA4 /* AppButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56F48BBD2BC02E82001F3AA4 /* AppButton.swift */; };
 		638BBB1D2E99302800222A6C /* Identity.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 638BBB1C2E99302800222A6C /* Identity.xcframework */; };
+		6CA9B5B5AD19F152CDF17D9D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E2931983913FD748CF9149A8 /* FirebaseAuth */; };
+		A6AC1FBEF4631FEAACC8E1A5 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 4E65220330641B7ACDCC5740 /* FirebaseAppCheck */; };
+		B244A347C8D5E5B35ABC27E1 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 265BD3F0F941DF42EA6429D8 /* FirebaseFunctions */; };
 		C71161B32CAAE3DB00ED41EA /* String+BigUInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C71161B22CAAE3DB00ED41EA /* String+BigUInt.swift */; };
 		C726E8D22D647FED000C9CA6 /* SnapCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C726E8D12D647FE9000C9CA6 /* SnapCarouselView.swift */; };
 		C72F33182D677DBA00AC1814 /* AppIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72F33172D677DB200AC1814 /* AppIconButton.swift */; };
@@ -153,6 +158,8 @@
 		C7F61DF52D84226000D4DC3A /* UnsupportedPassportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F61DF42D84225400D4DC3A /* UnsupportedPassportView.swift */; };
 		C7FFB52E2C99D7820037CBD4 /* NotificationDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFB52D2C99D7820037CBD4 /* NotificationDetailsView.swift */; };
 		C7FFB5302C9ACE900037CBD4 /* ClaimableNotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFB52F2C9ACE900037CBD4 /* ClaimableNotificationContent.swift */; };
+		CB92544B052C005370F67268 /* FunctionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6247714B2C3D98B179615273 /* FunctionsService.swift */; };
+		CD7DA7FF37ED5CACA22BEF8A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705B896C98AA4E0666FDE02F /* SignInView.swift */; };
 		CE00DF4B2D9AC1F700614151 /* ZkProof.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68BE3C2BD9B23D00D92EBB /* ZkProof.swift */; };
 		CE00DF4D2D9ACD5E00614151 /* NoirRegisterIdentityInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE00DF4C2D9ACD5C00614151 /* NoirRegisterIdentityInputs.swift */; };
 		CE00DF4E2D9ACD5E00614151 /* NoirRegisterIdentityInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE00DF4C2D9ACD5C00614151 /* NoirRegisterIdentityInputs.swift */; };
@@ -444,7 +451,9 @@
 		56F22B2C2E04611200456A7B /* CircuitData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitData.swift; sourceTree = "<group>"; };
 		56F22B2E2E059A9200456A7B /* DocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentType.swift; sourceTree = "<group>"; };
 		56F48BBD2BC02E82001F3AA4 /* AppButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppButton.swift; sourceTree = "<group>"; };
+		6247714B2C3D98B179615273 /* FunctionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionsService.swift; sourceTree = "<group>"; };
 		638BBB1C2E99302800222A6C /* Identity.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Identity.xcframework; sourceTree = "<group>"; };
+		705B896C98AA4E0666FDE02F /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		C71161B22CAAE3DB00ED41EA /* String+BigUInt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+BigUInt.swift"; sourceTree = "<group>"; };
 		C726E8D12D647FE9000C9CA6 /* SnapCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapCarouselView.swift; sourceTree = "<group>"; };
 		C72F33172D677DB200AC1814 /* AppIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconButton.swift; sourceTree = "<group>"; };
@@ -610,6 +619,8 @@
 		CEFF68BC2CB6A1C2008769EA /* RegisterIdentityInputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterIdentityInputs.swift; sourceTree = "<group>"; };
 		CEFF68BE2CB6A3E7008769EA /* CircuitBuilderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircuitBuilderManager.swift; sourceTree = "<group>"; };
 		CEFF68C02CB6AF46008769EA /* Encodable+json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+json.swift"; sourceTree = "<group>"; };
+		DEB969531739D4B78C5561C5 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		FC3A86E50FD85AD86F0C7CAB /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -690,12 +701,23 @@
 				CE7210312BD807140043DB7F /* ZipArchive in Frameworks */,
 				560F0C2A2BD114EE00067054 /* CodeScanner in Frameworks */,
 				CE68BE492BD9B6EA00D92EBB /* Web3PromiseKit in Frameworks */,
+				6CA9B5B5AD19F152CDF17D9D /* FirebaseAuth in Frameworks */,
+				B244A347C8D5E5B35ABC27E1 /* FirebaseFunctions in Frameworks */,
+				A6AC1FBEF4631FEAACC8E1A5 /* FirebaseAppCheck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		20D3086F01A00A182FD25BD1 /* FoundationAuth */ = {
+			isa = PBXGroup;
+			children = (
+				D057FACECEA66C3796E2D7E9 /* Views */,
+			);
+			path = FoundationAuth;
+			sourceTree = "<group>";
+		};
 		5617AB112C8F47B1003947C9 /* ExternalRequests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1297,6 +1319,7 @@
 				CE9E82C72BA8852700AAF885 /* Modules */,
 				56F48BBB2BC02DD0001F3AA4 /* UI */,
 				56474AD42BB985E00017AA25 /* Utilities */,
+				FAB543D31C52B3B15F97F586 /* Foundation */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -1315,6 +1338,7 @@
 				563529E02BB071930027C910 /* Profile */,
 				564715BE2DEDAF1800B1334B /* Recovery */,
 				56933DEB2BBAB0660068C894 /* ScanPassport */,
+				20D3086F01A00A182FD25BD1 /* FoundationAuth */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -1452,6 +1476,24 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		D057FACECEA66C3796E2D7E9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				705B896C98AA4E0666FDE02F /* SignInView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FAB543D31C52B3B15F97F586 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				FC3A86E50FD85AD86F0C7CAB /* Keychain.swift */,
+				6247714B2C3D98B179615273 /* FunctionsService.swift */,
+				DEB969531739D4B78C5561C5 /* AuthService.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1536,6 +1578,9 @@
 				C7BBDBD82D71E59800E2905E /* ConfettiSwiftUI */,
 				CE53BCC12D9A9A2C007B1892 /* Swoir */,
 				56D7FC9B2DFC3F1100B13A61 /* WrappingHStack */,
+				E2931983913FD748CF9149A8 /* FirebaseAuth */,
+				265BD3F0F941DF42EA6429D8 /* FirebaseFunctions */,
+				4E65220330641B7ACDCC5740 /* FirebaseAppCheck */,
 			);
 			productName = FoundationMobile;
 			productReference = CE9E82B22BA881F400AAF885 /* FoundationMobile.app */;
@@ -1904,6 +1949,10 @@
 				5659151D2BE92AA90050795A /* AppIcon.swift in Sources */,
 				56062BA02C120B3400C9BF9B /* WaitlistPassportView.swift in Sources */,
 				56E7AD0A2BDAA4F000D3A258 /* AppRadioButton.swift in Sources */,
+				4C77AFAE77BEA0FE5E4409D2 /* Keychain.swift in Sources */,
+				CB92544B052C005370F67268 /* FunctionsService.swift in Sources */,
+				2A7CE7C988B8184A657D7D3C /* AuthService.swift in Sources */,
+				CD7DA7FF37ED5CACA22BEF8A /* SignInView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3168,6 +3217,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		265BD3F0F941DF42EA6429D8 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE34774F2C7885DA005E91FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		4E65220330641B7ACDCC5740 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE34774F2C7885DA005E91FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
 		560F0C1C2BD0234300067054 /* QRCode */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 56E2D92F2BD01C77006E725D /* XCRemoteSwiftPackageReference "qrcode" */;
@@ -3292,6 +3351,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEF5C2B42D3FEC3500E143D7 /* XCRemoteSwiftPackageReference "RarimeIOSUtils" */;
 			productName = RarimeIOSUtils;
+		};
+		E2931983913FD748CF9149A8 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE34774F2C7885DA005E91FE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 
