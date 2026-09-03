@@ -38,7 +38,6 @@ enum class ScanPassportState {
 @Composable
 fun ScanPassportScreen(
     onClose: () -> Unit,
-    onClaim: () -> Unit,
     scanPassportScreenViewModel: ScanPassportScreenViewModel = hiltViewModel(),
     initialEDocument: EDocument? = if (BuildConfig.isTestnet) scanPassportScreenViewModel.eDocument.value else null,
     innerPaddings: Map<ScreenInsets, Number> = mapOf(),
@@ -53,12 +52,7 @@ fun ScanPassportScreen(
 
     var nfcAttempts by remember { mutableStateOf(0) }
 
-    val balance by scanPassportScreenViewModel.pointsToken.collectAsState()
     val eDoc by scanPassportScreenViewModel.eDocument.collectAsState()
-
-    var isAlreadyVerified by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(Unit) {
         setVisibilityOfBottomBar(false)
@@ -68,10 +62,6 @@ fun ScanPassportScreen(
         if (initialEDocument != null) {
             scanPassportScreenViewModel.setPassportTEMP(initialEDocument)
         }
-    }
-
-    LaunchedEffect(Unit) {
-        isAlreadyVerified = scanPassportScreenViewModel.isVerified()
     }
 
     fun handleNFCError(e: Exception) {
@@ -159,12 +149,12 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.FINISH_PASSPORT_FLOW -> {
-                if (balance?.balanceDetails == null) {
-                    onClose.invoke()
-                    scanPassportScreenViewModel.savePassport()
-                } else {
-                    onClaim.invoke()
-                }
+                // Upstream branched here on the user's points balance and sent
+                // holders to the token-reservation screen. That programme and
+                // its screen are removed, so the flow always takes what was the
+                // no-balance path: persist the passport and close.
+                onClose.invoke()
+                scanPassportScreenViewModel.savePassport()
             }
 
             ScanPassportState.REVOCATION_PROCESS -> {
@@ -205,5 +195,5 @@ fun ScanPassportScreen(
 @Preview
 @Composable
 private fun ScanPassportScreenPreview() {
-    ScanPassportScreen(onClose = {}, onClaim = {}, setVisibilityOfBottomBar = {})
+    ScanPassportScreen(onClose = {}, setVisibilityOfBottomBar = {})
 }

@@ -2,7 +2,6 @@ package com.rarilabs.rarime.util
 
 import android.content.Context
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.api.voting.models.Poll
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -184,23 +183,6 @@ object DateUtil {
             )
 
             else -> ""
-        }
-    }
-
-    fun getDateMessage(poll: Poll, context: Context): String {
-        return when {
-            poll.isEnded -> context.getString(R.string.poll_voting_ended)
-            poll.isStarted -> {
-                // Voting ends in some relative time period.
-                val remaining = poll.voteEndDate?.let { getRelativeTimeMessage(it) } ?: "N/A"
-                context.getString(R.string.poll_voting_end_timer, remaining)
-            }
-
-            else -> {
-                // Voting starts in some relative time period.
-                val remaining = poll.voteStartDate?.let { getRelativeTimeMessage(it) } ?: "N/A"
-                context.getString(R.string.poll_voting_start_timer, remaining)
-            }
         }
     }
 

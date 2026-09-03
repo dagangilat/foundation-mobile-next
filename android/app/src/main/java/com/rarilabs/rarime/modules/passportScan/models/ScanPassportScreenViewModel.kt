@@ -5,9 +5,7 @@ import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.RegistrationManager
-import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.data.UniversalProof
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,20 +15,13 @@ import javax.inject.Inject
 class ScanPassportScreenViewModel @Inject constructor(
     private val passportManager: PassportManager,
     private val identityManager: IdentityManager,
-    private val registrationManager: RegistrationManager,
-    private val walletManager: WalletManager,
-    private val pointsManager: PointsManager
+    private val registrationManager: RegistrationManager
 ) : ViewModel() {
     val eDocument = registrationManager.eDocument
-    val pointsToken = walletManager.pointsToken
 
     fun rejectRevocation() {
         ErrorHandler.logDebug("ScanPassportScreenViewModel", "rejectRevocation")
         resetPassportState()
-    }
-
-    suspend fun isVerified(): Boolean {
-        return pointsManager.getPointsBalance()?.data?.attributes?.is_verified ?: false
     }
 
     fun resetPassportState() {

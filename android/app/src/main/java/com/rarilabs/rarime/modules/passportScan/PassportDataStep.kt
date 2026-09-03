@@ -25,7 +25,6 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.PassportImage
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.components.RewardChip
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
@@ -121,12 +120,10 @@ private fun PassportDataStepContent(
                                     style = FoundationTheme.typography.subtitle5,
                                     color = FoundationTheme.colors.textPrimary
                                 )
-                                if (!isUnsupported) {
-                                    RewardChip(
-                                        reward = Constants.SCAN_PASSPORT_REWARD.toInt(),
-                                        isActive = true
-                                    )
-                                }
+                                // Upstream showed a "+10 tokens" reward chip
+                                // here. Scanning a passport earns no token in
+                                // this app, so the chip is removed rather than
+                                // left promising a reward that does not exist.
                             }
 
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

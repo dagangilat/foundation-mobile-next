@@ -2,13 +2,9 @@ package com.rarilabs.rarime.store
 
 import android.app.Application
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppLanguage
@@ -16,12 +12,8 @@ import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
-import com.rarilabs.rarime.manager.LikenessRule
-import com.rarilabs.rarime.manager.WalletAsset
-import com.rarilabs.rarime.manager.WalletAssetJSON
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.data.GrothProof
@@ -228,66 +220,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-    override fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset> {
-        val jsonWalletAssets = getSharedPreferences().getString(accessTokens["WALLET_ASSETS"], null)
-            ?: return assetsToPopulate
-        val listType = object : TypeToken<List<WalletAsset?>?>() {}.type
-
-        try {
-            val parsedWalletAssets =
-                Gson().fromJson<List<WalletAssetJSON>>(jsonWalletAssets, listType)
-
-            return assetsToPopulate.map {
-                val walletAsset =
-                    parsedWalletAssets.find { asset -> asset.tokenSymbol == it.getTokenSymbol() }
-
-                if (walletAsset != null) {
-                    it.transactions = walletAsset.transactions
-                }
-                it
-            }
-        } catch (e: Exception) {
-            return assetsToPopulate
-        }
-    }
-
-    override fun saveWalletAssets(walletAssets: List<WalletAsset>) {
-        val editor = getEditor()
-        val jsonBalances = Gson().toJson(walletAssets.map { it.toJSON() })
-        editor.putString(accessTokens["WALLET_ASSETS"], jsonBalances)
-        editor.apply()
-    }
-
-    override fun readSelectedWalletAsset(walletAssets: List<WalletAsset>): WalletAsset {
-        val jsonWalletAsset = getSharedPreferences().getString(
-            accessTokens["SELECTED_WALLET_ASSET"], walletAssets.first().toJSON()
-        )
-
-        val walletAssetType = object : TypeToken<WalletAsset?>() {}.type
-
-        try {
-            val parsedWalletAsset =
-                Gson().fromJson<WalletAssetJSON>(jsonWalletAsset, walletAssetType)
-
-            val walletAsset =
-                walletAssets.find { it.getTokenSymbol() == parsedWalletAsset.tokenSymbol }
-
-            if (walletAsset == null) {
-                return walletAssets.first()
-            }
-
-            return walletAsset
-        } catch (error: Exception) {
-            return walletAssets.first()
-        }
-    }
-
-    override fun saveSelectedWalletAsset(walletAsset: WalletAsset) {
-        val editor = getEditor()
-        editor.putString(accessTokens["SELECTED_WALLET_ASSET"], walletAsset.toJSON())
-        editor.apply()
-    }
-
     override fun readPasscode(): String {
         return getSharedPreferences().getString(accessTokens["PASSCODE"], "") ?: ""
     }
@@ -361,28 +293,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         return Gson().fromJson(jsonProof, GrothProof::class.java)
     }
 
-    override fun readTransactions(): List<Transaction> {
-        val jsonTx =
-            getSharedPreferences().getString(accessTokens["TX"], null) ?: return emptyList()
-        val listType = object : TypeToken<List<Transaction?>?>() {}.type
-
-        val txList = Gson().fromJson<List<Transaction>>(jsonTx, listType)
-        return txList
-    }
-
-    override fun addTransaction(transaction: Transaction) {
-        val allTransactions = readTransactions().toMutableList()
-        allTransactions.add(transaction)
-        saveTransactions(allTransactions)
-    }
-
-    private fun saveTransactions(transactions: List<Transaction>) {
-        val editor = getEditor()
-        val jsonTx = Gson().toJson(transactions)
-        editor.putString(accessTokens["TX"], jsonTx)
-        editor.apply()
-    }
-
     override fun saveAccessToken(accessToken: String) {
         val editor = getEditor()
         editor.putString(accessTokens["ACCESS_TOKEN"], accessToken)
@@ -438,27 +348,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         editor.apply()
     }
 
-    override fun saveDeferredReferralCode(referralCode: String) {
-        val editor = getEditor()
-        editor.putString(accessTokens["DEFERRED_REFERRAL_CODE"], referralCode)
-        editor.apply()
-    }
-
-    override fun getDeferredReferralCode(): String? {
-        return getSharedPreferences().getString(accessTokens["DEFERRED_REFERRAL_CODE"], null)
-    }
-
-
-    override fun saveGuessReferralCode(referralCode: String) {
-        val editor = getEditor()
-        editor.putString(accessTokens["GUESS_REFERRAL_CODE"], referralCode)
-        editor.apply()
-    }
-
-    override fun getGuessReferralCode(): String? {
-        return getSharedPreferences().getString(accessTokens["GUESS_REFERRAL_CODE"], null)
-    }
-
     override fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData) {
         val editor = getEditor()
         val lightRegistrationDataJson = Gson().toJson(lightRegistrationData)
@@ -477,54 +366,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         return lightRegistrationData
     }
 
-    override fun saveIsAlreadyReserved(isAlreadyReserved: Boolean) {
-        val editor = getEditor()
-        editor.putBoolean(accessTokens["ALREADY_RESERVED"], isAlreadyReserved)
-        editor.apply()
-    }
-
-    override fun getIsAlreadyReserved(): Boolean {
-        return getSharedPreferences().getBoolean(accessTokens["ALREADY_RESERVED"], false)
-    }
-
-
-    override fun saveSelectedLikenessRule(likenessRule: LikenessRule) {
-        val editor = getEditor()
-        editor.putInt(accessTokens["SELECTED_LIKENESS_OPTION"], likenessRule.value)
-        editor.apply()
-    }
-
-    override fun getSelectedLikenessRule(): LikenessRule? {
-
-        val enumValue = getSharedPreferences().getInt(
-            accessTokens["SELECTED_LIKENESS_OPTION"],
-            -1
-        )
-
-        if (enumValue == -1)
-            return null
-
-        return LikenessRule.fromInt(
-            enumValue
-        )
-    }
-
-
-    override fun saveLivenessProof(proof: GrothProof) {
-        val editor = getEditor()
-
-        val proofjson = Gson().toJson(proof)
-        editor.putString(accessTokens["LIKENESS_DATA"], proofjson)
-        editor.apply()
-    }
-
-    override fun getLivenessProof(): GrothProof? {
-        val proofJson = getSharedPreferences().getString(accessTokens["LIKENESS_DATA"], null)
-            ?: return null
-
-        return Gson().fromJson<GrothProof>(proofJson, GrothProof::class.java)
-    }
-
     override fun saveIsShownWelcome(isShown: Boolean) {
         val editor = getEditor()
         editor.putBoolean(accessTokens["WELCOME_FIRST_OPEN"], isShown)
@@ -535,28 +376,6 @@ class SecureSharedPrefsManagerImpl @Inject constructor(
         return getSharedPreferences().getBoolean(accessTokens["WELCOME_FIRST_OPEN"], false)
     }
 
-    override fun saveLikenessFace(face: Bitmap) {
-        val baos = ByteArrayOutputStream().apply {
-            face.compress(Bitmap.CompressFormat.PNG, 100, this)
-        }
-        val bytes = baos.toByteArray()
-
-        val encoded = Base64.encodeToString(bytes, Base64.DEFAULT)
-
-        getEditor().putString(accessTokens["LIKENESS_FACE"], encoded).apply()
-    }
-
-    override fun getLikenessFace(): Bitmap? {
-        val encoded = getSharedPreferences().getString(accessTokens["LIKENESS_FACE"], null)
-
-        if (encoded.isNullOrEmpty()) {
-            return null
-        }
-
-        val bytes = Base64.decode(encoded, Base64.DEFAULT)
-
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-    }
 
     override fun saveUniversalProof(proof: UniversalProof) {
         val wrapper = proof.toWrapper()

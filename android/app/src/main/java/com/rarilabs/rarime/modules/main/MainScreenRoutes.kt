@@ -29,7 +29,6 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.ExtIntActionPreview
-import com.rarilabs.rarime.api.voting.models.MOCKED_POLL_ITEM
 import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.home.v3.HomeScreenV3
 import com.rarilabs.rarime.modules.intro.IntroScreen
@@ -37,7 +36,6 @@ import com.rarilabs.rarime.modules.main.guards.AuthGuard
 import com.rarilabs.rarime.modules.maintenance.MaintenanceScreen
 import com.rarilabs.rarime.modules.notifications.NotificationsScreen
 import com.rarilabs.rarime.modules.passportScan.ScanPassportScreen
-import com.rarilabs.rarime.modules.passportVerify.VerifyPassportScreen
 import com.rarilabs.rarime.modules.profile.AppIconScreen
 import com.rarilabs.rarime.modules.profile.AuthMethodScreen
 import com.rarilabs.rarime.modules.profile.ExportKeysScreen
@@ -49,18 +47,12 @@ import com.rarilabs.rarime.modules.security.EnableBiometricsScreen
 import com.rarilabs.rarime.modules.security.EnablePasscodeScreen
 import com.rarilabs.rarime.modules.security.LockScreen
 import com.rarilabs.rarime.modules.security.SetupPasscode
-import com.rarilabs.rarime.modules.votes.voteProcessScreen.VoteProcessScreen
-import com.rarilabs.rarime.modules.wallet.WalletReceiveScreen
-import com.rarilabs.rarime.modules.wallet.WalletScreen
-import com.rarilabs.rarime.modules.wallet.WalletSendScreen
 import com.rarilabs.rarime.modules.you.ZkIdentityDebugScreen
 import com.rarilabs.rarime.modules.you.ZkIdentityScreen
 import com.rarilabs.rarime.ui.components.AppWebView
-import com.rarilabs.rarime.ui.components.CongratsInvitationModalContent
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
-import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.LocaleUtil
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.Dispatchers
@@ -327,22 +319,9 @@ fun MainScreenRoutes(
                     coroutineScope.launch {
                         navigateWithPopUp(Screen.Main.Identity.route)
                     }
-                }, onClaim = {
-                    coroutineScope.launch {
-                        navigateWithPopUp(Screen.Claim.Reserve.route)
-                    }
                 }, setVisibilityOfBottomBar = {})
             }
         }
-
-        composable(Screen.Claim.Reserve.route) {
-            VerifyPassportScreen(
-                onSendError = { navigateWithPopUp(Screen.Main.Profile.route) },
-                onFinish = {
-                    navigateWithPopUp(Screen.Main.route)
-                })
-        }
-
 
         navigation(
             startDestination = Screen.Main.Home.route, route = Screen.Main.route
@@ -380,53 +359,10 @@ fun MainScreenRoutes(
                         coroutineScope.launch {
                             navigateWithPopUp(Screen.Main.route)
                         }
-                    }, onClaim = {
-                        coroutineScope.launch {
-                            navigateWithPopUp(Screen.Claim.Specific.route)
-
-                        }
                     }, setBottomBarVisibility = { mainViewModel.setBottomBarVisibility(it) })
                 }
             }
 
-            composable(
-                Screen.Main.Vote.route,
-                arguments = listOf(navArgument("vote_id") { type = NavType.StringType }),
-            ) { backStackEntry ->
-                val voteId = backStackEntry.arguments?.getString("vote_id")
-
-
-                voteId?.let {
-                    VoteProcessScreen(
-                        selectedPoll = MOCKED_POLL_ITEM,
-                        onBackClick = { navController.popBackStack() },
-                        onVote = {})
-                } ?: run {
-                    navigateWithPopUp(Screen.Main.Home.route)
-                }
-            }
-
-            composable(Screen.Main.Wallet.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    ScreenInsetsContainer {
-                        WalletScreen(navigate = { simpleNavigate(it) })
-                    }
-                }
-            }
-            composable(Screen.Main.Wallet.Receive.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    ScreenInsetsContainer {
-                        WalletReceiveScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-            }
-            composable(Screen.Main.Wallet.Send.route) {
-                AuthGuard(navigate = navigateWithPopUp) {
-                    ScreenInsetsContainer {
-                        WalletSendScreen(onBack = { navController.popBackStack() })
-                    }
-                }
-            }
             composable(Screen.Main.Profile.route) {
                 AuthGuard(navigate = navigateWithPopUp) {
                     ScreenInsetsContainer {
@@ -501,37 +437,6 @@ fun MainScreenRoutes(
         }
 
         composable(
-            route = Screen.Invitation.route, arguments = listOf(
-                navArgument("code") {
-                    type = NavType.StringType
-                })
-        ) { entry ->
-            val code = entry.arguments?.getString("code")
-            AuthGuard(
-                init = {
-                    code?.let {
-                        savedNextNavScreen = Screen.Invitation.route.replace("{code}", code)
-                    } ?: run {
-                        savedNextNavScreen = Screen.Main.route
-                    }
-                },
-                navigate = navigateWithPopUp,
-            ) {
-                AcceptInvitation(code = code, onFinish = {
-                    mainViewModel.setModalVisibility(true)
-                    mainViewModel.setModalContent {
-                        CongratsInvitationModalContent(
-                            onClose = {
-                                mainViewModel.setModalVisibility(false)
-                            })
-                    }
-
-                    navigateWithPopUp(Screen.Main.Home.route)
-                }, onError = { navigateWithPopUp(Screen.Main.Home.route) })
-            }
-        }
-
-        composable(
             route = Screen.ExtIntegrator.route,
         ) {
             AuthGuard(init = {
@@ -544,40 +449,4 @@ fun MainScreenRoutes(
         }
 
     }
-}
-
-
-@Composable
-fun AcceptInvitation(
-    onFinish: () -> Unit, onError: () -> Unit, code: String?
-) {
-    val mainViewModel = LocalMainViewModel.current
-
-    val scope = rememberCoroutineScope()
-
-    suspend fun acceptInvitation() {
-        ErrorHandler.logDebug("MainScreen", "acceptInvitation: $code")
-        try {
-            code?.let {
-                mainViewModel.acceptInvitation(code)
-
-                //mainViewModel.loadUserDetails()
-
-                onFinish()
-            } ?: run {
-                throw Exception("No code provided")
-            }
-        } catch (e: Exception) {
-            ErrorHandler.logError("MainScreen", "acceptInvitation: $e", e)
-            onError()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            acceptInvitation()
-        }
-    }
-
-    AppLoadingScreen()
 }

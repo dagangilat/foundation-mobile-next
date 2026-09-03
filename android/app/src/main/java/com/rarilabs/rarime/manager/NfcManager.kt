@@ -20,8 +20,7 @@ enum class ScanNFCState {
 }
 
 class NfcManager @Inject constructor(
-    private val context: Context,
-    val pointsManager: PointsManager
+    private val context: Context
 ) {
     private lateinit var adapter: NfcAdapter
 

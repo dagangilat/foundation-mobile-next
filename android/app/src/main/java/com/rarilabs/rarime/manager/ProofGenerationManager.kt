@@ -69,7 +69,6 @@ class ProofGenerationManager @Inject constructor(
     private val registrationManager: RegistrationManager,
     private val passportManager: PassportManager,
     private val rarimoContractManager: RarimoContractManager,
-    private val pointsManager: PointsManager,
 ) {
 
     private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)

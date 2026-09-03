@@ -24,8 +24,6 @@ object Constants {
     val PASSCODE_LOCK_PERIOD = 5.minutes
 
 
-    const val SCAN_PASSPORT_REWARD = 10.0
-    const val AIRDROP_REWARD = 10.0
     const val MAX_PASSPORT_IDENTIFIERS = 2
 
     val NOT_ALLOWED_COUNTRIES = listOf(

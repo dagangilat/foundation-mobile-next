@@ -10,8 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.light_proof_handler.LightProofHandler
-import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.vote_handler.VoteHandler
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 
@@ -43,23 +41,11 @@ fun ExtIntActionPreview(
                 )
             }
 
-            ExtIntegratorActions.LightVerification.value -> {
-                LightProofHandler(
-                    queryParams = queryParams,
-                    onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(destination, null) },
-                    onFail = { onError() }
-                )
-            }
-
-            ExtIntegratorActions.Vote.value -> {
-                VoteHandler(
-                    queryParams = queryParams,
-                    onCancel = onCancel,
-                    onSuccess = { destination -> onSuccess(null, destination) },
-                    onFail = { onError() }
-                )
-            }
+            // The `light-verification` and `vote` actions were handled here by
+            // LightProofHandler / VoteHandler. Foundation verifies with the full
+            // query proof and does not run Freedom Tool voting, so both handlers
+            // are removed and those deep links now fall through to the
+            // not-implemented branch below.
 
             else -> {
                 Column(
