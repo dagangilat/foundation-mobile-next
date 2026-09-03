@@ -36,6 +36,7 @@ import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.foundation.ui.FoundationVerifyCard
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
@@ -102,6 +103,10 @@ fun HomeScreenV3(
         setVisibilityOfBottomBar = setVisibilityOfBottomBar,
         colorScheme = colorScheme,
         onClick = { sheetManageWidgets.show() },
+        // Passed as a slot rather than composed inside HomeScreenContent so
+        // HomeScreenPreview stays renderable - FoundationVerifyCard resolves a
+        // @HiltViewModel, which no @Preview can provide.
+        verifyCard = { FoundationVerifyCard() },
     )
 
     AppBottomSheet(
@@ -132,7 +137,8 @@ fun HomeScreenContent(
     userPassportName: String?,
     notificationsCount: Int?,
     colorScheme: AppColorScheme,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    verifyCard: @Composable () -> Unit = {}
 ) {
     var selectedWidgetType by remember { mutableStateOf<WidgetType?>(null) }
     LaunchedEffect(selectedWidgetType) {
@@ -161,6 +167,10 @@ fun HomeScreenContent(
                         notificationsCount = notificationsCount,
                         name = userPassportName,
                         onNotificationClick = { navigate(Screen.NotificationsList.route) })
+
+                    // Foundation verification entry point, above the widget list.
+                    verifyCard()
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
