@@ -22,16 +22,28 @@ struct ExternalRequestsView: View {
                     ProofRequestView(
                         proofParamsUrl: proofParamsUrl,
                         onSuccess: {
+                            // AD-2: claim the success SYNCHRONOUSLY, and before
+                            // anything below dismisses the sheet. Dismissal
+                            // trips the .onChange(of: isSheetPresented) hook,
+                            // which releases a still-.awaitingProof state; only
+                            // a state already moved to .polling by this call
+                            // survives it. Never wrap this in a Task - the
+                            // dismissal would win that race and reset a
+                            // legitimate verification back to .idle.
+                            //
+                            // false means the proof was not the one our own
+                            // startL2Verification asked for (an externally
+                            // scanned request), so there is nothing for
+                            // Foundation's backend to report on.
+                            let isOurVerification = FoundationVerificationManager.shared.proofRequestSucceeded()
+
                             isSheetPresented = false
 
                             handleRedirect(urlQueryParams)
 
-                            // AD-2: the proof this sheet just posted may be the
-                            // one our own startL2Verification asked for, so ask
-                            // Foundation's backend when the member flips to l2.
-                            // Only the proofRequest path does this -
-                            // lightVerification is not part of the L2 flow.
-                            Task { await FoundationVerificationManager.shared.pollUntilVerified() }
+                            if isOurVerification {
+                                Task { await FoundationVerificationManager.shared.pollUntilVerified() }
+                            }
                         },
                         onDismiss: { isSheetPresented = false }
                     )
@@ -57,6 +69,16 @@ struct ExternalRequestsView: View {
             .onChange(of: isSheetPresented) { isPresented in
                 if !isPresented {
                     externalRequestsManager.resetRequest()
+
+                    // AD-2: this is the one hook every sheet close runs
+                    // through - Cancel, the sheet's X, swipe-to-dismiss, a
+                    // proof-params load failure, a failed uniqueness check,
+                    // any generateProof error. Without it, .awaitingProof is
+                    // terminal and the Home verify card is stuck on "Working…"
+                    // for the rest of the process. A success has already moved
+                    // to .polling synchronously in onSuccess, so this only
+                    // fires for a genuine abandonment.
+                    FoundationVerificationManager.shared.proofSheetDismissed()
                 }
             }
             .onOpenURL { url in
