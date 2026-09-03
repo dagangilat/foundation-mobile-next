@@ -163,8 +163,11 @@ final class FoundationVerificationManager: ObservableObject {
                 // .failed below - found and fixed 2026-09-03 while porting
                 // this poller's Android counterpart (Task C8), which caught
                 // the mismatch against the real backend response shape.
+                // "verified" itself is kept here too, defensively - matching
+                // Android's TERMINAL_SUCCESS_STATUSES - so a future backend
+                // rename to that value cannot silently strand this poller.
                 if status.status == "member_created" || status.status == "member_upgraded"
-                    || status.status == "already_verified_l2" {
+                    || status.status == "already_verified_l2" || status.status == "verified" {
                     guard state == .polling else { return }
                     state = .verified(memberNumber: status.memberNumber)
                     return
