@@ -200,8 +200,11 @@ object TestNetConfig : IConfig {
     override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
     // STRIPPED (Task C4/C5, points-service): dead - EVM_SERVICE_URL's only DI consumer
     // ("erc20Retrofit" in ManagerModule.kt) has zero @Inject call sites, so this provider
-    // is never actually built. Blanked, not repointed.
-    override val EVM_SERVICE_URL = ""
+    // is never actually built. "http://NONE" (not "") for consistency with
+    // VOTING_RELAYER_URL/VOTING_RPC_URL below, which guard the identical Retrofit/Web3j
+    // eager-baseUrl hazard - "" would throw IllegalArgumentException if this provider
+    // is ever wired up by a future change.
+    override val EVM_SERVICE_URL = "http://NONE"
     // NOT TOUCHED this task (out of Task C4's own file scope): still Rarimo's real
     // community links, user-facing via "Follow us" buttons in Invitation.kt (the
     // enter_program flow, which survives independent of Task C5's module strip per
@@ -519,7 +522,9 @@ object MainnetConfig : IConfig {
     override val EVM_RPC_URL = "https://l2.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
     // STRIPPED (points-service): see TestNetConfig - dead, zero DI consumers.
-    override val EVM_SERVICE_URL = ""
+    // "http://NONE" for consistency with VOTING_RELAYER_URL/VOTING_RPC_URL's
+    // eager-baseUrl hazard guard below.
+    override val EVM_SERVICE_URL = "http://NONE"
     // NOT TOUCHED this task (out of Task C4's own file scope): still Rarimo's real
     // community links, user-facing via "Follow us" buttons in Invitation.kt (the
     // enter_program flow, which survives independent of Task C5's module strip per

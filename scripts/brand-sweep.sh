@@ -22,6 +22,11 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #    fork-provenance text MUST name Rarimo (this repo's own top-level docs,
 #    not user-facing app copy)
 #  - .git, build outputs
+#  - .cxx (Task C4 finding): NDK/CMake build artifacts (compile_commands.json
+#    etc.) generated only after a native build, referencing rarime.cpp by
+#    real upstream filename — not committed source, and its presence made
+#    the sweep's own hit count non-deterministic depending on whether a
+#    native build had run locally before the sweep did.
 #  - CircuitData.swift, ZKUtils.swift, CloudStorage.swift, NotificationManager.swift,
 #    Development.xcconfig, Production.xcconfig (Task B4 / Open Decision OD-5): these
 #    reference Rarimo INFRASTRUCTURE that is retained deliberately, not rebranded —
@@ -105,6 +110,7 @@ EXCLUDES=(
   --exclude-dir=Build
   --exclude-dir=lib
   --exclude-dir=.gradle
+  --exclude-dir=.cxx
   --exclude-dir=BrandingTests
   --exclude-dir=ConfigTests
   --exclude-dir=NavigationTests
