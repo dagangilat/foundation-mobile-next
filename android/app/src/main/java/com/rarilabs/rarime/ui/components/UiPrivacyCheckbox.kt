@@ -28,23 +28,24 @@ fun UiPrivacyCheckbox(
 ) {
     val uriHandler = LocalUriHandler.current
 
+    // Deviation (Task C4): the upstream 3-link composition (Terms, Privacy, and an
+    // Airdrop-Program-Terms link) is dropped to 2. The airdrop-terms link only makes
+    // sense on the earn/claim/airdrop screens Task C5 deletes wholesale, but this
+    // composable is ALSO used on VerifyPassportScreen.kt - a core, retained passport-
+    // verification screen with no airdrop concept at all. Keeping a 3rd "Airdrop
+    // Program Terms" link live there would be a real, user-visible product bug (not
+    // just a branding one), so it's removed here rather than merely re-pointed.
     val termsAnnotation = buildAnnotatedString {
         append(stringResource(R.string.terms_check_agreement))
         pushStringAnnotation("URL", Constants.TERMS_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_general_terms_conditions))
-        }
-        pop()
-        append(", ")
-        pushStringAnnotation("URL", Constants.PRIVACY_URL)
-        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_privacy_notice))
+            append(stringResource(R.string.foundation_general_terms_conditions))
         }
         pop()
         append(stringResource(R.string.and))
-        pushStringAnnotation("URL", Constants.AIRDROP_TERMS_URL)
+        pushStringAnnotation("URL", Constants.PRIVACY_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_airdrop_program_terms_conditions))
+            append(stringResource(R.string.foundation_privacy_notice))
         }
         pop()
     }

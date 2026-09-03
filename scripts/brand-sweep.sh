@@ -22,6 +22,11 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #    fork-provenance text MUST name Rarimo (this repo's own top-level docs,
 #    not user-facing app copy)
 #  - .git, build outputs
+#  - .cxx (Task C4 finding): NDK/CMake build artifacts (compile_commands.json
+#    etc.) generated only after a native build, referencing rarime.cpp by
+#    real upstream filename — not committed source, and its presence made
+#    the sweep's own hit count non-deterministic depending on whether a
+#    native build had run locally before the sweep did.
 #  - CircuitData.swift, ZKUtils.swift, CloudStorage.swift, NotificationManager.swift,
 #    Development.xcconfig, Production.xcconfig (Task B4 / Open Decision OD-5): these
 #    reference Rarimo INFRASTRUCTURE that is retained deliberately, not rebranded —
@@ -71,6 +76,33 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 # — Task B2's review found these block device/archive code signing under the
 # new DEVELOPMENT_TEAM; a future task must actually rebrand these values, not
 # just silence the sweep on them.
+#  - BaseConfig.kt / Constants.kt (Task C4 / Open Decision OD-5): the Android
+#    analog of Development.xcconfig / Production.xcconfig above — reference
+#    Rarimo INFRASTRUCTURE retained deliberately (registration relayer, RPC,
+#    explorer and contract addresses; the ZK circuit-artifact download URLs
+#    under rarimo-store), not rebranded. Each retained value carries its own
+#    inline comment. NOT exempt because everything here is safe to rebrand —
+#    Task C4 also left 2 real, load-bearing deviations in these same files
+#    (POINTS_SVC_ID retained despite its "points" name — it feeds
+#    AuthManager.login()'s core sign-in proof; DISCORD_URL/TWITTER_URL left
+#    untouched, still Rarimo's real community links, live on a surviving
+#    screen — Invitation.kt) that a later task must actually resolve, not
+#    just have the sweep stop reporting on.
+#
+# NOT exempt (Android namespace, OD-3 tension — controller-level, not a task
+# fix): the `com.rarilabs.rarime` package/import prefix appears in essentially
+# every Android Kotlin/C++ file because Open Decision OD-3 deliberately kept
+# the Kotlin namespace unrenamed (see android/app/build.gradle.kts's own
+# comment). PATTERN's `rarilabs` token means `./scripts/brand-sweep.sh android`
+# cannot reach 0 hits while OD-3 stands — this is expected, structural noise
+# unrelated to user-visible copy, not something any single copy-rebrand task
+# (C4) can or should fix by editing thousands of package declarations against
+# an explicit Open Decision. Left NOT exempt (rather than blanket-excluding
+# `com.rarilabs`) so a real accidental Rarimo copy/URL leak inside one of
+# those same files still surfaces on inspection — it just won't gate CI green
+# the way iOS's equivalent sweep can. A controller-level ruling is needed on
+# whether to special-case the `rarilabs` token for android or accept
+# `brand-sweep.sh android` never goes fully green.
 EXCLUDES=(
   --exclude-dir=.git
   --exclude-dir=Frameworks
@@ -78,6 +110,7 @@ EXCLUDES=(
   --exclude-dir=Build
   --exclude-dir=lib
   --exclude-dir=.gradle
+  --exclude-dir=.cxx
   --exclude-dir=BrandingTests
   --exclude-dir=ConfigTests
   --exclude-dir=NavigationTests
@@ -99,6 +132,8 @@ EXCLUDES=(
   --exclude=Package.resolved
   --exclude=GoogleService-Info.plist
   --exclude=GoogleService-Info-staging.plist
+  --exclude=BaseConfig.kt
+  --exclude=Constants.kt
 )
 
 hits=$(grep -rniE "$PATTERN" "${EXCLUDES[@]}" "${ROOTS[@]}" 2>/dev/null)

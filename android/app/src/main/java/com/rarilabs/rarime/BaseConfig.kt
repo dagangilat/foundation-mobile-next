@@ -191,17 +191,43 @@ interface IConfig {
 
 /* TESTNET */
 object TestNetConfig : IConfig {
+    // RETAINED (Open Decision OD-5): passport registration is anchored on Rarimo's L2 and
+    // our verificator-svc validates against that same registration state, so the relayer,
+    // RPC, explorer and contract addresses below must keep matching Rarimo's stage
+    // deployment. See Open Decision OD-5 before changing any of them - matches iOS Task
+    // B1's xcconfig treatment of the same infrastructure.
     override val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
     override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
-    override val EVM_SERVICE_URL =
-        "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo/"
+    // STRIPPED (Task C4/C5, points-service): dead - EVM_SERVICE_URL's only DI consumer
+    // ("erc20Retrofit" in ManagerModule.kt) has zero @Inject call sites, so this provider
+    // is never actually built. "http://NONE" (not "") for consistency with
+    // VOTING_RELAYER_URL/VOTING_RPC_URL below, which guard the identical Retrofit/Web3j
+    // eager-baseUrl hazard - "" would throw IllegalArgumentException if this provider
+    // is ever wired up by a future change.
+    override val EVM_SERVICE_URL = "http://NONE"
+    // NOT TOUCHED this task (out of Task C4's own file scope): still Rarimo's real
+    // community links, user-facing via "Follow us" buttons in Invitation.kt (the
+    // enter_program flow, which survives independent of Task C5's module strip per
+    // Task C3's finding). Carried forward - Foundation doesn't have its own Discord/
+    // Twitter to repoint these to, and TWITTER_URL is live on a screen real users reach.
     override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
     override val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
-    override val INVITATION_BASE_URL = "https://app.stage.rarime.com"
+    // Foundation-owned.
+    override val INVITATION_BASE_URL = "https://foundation-next-app-web.web.app"
 
+    // RETAINED, deliberately NOT blanked despite the "points-service" name (deviation from
+    // this task's own brief): AuthManager.login() - the app's core sign-in flow, invoked
+    // from MainViewModel.kt and RefreshTokenInterceptor.kt - uses this as the eventID for
+    // its ZK login proof against the retained RELAYER_URL/AuthAPIManager. LightProofHandlerViewModel.kt
+    // uses it the same way for the retained light-verification flow. Blanking it would send
+    // an empty eventID to Rarimo's relayer and break login, not just the points/airdrop
+    // features it's named after. Mirrors iOS Task B5's retained UserManager.anonymousIdEventId
+    // (renamed from Points.PointsEventId for the same reason).
     override val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
-    override val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
+    // STRIPPED (points-service/airdrop, Task C5 territory): only consumer is
+    // IdentityManager.getUserAirDropNullifier(), which has zero callers anywhere.
+    override val AIRDROP_SVC_ID = ""
 
     override val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
     override val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
@@ -216,30 +242,48 @@ object TestNetConfig : IConfig {
     override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xc2974679359c756bf97ff6B698377E02c083F3D4"
     override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xF19a85B10d705Ed3bAF3c0eCe3E73d8077Bf6481"
     override val STATE_KEEPER_CONTRACT_ADDRESS = "0x9EDADB216C1971cf0343b8C687cF76E7102584DB"
-    override val POINTS_SVC_SELECTOR = "23073"
-    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
+    // STRIPPED (points-service, Task C5 territory): only consumer is PointsManager.kt.
+    override val POINTS_SVC_SELECTOR = ""
+    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 0L
 
-    override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
+    override val FEEDBACK_EMAIL = "support@foundation-global.com"
     override val CHAIN = RarimoChains.MainnetBeta
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
     override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
     override val APP_ID_FIREBASE = Keys.APP_ID
 
 
-    override val GLOBAL_NOTIFICATION_TOPIC = "rarime-stage"
-    override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
+    // Dev/stage tier of the FCM topics, matching iOS Task B1's Development.xcconfig values
+    // exactly - both platforms subscribe to the same topics. Android has no separate
+    // debug/release xcconfig split; TestNetConfig/MainnetConfig (selected by
+    // BuildConfig.isTestnet, pinned false on all default build types per Task C1 and OD-5)
+    // is the closest structural analog to iOS's Development/Production split.
+    override val GLOBAL_NOTIFICATION_TOPIC = "foundation-dev"
+    override val REWARD_NOTIFICATION_TOPIC: String = "foundation-rewardable-dev"
 
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
-    override val VOTING_RELAYER_URL: String = "https://api.stage.freedomtool.org"
-    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
-        "0xFbae44a113A6f07687b180605f425e43066a6179"
-    override val VOTING_RPC_URL: String = "https://rpc.qtestnet.org"
+    // STRIPPED (Freedom Tool / Polls, Task C5 territory - OD-4). Not blanked to "":
+    // ManagerModule.kt builds a Retrofit client with .baseUrl(VOTING_RELAYER_URL) - OkHttp
+    // validates the URL immediately and throws IllegalArgumentException on "" - and
+    // Web3j's HttpService(VOTING_RPC_URL) is built the same eager way. "http://NONE" is
+    // this codebase's own existing placeholder pattern for an intentionally-unreachable
+    // Retrofit base URL (see ManagerModule.kt's EXT_INTEGRATOR retrofit), reused here for
+    // consistency and to keep the DI graph constructing until Task C5 removes VotingManager
+    // and this provider entirely.
+    override val VOTING_RELAYER_URL: String = "http://NONE"
+    // STRIPPED (Freedom Tool / Polls, Task C5 territory): consumed only inside
+    // VotingManager.kt method bodies (not at construction), so a plain "" is safe here.
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String = ""
+    override val VOTING_RPC_URL: String = "http://NONE"
 
-    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
-    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xcA11bde05977b3631167028862bE2a173976CA11"
+    override val PROPOSAL_CONTRACT_ADDRESS: String = ""
+    override val MULTICALL_CONTRACT_ADDRRESS: String = ""
 
-    override val VOTING_WEBSITE_URL: String = "https://freedomtool.org"
+    // STRIPPED (Freedom Tool / Polls, Task C5 territory): opened via LocalUriHandler/browser
+    // Intent (FreedomtoolExpandedWidget.kt) - blanking to "" risks an ActivityNotFoundException
+    // if tapped before Task C5 removes this widget, so "http://NONE" is used instead.
+    override val VOTING_WEBSITE_URL: String = "http://NONE"
 
     override val NOIR_TRUSTED_SETUP_URL: String =
         "https://storage.googleapis.com/rarimo-store/trusted-setups/ultraPlonkTrustedSetup.dat"
@@ -472,18 +516,32 @@ object TestNetConfig : IConfig {
 
 // Mainnet
 object MainnetConfig : IConfig {
+    // RETAINED (Open Decision OD-5): see the matching comment on TestNetConfig above -
+    // same rationale, mainnet deployment. Matches iOS Task B1's Production.xcconfig.
     override val RELAYER_URL = "https://api.app.rarime.com"
     override val EVM_RPC_URL = "https://l2.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
-    override val EVM_SERVICE_URL =
-        "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo/"
+    // STRIPPED (points-service): see TestNetConfig - dead, zero DI consumers.
+    // "http://NONE" for consistency with VOTING_RELAYER_URL/VOTING_RPC_URL's
+    // eager-baseUrl hazard guard below.
+    override val EVM_SERVICE_URL = "http://NONE"
+    // NOT TOUCHED this task (out of Task C4's own file scope): still Rarimo's real
+    // community links, user-facing via "Follow us" buttons in Invitation.kt (the
+    // enter_program flow, which survives independent of Task C5's module strip per
+    // Task C3's finding). Carried forward - Foundation doesn't have its own Discord/
+    // Twitter to repoint these to, and TWITTER_URL is live on a screen real users reach.
     override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
     override val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
-    override val INVITATION_BASE_URL = "https://app.rarime.com"
+    // Foundation-owned.
+    override val INVITATION_BASE_URL = "https://foundation-next-app-web.web.app"
 
+    // RETAINED: see the matching comment on TestNetConfig above - feeds AuthManager.login()'s
+    // core sign-in ZK proof (and LightProofHandlerViewModel.kt's light-verification flow),
+    // not just the points/airdrop features it's named after.
     override val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
-    override val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
+    // STRIPPED (points-service/airdrop): see TestNetConfig - zero live callers.
+    override val AIRDROP_SVC_ID = ""
 
     override val ICAO_COSMOS_RPC = "core-api.mainnet.rarimo.com:443"
     override val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
@@ -498,25 +556,29 @@ object MainnetConfig : IConfig {
     override val STATE_KEEPER_CONTRACT_ADDRESS = "0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
     override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x497D6957729d3a39D43843BD27E6cbD12310F273"
 
-    override val POINTS_SVC_SELECTOR = "23073"
-    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
-    override val FEEDBACK_EMAIL = "info@rarilabs.com"
+    // STRIPPED (points-service): see TestNetConfig - only consumer is PointsManager.kt.
+    override val POINTS_SVC_SELECTOR = ""
+    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 0L
+    override val FEEDBACK_EMAIL = "support@foundation-global.com"
     override val CHAIN = RarimoChains.Mainnet
     override val lightVerificationSKHex = Keys.lightVerificationSKHex
     override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
     override val APP_ID_FIREBASE = Keys.APP_ID
     override val RARIMO_EXPLORER = "https://scan.rarimo.com/tx"
-    override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
-    override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
+    // Production tier of the FCM topics, matching iOS Task B1's Production.xcconfig values
+    // exactly - both platforms subscribe to the same topics.
+    override val GLOBAL_NOTIFICATION_TOPIC = "foundation"
+    override val REWARD_NOTIFICATION_TOPIC: String = "foundation-rewardable"
     override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
-    override val VOTING_WEBSITE_URL = "https://freedomtool.org"
-    override val VOTING_RELAYER_URL: String = "https://api.freedomtool.org"
-    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
-        "0x479F84502Db545FA8d2275372E0582425204A879"
-    override val VOTING_RPC_URL: String = "https://l2.rarimo.com"
-    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
-    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
+    // STRIPPED (Freedom Tool / Polls): see TestNetConfig for the "http://NONE" placeholder
+    // rationale (Retrofit/Web3j eager-parse-at-construction crash risk).
+    override val VOTING_WEBSITE_URL = "http://NONE"
+    override val VOTING_RELAYER_URL: String = "http://NONE"
+    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String = ""
+    override val VOTING_RPC_URL: String = "http://NONE"
+    override val PROPOSAL_CONTRACT_ADDRESS: String = ""
+    override val MULTICALL_CONTRACT_ADDRRESS: String = ""
 
     override val FACE_REGISTRY_ADDRESS: String = "0x15DCd57B70D97F1D1F220ccb4e6B8E886aF3e3B9"
 
