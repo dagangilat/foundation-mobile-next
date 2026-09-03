@@ -44,3 +44,19 @@ every individual data type — checked directly, it never declared an
 `NSPrivacyTrackingDomains` array, so there was nothing AppsFlyer-related to
 strip when Task B5 removed that SDK. Re-audit only if a future task adds a
 new required-reason API or a new data collection surface.
+
+## Google Play specifics
+
+- **Target API level:** 35 (`targetSdk`), meeting Play's current requirement.
+- **ABI:** `arm64-v8a` only. Declared deliberately — the proving libraries are
+  shipped for that ABI alone. Play will restrict device availability
+  accordingly; this is expected, not a packaging error.
+- **Native debug symbols:** `debugSymbolLevel = "SYMBOL_TABLE"` is already set,
+  so the bundle carries symbols for the native crash reports Play expects.
+- **Data safety form:** all passport processing is on-device; only a
+  zero-knowledge proof leaves the phone. AppsFlyer was removed in Task C5, so
+  no advertising or attribution SDK is present — the form must say so.
+- **GPL and the Play Store:** unlike the App Store, Google Play's Developer
+  Distribution Agreement does not impose EULA terms that conflict with the GPL,
+  so Android carries materially less licensing friction than iOS. See Open
+  Decision OD-2 — the iOS side is where the legal read is actually needed.
