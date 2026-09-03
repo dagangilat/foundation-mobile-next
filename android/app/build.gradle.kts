@@ -90,7 +90,7 @@ android {
         }
 
         debug {
-            buildConfigField("Boolean", "isTestnet", "true")
+            buildConfigField("Boolean", "isTestnet", "false")
         }
 
         create("debug_mainnet") {

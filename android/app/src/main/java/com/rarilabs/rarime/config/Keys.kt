@@ -58,9 +58,17 @@ object Keys {
 
     /**
      * RMO rewards HMAC key - the rewards programme is stripped in Task C5.
-     * Until C5 lands, PointsManager's join/withdraw paths would build an
-     * empty-byte HMAC key from this and throw at runtime; that is the correct
-     * failure mode for a programme this fork does not participate in.
+     * Until C5 lands, PointsManager.kt's `joinRewardProgram` and
+     * `verifyPassport` feed this into HmacUtil.kt's `hmacSha256`, which
+     * builds a BouncyCastle `HMac(SHA256Digest())` from a `KeyParameter` -
+     * not `SecretKeySpec`. That
+     * accepts a zero-length key without throwing: an empty value here does
+     * NOT crash at runtime. It silently produces a syntactically-valid but
+     * semantically-meaningless HMAC signature, which then gets sent to
+     * Rarimo's points service as if it were a real signature. `""` is still
+     * the correct value - Foundation doesn't have Rarimo's real key - but
+     * the safety here comes entirely from Task C5 deleting these call sites,
+     * not from the empty key being inert on its own.
      */
     const val joinProgram: String = ""
 }
