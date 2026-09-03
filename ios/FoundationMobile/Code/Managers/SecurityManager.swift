@@ -30,9 +30,31 @@ class SecurityManager: ObservableObject {
         let passcodeBytes = (try? AppKeychain.getValue(.passcode) ?? Data()) ?? Data()
 
         self.passcode = passcodeBytes.utf8
+        // Same rule as `rearmPasscodeLock()` below, spelled out here because a
+        // stored property cannot be initialised by calling an instance method.
+        // If you change one, change the other.
         self.isPasscodeCorrect = passcodeState != .enabled
         self.passcodeState = passcodeState
         self.faceIdState = faceIdState
+    }
+
+    /// Put the passcode gate back the way a cold launch would leave it.
+    ///
+    /// `isPasscodeCorrect` is the flag `AppView` reads to choose between
+    /// `MainView` and `LockScreenView`, and until this existed it was only ever
+    /// set to `false` in `init` - i.e. only at a cold launch. Nothing in the
+    /// sign-out path touched it, so mid-session it stayed `true` from the
+    /// departing member's unlock: person A taps Sign Out, hands the still-warm
+    /// device to person B, B signs in with their own email, and `AppView` walks
+    /// them straight into `MainView` holding A's local Rarimo passport identity
+    /// - now bound to B's Foundation uid. Sign Out and Delete Account both call
+    /// this so that stops being possible.
+    ///
+    /// The `passcodeState != .enabled` form rather than a bare `false` is the
+    /// point: a device with no passcode configured must not be pushed at a lock
+    /// screen it could never satisfy.
+    func rearmPasscodeLock() {
+        isPasscodeCorrect = passcodeState != .enabled
     }
 
     func enablePasscode(_ newPasscode: String) {

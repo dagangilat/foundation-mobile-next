@@ -63,8 +63,46 @@ struct L2VerificationStatusResult: Decodable, Sendable {
     let memberNumber: Int?
 }
 
+/// `deleteMyAccount`'s real reply shape.
+///
+/// The callable (`foundation-next/functions/account-deletion.js`) returns
+/// whatever `deleteAccount(uid, foundationDataMap, …)` from `@plantagoai/auth`
+/// returns, i.e. that package's `DeletionResult`:
+/// `{ userId, deletedDocs, anonymizedDocs, retainedDocs, authDeleted,
+///    collections, external, completedAt, dryRun }`.
+///
+/// Two of those are deliberately NOT modelled here. `collections` is a
+/// per-collection `Record<string, { mode, count }>` and `external` a list of
+/// provider names - server-side bookkeeping this client has no use for, and
+/// modelling them would only create a shape to drift out of sync with.
+///
+/// Everything that IS modelled is optional, and that is a correctness
+/// decision rather than defensiveness: by the time this struct is built the
+/// server has already performed an irreversible hard delete, so a decode that
+/// throws on an added/renamed/missing field would report a *successful*
+/// deletion as a failure and strand the member signed in to an account that no
+/// longer exists.
+struct DeleteAccountResult: Decodable, Sendable {
+    var userId: String?
+    var deletedDocs: Int?
+    var anonymizedDocs: Int?
+    var retainedDocs: Int?
+    /// Informational only - never gate on it. `deleteAccount()` swallows
+    /// "user not found" from `auth.deleteUser` and reports `false`, which is
+    /// exactly what a re-run against an already-deleted account produces.
+    var authDeleted: Bool?
+    var completedAt: String?
+    /// The live callable never passes `dryRun`, so this is `false` or absent in
+    /// practice. It is read anyway because `dryRun: true` is the one reply that
+    /// means "the server reported success and deleted nothing" - the single
+    /// case where a 200 must not unlock the local erase.
+    var dryRun: Bool?
+}
+
 enum FunctionsError: Error {
     case malformedResponse
+    /// The server answered, but said it did not actually delete anything.
+    case accountDeletionNotPerformed
 }
 
 actor FunctionsService {
@@ -169,6 +207,37 @@ actor FunctionsService {
         try await refreshIDTokenIfStale()
         let result = try await functions.httpsCallable("startL2Verification").call([:])
         return try decode(StartL2VerificationResult.self, from: result.data)
+    }
+
+    /// Irreversible, server-side hard delete of this member's Foundation
+    /// account. No undo, by design (the callable's own comment cites GDPR
+    /// Art. 17); on-chain accounts created by the member's custodial Solana
+    /// keypair become orphaned, which is an accepted consequence of erasure
+    /// rather than a bug.
+    ///
+    /// The callable is `requireAuth`-gated, so this only ever works while the
+    /// Firebase session is live. Callers MUST invoke it BEFORE signing out.
+    ///
+    /// Throws only when the deletion genuinely did not happen: a transport /
+    /// auth / server error out of `.call()`, or a `dryRun` reply. A malformed
+    /// or unexpected response body does NOT throw - see `DeleteAccountResult`.
+    func deleteMyAccount() async throws -> DeleteAccountResult {
+        try await refreshIDTokenIfStale()
+        let result = try await functions.httpsCallable("deleteMyAccount").call([:])
+
+        // Past this line the server has already run the deletion, so nothing
+        // about the *shape* of its answer may be turned into a failure.
+        // `DeleteAccountResult`'s fields are all optional, so this fallback
+        // only fires for a reply that isn't a JSON object at all.
+        let decoded = (try? decode(DeleteAccountResult.self, from: result.data)) ?? DeleteAccountResult()
+
+        // The one exception, and the reason the field is decoded: the server
+        // explicitly reporting that it deleted nothing.
+        if decoded.dryRun == true {
+            throw FunctionsError.accountDeletionNotPerformed
+        }
+
+        return decoded
     }
 
     func getL2VerificationStatus() async throws -> L2VerificationStatusResult {

@@ -24,6 +24,10 @@ struct ProfileView: View {
     @State private var isTermsSheetPresented = false
     @State private var isShareWithDeveloper = false
     @State private var isAccountDeleting = false
+    /// True from the moment "Yes" is tapped until the server has answered.
+    /// Drives the blocking overlay and disables both destructive rows, because
+    /// `.alert` dismisses itself on any button tap and cannot host a spinner.
+    @State private var isAccountDeletionInFlight = false
 
     @State private var isDebugOptionsShown = false
 
@@ -49,6 +53,11 @@ struct ProfileView: View {
                     AppIconView(onBack: { path.removeLast() })
                         .navigationBarBackButtonHidden()
                 }
+            }
+        }
+        .overlay {
+            if isAccountDeletionInFlight {
+                AccountDeletionOverlay()
             }
         }
 #if DEVELOPMENT
@@ -169,6 +178,7 @@ struct ProfileView: View {
                             }
                             .buttonStyle(.plain)
                             .foregroundStyle(.textPrimary)
+                            .disabled(isAccountDeletionInFlight)
                         }
                         CardContainer {
                             Button(action: { isAccountDeleting = true }) {
@@ -184,6 +194,7 @@ struct ProfileView: View {
                             }
                             .buttonStyle(.plain)
                             .foregroundStyle(.errorMain)
+                            .disabled(isAccountDeletionInFlight)
                         }
                         Text("App version: \(configManager.general.version)")
                             .body5()
@@ -202,35 +213,7 @@ struct ProfileView: View {
                     Button("No", role: .cancel) {
                         self.isAccountDeleting = false
                     }
-                    Button("Yes", role: .destructive) {
-                        appViewModel.isIntroFinished = false
-                        AppUserDefaults.shared.isHomeOnboardingCompleted = false
-                        AppUserDefaults.shared.hasPointsBalance = false
-
-                        // The Foundation member identity goes FIRST. Every
-                        // reset below only touches Rarimo's local identity;
-                        // before this call the Firebase session survived
-                        // "Delete Account" untouched, and because
-                        // `securityManager.reset()` sends AppView back to the
-                        // intro the UI looked like the deletion had worked.
-                        // The next person to set the device up would then scan
-                        // their own passport, tap Verify, and have
-                        // `startL2Verification` answer `already_verified_l2`
-                        // for the PREVIOUS member's still-signed-in uid -
-                        // verified without a single check of their own.
-                        signOutOfFoundation()
-
-                        passportManager.reset()
-                        securityManager.reset()
-                        userManager.reset()
-                        decentralizedAuthManager.reset()
-                        notificationManager.reset()
-                        homeWidgetsViewModel.reset()
-
-                        Task {
-                            try? await notificationManager.unsubscribe(fromTopic: ConfigManager.shared.notifications.claimableTopic)
-                        }
-                    }
+                    Button("Yes", role: .destructive, action: deleteAccount)
                 },
                 message: {
                     Text("This action is irreversible and will delete all your data.")
@@ -249,10 +232,120 @@ struct ProfileView: View {
     /// `.verified`/in-flight verification state that described the departing
     /// member. `AppView` keys its first branch on `authService.isSignedIn`, so
     /// the effect either way is an immediate return to `SignInView`.
+    ///
+    /// `rearmPasscodeLock()` is the third leg, and the one that only exists
+    /// because the Sign Out row does. `SecurityManager.isPasscodeCorrect` was
+    /// only ever armed in `SecurityManager.init`, so mid-session it stayed
+    /// `true` from the departing member's own unlock and the next person to
+    /// sign in on this device skipped `LockScreenView` entirely - inheriting
+    /// the local Rarimo identity that is still on disk. Sign-out has to leave
+    /// the gate the way a cold launch would.
     @MainActor
     private func signOutOfFoundation() {
         AuthService.shared.signOut()
         FoundationVerificationManager.shared.reset()
+        securityManager.rearmPasscodeLock()
+    }
+
+    /// Delete Account, in the only order that can be correct.
+    ///
+    /// `deleteMyAccount` is `requireAuth`-gated server-side, so it has to run
+    /// while the Firebase session is still live: calling it after
+    /// `signOutOfFoundation()` would fail `unauthenticated` on every single
+    /// invocation and delete nothing at all, which is materially what this
+    /// screen did before - the alert promised "all your data" and erased not
+    /// one server-side byte.
+    ///
+    /// So every local mutation is gated behind the server answering. If the
+    /// call throws we keep the Firebase session, keep every manager, keep every
+    /// `AppUserDefaults` flag, and say so. The state that must never exist is
+    /// the opposite one: a device that believes the account is gone while the
+    /// server still holds the data.
+    private func deleteAccount() {
+        guard !isAccountDeletionInFlight else { return }
+        isAccountDeletionInFlight = true
+
+        Task { @MainActor in
+            defer { isAccountDeletionInFlight = false }
+
+            do {
+                let result = try await FunctionsService.shared.deleteMyAccount()
+                LoggerUtil.common.info(
+                    "deleteMyAccount succeeded (deleted=\(result.deletedDocs.map(String.init) ?? "?", privacy: .public), anonymized=\(result.anonymizedDocs.map(String.init) ?? "?", privacy: .public))"
+                )
+            } catch {
+                LoggerUtil.common.error("deleteMyAccount failed: \(error.localizedDescription, privacy: .public)")
+                // Deliberately NOT "nothing was changed": the callable drops the
+                // Solana wallet, the Storage objects and the path-keyed docs
+                // before the data-map sweep runs, so a throw can leave a
+                // partially deleted account server-side. Retrying is the right
+                // advice - every one of those helpers tolerates already-missing
+                // data - but promising an untouched server would be a lie.
+                AlertManager.shared.emitError(
+                    .unknown(String(localized: "Couldn't delete your account. Please try again."))
+                )
+                return
+            }
+
+            eraseLocalAccountState()
+        }
+    }
+
+    /// The local half of deletion - byte for byte the sequence that shipped
+    /// before this change, only its trigger moved. Reached ONLY after the
+    /// server has confirmed the account is gone.
+    @MainActor
+    private func eraseLocalAccountState() {
+        appViewModel.isIntroFinished = false
+        AppUserDefaults.shared.isHomeOnboardingCompleted = false
+        AppUserDefaults.shared.hasPointsBalance = false
+
+        // The Foundation member identity goes FIRST among the local steps.
+        // Every reset below only touches Rarimo's local identity; before Task
+        // B11 the Firebase session survived "Delete Account" untouched, and
+        // because `securityManager.reset()` sends AppView back to the intro the
+        // UI looked like the deletion had worked. The next person to set the
+        // device up would then scan their own passport, tap Verify, and have
+        // `startL2Verification` answer `already_verified_l2` for the PREVIOUS
+        // member's still-signed-in uid - verified without a single check of
+        // their own.
+        signOutOfFoundation()
+
+        passportManager.reset()
+        // Lands after `signOutOfFoundation()`'s `rearmPasscodeLock()` and
+        // overwrites it, which is correct on this path and not a conflict:
+        // `reset()` clears the passcode outright (`passcodeState = .unset`,
+        // `isPasscodeCorrect = true`), so there is no passcode left to gate on.
+        // The re-arm matters for the PLAIN Sign Out path, which never resets.
+        securityManager.reset()
+        userManager.reset()
+        decentralizedAuthManager.reset()
+        notificationManager.reset()
+        homeWidgetsViewModel.reset()
+
+        Task {
+            try? await notificationManager.unsubscribe(fromTopic: ConfigManager.shared.notifications.claimableTopic)
+        }
+    }
+}
+
+/// Blocking "this is happening" state for the one flow in the app that cannot
+/// be interrupted or repeated. A SwiftUI `.alert` dismisses itself the instant
+/// any button is tapped and has no room for a spinner, so the busy state lives
+/// here instead of fighting that API - and unlike disabling a button, this also
+/// stops a second tap from arriving through the rows underneath.
+private struct AccountDeletionOverlay: View {
+    var body: some View {
+        ZStack {
+            Color.bgPrimary.opacity(0.92).ignoresSafeArea()
+            VStack(spacing: 16) {
+                ProgressView()
+                Text("Deleting your account…")
+                    .body3()
+                    .foregroundStyle(.textSecondary)
+            }
+        }
+        .transition(.opacity)
     }
 }
 
