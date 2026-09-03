@@ -281,6 +281,11 @@ dependencies {
     // platform() lines for the same BOM is a resolution hazard.
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-functions-ktx")
+    // Play Integrity attestation (C7): Android's counterpart to iOS App
+    // Attest. App Check wraps the Play Integrity provider; the raw
+    // integrity library is used directly for the nonce-bound token request.
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.android.play:integrity:1.4.0")
     // `FirebaseFunctions.call()` and `signInWithCustomToken()` return Play
     // Services Tasks; this is what makes `Task.await()` available. It arrives
     // transitively today, but relying on another library's transitive for a
