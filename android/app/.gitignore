@@ -1,2 +1,5 @@
 /build
-/src/main/java/com/rarilabs/rarime/config/
+# See android/.gitignore: this fork commits its own reconstruction of Keys.kt,
+# the file upstream supplies out of band. Everything else here stays ignored.
+/src/main/java/com/rarilabs/rarime/config/*
+!/src/main/java/com/rarilabs/rarime/config/Keys.kt

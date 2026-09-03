@@ -22,6 +22,12 @@ local.properties
 /app/google-services.json
 /zkp_assets/build/intermediates/asset_pack_manifest/AndroidManifest.xml
 
-/app/src/main/java/com/rarilabs/rarime/config/
+# Upstream gitignores this whole directory and supplies Keys.kt out of band,
+# which is why rarime-android-app does not compile as cloned. This fork commits
+# its own reconstruction of Keys.kt (Foundation's values, several deliberately
+# empty) and keeps everything else in the directory ignored. The directory
+# itself must NOT be excluded or git could not re-include a file inside it.
+/app/src/main/java/com/rarilabs/rarime/config/*
+!/app/src/main/java/com/rarilabs/rarime/config/Keys.kt
 /app/google-services.json
 /.idea/

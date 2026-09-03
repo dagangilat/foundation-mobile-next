@@ -56,6 +56,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Google OAuth web client id for the Drive-backed identity backup.
+        // Supplied out of band (~/.gradle/gradle.properties or -P) rather than
+        // committed to source - see docs/android-local-setup.md. Read by
+        // com.rarilabs.rarime.config.Keys.GOOGLE_WEB_KEY.
+        buildConfigField(
+            "String",
+            "GOOGLE_WEB_KEY",
+            "\"${project.findProperty("GOOGLE_WEB_KEY") ?: ""}\""
+        )
     }
 
     androidResources {
@@ -63,7 +73,15 @@ android {
     }
 
     buildTypes {
+        // `isTestnet` is read as BuildConfig.isTestnet from 8 source files, but
+        // upstream only declares it on the four create(...) build types below -
+        // so the base `debug` and `release` variants have no such field and
+        // `assembleDebug` / `assembleRelease` cannot compile at all. Declaring
+        // defaults here fixes that; the four explicit build types still win,
+        // because initWith() copies this field and their own buildConfigField
+        // call then overrides it by name.
         release {
+            buildConfigField("Boolean", "isTestnet", "false")
             isMinifyEnabled = false
             isDebuggable = false
             proguardFiles(
@@ -71,7 +89,9 @@ android {
             )
         }
 
-        debug { }
+        debug {
+            buildConfigField("Boolean", "isTestnet", "true")
+        }
 
         create("debug_mainnet") {
             initWith(getByName("debug"))
