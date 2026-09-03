@@ -1,4 +1,5 @@
 import XCTest
+import FirebaseFunctions
 @testable import FoundationMobile
 
 final class VerificationManagerTests: XCTestCase {
@@ -152,6 +153,62 @@ final class VerificationManagerTests: XCTestCase {
 
         XCTAssertEqual(m.state, .idle, "a poll must not resurrect the departed member's state")
         XCTAssertLessThan(started.duration(to: .now), .seconds(1))
+    }
+
+    // MARK: - terminalRejectionMessage: which getL2VerificationStatus
+    // failures are terminal, not transient
+
+    /// A duplicate-passport rejection arrives as `already-exists` - this is
+    /// the code the backend actually uses in practice, per passport.js's
+    /// comment: the lane-doc uniqueness guard is "the ONLY layer that
+    /// actually rejects a duplicate passport in practice" because the
+    /// svc-side `failed-precondition` check "went blind". Before this fix
+    /// (whole-plan review finding I-2) only `.failedPrecondition` was
+    /// classified terminal, so this real rejection was retried 40x over two
+    /// minutes and reported as a generic timeout instead of the server's
+    /// real message.
+    func testAlreadyExistsIsClassifiedAsATerminalRejection() {
+        let message = "This passport is already linked to another member. A passport belongs to one member, permanently — if this is a mistake, contact support to appeal."
+        let error = NSError(
+            domain: FunctionsErrorDomain,
+            code: FunctionsErrorCode.alreadyExists.rawValue,
+            userInfo: [NSLocalizedDescriptionKey: message]
+        )
+        XCTAssertEqual(
+            FoundationVerificationManager.terminalRejectionMessage(for: error),
+            message
+        )
+    }
+
+    /// The pre-existing terminal code (C8's fix) must keep working exactly as
+    /// before - this fix adds `.alreadyExists` alongside it, not in place of
+    /// it.
+    func testFailedPreconditionIsStillClassifiedAsATerminalRejection() {
+        let message = "We couldn't verify that passport. Please try again."
+        let error = NSError(
+            domain: FunctionsErrorDomain,
+            code: FunctionsErrorCode.failedPrecondition.rawValue,
+            userInfo: [NSLocalizedDescriptionKey: message]
+        )
+        XCTAssertEqual(
+            FoundationVerificationManager.terminalRejectionMessage(for: error),
+            message
+        )
+    }
+
+    /// Everything else - a transient network blip, an unrelated Functions
+    /// error code, a non-Functions error - must NOT be classified terminal,
+    /// or pollUntilVerified would stop retrying failures worth retrying.
+    func testUnrelatedErrorsAreNotClassifiedAsTerminalRejections() {
+        let unavailable = NSError(
+            domain: FunctionsErrorDomain,
+            code: FunctionsErrorCode.unavailable.rawValue,
+            userInfo: [NSLocalizedDescriptionKey: "transient 503"]
+        )
+        XCTAssertNil(FoundationVerificationManager.terminalRejectionMessage(for: unavailable))
+
+        struct SomeOtherError: Error {}
+        XCTAssertNil(FoundationVerificationManager.terminalRejectionMessage(for: SomeOtherError()))
     }
 
     private static let allStates: [VerificationState] = [

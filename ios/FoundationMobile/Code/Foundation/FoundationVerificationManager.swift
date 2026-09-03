@@ -174,28 +174,58 @@ final class FoundationVerificationManager: ObservableObject {
                 }
                 // Any other status ("pending", "request_created", or an
                 // unrecognized future value) is not terminal - keep polling.
-            } catch let error as NSError where error.domain == FunctionsErrorDomain
-                && error.code == FunctionsErrorCode.failedPrecondition.rawValue {
-                // A terminal rejection (failed_verification /
-                // uniqueness_check_failed - see passport.js's
-                // getL2VerificationStatus), not a transient failure. The
-                // server's HttpsError message is the real, user-facing
-                // rejection reason ("We couldn't verify that passport...",
-                // "This passport is already linked to a different
-                // member..."); the original code caught every error the
-                // same way and silently retried until timeout, discarding
-                // this message in favor of a generic "taking longer than
-                // expected" - which also meant a legitimately duplicate or
-                // failed passport was mis-reported as a transient slowdown.
-                guard state == .polling else { return }
-                state = .failed(error.localizedDescription)
-                return
             } catch {
+                // A terminal rejection surfaces its own message immediately;
+                // everything else (transient blips, unrecognized errors)
+                // keeps retrying, matching the original behavior.
+                if let message = FoundationVerificationManager.terminalRejectionMessage(for: error) {
+                    guard state == .polling else { return }
+                    state = .failed(message)
+                    return
+                }
                 LoggerUtil.common.error("getL2VerificationStatus failed: \(error.localizedDescription, privacy: .public)")
             }
             try? await Task.sleep(for: pollInterval)
         }
         guard state == .polling else { return }
         state = .failed("The check is taking longer than expected. Please try again.")
+    }
+
+    /// Maps a `getL2VerificationStatus` failure to a terminal, user-facing
+    /// message, or `nil` when it is a transient blip worth retrying.
+    ///
+    /// Pulled out of `pollUntilVerified`'s catch block so the classification
+    /// is directly unit-testable: unlike Android's `FoundationVerificationManager`
+    /// (which injects `terminalFailureMessage` and can stub the whole poll),
+    /// this manager's `FunctionsService.shared` call has no DI seam, so this
+    /// static function - not a live network round-trip - is what the tests
+    /// exercise. It mirrors Android's `firebaseRejectionMessage` in shape and
+    /// in which codes it classifies as terminal.
+    ///
+    /// Two distinct codes are terminal, both thrown by passport.js's
+    /// `getL2VerificationStatus` / `upsertMemberWithLaneTx`:
+    ///   - `.failedPrecondition`: `failed_verification` / `uniqueness_check_failed`
+    ///     (the svc-side check).
+    ///   - `.alreadyExists`: the lane-doc uniqueness guard rejecting a
+    ///     duplicate passport - found 2026-09-03 (whole-plan review finding
+    ///     I-2) to be the ONE that actually fires in practice, because the
+    ///     svc-side check above "went blind" (see the passport.js comment).
+    ///     Before this fix only `.failedPrecondition` was classified
+    ///     terminal, so a real duplicate-passport rejection was retried 40x
+    ///     over two minutes and reported as a generic timeout instead of the
+    ///     server's real, specific rejection message
+    ///     ("This passport is already linked to another member...", or the
+    ///     erased-member variant).
+    ///
+    /// Either way the server's `HttpsError` message IS the real, user-facing
+    /// rejection reason; the original code caught every error the same way
+    /// and silently retried until timeout, discarding it in favor of a
+    /// generic "taking longer than expected".
+    nonisolated static func terminalRejectionMessage(for error: Error) -> String? {
+        let ns = error as NSError
+        guard ns.domain == FunctionsErrorDomain else { return nil }
+        guard ns.code == FunctionsErrorCode.failedPrecondition.rawValue
+            || ns.code == FunctionsErrorCode.alreadyExists.rawValue else { return nil }
+        return ns.localizedDescription
     }
 }
