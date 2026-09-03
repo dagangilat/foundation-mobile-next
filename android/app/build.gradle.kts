@@ -8,6 +8,10 @@ plugins {
 }
 
 android {
+    // Kotlin package namespace deliberately unchanged - see Open Decision OD-3
+    // in docs/superpowers/plans/2026-08-31-foundation-mobile-next-rarimo-fork-rebrand.md.
+    // Users see applicationId and app_name; the namespace is invisible, and
+    // renaming it would conflict on every upstream merge.
     namespace = "com.rarilabs.rarime"
     compileSdk = 35
 
@@ -27,11 +31,11 @@ android {
 
     defaultConfig {
 
-        applicationId = "com.rarilabs.rarime"
+        applicationId = "com.foundationnext.mobile"
         minSdk = 27
         targetSdk = 35
-        versionCode = 132
-        versionName = "2.3.13-internal-2-testnet"
+        versionCode = 1
+        versionName = "1.0.0"
 
         externalNativeBuild {
             cmake {

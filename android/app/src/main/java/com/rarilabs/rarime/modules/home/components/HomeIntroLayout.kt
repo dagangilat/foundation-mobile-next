@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun HomeIntroLayout(
@@ -42,14 +42,14 @@ fun HomeIntroLayout(
 
             Text(
                 text = title,
-                style = RarimeTheme.typography.h6,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h6,
+                color = FoundationTheme.colors.textPrimary
             )
             description?.let {
                 Text(
                     text = description,
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(300.dp)
                 )
@@ -71,13 +71,13 @@ private fun HomeIntroLayoutPreview() {
                 modifier = Modifier
                     .width(72.dp)
                     .height(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    .background(FoundationTheme.colors.componentPrimary, CircleShape)
             ) {
 
                 AppIcon(
                     id = R.drawable.ic_house_simple_fill,
                     size = 32.dp,
-                    tint = RarimeTheme.colors.textPrimary
+                    tint = FoundationTheme.colors.textPrimary
                 )
             }
         },

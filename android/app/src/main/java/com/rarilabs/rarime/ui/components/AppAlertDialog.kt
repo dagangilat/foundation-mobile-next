@@ -9,7 +9,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AppAlertDialog(
@@ -21,19 +21,19 @@ fun AppAlertDialog(
     onDismiss: () -> Unit,
 ) {
     AlertDialog(
-        containerColor = RarimeTheme.colors.backgroundPure,
+        containerColor = FoundationTheme.colors.backgroundPure,
         title = {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textPrimary,
             )
         },
         text = {
             Text(
                 text = text,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary,
             )
         },
         onDismissRequest = { onDismiss() },

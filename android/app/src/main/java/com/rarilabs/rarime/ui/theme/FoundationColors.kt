@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 @Stable
-class RarimeColors(
+class FoundationColors(
     // primary
     primaryDarker: Color,
     primaryDark: Color,
@@ -357,7 +357,7 @@ class RarimeColors(
         welcomeAccent4: Color = this.welcomeAccent4,
 
 
-        ) = RarimeColors(
+        ) = FoundationColors(
         primaryDarker = primaryDarker,
         primaryDark = primaryDark,
         primaryMain = primaryMain,
@@ -435,7 +435,7 @@ class RarimeColors(
         welcomeAccent4 = welcomeAccent4
     )
 
-    fun updateColorsFrom(other: RarimeColors) {
+    fun updateColorsFrom(other: FoundationColors) {
         this.primaryDarker = other.primaryDarker
         this.primaryDark = other.primaryDark
         this.primaryMain = other.primaryMain
@@ -520,7 +520,7 @@ class RarimeColors(
 }
 
 
-fun darkColors() = RarimeColors(
+fun darkColors() = FoundationColors(
     // primary
     primaryDarker = Color(0xFFFFFFFF),
     primaryDark = Color(0xFFFFFFFF),
@@ -674,7 +674,7 @@ fun darkColors() = RarimeColors(
     welcomeAccent4 = Color(0xFF201F21)
 )
 
-fun lightColors() = RarimeColors(
+fun lightColors() = FoundationColors(
     // primary
     primaryDarker = Color(0xFF050505),
     primaryDark = Color(0xFF111211),

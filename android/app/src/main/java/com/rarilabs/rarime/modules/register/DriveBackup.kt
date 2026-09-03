@@ -25,7 +25,7 @@ import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 data class DriveBackupContent(
     val description: String,
@@ -44,32 +44,32 @@ private fun getContentDescription(state: DriveState): DriveBackupContent {
             description = stringResource(R.string.google_drive_backup_backed_up),
             icon = R.drawable.ic_check,
             buttonText = stringResource(R.string.google_drive_backup_delete_btn),
-            contentBadgeColor = RarimeTheme.colors.successMain,
-            containerColor = RarimeTheme.colors.backgroundPrimary
+            contentBadgeColor = FoundationTheme.colors.successMain,
+            containerColor = FoundationTheme.colors.backgroundPrimary
         )
 
         DriveState.NOT_BACKED_UP -> DriveBackupContent(
             description = stringResource(R.string.google_drive_backup_not_backed_up),
             icon = R.drawable.ic_backup,
             buttonText = stringResource(R.string.google_drive_backup_not_backed_uo),
-            contentBadgeColor = RarimeTheme.colors.backgroundPrimary,
-            containerColor = RarimeTheme.colors.primaryMain
+            contentBadgeColor = FoundationTheme.colors.backgroundPrimary,
+            containerColor = FoundationTheme.colors.primaryMain
         )
 
         DriveState.PKS_ARE_NOT_EQUAL -> DriveBackupContent(
             description = stringResource(R.string.google_drive_backup_pks_are_not_equal),
             icon = R.drawable.ic_warning,
             buttonText = stringResource(R.string.google_drive_backup_delete_old_key),
-            contentBadgeColor = RarimeTheme.colors.warningMain,
-            containerColor = RarimeTheme.colors.warningLight
+            contentBadgeColor = FoundationTheme.colors.warningMain,
+            containerColor = FoundationTheme.colors.warningLight
         )
 
         DriveState.NOT_SIGNED_IN -> DriveBackupContent(
             description = stringResource(R.string.google_drive_backup_sign_in_description),
             icon = R.drawable.ic_key,
             buttonText = stringResource(R.string.google_drive_backup_sign_in),
-            contentBadgeColor = RarimeTheme.colors.backgroundPrimary,
-            containerColor = RarimeTheme.colors.primaryMain
+            contentBadgeColor = FoundationTheme.colors.backgroundPrimary,
+            containerColor = FoundationTheme.colors.primaryMain
         )
     }
 }
@@ -98,15 +98,15 @@ fun DriveBackup(
             Text(
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.google_drive_backup_title),
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h4,
+                color = FoundationTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = contentDescription.description,
                 textAlign = TextAlign.Center,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary,
             )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider()
@@ -117,8 +117,8 @@ fun DriveBackup(
                     BaseButton(
                         enabled = isDriveButtonEnabled,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = RarimeTheme.colors.errorLighter,
-                            contentColor = RarimeTheme.colors.errorDark
+                            containerColor = FoundationTheme.colors.errorLighter,
+                            contentColor = FoundationTheme.colors.errorDark
                         ),
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { delete.invoke() },
@@ -142,8 +142,8 @@ fun DriveBackup(
                     BaseButton(
                         enabled = isDriveButtonEnabled,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = RarimeTheme.colors.errorLighter,
-                            contentColor = RarimeTheme.colors.errorDark
+                            containerColor = FoundationTheme.colors.errorLighter,
+                            contentColor = FoundationTheme.colors.errorDark
                         ),
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { delete.invoke() },

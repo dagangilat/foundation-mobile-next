@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Screen
 
 enum class BottomTab(
@@ -84,7 +84,7 @@ fun BottomTabBar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .padding(vertical = 12.dp)
         ) {
             BottomTab.entries.forEach { tab ->
@@ -115,7 +115,7 @@ private fun TabItem(
     onQrCodeRouteSelected: (BottomTab) -> Unit
 ) {
     val animatedColor by animateColorAsState(
-        if (isSelected) RarimeTheme.colors.componentPrimary else Color.Transparent,
+        if (isSelected) FoundationTheme.colors.componentPrimary else Color.Transparent,
         label = "animated_tab_bar_bg"
     )
 
@@ -138,7 +138,7 @@ private fun TabItem(
     ) {
         AppIcon(
             id = if (isSelected) tab.activeIcon else tab.icon,
-            tint = if (isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textPlaceholder,
+            tint = if (isSelected) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textPlaceholder,
         )
     }
 }

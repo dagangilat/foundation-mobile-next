@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AppCircularProgressIndicator(modifier: Modifier = Modifier) {
@@ -16,8 +16,8 @@ fun AppCircularProgressIndicator(modifier: Modifier = Modifier) {
         modifier = modifier
             .width(64.dp)
             .height(64.dp),
-        color = RarimeTheme.colors.textPrimary,
-        trackColor = RarimeTheme.colors.textDisabled,
+        color = FoundationTheme.colors.textPrimary,
+        trackColor = FoundationTheme.colors.textDisabled,
     )
 
 

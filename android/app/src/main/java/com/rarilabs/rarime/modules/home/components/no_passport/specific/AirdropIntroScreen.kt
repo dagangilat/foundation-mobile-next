@@ -23,7 +23,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.UiPrivacyCheckbox
 import com.rarilabs.rarime.ui.components.rememberAppCheckboxState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AirdropIntroScreen(onStart: () -> Unit) {
@@ -43,12 +43,12 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
                     modifier = Modifier
                         .width(72.dp)
                         .height(72.dp)
-                        .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                        .background(FoundationTheme.colors.componentPrimary, CircleShape)
                 ) {
                     Text(
                         text = "🇺🇦",
-                        style = RarimeTheme.typography.h5,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.h5,
+                        color = FoundationTheme.colors.textPrimary,
                     )
                 }
             },
@@ -58,13 +58,13 @@ fun AirdropIntroScreen(onStart: () -> Unit) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     text = stringResource(R.string.airdrop_intro_text_title),
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textSecondary
                 )
                 Text(
                     text = stringResource(R.string.airdrop_intro_text),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textPrimary
                 )
             }
         }

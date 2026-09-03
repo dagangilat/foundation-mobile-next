@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 const val totalSteps = 3
 
@@ -33,7 +33,7 @@ fun ScanPassportLayout(
 ) {
     Column(
         modifier = modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .fillMaxSize()
             .padding(top = 24.dp)
     ) {
@@ -49,21 +49,21 @@ fun ScanPassportLayout(
             ) {
                 Text(
                     text = stringResource(R.string.step_indicator, step, totalSteps),
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary
                 )
                 PrimaryTextButton(leftIcon = R.drawable.ic_close, onClick = onClose)
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle4,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = text,
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
         }
@@ -82,7 +82,7 @@ fun PreviewScanPassportLayout() {
     ) {
         Box(
             modifier = Modifier
-                .background(RarimeTheme.colors.baseBlack, RectangleShape)
+                .background(FoundationTheme.colors.baseBlack, RectangleShape)
                 .fillMaxWidth()
                 .fillMaxHeight(0.5f)
         )

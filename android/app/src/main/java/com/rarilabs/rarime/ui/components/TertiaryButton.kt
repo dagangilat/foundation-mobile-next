@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun TertiaryButton(
@@ -38,9 +38,9 @@ fun TertiaryButton(
         size = size,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = RarimeTheme.colors.textPrimary,
+            contentColor = FoundationTheme.colors.textPrimary,
             disabledContainerColor = Color.Transparent,
-            disabledContentColor = RarimeTheme.colors.textDisabled
+            disabledContentColor = FoundationTheme.colors.textDisabled
         ),
         text = text,
         leftIcon = leftIcon,
@@ -85,8 +85,8 @@ private fun TertiaryButtonPreview() {
                 .width(220.dp), onClick = { }) {
             Text(
                 text = "Custom content",
-                color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle3
+                color = FoundationTheme.colors.errorDark,
+                style = FoundationTheme.typography.subtitle3
             )
         }
     }

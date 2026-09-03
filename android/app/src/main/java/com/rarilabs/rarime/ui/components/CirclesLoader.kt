@@ -25,12 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun CirclesLoader(
     size: Dp = 24.dp,
-    color: Color = RarimeTheme.colors.textPrimary
+    color: Color = FoundationTheme.colors.textPrimary
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "")
 

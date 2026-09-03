@@ -17,7 +17,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 
 @Composable
@@ -56,7 +56,7 @@ fun UiPrivacyCheckbox(
         AppCheckbox(state = termsAcceptedState, enabled = enabled)
         ClickableText(
             text = termsAnnotation,
-            style = RarimeTheme.typography.body5.copy(color = RarimeTheme.colors.textSecondary),
+            style = FoundationTheme.typography.body5.copy(color = FoundationTheme.colors.textSecondary),
             onClick = {
                 termsAnnotation
                     .getStringAnnotations("URL", it, it)
@@ -73,7 +73,7 @@ fun UiPrivacyCheckbox(
 fun UiPrivacyCheckboxPreview() {
     Column(
         modifier = Modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(24.dp)
     ) {
         UiPrivacyCheckbox()

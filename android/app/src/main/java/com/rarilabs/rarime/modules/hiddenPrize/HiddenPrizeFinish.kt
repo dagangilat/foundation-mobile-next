@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.Position
@@ -77,19 +77,19 @@ fun HiddenPrizeFinish(
                     Icon(
                         painter = painterResource(R.drawable.ic_success_color),
                         contentDescription = null,
-                        tint = RarimeTheme.colors.baseWhite,
+                        tint = FoundationTheme.colors.baseWhite,
                     )
                     Spacer(Modifier.height(32.dp))
                     Text(
                         stringResource(R.string.hidden_prize_finish_screen_title),
-                        color = RarimeTheme.colors.baseWhite,
+                        color = FoundationTheme.colors.baseWhite,
                         textAlign = TextAlign.Center,
-                        style = RarimeTheme.typography.h3
+                        style = FoundationTheme.typography.h3
                     )
                     Spacer(Modifier.height(12.dp))
                     Text(
                         stringResource(R.string.hidden_prize_finish_screen_description),
-                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                        color = FoundationTheme.colors.baseWhite.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
                     )
 
@@ -107,16 +107,16 @@ fun HiddenPrizeFinish(
                     .padding(horizontal = 16.dp),
                 size = ButtonSize.Large,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
-                    contentColor = RarimeTheme.colors.invertedLight,
-                    disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                    disabledContentColor = RarimeTheme.colors.textDisabled
+                    containerColor = FoundationTheme.colors.baseWhite.copy(0.1f),
+                    contentColor = FoundationTheme.colors.invertedLight,
+                    disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                    disabledContentColor = FoundationTheme.colors.textDisabled
                 ),
                 onClick = onViewWallet
             ) {
                 Text(
                     stringResource(R.string.hidden_prize_success_screen_wallet_btn),
-                    color = RarimeTheme.colors.baseWhite
+                    color = FoundationTheme.colors.baseWhite
                 )
             }
             BaseButton(
@@ -126,16 +126,16 @@ fun HiddenPrizeFinish(
                     .padding(bottom = 16.dp),
                 size = ButtonSize.Large,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.baseWhite,
-                    contentColor = RarimeTheme.colors.baseBlack,
-                    disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                    disabledContentColor = RarimeTheme.colors.textDisabled
+                    containerColor = FoundationTheme.colors.baseWhite,
+                    contentColor = FoundationTheme.colors.baseBlack,
+                    disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                    disabledContentColor = FoundationTheme.colors.textDisabled
                 ),
                 onClick = onShareWallet
             ) {
                 Text(
                     stringResource(R.string.hidden_prize_success_share_btn),
-                    color = RarimeTheme.colors.baseBlack,
+                    color = FoundationTheme.colors.baseBlack,
                 )
             }
         }

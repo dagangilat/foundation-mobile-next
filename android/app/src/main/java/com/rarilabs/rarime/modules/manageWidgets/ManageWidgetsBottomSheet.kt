@@ -31,7 +31,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 @Composable
@@ -78,8 +78,8 @@ fun ManageWidgetsBottomSheetContent(
         Row {
             Text(
                 text = stringResource(R.string.manage_widgets_bottom_sheet_title),
-                style = RarimeTheme.typography.h3,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h3,
+                color = FoundationTheme.colors.textPrimary,
                 modifier = Modifier
                     .align(alignment = Alignment.CenterVertically)
                     .padding(start = 20.dp, top = 30.dp, bottom = 30.dp)
@@ -91,11 +91,11 @@ fun ManageWidgetsBottomSheetContent(
                     .padding(end = 20.dp, top = 24.dp, bottom = 24.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = RarimeTheme.colors.componentPrimary)
+                    .background(color = FoundationTheme.colors.componentPrimary)
             ) {
                 AppIcon(
                     id = R.drawable.ic_close_fill,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
 
@@ -163,8 +163,8 @@ fun ManageWidgetsBottomSheetContent(
             numberOfPages = managedWidgets.size,
             selectedPage = pagerState.currentPage,
             defaultRadius = 6.dp,
-            selectedColor = RarimeTheme.colors.primaryMain,
-            defaultColor = RarimeTheme.colors.primaryLight,
+            selectedColor = FoundationTheme.colors.primaryMain,
+            defaultColor = FoundationTheme.colors.primaryLight,
             selectedLength = 16.dp,
             space = 8.dp
         )

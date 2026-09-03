@@ -82,7 +82,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TipAlert
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
@@ -165,7 +165,7 @@ fun HiddenPrizeExpandedWidget(
     val launcherInvite = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(), onResult = {})
 
-    AppBottomSheet(state = showAddScan, backgroundColor = RarimeTheme.colors.backgroundSurface1) {
+    AppBottomSheet(state = showAddScan, backgroundColor = FoundationTheme.colors.backgroundSurface1) {
         AddScanBottomSheet(
 
             isShareEnable = shares?.isSocialShare == false,
@@ -354,11 +354,11 @@ private fun Header(
                     .padding(20.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = RarimeTheme.colors.componentPrimary)
+                    .background(color = FoundationTheme.colors.componentPrimary)
             ) {
                 AppIcon(
                     id = R.drawable.ic_close_fill,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
@@ -389,7 +389,7 @@ private fun Footer(
                     boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .padding(bottom = 20.dp, start = 20.dp, end = 20.dp)
 
         ) {
@@ -404,8 +404,8 @@ private fun Footer(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             "Available",
-                            style = RarimeTheme.typography.subtitle6,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.subtitle6,
+                            color = FoundationTheme.colors.textPrimary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                     }
@@ -413,17 +413,17 @@ private fun Footer(
                     Row(verticalAlignment = Alignment.Bottom) {
                         Text(
                             text = attendsCount.toString(),
-                            color = RarimeTheme.colors.textPrimary,
+                            color = FoundationTheme.colors.textPrimary,
                             style = TextStyle(
-                                brush = RarimeTheme.colors.gradient8,
-                                fontSize = RarimeTheme.typography.h4.fontSize,
-                                fontWeight = RarimeTheme.typography.h4.fontWeight
+                                brush = FoundationTheme.colors.gradient8,
+                                fontSize = FoundationTheme.typography.h4.fontSize,
+                                fontWeight = FoundationTheme.typography.h4.fontWeight
                             ),
                         )
                         Text(
                             text = " scans",
-                            color = RarimeTheme.colors.textSecondary,
-                            style = RarimeTheme.typography.body4
+                            color = FoundationTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.body4
 
                         )
 
@@ -433,16 +433,16 @@ private fun Footer(
                     BaseButton(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(RarimeTheme.colors.gradient8)
+                            .background(FoundationTheme.colors.gradient8)
                             .fillMaxWidth(0.6f),
                         onClick = onAddScan,
                         enabled = true,
                         size = ButtonSize.Large,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
-                            contentColor = RarimeTheme.colors.baseWhite,
-                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                            disabledContentColor = RarimeTheme.colors.textDisabled
+                            contentColor = FoundationTheme.colors.baseWhite,
+                            disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                            disabledContentColor = FoundationTheme.colors.textDisabled
                         ),
                         text = "Bonus scan",
                         leftIcon = R.drawable.ic_flashlight_fill,
@@ -494,7 +494,7 @@ private fun Body(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.backgroundPrimary,
+                        FoundationTheme.colors.backgroundPrimary,
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
@@ -502,7 +502,7 @@ private fun Body(
             ) {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = RarimeTheme.colors.componentPrimary,
+                        containerColor = FoundationTheme.colors.componentPrimary,
                     ),
                     modifier = Modifier
                         .sharedBounds(
@@ -519,11 +519,11 @@ private fun Body(
                     ) {
                         Text(
                             "Prize-pool: ",
-                            style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                            style = FoundationTheme.typography.subtitle6.copy(color = FoundationTheme.colors.textPrimary)
                         )
                         Text(
                             text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                            style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                            style = FoundationTheme.typography.h6.copy(color = FoundationTheme.colors.textPrimary),
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Image(
@@ -537,8 +537,8 @@ private fun Body(
                 BaseWidgetTitle(
                     title = "Hidden keys",
                     accentTitle = "Find a face",
-                    titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
+                    titleStyle = FoundationTheme.typography.h1.copy(FoundationTheme.colors.textPrimary),
+                    accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient8),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -568,8 +568,8 @@ private fun Body(
 
                         Text(
                             stringResource(R.string.hidden_price_expanded_cart_description),
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textSecondary
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textSecondary
                         )
 
 
@@ -644,7 +644,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
         ) {
             Image(
                 painter = painterResource(backgroundRes),

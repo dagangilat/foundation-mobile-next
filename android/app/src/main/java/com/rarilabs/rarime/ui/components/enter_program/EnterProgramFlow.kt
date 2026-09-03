@@ -32,7 +32,7 @@ import com.rarilabs.rarime.ui.components.enter_program.components.AboutProgram
 import com.rarilabs.rarime.ui.components.enter_program.components.Invitation
 import com.rarilabs.rarime.ui.components.enter_program.components.PolicyConfirmation
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 enum class UNSPECIFIED_PASSPORT_STEPS(val value: Int) {
     INVITATION(1),
@@ -183,8 +183,8 @@ fun EnterProgramFlow(
 
                 Text(
                     text = "About the program",
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle4,
+                    color = FoundationTheme.colors.textPrimary,
                 )
 
                 PrimaryTextButton(

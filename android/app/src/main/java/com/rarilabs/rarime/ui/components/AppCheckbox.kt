@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 class AppCheckboxState(initialChecked: Boolean = false) {
     var checked by mutableStateOf(initialChecked)
@@ -51,7 +51,7 @@ fun AppCheckbox(
     state: AppCheckboxState = rememberAppCheckboxState(),
 ) {
 
-    val colors = RarimeTheme.colors
+    val colors = FoundationTheme.colors
 
     val backgroundModifier = if (state.checked) {
         Modifier.background(colors.gradient6, RoundedCornerShape(4.dp))

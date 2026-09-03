@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 enum class ButtonSize {
     Small,
@@ -45,9 +45,9 @@ enum class ButtonSize {
 
     @Composable
     fun textStyle() = when (this) {
-        Small -> RarimeTheme.typography.buttonSmall
-        Medium -> RarimeTheme.typography.buttonMedium
-        Large -> RarimeTheme.typography.buttonLarge
+        Small -> FoundationTheme.typography.buttonSmall
+        Medium -> FoundationTheme.typography.buttonMedium
+        Large -> FoundationTheme.typography.buttonLarge
     }
 
     fun iconSize(): Dp = when (this) {
@@ -147,8 +147,8 @@ private fun BaseButtonPreview() {
                 .width(220.dp), onClick = { }) {
             Text(
                 text = "Custom content",
-                color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle5
+                color = FoundationTheme.colors.errorDark,
+                style = FoundationTheme.typography.subtitle5
             )
         }
     }

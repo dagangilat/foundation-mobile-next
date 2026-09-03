@@ -41,7 +41,7 @@ import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.core.Party
@@ -71,8 +71,8 @@ fun HiddenPrizeCongratsScreen(
         AppColorScheme.DARK -> true
         AppColorScheme.LIGHT -> false
     }
-    val bgDark = RarimeTheme.colors.baseBlack
-    val bgLight = RarimeTheme.colors.baseWhite
+    val bgDark = FoundationTheme.colors.baseBlack
+    val bgLight = FoundationTheme.colors.baseWhite
     val bgColor = remember(isDark) {
         if (isDark) bgDark
         else bgLight
@@ -132,14 +132,14 @@ fun HiddenPrizeCongratsScreen(
             Spacer(modifier = Modifier.size(62.dp))
             Text(
                 stringResource(R.string.hidden_prize_success_screen_title),
-                color = RarimeTheme.colors.textPrimary,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
-                style = RarimeTheme.typography.h3
+                style = FoundationTheme.typography.h3
             )
             Spacer(Modifier.height(12.dp))
             Text(
                 stringResource(R.string.hidden_prize_success_screen_description),
-                color = RarimeTheme.colors.textSecondary,
+                color = FoundationTheme.colors.textSecondary,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(32.dp))
@@ -168,7 +168,7 @@ fun HiddenPrizeCongratsScreen(
                 ) {
                     Text(
                         stringResource(R.string.hidden_prize_success_screen_prize),
-                        color = RarimeTheme.colors.textSecondary,
+                        color = FoundationTheme.colors.textSecondary,
                         modifier = Modifier.padding(top = 20.dp)
                     )
                     Row(
@@ -177,8 +177,8 @@ fun HiddenPrizeCongratsScreen(
                     ) {
                         Text(
                             prizeAmount.toString().format(),
-                            style = RarimeTheme.typography.h3,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.h3,
+                            color = FoundationTheme.colors.textPrimary
                         )
                         prizeSymbol()
                     }
@@ -208,7 +208,7 @@ fun HiddenPrizeCongratsScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        contentColor = RarimeTheme.colors.textPrimary,
+                        contentColor = FoundationTheme.colors.textPrimary,
                         containerColor = bgColor,
                     ),
                     enabled = true
@@ -243,10 +243,10 @@ private fun LoadingButton(
                 .padding(bottom = 16.dp),
             size = ButtonSize.Large,
             colors = ButtonDefaults.buttonColors(
-                containerColor = RarimeTheme.colors.baseBlack,
-                contentColor = RarimeTheme.colors.baseWhite,
-                disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                disabledContentColor = RarimeTheme.colors.textDisabled
+                containerColor = FoundationTheme.colors.baseBlack,
+                contentColor = FoundationTheme.colors.baseWhite,
+                disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                disabledContentColor = FoundationTheme.colors.textDisabled
             ),
             onClick = {
                 onClick()
@@ -256,7 +256,7 @@ private fun LoadingButton(
         ) {
             Text(
                 text = stringResource(R.string.hidden_prize_congrats_share_btn),
-                color = RarimeTheme.colors.baseWhite,
+                color = FoundationTheme.colors.baseWhite,
             )
         }
 
@@ -267,10 +267,10 @@ private fun LoadingButton(
                 .padding(bottom = 16.dp),
             size = ButtonSize.Large,
             colors = ButtonDefaults.buttonColors(
-                containerColor = RarimeTheme.colors.baseBlack,
-                contentColor = RarimeTheme.colors.baseWhite,
-                disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                disabledContentColor = RarimeTheme.colors.textDisabled
+                containerColor = FoundationTheme.colors.baseBlack,
+                contentColor = FoundationTheme.colors.baseWhite,
+                disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                disabledContentColor = FoundationTheme.colors.textDisabled
             ),
             onClick = {
                 onClick()
@@ -280,12 +280,12 @@ private fun LoadingButton(
         ) {
             if (progress != 100) {
                 Text(
-                    text = "Claiming ($progress%)", color = RarimeTheme.colors.textDisabled
+                    text = "Claiming ($progress%)", color = FoundationTheme.colors.textDisabled
                 )
             } else {
                 Text(
                     text = stringResource(R.string.ic_hidden_prize_congats_screen_button_label_while_creating_ZK),
-                    color = RarimeTheme.colors.textDisabled
+                    color = FoundationTheme.colors.textDisabled
                 )
             }
         }
@@ -298,8 +298,8 @@ private fun LoadingButton(
                 .padding(bottom = 16.dp),
             size = ButtonSize.Large,
             colors = ButtonDefaults.buttonColors(
-                disabledContainerColor = RarimeTheme.colors.successLighter,
-                disabledContentColor = RarimeTheme.colors.successDark
+                disabledContainerColor = FoundationTheme.colors.successLighter,
+                disabledContentColor = FoundationTheme.colors.successDark
             ),
             onClick = {
                 onClick()
@@ -311,7 +311,7 @@ private fun LoadingButton(
         ) {
             Text(
                 stringResource(R.string.hidden_prize_congrats_share_btn_final),
-                color = RarimeTheme.colors.successDark,
+                color = FoundationTheme.colors.successDark,
             )
         }
 

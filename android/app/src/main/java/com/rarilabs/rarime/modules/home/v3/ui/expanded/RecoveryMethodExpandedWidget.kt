@@ -65,7 +65,7 @@ import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
@@ -127,7 +127,7 @@ fun RecoveryMethodExpandedWidget(
 
     AppBottomSheet(
         state = sheetRecoveryMethod,
-        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        backgroundColor = FoundationTheme.colors.backgroundPrimary,
         fullScreen = true,
         isHeaderEnabled = false,
         disablePullClose = false,
@@ -258,11 +258,11 @@ private fun Header(
                     .padding(20.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = RarimeTheme.colors.componentPrimary)
+                    .background(color = FoundationTheme.colors.componentPrimary)
             ) {
                 AppIcon(
                     id = R.drawable.ic_close_fill,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
@@ -289,7 +289,7 @@ private fun Footer(
                     boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                 )
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .padding(bottom = 20.dp, start = 20.dp, end = 20.dp)
 
         ) {
@@ -342,7 +342,7 @@ private fun Body(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.backgroundPrimary,
+                        FoundationTheme.colors.backgroundPrimary,
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
@@ -353,10 +353,10 @@ private fun Body(
                 BaseWidgetTitle(
                     title = stringResource(R.string.recovery_method_expanded_card_title),
                     accentTitle = stringResource(R.string.recovery_method_expanded_card_accent_title),
-                    titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient11),
+                    titleStyle = FoundationTheme.typography.h1.copy(FoundationTheme.colors.textPrimary),
+                    accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient11),
                     caption = stringResource(R.string.recovery_method_expanded_card_caption),
-                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+                    captionStyle = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -379,7 +379,7 @@ private fun Body(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = stringResource(R.string.recovery_method_expanded_card_desciption),
-                    style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+                    style = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -414,7 +414,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
         ) {
             Image(
                 painter = painterResource(backgroundRes),

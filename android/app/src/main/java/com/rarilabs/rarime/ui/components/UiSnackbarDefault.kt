@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 enum class SnackbarSeverity {
     Success,
@@ -27,9 +27,9 @@ enum class SnackbarSeverity {
 
     @Composable
     fun containerColor(): Color = when (this) {
-        Success -> RarimeTheme.colors.successDark
-        Warning -> RarimeTheme.colors.warningMain
-        Error -> RarimeTheme.colors.errorMain
+        Success -> FoundationTheme.colors.successDark
+        Warning -> FoundationTheme.colors.warningMain
+        Error -> FoundationTheme.colors.errorMain
     }
 
     fun icon(): Int = when (this) {
@@ -40,9 +40,9 @@ enum class SnackbarSeverity {
 
     @Composable
     fun iconTint(): Color = when (this) {
-        Success -> RarimeTheme.colors.baseWhite
-        Warning -> RarimeTheme.colors.baseWhite
-        Error -> RarimeTheme.colors.baseWhite
+        Success -> FoundationTheme.colors.baseWhite
+        Warning -> FoundationTheme.colors.baseWhite
+        Error -> FoundationTheme.colors.baseWhite
     }
 
     @Composable
@@ -61,9 +61,9 @@ enum class SnackbarSeverity {
 
     @Composable
     fun textColor(): Color = when (this) {
-        Success -> RarimeTheme.colors.baseWhite
-        Warning -> RarimeTheme.colors.baseWhite
-        Error -> RarimeTheme.colors.baseWhite
+        Success -> FoundationTheme.colors.baseWhite
+        Warning -> FoundationTheme.colors.baseWhite
+        Error -> FoundationTheme.colors.baseWhite
     }
 }
 
@@ -127,13 +127,13 @@ fun UiSnackbarDefault(
         ) {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle6,
+                style = FoundationTheme.typography.subtitle6,
                 color = textColor
             )
 
             Text(
                 text = message,
-                style = RarimeTheme.typography.body5,
+                style = FoundationTheme.typography.body5,
                 color = textColor.copy(alpha = 0.64f)
             )
         }

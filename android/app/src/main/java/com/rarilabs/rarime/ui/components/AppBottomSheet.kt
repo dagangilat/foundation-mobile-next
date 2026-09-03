@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 
 class AppSheetState(initialShowSheet: Boolean = false) {
@@ -70,7 +70,7 @@ fun AppBottomSheet(
     shape: Shape = BottomSheetDefaults.ExpandedShape,
     isHeaderEnabled: Boolean = true,
     scrimColor: Color = Color.Black.copy(alpha = 0.5f),
-    backgroundColor: Color = RarimeTheme.colors.backgroundPure,
+    backgroundColor: Color = FoundationTheme.colors.backgroundPure,
     disablePullClose: Boolean = false,
     onClose: () -> Unit = {},
     content: @Composable (HideSheetFn) -> Unit,

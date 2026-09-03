@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PrimaryButton(
@@ -28,10 +28,10 @@ fun PrimaryButton(
     size: ButtonSize = ButtonSize.Medium,
     text: String? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = RarimeTheme.colors.textPrimary,
-        contentColor = RarimeTheme.colors.invertedLight,
-        disabledContainerColor = RarimeTheme.colors.componentDisabled,
-        disabledContentColor = RarimeTheme.colors.textDisabled
+        containerColor = FoundationTheme.colors.textPrimary,
+        contentColor = FoundationTheme.colors.invertedLight,
+        disabledContainerColor = FoundationTheme.colors.componentDisabled,
+        disabledContentColor = FoundationTheme.colors.textDisabled
     ),
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
@@ -88,8 +88,8 @@ private fun PrimaryButtonPreview() {
                 .width(220.dp), onClick = { }) {
             Text(
                 text = "Custom content",
-                color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle5
+                color = FoundationTheme.colors.errorDark,
+                style = FoundationTheme.typography.subtitle5
             )
         }
     }

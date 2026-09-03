@@ -48,7 +48,7 @@ import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityDat
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.DateUtil
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -100,7 +100,7 @@ fun NotificationScreenContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
     ) {
         Row(
             modifier = Modifier
@@ -112,8 +112,8 @@ fun NotificationScreenContent(
         ) {
             Text(
                 text = "Notifications",
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textPrimary
             )
 
             Row {
@@ -136,9 +136,9 @@ fun NotificationScreenContent(
                             id = R.drawable.ic_plus,
                             size = 40.dp,
                             modifier = Modifier
-                                .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                                .background(FoundationTheme.colors.componentPrimary, CircleShape)
                                 .padding(10.dp),
-                            tint = RarimeTheme.colors.textPrimary
+                            tint = FoundationTheme.colors.textPrimary
                         )
                     }
                 }
@@ -147,9 +147,9 @@ fun NotificationScreenContent(
                         id = R.drawable.ic_close,
                         size = 40.dp,
                         modifier = Modifier
-                            .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                            .background(FoundationTheme.colors.componentPrimary, CircleShape)
                             .padding(10.dp),
-                        tint = RarimeTheme.colors.textPrimary
+                        tint = FoundationTheme.colors.textPrimary
                     )
                 }
             }
@@ -161,8 +161,8 @@ fun NotificationScreenContent(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(id = R.string.no_notifications),
-                    style = RarimeTheme.typography.h6,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.h6,
+                    color = FoundationTheme.colors.textPrimary
                 )
             }
         } else {
@@ -194,7 +194,7 @@ fun NotificationScreenContent(
 @Composable
 fun DismissBackground(dismissState: SwipeToDismissBoxState) {
     val color = when (dismissState.dismissDirection) {
-        SwipeToDismissBoxValue.EndToStart -> RarimeTheme.colors.errorMain
+        SwipeToDismissBoxValue.EndToStart -> FoundationTheme.colors.errorMain
         SwipeToDismissBoxValue.Settled -> Color.Transparent
         else -> Color.Transparent
     }
@@ -208,7 +208,7 @@ fun DismissBackground(dismissState: SwipeToDismissBoxState) {
     ) {
         Spacer(modifier = Modifier)
         AppIcon(
-            id = R.drawable.ic_trash_simple, tint = RarimeTheme.colors.baseWhite
+            id = R.drawable.ic_trash_simple, tint = FoundationTheme.colors.baseWhite
         )
     }
 }
@@ -242,7 +242,7 @@ fun NotificationItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .padding(horizontal = 20.dp)
                 .clickable { onClick(currentItem) }) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -253,8 +253,8 @@ fun NotificationItem(
             ) {
                 Text(
                     text = currentItem.header,
-                    style = RarimeTheme.typography.subtitle6,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle6,
+                    color = FoundationTheme.colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -266,7 +266,7 @@ fun NotificationItem(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(RoundedCornerShape(20.dp))
-                            .background(RarimeTheme.colors.primaryMain)
+                            .background(FoundationTheme.colors.primaryMain)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }
@@ -281,8 +281,8 @@ fun NotificationItem(
                     ) + " " + stringResource(
                         id = R.string.time_ago
                     ),
-                    style = RarimeTheme.typography.caption3,
-                    color = if (currentItem.isActive) RarimeTheme.colors.primaryMain else RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.caption3,
+                    color = if (currentItem.isActive) FoundationTheme.colors.primaryMain else FoundationTheme.colors.textSecondary
                 )
             }
 
@@ -292,8 +292,8 @@ fun NotificationItem(
                 text = currentItem.description,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary
             )
 
             if (isLastItem) {

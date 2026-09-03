@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.DateUtil.convertToDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -85,7 +85,7 @@ fun FieldTypeDatePicker(
         Row(
             modifier = Modifier
                 .clickable { toggle() }
-                .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(12.dp))
+                .border(1.dp, FoundationTheme.colors.componentPrimary, RoundedCornerShape(12.dp))
                 .defaultMinSize(
                     minWidth = OutlinedTextFieldDefaults.MinWidth,
                     minHeight = OutlinedTextFieldDefaults.MinHeight
@@ -97,13 +97,13 @@ fun FieldTypeDatePicker(
             Text(
                 modifier = Modifier.weight(1f),
                 text = text,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary
             )
             AppIcon(
                 id = R.drawable.ic_calendar_blank,
                 size = 18.dp,
-                tint = RarimeTheme.colors.textSecondary
+                tint = FoundationTheme.colors.textSecondary
             )
         }
     }

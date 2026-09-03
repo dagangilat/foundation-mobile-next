@@ -165,7 +165,7 @@ class PointsManager @Inject constructor(
 
         val lightProofData = secureSharedPrefsManager.getLightRegistrationData()
 
-        val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
+        val assetContext: Context = context.createPackageContext(context.packageName, 0)
         val assetManager = assetContext.assets
 
 

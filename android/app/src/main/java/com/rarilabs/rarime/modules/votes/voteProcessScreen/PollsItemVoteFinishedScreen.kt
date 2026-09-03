@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PollsItemVoteFinishedScreen(
@@ -46,15 +46,15 @@ fun PollsItemVoteFinishedScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Success",
-                style = RarimeTheme.typography.h3,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h3,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Thank you for participating",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.weight(1f))

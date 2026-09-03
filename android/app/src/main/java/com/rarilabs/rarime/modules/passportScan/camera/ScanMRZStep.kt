@@ -45,7 +45,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.DateUtil
 import org.jmrtd.lds.icao.MRZInfo
 import java.util.Calendar
@@ -65,7 +65,7 @@ fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
             if (cameraPermissionState.status.isGranted) {
                 CameraScanPassport(
                     modifier = Modifier
-                        .background(RarimeTheme.colors.baseBlack)
+                        .background(FoundationTheme.colors.baseBlack)
                         .height(300.dp),
                     onMrzDetected = { onNext(it) }
                 )
@@ -82,14 +82,14 @@ fun ScanMRZStep(onNext: (MRZInfo) -> Unit, onClose: () -> Unit) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(RarimeTheme.colors.componentPrimary)
+                            .background(FoundationTheme.colors.componentPrimary)
                             .height(250.dp)
                             .padding(20.dp), contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = stringResource(id = R.string.scan_mrzstep_permission_denied),
-                            style = RarimeTheme.typography.h4,
-                            color = RarimeTheme.colors.textPrimary,
+                            style = FoundationTheme.typography.h4,
+                            color = FoundationTheme.colors.textPrimary,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -121,8 +121,8 @@ private fun ScanMRZStepContent(
             cameraContent()
             Text(
                 text = stringResource(R.string.scan_your_passport_hint),
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary,
                 modifier = Modifier.width(250.dp),
                 textAlign = TextAlign.Center
             )
@@ -140,8 +140,8 @@ private fun ScanMRZStepContent(
                 ) {
                     Text(
                         text = stringResource(id = R.string.scan_mrzstep_manual_input_show_btn).uppercase(),
-                        style = RarimeTheme.typography.buttonMedium,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.buttonMedium,
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
@@ -207,13 +207,13 @@ private fun ManualInputForm(
         ) {
             Text(
                 text = stringResource(id = R.string.scan_mrzstep_manual_input_title),
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h4,
+                color = FoundationTheme.colors.textPrimary,
             )
 
             IconButton(onClick = { onClose() }) {
                 AppIcon(
-                    id = R.drawable.ic_close, tint = RarimeTheme.colors.textSecondary, size = 16.dp
+                    id = R.drawable.ic_close, tint = FoundationTheme.colors.textSecondary, size = 16.dp
                 )
             }
         }
@@ -228,8 +228,8 @@ private fun ManualInputForm(
         ) {
             Text(
                 text = stringResource(id = R.string.scan_mrzstep_manual_input_subtitle),
-                style = RarimeTheme.typography.subtitle6,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.subtitle6,
+                color = FoundationTheme.colors.textSecondary,
             )
 
             AppTextField(
@@ -266,14 +266,14 @@ private fun ScanMRZStepPreview() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(RarimeTheme.colors.componentPrimary)
+                    .background(FoundationTheme.colors.componentPrimary)
                     .height(250.dp)
                     .padding(20.dp), contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(id = R.string.scan_mrzstep_permission_denied),
-                    style = RarimeTheme.typography.h4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h4,
+                    color = FoundationTheme.colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
 

@@ -473,7 +473,7 @@ class ProofGenerationManager @Inject constructor(
         _state.value = PassportProofState.APPLYING_ZERO_KNOWLEDGE
 
         val inputs = buildGrothRegistrationInputs(eDocument, registerIdentityCircuitType)
-        val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
+        val assetContext: Context = application.createPackageContext(application.packageName, 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
 
@@ -519,7 +519,7 @@ class ProofGenerationManager @Inject constructor(
         circuitData: RegisteredCircuitData
     ): GrothProof {
         val inputs = Gson().toJson(getLightRegistrationInputs(eDocument, privateKey)).toByteArray()
-        val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
+        val assetContext: Context = application.createPackageContext(application.packageName, 0)
         val assetManager = assetContext.assets
         val zkp = ZKPUseCase(application, assetManager)
         return generateLightRegistrationProofByCircuitType(circuitData, filePaths, zkp, inputs)
@@ -683,7 +683,7 @@ class ProofGenerationManager @Inject constructor(
 
     private fun readICAO(context: Context): ByteArray? {
         return try {
-            val assetContext: Context = context.createPackageContext("com.rarilabs.rarime", 0)
+            val assetContext: Context = context.createPackageContext(context.packageName, 0)
             assetContext.assets.open("masters_asset.pem").use { inputStream ->
                 inputStream.readBytes()
             }

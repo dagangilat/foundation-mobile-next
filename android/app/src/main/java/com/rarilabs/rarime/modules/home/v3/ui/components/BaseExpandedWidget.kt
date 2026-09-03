@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.home.v3.model.BG_DOT_MAP_HEIGHT
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun BaseExpandedWidget(
@@ -99,13 +99,13 @@ fun BaseExpandedWidgetPreview() {
                 BaseWidgetTitle(
                     title = "RariMe",
                     accentTitle = "Learn More",
-                    gradient = RarimeTheme.colors.gradient6,
+                    gradient = FoundationTheme.colors.gradient6,
                     caption = "* Nothing leaves this device",
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     "An identification and privacy solution that revolutionizes polling, surveying and election processes",
-                    color = RarimeTheme.colors.textSecondary
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
         },
@@ -114,7 +114,7 @@ fun BaseExpandedWidgetPreview() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(RarimeTheme.colors.gradient3)
+                    .background(FoundationTheme.colors.gradient3)
             ) {
                 Image(
                     painter = painterResource(R.drawable.freedomtool_bg),

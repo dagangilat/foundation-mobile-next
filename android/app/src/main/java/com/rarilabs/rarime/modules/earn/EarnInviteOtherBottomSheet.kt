@@ -21,7 +21,7 @@ import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.modules.earn.components.RewardsEventItemInvitesCard
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 val tempPointsBalances = PointsBalanceData(
@@ -79,8 +79,8 @@ fun InviteOthersContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = stringResource(R.string.earn_widget_invite_bottom_sheet_title),
-                style = RarimeTheme.typography.h2,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h2,
+                color = FoundationTheme.colors.textPrimary,
                 modifier = Modifier
                     .align(alignment = Alignment.CenterVertically)
                     .padding(top = 30.dp, bottom = 12.dp)
@@ -94,14 +94,14 @@ fun InviteOthersContent(
             ) {
                 AppIcon(
                     id = R.drawable.ic_close_fill,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
         Text(
             text = stringResource(R.string.earn_invite_bottom_sheet_description),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textSecondary
 
         )
 

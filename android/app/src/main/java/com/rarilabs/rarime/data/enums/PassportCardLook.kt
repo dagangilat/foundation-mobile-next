@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 enum class PassportCardLook(val value: Int) {
     WHITE(0),
@@ -29,18 +29,18 @@ fun PassportCardLook.getBackgroundImage(modifier: Modifier = Modifier): Int {
 @Composable
 fun PassportCardLook.getBackgroundColor(): Color {
     return when (this) {
-        PassportCardLook.GREEN -> RarimeTheme.colors.primaryMain
-        PassportCardLook.BLACK -> RarimeTheme.colors.baseBlack
-        PassportCardLook.WHITE -> RarimeTheme.colors.baseWhite
+        PassportCardLook.GREEN -> FoundationTheme.colors.primaryMain
+        PassportCardLook.BLACK -> FoundationTheme.colors.baseBlack
+        PassportCardLook.WHITE -> FoundationTheme.colors.baseWhite
     }
 }
 
 @Composable
 fun PassportCardLook.getForegroundColor(): Color {
     return when (this) {
-        PassportCardLook.GREEN -> RarimeTheme.colors.baseBlack
-        PassportCardLook.BLACK -> RarimeTheme.colors.baseBlack
-        PassportCardLook.WHITE -> RarimeTheme.colors.baseBlack
+        PassportCardLook.GREEN -> FoundationTheme.colors.baseBlack
+        PassportCardLook.BLACK -> FoundationTheme.colors.baseBlack
+        PassportCardLook.WHITE -> FoundationTheme.colors.baseBlack
     }
 }
 

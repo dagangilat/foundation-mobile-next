@@ -22,7 +22,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun EnableScreenLayout(
@@ -36,7 +36,7 @@ fun EnableScreenLayout(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(top = 72.dp, bottom = 16.dp)
             .padding(horizontal = 20.dp)
     ) {
@@ -48,22 +48,22 @@ fun EnableScreenLayout(
         ) {
             Box(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    .background(FoundationTheme.colors.componentPrimary, CircleShape)
                     .padding(42.dp),
             ) {
-                AppIcon(id = icon, size = 72.dp, tint = RarimeTheme.colors.primaryDarker)
+                AppIcon(id = icon, size = 72.dp, tint = FoundationTheme.colors.primaryDarker)
             }
             Text(
                 text = title,
-                style = RarimeTheme.typography.h2,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h2,
+                color = FoundationTheme.colors.textPrimary,
                 modifier = Modifier.padding(top = 64.dp),
                 textAlign = TextAlign.Center
             )
             Text(
                 text = text,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary,
                 modifier = Modifier.padding(top = 12.dp),
                 textAlign = TextAlign.Center
             )

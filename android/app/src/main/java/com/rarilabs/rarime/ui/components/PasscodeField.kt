@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PasscodeField(
@@ -67,13 +67,13 @@ fun PasscodeField(
 
             Text(
                 text = state.errorMessage,
-                style = RarimeTheme.typography.caption2,
-                color = RarimeTheme.colors.errorDark,
+                style = FoundationTheme.typography.caption2,
+                color = FoundationTheme.colors.errorDark,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .alpha(if (state.errorMessage == "") 0f else 1f)
                     .clip(RoundedCornerShape(102.dp))
-                    .background(RarimeTheme.colors.errorLight)
+                    .background(FoundationTheme.colors.errorLight)
                     .padding(vertical = 12.dp, horizontal = 60.dp)
             )
         }
@@ -101,9 +101,9 @@ private fun CodeValue(
                         .height(16.dp)
                         .background(
                             if (index < value.length) {
-                                RarimeTheme.colors.primaryMain
+                                FoundationTheme.colors.primaryMain
                             } else {
-                                RarimeTheme.colors.componentPrimary
+                                FoundationTheme.colors.componentPrimary
                             },
                             CircleShape
                         )
@@ -130,8 +130,8 @@ private fun PasscodeKeyboard(
                     ) {
                         Text(
                             text = number.toString(),
-                            style = RarimeTheme.typography.subtitle4,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.subtitle4,
+                            color = FoundationTheme.colors.textPrimary
                         )
                     }
                 }
@@ -147,8 +147,8 @@ private fun PasscodeKeyboard(
             ) {
                 Text(
                     text = "0",
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle4,
+                    color = FoundationTheme.colors.textPrimary
                 )
             }
             PasscodeKey(
@@ -159,7 +159,7 @@ private fun PasscodeKeyboard(
                     }
                 }
             ) {
-                AppIcon(id = R.drawable.ic_backspace, tint = RarimeTheme.colors.textPrimary)
+                AppIcon(id = R.drawable.ic_backspace, tint = FoundationTheme.colors.textPrimary)
             }
         }
     }
@@ -178,7 +178,7 @@ private fun PasscodeKey(
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = RarimeTheme.colors.textPrimary
+            contentColor = FoundationTheme.colors.textPrimary
         ),
         onClick = {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)

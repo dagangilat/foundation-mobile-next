@@ -17,10 +17,10 @@ fun AppTheme(
         remember { currentColors.copy() }.apply { updateColorsFrom(currentColors) }
     CompositionLocalProvider(
         LocalColors provides rememberedColors,
-        LocalTypography provides RarimeTypography(),
+        LocalTypography provides FoundationTypography(),
     ) {
         ProvideTextStyle(
-            value = RarimeTheme.typography.body3.copy(color = RarimeTheme.colors.textPrimary),
+            value = FoundationTheme.typography.body3.copy(color = FoundationTheme.colors.textPrimary),
             content = content
         )
     }

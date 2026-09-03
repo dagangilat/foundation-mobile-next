@@ -15,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AppSkeleton(modifier: Modifier = Modifier, cornerRadius: Float = 100f) {
     Box(
         modifier = modifier
-            .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(cornerRadius))
+            .background(FoundationTheme.colors.componentPrimary, RoundedCornerShape(cornerRadius))
     )
 }
 
@@ -32,7 +32,7 @@ private fun AppSkeletonPreview() {
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPure)
+            .background(FoundationTheme.colors.backgroundPure)
             .padding(20.dp)
     ) {
         AppSkeleton(

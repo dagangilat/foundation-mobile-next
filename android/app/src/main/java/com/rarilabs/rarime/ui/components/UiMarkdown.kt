@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 val MARKDOWN_CONTENT = buildString {
@@ -286,7 +286,7 @@ fun UiMarkdownPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(20.dp)
             .verticalScroll(rememberScrollState())
     ) {

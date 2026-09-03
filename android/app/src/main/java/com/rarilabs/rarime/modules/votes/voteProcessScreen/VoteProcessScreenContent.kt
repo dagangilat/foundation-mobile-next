@@ -43,7 +43,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.VerticalDivider
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun VoteProcessScreenContent(
@@ -81,7 +81,7 @@ fun VoteProcessScreenContent(
         ) {
             AppIcon(
                 id = R.drawable.ic_arrow_left,
-                tint = RarimeTheme.colors.textPrimary
+                tint = FoundationTheme.colors.textPrimary
             )
         }
 
@@ -92,14 +92,14 @@ fun VoteProcessScreenContent(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = RarimeTheme.colors.textPrimary)
+                CircularProgressIndicator(color = FoundationTheme.colors.textPrimary)
             }
         } else if (voteData != null) {
             // Title
             Text(
                 text = voteData.title,
-                style = RarimeTheme.typography.h3,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h3,
+                color = FoundationTheme.colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -114,8 +114,8 @@ fun VoteProcessScreenContent(
                     AppIcon(id = R.drawable.ic_timer_line)
                     Text(
                         text = "${voteData.durationMillis / (1000 * 60 * 60)} hours",
-                        style = RarimeTheme.typography.subtitle7,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.subtitle7,
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
 
@@ -126,8 +126,8 @@ fun VoteProcessScreenContent(
                     AppIcon(id = R.drawable.ic_group_line)
                     Text(
                         text = voteData.participantsCount.toString(),
-                        style = RarimeTheme.typography.subtitle7,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.subtitle7,
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
             }
@@ -137,8 +137,8 @@ fun VoteProcessScreenContent(
             // Description
             Text(
                 text = voteData.description,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -164,8 +164,8 @@ fun VoteProcessScreenContent(
                 // Options
                 Text(
                     text = "Select Answer",
-                    style = RarimeTheme.typography.subtitle5,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle5,
+                    color = FoundationTheme.colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -183,8 +183,8 @@ fun VoteProcessScreenContent(
                         ) {
                             Text(
                                 text = question.title,
-                                color = RarimeTheme.colors.textPrimary,
-                                style = RarimeTheme.typography.h5
+                                color = FoundationTheme.colors.textPrimary,
+                                style = FoundationTheme.typography.h5
                             )
 
                             question.variants.forEachIndexed { variantIndex, variant ->
@@ -207,11 +207,11 @@ fun VoteProcessScreenContent(
                                         }
                                         .background(
                                             if (isActive) Color.Transparent
-                                            else RarimeTheme.colors.componentPrimary
+                                            else FoundationTheme.colors.componentPrimary
                                         )
                                         .border(
                                             1.dp,
-                                            if (isActive) RarimeTheme.colors.textPrimary
+                                            if (isActive) FoundationTheme.colors.textPrimary
                                             else Color.Transparent,
                                             RoundedCornerShape(16.dp)
                                         )
@@ -222,13 +222,13 @@ fun VoteProcessScreenContent(
                                     if (isActive) {
                                         AppIcon(
                                             id = R.drawable.ic_check,
-                                            tint = RarimeTheme.colors.textPrimary
+                                            tint = FoundationTheme.colors.textPrimary
                                         )
                                     } else {
                                         Text(
                                             text = (variantIndex + 1).toString(),
-                                            style = RarimeTheme.typography.buttonMedium,
-                                            color = RarimeTheme.colors.textPrimary,
+                                            style = FoundationTheme.typography.buttonMedium,
+                                            color = FoundationTheme.colors.textPrimary,
                                             textAlign = TextAlign.Center
                                         )
                                     }
@@ -237,8 +237,8 @@ fun VoteProcessScreenContent(
 
                                     Text(
                                         text = variant.title,
-                                        style = RarimeTheme.typography.buttonMedium,
-                                        color = RarimeTheme.colors.textPrimary,
+                                        style = FoundationTheme.typography.buttonMedium,
+                                        color = FoundationTheme.colors.textPrimary,
                                         textAlign = TextAlign.Center
                                     )
                                 }
@@ -270,8 +270,8 @@ fun VoteProcessScreenContent(
             ) {
                 Text(
                     text = "Failed to load vote data",
-                    style = RarimeTheme.typography.body1,
-                    color = RarimeTheme.colors.errorMain
+                    style = FoundationTheme.typography.body1,
+                    color = FoundationTheme.colors.errorMain
                 )
             }
         }
@@ -284,7 +284,7 @@ fun VoteProcessScreenContentPreview() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
     ) {
         VoteProcessScreenContent(
             screenInsets = mapOf(

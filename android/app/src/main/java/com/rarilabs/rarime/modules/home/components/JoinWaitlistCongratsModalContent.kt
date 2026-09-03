@@ -27,14 +27,14 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun JoinWaitlistCongratsModalContent(onClose: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(FoundationTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
     ) {
         Image(
             painter = painterResource(id = R.drawable.confetti),
@@ -53,9 +53,9 @@ fun JoinWaitlistCongratsModalContent(onClose: () -> Unit) {
             AppIcon(
                 id = R.drawable.ic_check,
                 size = 24.dp,
-                tint = RarimeTheme.colors.backgroundPure,
+                tint = FoundationTheme.colors.backgroundPure,
                 modifier = Modifier
-                    .background(RarimeTheme.colors.successMain, CircleShape)
+                    .background(FoundationTheme.colors.successMain, CircleShape)
                     .padding(28.dp)
             )
             Column(
@@ -65,13 +65,13 @@ fun JoinWaitlistCongratsModalContent(onClose: () -> Unit) {
             ) {
                 Text(
                     text = stringResource(R.string.congrats_joined_waitlist_title),
-                    style = RarimeTheme.typography.h6,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.h6,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = stringResource(R.string.congrats_joined_waitlist_description),
-                    style = RarimeTheme.typography.body2,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body2,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)
                 )
@@ -95,7 +95,7 @@ private fun NonSpecificCongratsModalContentPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(24.dp)
     ) {
         Dialog(onDismissRequest = { /*TODO*/ }) {

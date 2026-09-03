@@ -77,7 +77,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
@@ -318,11 +318,11 @@ private fun Header(
                     .padding(20.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = RarimeTheme.colors.componentPrimary)
+                    .background(color = FoundationTheme.colors.componentPrimary)
             ) {
                 AppIcon(
                     id = R.drawable.ic_close,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
@@ -362,7 +362,7 @@ private fun Body(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.backgroundPrimary,
+                        FoundationTheme.colors.backgroundPrimary,
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
@@ -382,7 +382,7 @@ private fun Body(
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = stringResource(R.string.digital_likeness_description),
-                    style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+                    style = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -411,10 +411,10 @@ private fun LikenessTitle(
                         Text(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(RarimeTheme.colors.baseBlack)
+                                .background(FoundationTheme.colors.baseBlack)
                                 .padding(horizontal = 12.dp, vertical = 8.dp),
                             text = "Success! Your rule is set. You can\nupdate it anytime by clicking the title.",
-                            color = RarimeTheme.colors.baseWhite
+                            color = FoundationTheme.colors.baseWhite
                         )
                     }) {
                     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
@@ -433,11 +433,11 @@ private fun LikenessTitle(
                                 LikenessRule.ASK_FIRST -> "Ask me first"
                                 else -> ""
                             },
-                            titleStyle = RarimeTheme.typography.subtitle5.copy(
-                                color = RarimeTheme.colors.invertedDark
+                            titleStyle = FoundationTheme.typography.subtitle5.copy(
+                                color = FoundationTheme.colors.invertedDark
                             ),
-                            accentTitleStyle = RarimeTheme.typography.h2.copy(
-                                brush = RarimeTheme.colors.gradient14
+                            accentTitleStyle = FoundationTheme.typography.h2.copy(
+                                brush = FoundationTheme.colors.gradient14
                             ),
                             titleModifier = Modifier.sharedBounds(
                                 rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -465,16 +465,16 @@ private fun LikenessTitle(
                 }
                 HorizontalDivider(
                     modifier = Modifier.padding(top = 15.dp),
-                    color = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f)
+                    color = FoundationTheme.colors.baseBlack.copy(alpha = 0.1f)
                 )
             } else
                 BaseWidgetTitle(
                     title = stringResource(R.string.digital_likeness_collapsed_widget_title),
                     accentTitle = stringResource(R.string.digital_likeness_collapsed_widget_accent_title),
-                    titleStyle = RarimeTheme.typography.h2.copy(
-                        color = RarimeTheme.colors.invertedDark
+                    titleStyle = FoundationTheme.typography.h2.copy(
+                        color = FoundationTheme.colors.invertedDark
                     ),
-                    accentTitleStyle = RarimeTheme.typography.h2.copy(brush = RarimeTheme.colors.gradient14),
+                    accentTitleStyle = FoundationTheme.typography.h2.copy(brush = FoundationTheme.colors.gradient14),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -498,7 +498,7 @@ private fun LikenessTitle(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+                    captionStyle = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary)
 
                 )
         }
@@ -528,7 +528,7 @@ private fun Footer(
                 )
                 .padding(horizontal = 20.dp)
         ) {
-            HorizontalDivider(color = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f))
+            HorizontalDivider(color = FoundationTheme.colors.baseBlack.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(24.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -540,23 +540,23 @@ private fun Footer(
                         text = String.format(
                             "%,d",
                             ALREADY_SET_AMOUNT
-                        ), style = RarimeTheme.typography.h4,
-                        color = RarimeTheme.colors.textPrimary
+                        ), style = FoundationTheme.typography.h4,
+                        color = FoundationTheme.colors.textPrimary
                     )
                     Text(
                         "Others already set",
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textSecondary
                     )
 
                 }
 
                 BaseButton(
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = RarimeTheme.colors.invertedDark,
-                        contentColor = RarimeTheme.colors.invertedLight,
-                        disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                        disabledContentColor = RarimeTheme.colors.textDisabled
+                        containerColor = FoundationTheme.colors.invertedDark,
+                        contentColor = FoundationTheme.colors.invertedLight,
+                        disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                        disabledContentColor = FoundationTheme.colors.textDisabled
                     ),
                     text = "Set a rule", size = ButtonSize.Large, onClick = onStart
                 )
@@ -589,7 +589,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
         ) {
             Image(
                 painter = painterResource(backgroundRes),

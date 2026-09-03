@@ -42,7 +42,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -118,9 +118,9 @@ private fun Header(
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_rarimo,
-                backgroundColor = RarimeTheme.colors.componentPrimary,
+                backgroundColor = FoundationTheme.colors.componentPrimary,
                 size = 40,
-                tint = RarimeTheme.colors.textSecondary.copy(alpha = 1f),
+                tint = FoundationTheme.colors.textSecondary.copy(alpha = 1f),
             )
         }
     }
@@ -152,7 +152,7 @@ private fun Footer(
             Row(modifier = Modifier.fillMaxWidth()) {
                 BaseWidgetTitle(
                     title = title,
-                    titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
+                    titleStyle = FoundationTheme.typography.h1.copy(color = FoundationTheme.colors.invertedDark),
                     accentTitle = accentTitle,
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -160,7 +160,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient13),
+                    accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient13),
                     accentTitleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.accentTitle(
@@ -172,7 +172,7 @@ private fun Footer(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
                     caption = stringResource(R.string.earn_collapsed_widget_caption),
-                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+                    captionStyle = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.caption(
@@ -188,7 +188,7 @@ private fun Footer(
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
                     modifier = Modifier.align(Alignment.Bottom),
-                    tint = RarimeTheme.colors.invertedDark,
+                    tint = FoundationTheme.colors.invertedDark,
                     size = 24.dp
                 )
             }

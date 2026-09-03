@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun CircledBadge(
@@ -29,9 +29,9 @@ fun CircledBadge(
     painter: Painter? = null,
     iconId: Int? = null,
     containerSize: Int = 80,
-    containerColor: Color = RarimeTheme.colors.primaryMain,
+    containerColor: Color = FoundationTheme.colors.primaryMain,
     contentSize: Int = 40,
-    contentColor: Color = RarimeTheme.colors.baseBlack,
+    contentColor: Color = FoundationTheme.colors.baseBlack,
     content: @Composable () -> Unit = {}
 ) {
     Box(
@@ -61,9 +61,9 @@ fun CircledBadgeWithCounter(
     painter: Painter? = null,
     iconId: Int? = null,
     containerSize: Int = 80,
-    containerColor: Color = RarimeTheme.colors.primaryMain,
+    containerColor: Color = FoundationTheme.colors.primaryMain,
     contentSize: Int = 40,
-    contentColor: Color = RarimeTheme.colors.baseBlack,
+    contentColor: Color = FoundationTheme.colors.baseBlack,
     count: Int = 0,
     badgeSize: Int = 20,
     content: @Composable () -> Unit = {}
@@ -104,9 +104,9 @@ fun CircledBadgeWithCounter(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .size(badgeSize.dp),
-                containerColor = RarimeTheme.colors.errorMain
+                containerColor = FoundationTheme.colors.errorMain
             ) {
-                Text(text = count.toString(), color = RarimeTheme.colors.baseWhite)
+                Text(text = count.toString(), color = FoundationTheme.colors.baseWhite)
             }
 
         }
@@ -131,13 +131,13 @@ private fun CircledBadgePreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircledBadge(
-                iconId = R.drawable.ic_lock, contentColor = RarimeTheme.colors.baseBlack
+                iconId = R.drawable.ic_lock, contentColor = FoundationTheme.colors.baseBlack
             )
             CircledBadge(
                 containerSize = 160,
                 iconId = R.drawable.ic_lock,
                 contentSize = 80,
-                contentColor = RarimeTheme.colors.baseBlack
+                contentColor = FoundationTheme.colors.baseBlack
             )
             CircledBadge(
                 containerSize = 160,
@@ -146,7 +146,7 @@ private fun CircledBadgePreview() {
             )
             CircledBadge(
                 containerSize = 160,
-                containerColor = RarimeTheme.colors.secondaryMain,
+                containerColor = FoundationTheme.colors.secondaryMain,
                 painter = painterResource(id = R.drawable.reward_coin),
                 contentSize = 120
             )
@@ -159,7 +159,7 @@ private fun CircledBadgePreview() {
                 count = 2, containerSize = 40, badgeSize = 20
             ) {
                 AppIcon(
-                    id = R.drawable.ic_bell, size = 20.dp, tint = RarimeTheme.colors.baseBlack
+                    id = R.drawable.ic_bell, size = 20.dp, tint = FoundationTheme.colors.baseBlack
                 )
             }
 
@@ -169,7 +169,7 @@ private fun CircledBadgePreview() {
                 AppIcon(
                     id = R.drawable.ic_lock,
                     size = 80.dp,
-                    tint = RarimeTheme.colors.baseBlack
+                    tint = FoundationTheme.colors.baseBlack
                 )
             }
             CircledBadgeWithCounter(
@@ -181,7 +181,7 @@ private fun CircledBadgePreview() {
                 )
             }
             CircledBadgeWithCounter(
-                containerSize = 160, containerColor = RarimeTheme.colors.secondaryMain
+                containerSize = 160, containerColor = FoundationTheme.colors.secondaryMain
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.reward_coin),

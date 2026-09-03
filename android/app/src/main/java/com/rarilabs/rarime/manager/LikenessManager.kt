@@ -169,7 +169,7 @@ class LikenessManager @Inject constructor(
 
         val privateKey = identityManager.privateKeyBytes
 
-        val assetContext: Context = (application).createPackageContext("com.rarilabs.rarime", 0)
+        val assetContext: Context = (application).createPackageContext((application).packageName, 0)
         val assetManager = assetContext.assets
 
         val zkp = ZKPUseCase(
@@ -283,7 +283,7 @@ class LikenessManager @Inject constructor(
                 faceContract.getVerificationNonce(address).send().toString()
             }
 
-            val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
+            val assetContext: Context = application.createPackageContext(application.packageName, 0)
             val assetManager = assetContext.assets
 
             val zkp = ZKPUseCase(application, assetManager)

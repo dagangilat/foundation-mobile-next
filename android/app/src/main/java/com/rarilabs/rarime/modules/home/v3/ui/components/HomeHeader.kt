@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.CircledBadgeWithCounter
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun HomeHeader(
@@ -38,16 +38,16 @@ fun HomeHeader(
         ) {
             Text(
                 text = stringResource(R.string.hi),
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = name?.substringBefore(" ") ?: stringResource(R.string.stranger),
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -64,11 +64,11 @@ fun HomeHeader(
             ) { onNotificationClick() },
             iconId = R.drawable.ic_bell,
             containerSize = 40,
-            containerColor = RarimeTheme.colors.componentPrimary,
+            containerColor = FoundationTheme.colors.componentPrimary,
             contentSize = 20,
             badgeSize = 16,
             count = notificationsCount ?: 0,
-            contentColor = RarimeTheme.colors.textPrimary
+            contentColor = FoundationTheme.colors.textPrimary
         )
     }
 }

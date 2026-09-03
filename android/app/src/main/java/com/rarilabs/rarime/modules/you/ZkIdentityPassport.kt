@@ -29,7 +29,7 @@ import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 
 @Composable
@@ -105,13 +105,13 @@ fun ZkIdentityPassportContent(
         ) {
             Text(
                 text = stringResource(R.string.you),
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textPrimary
             )
 //            Column(
 //                Modifier
 //                    .clip(RoundedCornerShape(100.dp))
-//                    .background(RarimeTheme.colors.componentPrimary)
+//                    .background(FoundationTheme.colors.componentPrimary)
 //            ) {
 //                AppIcon(modifier = Modifier.padding(10.dp), id = R.drawable.ic_plus)
 //            }

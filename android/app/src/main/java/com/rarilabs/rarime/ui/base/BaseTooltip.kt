@@ -22,14 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseTooltip(
     modifier: Modifier = Modifier,
     state: TooltipState = rememberTooltipState(),
-    iconColor: Color = RarimeTheme.colors.textPrimary,
+    iconColor: Color = FoundationTheme.colors.textPrimary,
     tooltipContent: @Composable () -> Unit = {},
     tooltipText: String? = null,
     content: @Composable () -> Unit,
@@ -51,15 +51,15 @@ fun BaseTooltip(
                         text = {
                             Text(
                                 text = tooltipText,
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textSecondary,
+                                style = FoundationTheme.typography.body3,
+                                color = FoundationTheme.colors.textSecondary,
                             )
                         },
                         colors = RichTooltipColors(
-                            containerColor = RarimeTheme.colors.baseWhite,
-                            contentColor = RarimeTheme.colors.textPrimary,
-                            titleContentColor = RarimeTheme.colors.textPrimary,
-                            actionContentColor = RarimeTheme.colors.textPrimary,
+                            containerColor = FoundationTheme.colors.baseWhite,
+                            contentColor = FoundationTheme.colors.textPrimary,
+                            titleContentColor = FoundationTheme.colors.textPrimary,
+                            actionContentColor = FoundationTheme.colors.textPrimary,
                         ),
                     )
                 }
@@ -81,7 +81,7 @@ fun BaseTooltipPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -91,15 +91,15 @@ fun BaseTooltipPreview() {
                     text = {
                         Text(
                             text = "Lorem ipsum dolor sit amet concestetur! Lorem ipsum dolor sit amet concestetur! Lorem ipsum dolor sit amet concestetur!",
-                            style = RarimeTheme.typography.body3,
-                            color = RarimeTheme.colors.warningDarker,
+                            style = FoundationTheme.typography.body3,
+                            color = FoundationTheme.colors.warningDarker,
                         )
                     },
                     colors = RichTooltipColors(
-                        containerColor = RarimeTheme.colors.warningLighter,
-                        contentColor = RarimeTheme.colors.warningDarker,
-                        titleContentColor = RarimeTheme.colors.successDarker,
-                        actionContentColor = RarimeTheme.colors.textPrimary,
+                        containerColor = FoundationTheme.colors.warningLighter,
+                        contentColor = FoundationTheme.colors.warningDarker,
+                        titleContentColor = FoundationTheme.colors.successDarker,
+                        actionContentColor = FoundationTheme.colors.textPrimary,
                     ),
                 )
             }

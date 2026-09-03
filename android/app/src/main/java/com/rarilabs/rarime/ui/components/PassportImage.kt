@@ -17,15 +17,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PassportImage(
     modifier: Modifier = Modifier,
     image: Bitmap? = null,
     size: Dp = 56.dp,
-    color: Color = RarimeTheme.colors.textPrimary,
-    backgroundColor: Color = RarimeTheme.colors.backgroundPrimary,
+    color: Color = FoundationTheme.colors.textPrimary,
+    backgroundColor: Color = FoundationTheme.colors.backgroundPrimary,
 ) {
     if (image == null) {
         AppIcon(
@@ -34,7 +34,7 @@ fun PassportImage(
             tint = color,
             modifier = modifier
                 .background(backgroundColor, CircleShape)
-                .border(1.dp, RarimeTheme.colors.componentPrimary, CircleShape)
+                .border(1.dp, FoundationTheme.colors.componentPrimary, CircleShape)
                 .padding(size.times(0.25f))
         )
     } else {
@@ -46,7 +46,7 @@ fun PassportImage(
                 .size(size)
                 .clip(CircleShape)
                 .background(Color.White, CircleShape)
-                .border(1.dp, RarimeTheme.colors.componentPrimary, CircleShape)
+                .border(1.dp, FoundationTheme.colors.componentPrimary, CircleShape)
         )
     }
 }

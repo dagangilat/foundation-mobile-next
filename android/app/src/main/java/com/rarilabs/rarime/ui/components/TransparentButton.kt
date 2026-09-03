@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun TransparentButton(
@@ -30,13 +30,13 @@ fun TransparentButton(
     @DrawableRes leftIcon: Int? = null,
     @DrawableRes rightIcon: Int? = null,
     alpha: Float = 0.05f,
-    baseColor: Color = RarimeTheme.colors.componentPrimary,
+    baseColor: Color = FoundationTheme.colors.componentPrimary,
     content: @Composable RowScope.() -> Unit = {},
     colors: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = baseColor.copy(alpha),
-        contentColor = RarimeTheme.colors.textPrimary,
+        contentColor = FoundationTheme.colors.textPrimary,
         disabledContainerColor = Color.Transparent,
-        disabledContentColor = RarimeTheme.colors.textDisabled
+        disabledContentColor = FoundationTheme.colors.textDisabled
     )
 ) {
     BaseButton(

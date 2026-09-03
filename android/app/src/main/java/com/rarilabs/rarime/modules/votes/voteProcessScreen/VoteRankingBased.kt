@@ -46,7 +46,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.VerticalDivider
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -71,7 +71,7 @@ fun VoteRankingBasedScreen(
 
     Column(
         modifier = Modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
         Row(
@@ -86,8 +86,8 @@ fun VoteRankingBasedScreen(
                 onClick = { onBackClick.invoke() },
                 icon = R.drawable.ic_close,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.componentPrimary,
-                    contentColor = RarimeTheme.colors.textPrimary
+                    containerColor = FoundationTheme.colors.componentPrimary,
+                    contentColor = FoundationTheme.colors.textPrimary
                 ),
             )
         }
@@ -153,16 +153,16 @@ fun VoteRankingCard(
     ) {
         Text(
             voteOption.title,
-            style = RarimeTheme.typography.h4,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.h4,
+            color = FoundationTheme.colors.textPrimary
         )
         Spacer(modifier = Modifier.height(16.dp))
         HorizontalDivider()
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             stringResource(R.string.ranking_based_tip),
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.subtitle5,
+            color = FoundationTheme.colors.textPrimary
         )
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(
@@ -180,13 +180,13 @@ fun VoteRankingCard(
                             .fillMaxWidth()
                             .zIndex(if (isDragging) 1f else 0f)
                             .background(
-                                if (isDragging) RarimeTheme.colors.componentPrimary else RarimeTheme.colors.backgroundPrimary,
+                                if (isDragging) FoundationTheme.colors.componentPrimary else FoundationTheme.colors.backgroundPrimary,
                                 RoundedCornerShape(12.dp)
                             )
                             .clip(RoundedCornerShape(12.dp))
                             .border(
-                                1.dp, color = if (isDragging) RarimeTheme.colors.textPrimary
-                                else RarimeTheme.colors.textSecondary, RoundedCornerShape(12.dp)
+                                1.dp, color = if (isDragging) FoundationTheme.colors.textPrimary
+                                else FoundationTheme.colors.textSecondary, RoundedCornerShape(12.dp)
                             )
                             .padding(16.dp)
                     ) {
@@ -199,7 +199,7 @@ fun VoteRankingCard(
                             Icon(
                                 painter = painterResource(R.drawable.ic_draggable),
                                 contentDescription = "",
-                                tint = RarimeTheme.colors.textPrimary,
+                                tint = FoundationTheme.colors.textPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                             VerticalDivider(
@@ -209,8 +209,8 @@ fun VoteRankingCard(
                             )
                             Text(
                                 item.text,
-                                color = RarimeTheme.colors.textPrimary,
-                                style = RarimeTheme.typography.buttonMedium
+                                color = FoundationTheme.colors.textPrimary,
+                                style = FoundationTheme.typography.buttonMedium
                             )
                         }
                     }
@@ -251,8 +251,8 @@ fun PreviewRankingPollCard(
     ) {
         Text(
             text = voteOption.title,
-            style = RarimeTheme.typography.h4,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.h4,
+            color = FoundationTheme.colors.textPrimary
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -270,7 +270,7 @@ fun PreviewRankingPollCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
                         .fillMaxWidth()
-                        .background(RarimeTheme.colors.componentPrimary)
+                        .background(FoundationTheme.colors.componentPrimary)
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
@@ -280,8 +280,8 @@ fun PreviewRankingPollCard(
                     ) {
                         Text(
                             text = (idx + 1).toString(),
-                            color = RarimeTheme.colors.textSecondary,
-                            style = RarimeTheme.typography.overline2,
+                            color = FoundationTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.overline2,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -294,8 +294,8 @@ fun PreviewRankingPollCard(
 
                     Text(
                         text = answerText,
-                        color = RarimeTheme.colors.textPrimary,
-                        style = RarimeTheme.typography.buttonMedium
+                        color = FoundationTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.buttonMedium
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))

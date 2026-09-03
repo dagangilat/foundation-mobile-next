@@ -29,7 +29,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.ui.components.StepIndicator
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -94,8 +94,8 @@ fun WalletTokensList(userAssets: List<WalletAsset>, selectedUserAsset: WalletAss
                     R.string.wallet_tokens_list_title,
                     userAssets.size,
                 ).uppercase(),
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.overline2,
+                color = FoundationTheme.colors.textSecondary
             )
 
             // TODO: handle case, when tokens is too much to fit on the screen
@@ -140,7 +140,7 @@ private fun WalletTokensListPreview() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
 

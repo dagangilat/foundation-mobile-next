@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppLogo
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Screen
 
 private enum class IntroStep(
@@ -93,7 +93,7 @@ fun IntroScreenContent(
         verticalArrangement = Arrangement.spacedBy(48.dp),
         modifier = Modifier
             .fillMaxHeight()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(bottom = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
@@ -152,14 +152,14 @@ private fun StepView(step: IntroStep) {
                 ) {
                     Text(
                         text = stringResource(step.text),
-                        style = RarimeTheme.typography.subtitle4,
-                        color = RarimeTheme.colors.textSecondary,
+                        style = FoundationTheme.typography.subtitle4,
+                        color = FoundationTheme.colors.textSecondary,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = stringResource(step.title),
-                        style = RarimeTheme.typography.h1,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.h1,
+                        color = FoundationTheme.colors.textPrimary,
                         textAlign = TextAlign.Center
                     )
                 }

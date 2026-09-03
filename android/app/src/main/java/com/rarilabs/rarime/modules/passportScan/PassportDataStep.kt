@@ -26,7 +26,7 @@ import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.PassportImage
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.RewardChip
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import java.time.LocalDate
@@ -91,8 +91,8 @@ private fun PassportDataStepContent(
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(
                                     text = eDocument.personDetails!!.name.toString() + " " + eDocument.personDetails!!.surname,
-                                    style = RarimeTheme.typography.subtitle5,
-                                    color = RarimeTheme.colors.textPrimary
+                                    style = FoundationTheme.typography.subtitle5,
+                                    color = FoundationTheme.colors.textPrimary
                                 )
                                 Text(
                                     text = "${eDocument.personDetails!!.gender}, Age: ${
@@ -100,8 +100,8 @@ private fun PassportDataStepContent(
                                             eDocument.personDetails!!.birthDate!!
                                         )
                                     }",
-                                    style = RarimeTheme.typography.body4,
-                                    color = RarimeTheme.colors.textSecondary
+                                    style = FoundationTheme.typography.body4,
+                                    color = FoundationTheme.colors.textSecondary
                                 )
                             }
 
@@ -118,8 +118,8 @@ private fun PassportDataStepContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.must_data),
-                                    style = RarimeTheme.typography.subtitle5,
-                                    color = RarimeTheme.colors.textPrimary
+                                    style = FoundationTheme.typography.subtitle5,
+                                    color = FoundationTheme.colors.textPrimary
                                 )
                                 if (!isUnsupported) {
                                     RewardChip(
@@ -152,7 +152,7 @@ private fun PassportDataStepContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(RarimeTheme.colors.backgroundPure)
+                    .background(FoundationTheme.colors.backgroundPure)
                     .padding(top = 12.dp, bottom = 20.dp)
                     .padding(horizontal = 20.dp)
             ) {
@@ -174,13 +174,13 @@ private fun MustDataRow(title: String, value: String) {
     ) {
         Text(
             text = title,
-            style = RarimeTheme.typography.body4,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.body4,
+            color = FoundationTheme.colors.textPrimary
         )
         Text(
             text = value,
-            style = RarimeTheme.typography.subtitle6,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.subtitle6,
+            color = FoundationTheme.colors.textPrimary
         )
     }
 }

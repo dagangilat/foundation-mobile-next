@@ -44,7 +44,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
@@ -182,8 +182,8 @@ private fun Footer(
             BaseWidgetTitle(
                 title = title,
                 accentTitle = accentTitle,
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
-                accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
+                titleStyle = FoundationTheme.typography.h1.copy(color = FoundationTheme.colors.baseBlack),
+                accentTitleStyle = FoundationTheme.typography.additional1.copy(color = FoundationTheme.colors.baseBlackOp40),
                 titleModifier = Modifier.sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -231,8 +231,8 @@ fun TermsAndConditionsText() {
         modifier = Modifier.fillMaxWidth(),
         text = termsAnnotation,
 
-        style = RarimeTheme.typography.body5.copy(
-            color = RarimeTheme.colors.baseBlack.copy(alpha = 0.5f),
+        style = FoundationTheme.typography.body5.copy(
+            color = FoundationTheme.colors.baseBlack.copy(alpha = 0.5f),
             textAlign = TextAlign.Center
         ),
         onClick = {
@@ -257,7 +257,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient3)
+                .background(FoundationTheme.colors.gradient3)
                 .sharedBounds(
                     rememberSharedContentState(
                         HomeSharedKeys.content(layoutId)

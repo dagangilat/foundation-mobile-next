@@ -36,7 +36,7 @@ import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import okio.IOException
 import org.jmrtd.lds.icao.MRZInfo
 
@@ -169,8 +169,8 @@ private fun ReadEDocStepContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.nfc_reader_hint_1),
-                                    style = RarimeTheme.typography.body4,
-                                    color = RarimeTheme.colors.textSecondary,
+                                    style = FoundationTheme.typography.body4,
+                                    color = FoundationTheme.colors.textSecondary,
                                     modifier = Modifier.width(250.dp),
                                     textAlign = TextAlign.Center
                                 )
@@ -180,8 +180,8 @@ private fun ReadEDocStepContent(
                         ScanNFCState.SCANNING -> {
 //                            Text(
 //                                text = stringResource(R.string.nfc_reader_scanning),
-//                                style = RarimeTheme.typography.body4,
-//                                color = RarimeTheme.colors.textSecondary,
+//                                style = FoundationTheme.typography.body4,
+//                                color = FoundationTheme.colors.textSecondary,
 //                                modifier = Modifier.width(250.dp),
 //                                textAlign = TextAlign.Center
 //                            )
@@ -202,7 +202,7 @@ private fun ReadEDocStepContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(RarimeTheme.colors.backgroundPure)
+                        .background(FoundationTheme.colors.backgroundPure)
                         .padding(bottom = 20.dp)
                         .padding(horizontal = 20.dp)
                 ) {

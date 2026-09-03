@@ -40,7 +40,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.GetCustomContents
 import com.rarilabs.rarime.util.ParseEDocumentFromJson
 import com.rarilabs.rarime.util.Screen
@@ -178,7 +178,7 @@ fun ZkIdentityNoPassportContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
         AppBackgroundGradient(
@@ -196,19 +196,19 @@ fun ZkIdentityNoPassportContent(
                     bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
                     top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp + 40.dp,
                 )
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .padding(horizontal = 20.dp)
                 .then(modifier)
         ) {
             Text(
                 stringResource(R.string.zk_identity_no_passport_title_1),
-                style = RarimeTheme.typography.h1,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h1,
+                color = FoundationTheme.colors.textPrimary
             )
             Text(
                 stringResource(R.string.zk_identity_no_passport_title_2),
-                style = RarimeTheme.typography.additional1,
-                color = RarimeTheme.colors.successMain
+                style = FoundationTheme.typography.additional1,
+                color = FoundationTheme.colors.successMain
             )
 
             Spacer(modifier = Modifier.height(88.dp))
@@ -216,8 +216,8 @@ fun ZkIdentityNoPassportContent(
             Text(
                 modifier = Modifier.padding(bottom = 16.dp),
                 text = stringResource(R.string.zk_identity_no_passport_list_caption),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary
             )
 
             IdentityList(items = identityItems)
@@ -231,7 +231,7 @@ fun IdentityList(items: List<IdentityItemData>) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(24.dp)),
+            .border(1.dp, FoundationTheme.colors.componentPrimary, RoundedCornerShape(24.dp)),
     ) {
         items.forEachIndexed { index, item ->
             IdentityCardTypeItem(
@@ -243,7 +243,7 @@ fun IdentityList(items: List<IdentityItemData>) {
             )
             if (index < items.lastIndex) {
                 HorizontalDivider(
-                    color = RarimeTheme.colors.componentPrimary,
+                    color = FoundationTheme.colors.componentPrimary,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }

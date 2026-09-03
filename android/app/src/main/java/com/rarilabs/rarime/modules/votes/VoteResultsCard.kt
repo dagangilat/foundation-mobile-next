@@ -44,7 +44,7 @@ import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.DateUtil.convertToDate
 
 private enum class PollType {
@@ -63,11 +63,11 @@ fun VoteResultsCard(
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(width = 1.dp, color = RarimeTheme.colors.textSecondary)
+        border = BorderStroke(width = 1.dp, color = FoundationTheme.colors.textSecondary)
 
     ) {
         CardContainer(
-            backgroundColor = RarimeTheme.colors.backgroundSurface1,
+            backgroundColor = FoundationTheme.colors.backgroundSurface1,
             modifier = Modifier
 
                 .clickable { onCLick.invoke(voteData) }
@@ -99,8 +99,8 @@ fun VoteResultsCard(
                     ) {
                         Text(
                             text = voteData.title,
-                            style = RarimeTheme.typography.h5,
-                            color = RarimeTheme.colors.baseWhite
+                            style = FoundationTheme.typography.h5,
+                            color = FoundationTheme.colors.baseWhite
                         )
 
                         Row(
@@ -112,7 +112,7 @@ fun VoteResultsCard(
                             ) {
                                 AppIcon(
                                     id = R.drawable.ic_calendar_line,
-                                    tint = RarimeTheme.colors.textSecondary
+                                    tint = FoundationTheme.colors.textSecondary
                                 )
                                 Text(
                                     text = convertToDate(
@@ -122,8 +122,8 @@ fun VoteResultsCard(
                                         value = voteData.voteEndDate,
                                         pattern = "dd MMM"
                                     ),
-                                    style = RarimeTheme.typography.subtitle7,
-                                    color = RarimeTheme.colors.textSecondary
+                                    style = FoundationTheme.typography.subtitle7,
+                                    color = FoundationTheme.colors.textSecondary
                                 )
                             }
 
@@ -133,12 +133,12 @@ fun VoteResultsCard(
                             ) {
                                 AppIcon(
                                     id = R.drawable.ic_group_line,
-                                    tint = RarimeTheme.colors.textSecondary
+                                    tint = FoundationTheme.colors.textSecondary
                                 )
                                 Text(
                                     text = voteData.proposalResults[0].sum().toString(),
-                                    style = RarimeTheme.typography.subtitle7,
-                                    color = RarimeTheme.colors.textSecondary
+                                    style = FoundationTheme.typography.subtitle7,
+                                    color = FoundationTheme.colors.textSecondary
                                 )
                             }
                         }
@@ -147,7 +147,7 @@ fun VoteResultsCard(
 
                 HorizontalDivider(
                     modifier = Modifier
-                        .background(RarimeTheme.colors.componentPrimary)
+                        .background(FoundationTheme.colors.componentPrimary)
                         .fillMaxWidth()
                         .height(1.dp)
                 )
@@ -159,8 +159,8 @@ fun VoteResultsCard(
                                 Column {
                                     Text(
                                         text = voteData.questionList[pageState.currentPage].title,
-                                        style = RarimeTheme.typography.body4,
-                                        color = RarimeTheme.colors.textPrimary,
+                                        style = FoundationTheme.typography.body4,
+                                        color = FoundationTheme.colors.textPrimary,
                                         modifier = Modifier.padding(vertical = 16.dp)
 
                                     )
@@ -178,7 +178,7 @@ fun VoteResultsCard(
                             HorizontalPageIndicator(
                                 numberOfPages = pageState.pageCount,
                                 selectedPage = pageState.currentPage,
-                                selectedColor = RarimeTheme.colors.primaryMain,
+                                selectedColor = FoundationTheme.colors.primaryMain,
                                 defaultRadius = 6.dp,
                                 selectedLength = 16.dp,
                                 space = 8.dp
@@ -190,8 +190,8 @@ fun VoteResultsCard(
                             Column {
                                 Text(
                                     text = voteData.questionList[0].title,
-                                    style = RarimeTheme.typography.body4,
-                                    color = RarimeTheme.colors.textPrimary,
+                                    style = FoundationTheme.typography.body4,
+                                    color = FoundationTheme.colors.textPrimary,
                                     modifier = Modifier.padding(vertical = 16.dp)
 
                                 )
@@ -211,7 +211,7 @@ fun VoteResultsCard(
                             HorizontalPageIndicator(
                                 numberOfPages = pageState.pageCount,
                                 selectedPage = pageState.currentPage,
-                                selectedColor = RarimeTheme.colors.primaryMain,
+                                selectedColor = FoundationTheme.colors.primaryMain,
                                 defaultRadius = 6.dp,
                                 selectedLength = 16.dp,
                                 space = 8.dp
@@ -259,7 +259,7 @@ fun RankingBasedVoteResultsCardStatistics(
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
+                .border(1.dp, FoundationTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
         ) {
             Box(
                 modifier = Modifier
@@ -272,7 +272,7 @@ fun RankingBasedVoteResultsCardStatistics(
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(progressWidth)
-                        .background(RarimeTheme.colors.successLight)
+                        .background(FoundationTheme.colors.successLight)
                 )
                 Row(
                     modifier = Modifier
@@ -283,8 +283,8 @@ fun RankingBasedVoteResultsCardStatistics(
                 ) {
                     Text(
                         text = currentResult.key,
-                        color = RarimeTheme.colors.textPrimary,
-                        style = RarimeTheme.typography.overline1
+                        color = FoundationTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.overline1
                     )
 
                     Column(
@@ -292,13 +292,13 @@ fun RankingBasedVoteResultsCardStatistics(
                     ) {
                         Text(
                             text = "${percentage.toInt()}%",
-                            color = RarimeTheme.colors.textPrimary,
-                            style = RarimeTheme.typography.subtitle6
+                            color = FoundationTheme.colors.textPrimary,
+                            style = FoundationTheme.typography.subtitle6
                         )
                         Text(
                             text = currentResult.value.toInt().toString() + " points",
-                            color = RarimeTheme.colors.textSecondary,
-                            style = RarimeTheme.typography.caption3
+                            color = FoundationTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.caption3
                         )
                     }
                 }
@@ -325,7 +325,7 @@ fun OptionBasedVoteResultsCardStatistics(
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
-            .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
+            .border(1.dp, FoundationTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
     ) {
 
         Box(
@@ -342,7 +342,7 @@ fun OptionBasedVoteResultsCardStatistics(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(progressWidth)
-                    .background(RarimeTheme.colors.successLight)
+                    .background(FoundationTheme.colors.successLight)
             )
 
             Row(
@@ -354,8 +354,8 @@ fun OptionBasedVoteResultsCardStatistics(
             ) {
                 Text(
                     text = largestOption.keys.first(),
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.overline1
+                    color = FoundationTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.overline1
                 )
 
                 Column(
@@ -363,13 +363,13 @@ fun OptionBasedVoteResultsCardStatistics(
                 ) {
                     Text(
                         text = percentage.toInt().toString() + "%",
-                        color = RarimeTheme.colors.textPrimary,
-                        style = RarimeTheme.typography.subtitle6
+                        color = FoundationTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.subtitle6
                     )
                     Text(
                         text = largestOption.values.first().toInt().toString() + " votes",
-                        color = RarimeTheme.colors.textSecondary,
-                        style = RarimeTheme.typography.caption3
+                        color = FoundationTheme.colors.textSecondary,
+                        style = FoundationTheme.typography.caption3
                     )
                 }
             }
@@ -381,7 +381,7 @@ fun OptionBasedVoteResultsCardStatistics(
 @Composable
 fun VotesLoadingSkeleton() {
     CardContainer(
-        backgroundColor = RarimeTheme.colors.backgroundPrimary
+        backgroundColor = FoundationTheme.colors.backgroundPrimary
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -395,7 +395,7 @@ fun VotesLoadingSkeleton() {
                         .height(24.dp)
                         .fillMaxWidth(0.7f)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(RarimeTheme.colors.componentDisabled)
+                        .background(FoundationTheme.colors.componentDisabled)
                 )
 
                 Row(
@@ -411,7 +411,7 @@ fun VotesLoadingSkeleton() {
                             modifier = Modifier
                                 .size(16.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(RarimeTheme.colors.componentDisabled)
+                                .background(FoundationTheme.colors.componentDisabled)
                         )
                         // Text placeholder
                         AppSkeleton(
@@ -419,7 +419,7 @@ fun VotesLoadingSkeleton() {
                                 .height(16.dp)
                                 .width(50.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(RarimeTheme.colors.componentDisabled)
+                                .background(FoundationTheme.colors.componentDisabled)
                         )
                     }
 
@@ -433,7 +433,7 @@ fun VotesLoadingSkeleton() {
                             modifier = Modifier
                                 .size(16.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(RarimeTheme.colors.componentDisabled)
+                                .background(FoundationTheme.colors.componentDisabled)
                         )
                         // Text placeholder
                         AppSkeleton(
@@ -441,7 +441,7 @@ fun VotesLoadingSkeleton() {
                                 .height(16.dp)
                                 .width(30.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(RarimeTheme.colors.componentDisabled)
+                                .background(FoundationTheme.colors.componentDisabled)
                                 .padding(top = 4.dp)
                         )
                     }
@@ -450,7 +450,7 @@ fun VotesLoadingSkeleton() {
 
             HorizontalDivider(
                 modifier = Modifier
-                    .background(RarimeTheme.colors.componentPrimary)
+                    .background(FoundationTheme.colors.componentPrimary)
                     .fillMaxWidth()
                     .height(1.dp)
             )
@@ -459,7 +459,7 @@ fun VotesLoadingSkeleton() {
             Column(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
+                    .border(1.dp, FoundationTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
             ) {
                 // Create 3 skeleton option rows
 
@@ -473,7 +473,7 @@ fun VotesLoadingSkeleton() {
                         modifier = Modifier
                             .fillMaxHeight()
                             .fillMaxWidth(0.6f)
-                            .background(RarimeTheme.colors.componentDisabled.copy(alpha = 0.3f))
+                            .background(FoundationTheme.colors.componentDisabled.copy(alpha = 0.3f))
                     )
 
                     Row(
@@ -489,7 +489,7 @@ fun VotesLoadingSkeleton() {
                                 .height(16.dp)
                                 .width(80.dp)
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(RarimeTheme.colors.componentDisabled)
+                                .background(FoundationTheme.colors.componentDisabled)
                         )
 
                         // Option values placeholder
@@ -501,14 +501,14 @@ fun VotesLoadingSkeleton() {
                                     .height(14.dp)
                                     .width(40.dp)
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(RarimeTheme.colors.componentDisabled)
+                                    .background(FoundationTheme.colors.componentDisabled)
                             )
                             AppSkeleton(
                                 modifier = Modifier
                                     .height(12.dp)
                                     .width(30.dp)
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(RarimeTheme.colors.componentDisabled)
+                                    .background(FoundationTheme.colors.componentDisabled)
                                     .padding(top = 4.dp)
                             )
                         }

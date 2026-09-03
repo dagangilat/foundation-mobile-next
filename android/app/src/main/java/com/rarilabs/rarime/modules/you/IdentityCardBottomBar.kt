@@ -55,7 +55,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryIconButton
 import com.rarilabs.rarime.ui.components.UiLinearProgressBar
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -229,11 +229,11 @@ fun IdentityCardBottomBarContentLoading(
         ) {
             UiLinearProgressBar(
                 percentage = animatedProgress, trackColors = listOf(
-                    RarimeTheme.colors.secondaryMain,
-                    RarimeTheme.colors.secondaryMain,
+                    FoundationTheme.colors.secondaryMain,
+                    FoundationTheme.colors.secondaryMain,
                 ), backgroundModifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, CircleShape
+                        FoundationTheme.colors.componentPrimary, CircleShape
                     )
                     .weight(1f)
             )
@@ -244,16 +244,16 @@ fun IdentityCardBottomBarContentLoading(
                     PassportProofState.CREATING_CONFIDENTIAL_PROFILE -> stringResource(R.string.creating)
                     PassportProofState.FINALIZING -> stringResource(R.string.finishing)
                 },
-                style = RarimeTheme.typography.subtitle6,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.subtitle6,
+                color = FoundationTheme.colors.textSecondary,
                 textAlign = TextAlign.Right,
                 modifier = Modifier.widthIn(min = 50.dp)
             )
         }
         Text(
             stringResource(R.string.please_don_t_close_application),
-            style = RarimeTheme.typography.body5,
-            color = RarimeTheme.colors.textSecondary
+            style = FoundationTheme.typography.body5,
+            color = FoundationTheme.colors.textSecondary
         )
     }
 }
@@ -344,18 +344,18 @@ fun IdentityCardBottomBarContentError(
                 id = R.drawable.ic_information_line,
                 size = 20.dp,
                 description = stringResource(R.string.error),
-                tint = RarimeTheme.colors.errorDark,
+                tint = FoundationTheme.colors.errorDark,
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     errorData.header,
-                    style = RarimeTheme.typography.subtitle6,
-                    color = RarimeTheme.colors.errorDark
+                    style = FoundationTheme.typography.subtitle6,
+                    color = FoundationTheme.colors.errorDark
                 )
                 Text(
                     errorData.hint,
-                    style = RarimeTheme.typography.body5,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body5,
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
         }
@@ -394,16 +394,16 @@ fun IdentityCardBottomBarContentInfo(
     Column(modifier) {
         Text(
             text = if (isIncognito) identifier.toTitleStub() else identifier.toLocalizedTitle(),
-            style = RarimeTheme.typography.subtitle6,
-            color = RarimeTheme.colors.textSecondary
+            style = FoundationTheme.typography.subtitle6,
+            color = FoundationTheme.colors.textSecondary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = if (isIncognito) identifier.toValueStub() else identifier.toLocalizedValue(
                 eDocument
             ),
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.subtitle5,
+            color = FoundationTheme.colors.textPrimary
         )
     }
 
@@ -437,7 +437,7 @@ fun IdentityCardBottomBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
                 .padding(horizontal = 16.dp, vertical = 9.dp)
                 .then(modifier),
             horizontalArrangement = Arrangement.SpaceBetween,

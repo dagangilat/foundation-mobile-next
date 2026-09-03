@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun WalletRouteLayout(
@@ -30,7 +30,7 @@ fun WalletRouteLayout(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(top = 20.dp)
             .padding(horizontal = 20.dp)
     ) {
@@ -54,16 +54,16 @@ fun WalletRouteLayout(
                     if (title.isNotEmpty()) {
                         Text(
                             text = title,
-                            style = RarimeTheme.typography.subtitle4,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.subtitle4,
+                            color = FoundationTheme.colors.textPrimary
                         )
                     }
 
                     if (description.isNotEmpty()) {
                         Text(
                             text = description,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textSecondary
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textSecondary
                         )
                     }
                 }

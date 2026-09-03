@@ -76,7 +76,7 @@ import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import kotlinx.coroutines.launch
 
@@ -220,11 +220,11 @@ private fun Header(
                     .padding(20.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = RarimeTheme.colors.componentPrimary)
+                    .background(color = FoundationTheme.colors.componentPrimary)
             ) {
                 AppIcon(
                     id = R.drawable.ic_close_fill,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
@@ -265,7 +265,7 @@ private fun Body(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.backgroundPrimary,
+                        FoundationTheme.colors.backgroundPrimary,
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
@@ -275,7 +275,7 @@ private fun Body(
                 BaseWidgetTitle(
                     title = stringResource(R.string.freedomtool_title),
                     accentTitle = stringResource(R.string.fredomtool_accent_title),
-                    titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
+                    titleStyle = FoundationTheme.typography.h1.copy(color = FoundationTheme.colors.invertedDark),
                     titleModifier =
                         Modifier.sharedBounds(
                             rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -283,7 +283,7 @@ private fun Body(
                             boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                             resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                         ),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient15),
+                    accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient15),
                     accentTitleModifier =
                         Modifier.sharedBounds(
                             rememberSharedContentState(
@@ -299,8 +299,8 @@ private fun Body(
                     )
                 Text(
                     text = "Cast secure, anonymous votes from anywhere, just using your passport",
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary
                 )
                 VoteActionRow(
                     onLink = { uriHandler.openUri(BaseConfig.VOTING_WEBSITE_URL) },
@@ -308,7 +308,7 @@ private fun Body(
                 )
                 HorizontalDivider(
                     modifier = Modifier
-                        .background(RarimeTheme.colors.componentPrimary)
+                        .background(FoundationTheme.colors.componentPrimary)
                         .fillMaxWidth()
 
                 )
@@ -370,14 +370,14 @@ private fun VoteTabs(
                 text = title.uppercase(),
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
-                    .background(if (sel) RarimeTheme.colors.componentPrimary else Color.Transparent)
+                    .background(if (sel) FoundationTheme.colors.componentPrimary else Color.Transparent)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = true)
                     ) { scope.launch { pagerState.animateScrollToPage(idx) } }
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                style = RarimeTheme.typography.overline2,
-                color = if (sel) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.overline2,
+                color = if (sel) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textSecondary
             )
         }
     }
@@ -407,7 +407,7 @@ private fun EmptyState(text: String) {
             .fillMaxWidth()
             .padding(vertical = 10.dp)
     ) {
-        Text(text = text, color = RarimeTheme.colors.textSecondary, textAlign = TextAlign.Center)
+        Text(text = text, color = FoundationTheme.colors.textSecondary, textAlign = TextAlign.Center)
     }
 }
 
@@ -422,7 +422,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient5)
+                .background(FoundationTheme.colors.gradient5)
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_bg_freedomtool_voting),

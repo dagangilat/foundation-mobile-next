@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppBackgroundGradient
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun BaseCollapsedWidget(
@@ -105,7 +105,7 @@ fun BaseCollapsedWidgetPreview() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(RarimeTheme.colors.backgroundBlur)
+                    .background(FoundationTheme.colors.backgroundBlur)
             ) {
                 AppBackgroundGradient()
             }

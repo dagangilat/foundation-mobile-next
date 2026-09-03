@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun DottedProgressItem(
@@ -24,7 +24,7 @@ fun DottedProgressItem(
     Box(
         modifier = Modifier
             .clip(shape)
-            .background(color = if (isActive) RarimeTheme.colors.primaryMain else RarimeTheme.colors.componentDisabled)
+            .background(color = if (isActive) FoundationTheme.colors.primaryMain else FoundationTheme.colors.componentDisabled)
             .size(size)
     ) {
 

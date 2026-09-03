@@ -28,7 +28,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.UiLinearProgressBar
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -85,15 +85,15 @@ fun SendingVoteScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "Sending",
-                style = RarimeTheme.typography.h5,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h5,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Sending your vote",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -107,8 +107,8 @@ fun SendingVoteScreen(
 
                 Text(
                     text = "${(progress.value * 100).toInt()}%",
-                    style = RarimeTheme.typography.caption2,
-                    color = RarimeTheme.colors.primaryMain,
+                    style = FoundationTheme.typography.caption2,
+                    color = FoundationTheme.colors.primaryMain,
                 )
             }
 

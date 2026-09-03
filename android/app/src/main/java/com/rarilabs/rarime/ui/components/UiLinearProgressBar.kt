@@ -15,17 +15,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun UiLinearProgressBar(
     backgroundModifier: Modifier = Modifier,
     trackModifier: Modifier = Modifier,
     percentage: Float = 0f,
-    backgroundColor: Color = RarimeTheme.colors.backgroundPrimary,
+    backgroundColor: Color = FoundationTheme.colors.backgroundPrimary,
     trackColors: List<Color> = listOf(
-        RarimeTheme.colors.primaryMain,
-        RarimeTheme.colors.primaryMain
+        FoundationTheme.colors.primaryMain,
+        FoundationTheme.colors.primaryMain
     ),
 ) {
     Box(
@@ -86,10 +86,10 @@ fun UiLinearProgressBarPreview() {
             UiLinearProgressBar(
                 percentage = 0.75f,
                 trackColors = listOf(
-                    RarimeTheme.colors.primaryMain,
-                    RarimeTheme.colors.warningDarker,
-                    RarimeTheme.colors.errorLighter,
-                    RarimeTheme.colors.successDarker,
+                    FoundationTheme.colors.primaryMain,
+                    FoundationTheme.colors.warningDarker,
+                    FoundationTheme.colors.errorLighter,
+                    FoundationTheme.colors.successDarker,
                 )
             )
         }

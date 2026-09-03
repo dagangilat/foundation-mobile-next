@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ProfileRouteLayout(
@@ -33,7 +33,7 @@ fun ProfileRouteLayout(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
     ) {
         Box(
             modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp)
@@ -43,8 +43,8 @@ fun ProfileRouteLayout(
             )
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle6,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.subtitle6,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

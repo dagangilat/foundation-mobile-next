@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun TipAlert(
@@ -30,7 +30,7 @@ fun TipAlert(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.gradient10, RoundedCornerShape(8.dp))
+            .background(FoundationTheme.colors.gradient10, RoundedCornerShape(8.dp))
             .padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         Row(
@@ -41,7 +41,7 @@ fun TipAlert(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle7,
+                style = FoundationTheme.typography.subtitle7,
                 color = Color(0xFF863AC4),
                 modifier = Modifier.weight(1f)
             )
@@ -50,8 +50,8 @@ fun TipAlert(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = text,
-            style = RarimeTheme.typography.body4,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.body4,
+            color = FoundationTheme.colors.textPrimary,
         )
         actionBar()
     }

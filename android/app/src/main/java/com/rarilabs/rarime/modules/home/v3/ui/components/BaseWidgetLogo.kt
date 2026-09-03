@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun BaseWidgetLogo(
@@ -28,9 +28,9 @@ fun BaseWidgetLogo(
     contentPadding: Int = 8,
     @DrawableRes
     resId: Int = R.drawable.ic_rarime,
-    tint: Color = RarimeTheme.colors.textPrimary,
+    tint: Color = FoundationTheme.colors.textPrimary,
     shape: Shape = CircleShape,
-    backgroundColor: Color = RarimeTheme.colors.backgroundBlur
+    backgroundColor: Color = FoundationTheme.colors.backgroundBlur
 ) {
     Box(
         modifier = modifier
@@ -62,9 +62,9 @@ fun BaseWidgetLogoPreview_CutCorner() {
         iconSize = 32,
         contentPadding = 8,
         resId = R.drawable.ic_body_scan_fill,
-        tint = RarimeTheme.colors.baseWhite,
+        tint = FoundationTheme.colors.baseWhite,
         shape = CutCornerShape(5.dp),
-        backgroundColor = RarimeTheme.colors.successDark
+        backgroundColor = FoundationTheme.colors.successDark
     )
 }
 
@@ -76,8 +76,8 @@ fun BaseWidgetLogoPreview_RoundedRect() {
         iconSize = 24,
         contentPadding = 12,
         resId = R.drawable.ic_body_scan_fill,
-        tint = RarimeTheme.colors.errorDark,
+        tint = FoundationTheme.colors.errorDark,
         shape = RoundedCornerShape(5.dp),
-        backgroundColor = RarimeTheme.colors.errorLighter
+        backgroundColor = FoundationTheme.colors.errorLighter
     )
 }

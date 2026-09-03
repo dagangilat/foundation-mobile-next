@@ -7,7 +7,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Screen
 
 private val navPureBgRoutes = listOf(
@@ -28,13 +28,13 @@ fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
     val isSystemDark = isSystemInDarkTheme()
 
     val navColor =
-        if (route in navPureBgRoutes) RarimeTheme.colors.backgroundPure
-        else RarimeTheme.colors.backgroundPrimary
+        if (route in navPureBgRoutes) FoundationTheme.colors.backgroundPure
+        else FoundationTheme.colors.backgroundPrimary
 //    TODO: rollback once there will be any screen with pure bg
 //    val statusColor =
-//        if (route in statusPureBgRoutes) RarimeTheme.colors.backgroundPure
-//        else RarimeTheme.colors.backgroundPrimary
-    val statusColor = RarimeTheme.colors.backgroundPrimary
+//        if (route in statusPureBgRoutes) FoundationTheme.colors.backgroundPure
+//        else FoundationTheme.colors.backgroundPrimary
+    val statusColor = FoundationTheme.colors.backgroundPrimary
 
     val isLightStyle = when (colorScheme) {
         AppColorScheme.LIGHT -> true

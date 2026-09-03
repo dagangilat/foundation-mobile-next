@@ -26,7 +26,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Country
 
 @Composable
@@ -38,7 +38,7 @@ fun NotAllowedPassportScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(top = 80.dp, bottom = 20.dp)
     ) {
         Column(
@@ -51,13 +51,13 @@ fun NotAllowedPassportScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
-                    .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                    .background(FoundationTheme.colors.componentPrimary, CircleShape)
+                    .border(2.dp, FoundationTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
                     text = Country.fromISOCode(eDocument.personDetails!!.nationality).flag,
-                    style = RarimeTheme.typography.h3,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h3,
+                    color = FoundationTheme.colors.textPrimary,
                 )
             }
 
@@ -73,14 +73,14 @@ fun NotAllowedPassportScreen(
                     text = stringResource(
                         R.string.unsupported_country_title
                     ),
-                    style = RarimeTheme.typography.h4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h4,
+                    color = FoundationTheme.colors.textPrimary,
                 )
                 Text(
                     text = Country.fromISOCode(eDocument.personDetails!!.nationality).localizedName,
-                    style = RarimeTheme.typography.body4,
+                    style = FoundationTheme.typography.body4,
                     textAlign = TextAlign.Center,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = FoundationTheme.colors.textSecondary,
                 )
 
                 HorizontalDivider()
@@ -93,8 +93,8 @@ fun NotAllowedPassportScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.unsupported_country_description),
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.body4
+                    color = FoundationTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.body4
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }

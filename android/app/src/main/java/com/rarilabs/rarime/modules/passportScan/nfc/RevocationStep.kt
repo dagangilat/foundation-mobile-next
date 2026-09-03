@@ -26,7 +26,7 @@ import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.models.RevocationStepViewModel
 import com.rarilabs.rarime.ui.components.AppAnimation
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 import org.jmrtd.lds.icao.MRZInfo
@@ -100,8 +100,8 @@ fun RevocationStep(
                     ScanNFCState.NOT_SCANNING -> {
                         Text(
                             text = stringResource(R.string.nfc_reader_hint),
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textSecondary,
                             modifier = Modifier.width(250.dp),
                             textAlign = TextAlign.Center
                         )
@@ -110,8 +110,8 @@ fun RevocationStep(
                     ScanNFCState.SCANNING -> {
                         Text(
                             text = stringResource(R.string.nfc_reader_scanning),
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textSecondary,
                             modifier = Modifier.width(250.dp),
                             textAlign = TextAlign.Center
                         )
@@ -120,8 +120,8 @@ fun RevocationStep(
                     ScanNFCState.SCANNED -> {
                         Text(
                             text = stringResource(R.string.nfc_reader_revoke),
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textSecondary,
                             modifier = Modifier.width(250.dp),
                             textAlign = TextAlign.Center
                         )

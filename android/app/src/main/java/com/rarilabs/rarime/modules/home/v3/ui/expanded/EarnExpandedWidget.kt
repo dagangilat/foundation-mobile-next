@@ -61,7 +61,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -103,7 +103,7 @@ fun EarnExpandedWidget(
     }
     AppBottomSheet(
         state = inviteOthers,
-        backgroundColor = RarimeTheme.colors.backgroundSurface1,
+        backgroundColor = FoundationTheme.colors.backgroundSurface1,
         isHeaderEnabled = false,
         fullScreen = false,
     ) {
@@ -218,7 +218,7 @@ private fun Header(
                 modifier = Modifier
                     .padding(20.dp)
                     .clip(RoundedCornerShape(40.dp))
-                    .background(color = RarimeTheme.colors.componentPrimary),
+                    .background(color = FoundationTheme.colors.componentPrimary),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
@@ -227,21 +227,21 @@ private fun Header(
                 ) {
                     Text(
                         text = "Reserved: ",
-                        style = RarimeTheme.typography.subtitle6,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.subtitle6,
+                        color = FoundationTheme.colors.textPrimary,
 
                         )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = balance.toString(),
-                        style = RarimeTheme.typography.h6,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.h6,
+                        color = FoundationTheme.colors.textPrimary,
                         modifier = Modifier
                     )
                     AppIcon(
                         id = (R.drawable.ic_rarimo),
                         size = 17.dp,
-                        tint = RarimeTheme.colors.textPrimary,
+                        tint = FoundationTheme.colors.textPrimary,
                     )
                 }
 
@@ -254,11 +254,11 @@ private fun Header(
                     .padding(20.dp)
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = RarimeTheme.colors.componentPrimary)
+                    .background(color = FoundationTheme.colors.componentPrimary)
             ) {
                 AppIcon(
                     id = R.drawable.ic_close,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
@@ -292,7 +292,7 @@ private fun Body(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.backgroundSurface1,
+                        FoundationTheme.colors.backgroundSurface1,
                         shape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
                     )
                     .padding(20.dp)
@@ -302,7 +302,7 @@ private fun Body(
 
                 BaseWidgetTitle(
                     title = stringResource(R.string.earn),
-                    titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
+                    titleStyle = FoundationTheme.typography.h1.copy(color = FoundationTheme.colors.invertedDark),
                     accentTitle = stringResource(R.string.rmo),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -310,7 +310,7 @@ private fun Body(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient13),
+                    accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient13),
                     accentTitleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.accentTitle(
@@ -322,7 +322,7 @@ private fun Body(
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
                     caption = stringResource(R.string.earn_expanded_widget_caption),
-                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+                    captionStyle = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.caption(
@@ -348,7 +348,7 @@ private fun Body(
 private fun Footer(
     countOfTask: Int, onClick: () -> Unit, maxValueOfRefferals: Int, currentValueOfRefferals: Int
 ) {
-    Column(modifier = Modifier.background(color = RarimeTheme.colors.backgroundSurface1)) {
+    Column(modifier = Modifier.background(color = FoundationTheme.colors.backgroundSurface1)) {
 
 
         HorizontalDivider(
@@ -359,8 +359,8 @@ private fun Footer(
         Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 24.dp)) {
             Text(
                 text = (countOfTask.toString() + stringResource(R.string.earn_expanded_widget_active_task_title)),
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.overline2,
+                color = FoundationTheme.colors.textSecondary,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             TaskCard(
@@ -397,7 +397,7 @@ private fun Background(
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
                 .fillMaxSize()
         ) {
             Image(

@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 data class TextButtonColors(
     val contentColor: Color,
@@ -35,9 +35,9 @@ fun BaseTextButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
     colors: TextButtonColors = TextButtonColors(
-        contentColor = RarimeTheme.colors.textPrimary,
-        pressedColor = RarimeTheme.colors.textPlaceholder,
-        disabledColor = RarimeTheme.colors.textDisabled
+        contentColor = FoundationTheme.colors.textPrimary,
+        pressedColor = FoundationTheme.colors.textPlaceholder,
+        disabledColor = FoundationTheme.colors.textDisabled
     ),
     size: ButtonSize = ButtonSize.Medium,
     text: String? = null,
@@ -130,8 +130,8 @@ fun TextButtonPreview() {
         BaseTextButton(onClick = { }) {
             Text(
                 text = "Custom content",
-                color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle5
+                color = FoundationTheme.colors.errorDark,
+                style = FoundationTheme.typography.subtitle5
             )
         }
     }

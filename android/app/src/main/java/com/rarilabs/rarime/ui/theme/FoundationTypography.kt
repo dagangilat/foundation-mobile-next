@@ -23,7 +23,7 @@ val playfairFontFamily = FontFamily(
     Font(R.font.playfair_bold, FontWeight.Bold),
 )
 
-data class RarimeTypography(
+data class FoundationTypography(
     val additional1: TextStyle = TextStyle(
         fontFamily = playfairFontFamily,
         fontWeight = FontWeight.Bold,
@@ -210,4 +210,4 @@ data class RarimeTypography(
     ),
 )
 
-val LocalTypography = staticCompositionLocalOf { RarimeTypography() }
+val LocalTypography = staticCompositionLocalOf { FoundationTypography() }

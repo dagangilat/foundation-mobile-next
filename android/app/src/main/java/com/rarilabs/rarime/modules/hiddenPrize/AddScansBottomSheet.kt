@@ -21,7 +21,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 data class AddScanProps(
@@ -42,12 +42,12 @@ fun AddScanBottomSheet(
     onShare: () -> Unit,
     onInvite: () -> Unit,
 ) {
-    val enabledColor = RarimeTheme.colors.textPrimary
-    val disabledColor = RarimeTheme.colors.textDisabled
-    val enabledIconTitleColor = RarimeTheme.colors.hiddenPrizeAccent
-    val enabledIconBackgroundTitleColor = RarimeTheme.colors.hiddenPrizeAccent.copy(alpha = 0.1f)
-    val disabledIconTitleColor = RarimeTheme.colors.textSecondary
-    val disabledIconBackgroundTitleColor = RarimeTheme.colors.componentPrimary
+    val enabledColor = FoundationTheme.colors.textPrimary
+    val disabledColor = FoundationTheme.colors.textDisabled
+    val enabledIconTitleColor = FoundationTheme.colors.hiddenPrizeAccent
+    val enabledIconBackgroundTitleColor = FoundationTheme.colors.hiddenPrizeAccent.copy(alpha = 0.1f)
+    val disabledIconTitleColor = FoundationTheme.colors.textSecondary
+    val disabledIconBackgroundTitleColor = FoundationTheme.colors.componentPrimary
     val props = remember(isInviteEnable, isShareEnable) {
         if (isInviteEnable || isShareEnable) {
             AddScanProps(
@@ -88,16 +88,16 @@ fun AddScanBottomSheet(
             }
             Text(
                 text = stringResource(props.idTitle),
-                style = RarimeTheme.typography.h3,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h3,
+                color = FoundationTheme.colors.textPrimary,
                 modifier = Modifier.padding(
                     bottom = 8.dp, start = 24.dp
                 )
             )
             Text(
                 text = stringResource(props.idDescription),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary,
                 modifier = Modifier.padding(
                     horizontal = 24.dp
                 )
@@ -166,18 +166,18 @@ private fun RowAddScans(
                 containerSize = 40,
                 contentColor = props.color,
                 contentSize = 20,
-                containerColor = RarimeTheme.colors.componentPrimary
+                containerColor = FoundationTheme.colors.componentPrimary
             )
         }
 
         Column {
             Text(
-                text = rowTitle, style = RarimeTheme.typography.subtitle5, color = props.color
+                text = rowTitle, style = FoundationTheme.typography.subtitle5, color = props.color
             )
             Text(
                 text = rowDescription,
-                style = RarimeTheme.typography.body5,
-                color = if (isEnabled) RarimeTheme.colors.textSecondary else props.color
+                style = FoundationTheme.typography.body5,
+                color = if (isEnabled) FoundationTheme.colors.textSecondary else props.color
             )
         }
         Spacer(Modifier.weight(weight = 1.0f))

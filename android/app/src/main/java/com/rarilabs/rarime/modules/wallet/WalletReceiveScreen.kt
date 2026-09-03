@@ -37,7 +37,7 @@ import com.rarilabs.rarime.modules.wallet.view_model.WalletReceiveViewModel
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CardContainer
 import com.rarilabs.rarime.ui.components.SecondaryTextButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -93,48 +93,48 @@ fun WalletReceiveScreenContent(
                     QrCodeView(
                         data = selectedWalletAsset.userAddress,
                         colors = QrCodeColors(
-                            background = RarimeTheme.colors.backgroundPure,
-                            foreground = RarimeTheme.colors.textPrimary
+                            background = FoundationTheme.colors.backgroundPure,
+                            foreground = FoundationTheme.colors.textPrimary
                         ),
                         modifier = Modifier
                             .size(180.dp)
-                            .border(7.dp, RarimeTheme.colors.textPrimary, RoundedCornerShape(12.dp))
+                            .border(7.dp, FoundationTheme.colors.textPrimary, RoundedCornerShape(12.dp))
                             .padding(20.dp)
                     )
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .background(RarimeTheme.colors.backgroundPure)
+                            .background(FoundationTheme.colors.backgroundPure)
                             .padding(4.dp)
                     ) {
                         AppIcon(
                             id = R.drawable.ic_rarime,
                             size = 36.dp,
-                            tint = RarimeTheme.colors.textPrimary,
+                            tint = FoundationTheme.colors.textPrimary,
                         )
                     }
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = stringResource(R.string.deposit_address_lbl),
-                        style = RarimeTheme.typography.subtitle6,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.subtitle6,
+                        color = FoundationTheme.colors.textPrimary
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .background(
-                                RarimeTheme.colors.componentPrimary,
+                                FoundationTheme.colors.componentPrimary,
                                 RoundedCornerShape(8.dp)
                             )
                             .padding(vertical = 14.dp, horizontal = 16.dp)
                     ) {
                         Text(
                             text = selectedWalletAsset.userAddress,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary,
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textPrimary,
                             modifier = Modifier.weight(1f),
                         )
                         SecondaryTextButton(

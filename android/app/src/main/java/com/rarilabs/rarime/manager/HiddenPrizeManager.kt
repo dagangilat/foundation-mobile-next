@@ -271,7 +271,7 @@ class HiddenPrizeManager @Inject constructor(
                 faceContract.getVerificationNonce(BigInteger(address.drop(2), 16)).send().toString()
             }
 
-            val assetContext: Context = application.createPackageContext("com.rarilabs.rarime", 0)
+            val assetContext: Context = application.createPackageContext(application.packageName, 0)
             val assetManager = assetContext.assets
 
             val zkp = ZKPUseCase(application, assetManager)

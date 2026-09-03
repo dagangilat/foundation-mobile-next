@@ -8,12 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun HorizontalDivider(
     modifier: Modifier = Modifier,
-    color: Color = RarimeTheme.colors.componentPrimary
+    color: Color = FoundationTheme.colors.componentPrimary
 ) {
     Box(
         modifier = modifier

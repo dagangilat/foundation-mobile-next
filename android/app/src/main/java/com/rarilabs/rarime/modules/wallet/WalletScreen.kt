@@ -43,7 +43,7 @@ import com.rarilabs.rarime.ui.components.DropdownOption
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.SecondaryIconButton
 import com.rarilabs.rarime.ui.components.TextDropdown
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.NumberUtil
 import com.rarilabs.rarime.util.Screen
@@ -115,7 +115,7 @@ fun WalletScreenContainer(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .verticalScroll(rememberScrollState())
         ) {
             Column(
@@ -125,8 +125,8 @@ fun WalletScreenContainer(
             ) {
                 Text(
                     text = stringResource(R.string.wallet_title),
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle4,
+                    color = FoundationTheme.colors.textPrimary,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
@@ -137,8 +137,8 @@ fun WalletScreenContainer(
                 ) {
                     Text(
                         text = stringResource(R.string.available_rmo),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textSecondary
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -146,8 +146,8 @@ fun WalletScreenContainer(
                     ) {
                         Text(
                             text = NumberUtil.formatAmount(selectedUserAsset.humanBalance()),
-                            style = RarimeTheme.typography.h4,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.h4,
+                            color = FoundationTheme.colors.textPrimary
                         )
 
                         // TODO: rollback at next releases
@@ -181,8 +181,8 @@ fun WalletScreenContainer(
                         } else {
                             Text(
                                 text = selectedUserAsset.getTokenSymbol().uppercase(),
-                                style = RarimeTheme.typography.overline2,
-                                color = RarimeTheme.colors.textPrimary
+                                style = FoundationTheme.typography.overline2,
+                                color = FoundationTheme.colors.textPrimary
                             )
                         }
                     }
@@ -206,8 +206,8 @@ fun WalletScreenContainer(
                             )
                             Text(
                                 text = stringResource(R.string.receive_btn),
-                                color = RarimeTheme.colors.textSecondary,
-                                style = RarimeTheme.typography.buttonSmall
+                                color = FoundationTheme.colors.textSecondary,
+                                style = FoundationTheme.typography.buttonSmall
                             )
                         }
                         Spacer(modifier = Modifier.width(32.dp))
@@ -222,8 +222,8 @@ fun WalletScreenContainer(
                             )
                             Text(
                                 text = stringResource(R.string.send_btn),
-                                color = RarimeTheme.colors.textSecondary,
-                                style = RarimeTheme.typography.buttonSmall
+                                color = FoundationTheme.colors.textSecondary,
+                                style = FoundationTheme.typography.buttonSmall
                             )
                         }
                     }

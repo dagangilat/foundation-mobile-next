@@ -37,7 +37,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.CoroutineScope
@@ -96,8 +96,8 @@ fun HeaderSection(onClose: () -> Unit) {
             onClick = onClose,
             icon = R.drawable.ic_close,
             colors = ButtonDefaults.buttonColors(
-                containerColor = RarimeTheme.colors.componentPrimary,
-                contentColor = RarimeTheme.colors.textPrimary
+                containerColor = FoundationTheme.colors.componentPrimary,
+                contentColor = FoundationTheme.colors.textPrimary
             )
         )
     }
@@ -107,8 +107,8 @@ fun HeaderSection(onClose: () -> Unit) {
 fun NotificationHeader(text: String) {
     Text(
         text = text,
-        style = RarimeTheme.typography.h4,
-        color = RarimeTheme.colors.textPrimary
+        style = FoundationTheme.typography.h4,
+        color = FoundationTheme.colors.textPrimary
     )
 }
 
@@ -124,8 +124,8 @@ fun NotificationTimestamp(timestamp: String, context: Context) {
                 id = R.string.time_ago
             )
         }",
-        style = RarimeTheme.typography.body3,
-        color = RarimeTheme.colors.textSecondary
+        style = FoundationTheme.typography.body3,
+        color = FoundationTheme.colors.textSecondary
     )
 }
 
@@ -133,8 +133,8 @@ fun NotificationTimestamp(timestamp: String, context: Context) {
 fun NotificationDescription(text: String) {
     Text(
         text = text,
-        style = RarimeTheme.typography.body4,
-        color = RarimeTheme.colors.textSecondary
+        style = FoundationTheme.typography.body4,
+        color = FoundationTheme.colors.textSecondary
     )
 }
 

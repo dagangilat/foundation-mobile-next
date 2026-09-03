@@ -14,7 +14,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseTextButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.base.TextButtonColors
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PrimaryTextButton(
@@ -33,9 +33,9 @@ fun PrimaryTextButton(
         enabled = enabled,
         size = size,
         colors = TextButtonColors(
-            contentColor = RarimeTheme.colors.textPrimary,
-            pressedColor = RarimeTheme.colors.textPlaceholder,
-            disabledColor = RarimeTheme.colors.textDisabled
+            contentColor = FoundationTheme.colors.textPrimary,
+            pressedColor = FoundationTheme.colors.textPlaceholder,
+            disabledColor = FoundationTheme.colors.textDisabled
         ),
         text = text,
         leftIcon = leftIcon,
@@ -75,8 +75,8 @@ private fun PrimaryTextButtonPreview() {
         PrimaryTextButton(onClick = { }) {
             Text(
                 text = "Custom content",
-                color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle3
+                color = FoundationTheme.colors.errorDark,
+                style = FoundationTheme.typography.subtitle3
             )
         }
     }

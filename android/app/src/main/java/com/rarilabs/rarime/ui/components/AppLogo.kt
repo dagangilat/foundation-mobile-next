@@ -13,7 +13,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Preview(showBackground = true)
 @Composable
@@ -25,7 +25,7 @@ fun AppLogo(
     iconSize: Int = 96
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = RarimeTheme.colors.baseBlack),
+        colors = CardDefaults.cardColors(containerColor = FoundationTheme.colors.baseBlack),
         shape = RoundedCornerShape(radius.dp),
         modifier = modifier
             .size(wrapperSize.dp)

@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun InfoAlert(
@@ -26,14 +26,14 @@ fun InfoAlert(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.warningLighter, RoundedCornerShape(8.dp))
+            .background(FoundationTheme.colors.warningLighter, RoundedCornerShape(8.dp))
             .padding(8.dp)
     ) {
-        AppIcon(id = R.drawable.ic_info, tint = RarimeTheme.colors.warningDarker)
+        AppIcon(id = R.drawable.ic_info, tint = FoundationTheme.colors.warningDarker)
         Text(
             text = text,
-            style = RarimeTheme.typography.body5,
-            color = RarimeTheme.colors.warningDarker,
+            style = FoundationTheme.typography.body5,
+            color = FoundationTheme.colors.warningDarker,
             modifier = Modifier.weight(1f)
         )
         actionBar()

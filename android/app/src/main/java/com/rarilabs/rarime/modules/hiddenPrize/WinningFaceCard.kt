@@ -32,7 +32,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.WalletUtil
 
 @Composable
@@ -58,14 +58,14 @@ fun WinningFaceCard(
             modifier = modifier,
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = RarimeTheme.colors.backgroundPrimary,
+                containerColor = FoundationTheme.colors.backgroundPrimary,
             ),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = stringResource(R.string.winner_face_card_title),
-                    style = RarimeTheme.typography.subtitle6.copy(RarimeTheme.colors.textPrimary)
+                    style = FoundationTheme.typography.subtitle6.copy(FoundationTheme.colors.textPrimary)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -88,13 +88,13 @@ fun WinningFaceCard(
                     Column {
                         Text(
                             text = name,
-                            style = RarimeTheme.typography.h5.copy(RarimeTheme.colors.textPrimary)
+                            style = FoundationTheme.typography.h5.copy(FoundationTheme.colors.textPrimary)
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = description,
-                            style = RarimeTheme.typography.body5,
-                            color = RarimeTheme.colors.textSecondary,
+                            style = FoundationTheme.typography.body5,
+                            color = FoundationTheme.colors.textSecondary,
                         )
                     }
                 }
@@ -102,7 +102,7 @@ fun WinningFaceCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(
                     thickness = 1.dp,
-                    color = RarimeTheme.colors.componentPrimary.copy(0.05f)
+                    color = FoundationTheme.colors.componentPrimary.copy(0.05f)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -113,7 +113,7 @@ fun WinningFaceCard(
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = stringResource(R.string.winner_face_card_winner_lbl),
-                            style = RarimeTheme.typography.subtitle6.copy(RarimeTheme.colors.textPrimary)
+                            style = FoundationTheme.typography.subtitle6.copy(FoundationTheme.colors.textPrimary)
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
@@ -124,7 +124,7 @@ fun WinningFaceCard(
                             ),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
-                            style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+                            style = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary),
                             textDecoration = TextDecoration.Underline
                         )
                     }
@@ -132,7 +132,7 @@ fun WinningFaceCard(
                     Row(horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = stringResource(R.string.winner_face_card_prize_lbl),
-                            style = RarimeTheme.typography.subtitle6.copy(RarimeTheme.colors.textPrimary)
+                            style = FoundationTheme.typography.subtitle6.copy(FoundationTheme.colors.textPrimary)
                         )
                         Spacer(Modifier.weight(1f))
                         Row(
@@ -141,7 +141,7 @@ fun WinningFaceCard(
                         ) {
                             Text(
                                 text = prizeAmount.toString().format(),
-                                style = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary),
+                                style = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary),
                             )
                             prizeSymbol()
                         }

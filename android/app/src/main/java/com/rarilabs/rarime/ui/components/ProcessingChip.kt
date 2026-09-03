@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 enum class ProcessingStatus {
     PROCESSING,
@@ -28,18 +28,18 @@ enum class ProcessingStatus {
 fun ProcessingChip(status: ProcessingStatus) {
     val bgColor by animateColorAsState(
         targetValue = when (status) {
-            ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningLighter
-            ProcessingStatus.SUCCESS -> RarimeTheme.colors.successLighter
-            ProcessingStatus.FAILURE -> RarimeTheme.colors.errorLighter
+            ProcessingStatus.PROCESSING -> FoundationTheme.colors.warningLighter
+            ProcessingStatus.SUCCESS -> FoundationTheme.colors.successLighter
+            ProcessingStatus.FAILURE -> FoundationTheme.colors.errorLighter
         },
         label = ""
     )
 
     val contentColor by animateColorAsState(
         targetValue = when (status) {
-            ProcessingStatus.PROCESSING -> RarimeTheme.colors.warningDark
-            ProcessingStatus.SUCCESS -> RarimeTheme.colors.successDark
-            ProcessingStatus.FAILURE -> RarimeTheme.colors.errorMain
+            ProcessingStatus.PROCESSING -> FoundationTheme.colors.warningDark
+            ProcessingStatus.SUCCESS -> FoundationTheme.colors.successDark
+            ProcessingStatus.FAILURE -> FoundationTheme.colors.errorMain
         },
         label = ""
     )
@@ -73,7 +73,7 @@ fun ProcessingChip(status: ProcessingStatus) {
         }
         Text(
             text = text,
-            style = RarimeTheme.typography.overline3,
+            style = FoundationTheme.typography.overline3,
             color = contentColor,
         )
     }

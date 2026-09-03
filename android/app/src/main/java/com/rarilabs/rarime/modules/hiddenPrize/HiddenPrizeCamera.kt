@@ -73,7 +73,7 @@ import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -156,9 +156,9 @@ fun HiddenPrizeCamera(
                 ShadowBoxCanvas(
                     boxSize = 270.dp,
                     cornerRadius = 16.dp,
-                    borderColor = RarimeTheme.colors.baseWhite,
+                    borderColor = FoundationTheme.colors.baseWhite,
                     borderWidth = 2.dp,
-                    boxColor = RarimeTheme.colors.baseBlackOp40
+                    boxColor = FoundationTheme.colors.baseBlackOp40
                 )
 
                 FaceMeshCanvas(
@@ -346,8 +346,8 @@ fun OverlayControls(
             onClick = onClose,
             icon = R.drawable.ic_close_fill,
             colors = ButtonDefaults.buttonColors(
-                containerColor = RarimeTheme.colors.componentPrimary,
-                contentColor = RarimeTheme.colors.baseWhite
+                containerColor = FoundationTheme.colors.componentPrimary,
+                contentColor = FoundationTheme.colors.baseWhite
             ),
             modifier = Modifier
                 .padding(20.dp)
@@ -363,13 +363,13 @@ fun OverlayControls(
         ) {
             AppIcon(
                 modifier = Modifier.padding(top = 42.dp),
-                id = R.drawable.ic_user_focus, size = 32.dp, tint = RarimeTheme.colors.baseWhite
+                id = R.drawable.ic_user_focus, size = 32.dp, tint = FoundationTheme.colors.baseWhite
             )
             Text(
                 modifier = Modifier.padding(top = 17.dp),
                 text = stringResource(R.string.hidden_prize_camera_up_title),
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.baseWhite
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.baseWhite
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -386,10 +386,10 @@ fun OverlayControls(
                             .fillMaxWidth(),
                         size = ButtonSize.Large,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
-                            contentColor = RarimeTheme.colors.baseWhite,
-                            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                            disabledContentColor = RarimeTheme.colors.textDisabled
+                            containerColor = FoundationTheme.colors.baseWhite.copy(0.1f),
+                            contentColor = FoundationTheme.colors.baseWhite,
+                            disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                            disabledContentColor = FoundationTheme.colors.textDisabled
                         ),
                         onClick = {
                             scope.launch {
@@ -414,10 +414,10 @@ fun OverlayControls(
                             leftIcon = R.drawable.ic_restart_line,
                             onClick = { onClearBitmap() },
                             colors = ButtonColors(
-                                containerColor = RarimeTheme.colors.baseBlack,
-                                contentColor = RarimeTheme.colors.baseWhite,
-                                disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                                disabledContentColor = RarimeTheme.colors.textDisabled
+                                containerColor = FoundationTheme.colors.baseBlack,
+                                contentColor = FoundationTheme.colors.baseWhite,
+                                disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                                disabledContentColor = FoundationTheme.colors.textDisabled
                             )
                         )
 
@@ -427,10 +427,10 @@ fun OverlayControls(
                             modifier = Modifier.weight(12f),
                             size = ButtonSize.Large,
                             colors = ButtonColors(
-                                containerColor = RarimeTheme.colors.baseWhite,
-                                contentColor = RarimeTheme.colors.baseBlack,
-                                disabledContentColor = RarimeTheme.colors.textDisabled,
-                                disabledContainerColor = RarimeTheme.colors.componentDisabled
+                                containerColor = FoundationTheme.colors.baseWhite,
+                                contentColor = FoundationTheme.colors.baseBlack,
+                                disabledContentColor = FoundationTheme.colors.textDisabled,
+                                disabledContainerColor = FoundationTheme.colors.componentDisabled
                             ),
                             text = "Confirm",
                             onClick = { onNext(selectedBitmap) })

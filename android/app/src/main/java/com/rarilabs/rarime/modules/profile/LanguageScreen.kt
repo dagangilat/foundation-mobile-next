@@ -16,7 +16,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppLanguage
 import com.rarilabs.rarime.data.enums.toLocalizedString
 import com.rarilabs.rarime.ui.components.AppRadioButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun LanguageScreen(
@@ -52,13 +52,13 @@ private fun LanguageItem(
         ) {
             Text(
                 text = language.flag,
-                style = RarimeTheme.typography.subtitle3,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle3,
+                color = FoundationTheme.colors.textPrimary
             )
             Text(
                 text = language.toLocalizedString(),
-                style = RarimeTheme.typography.buttonMedium,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.buttonMedium,
+                color = FoundationTheme.colors.textPrimary
             )
         }
     }

@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AppIcon(
@@ -43,7 +43,7 @@ fun AppIconWithGradient(
     @DrawableRes id: Int,
     size: Dp = 20.dp,
     description: String? = null,
-    gradient: Brush = RarimeTheme.colors.gradient1
+    gradient: Brush = FoundationTheme.colors.gradient1
 ) {
     Icon(
         modifier = Modifier
@@ -69,12 +69,12 @@ private fun AppIconPreview() {
     ) {
         AppIcon(id = R.drawable.ic_bell_fill)
         AppIcon(id = R.drawable.ic_qr_code, size = 24.dp)
-        AppIcon(id = R.drawable.ic_cardholder, size = 32.dp, tint = RarimeTheme.colors.errorMain)
+        AppIcon(id = R.drawable.ic_cardholder, size = 32.dp, tint = FoundationTheme.colors.errorMain)
 
         AppIconWithGradient(
             id = R.drawable.ic_rarime,
             size = 32.dp,
-            gradient = RarimeTheme.colors.gradient1
+            gradient = FoundationTheme.colors.gradient1
         )
     }
 }

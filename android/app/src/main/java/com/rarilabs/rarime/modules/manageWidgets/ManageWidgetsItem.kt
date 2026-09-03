@@ -15,7 +15,7 @@ import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 @Composable
@@ -37,16 +37,16 @@ fun ManageWidgetsItem(
         )
         Text(
             text = title,
-            style = RarimeTheme.typography.h3,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.h3,
+            color = FoundationTheme.colors.textPrimary,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 12.dp, bottom = 20.dp)
         )
         Text(
             text = description,
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textSecondary,
             minLines = 2,
             textAlign = TextAlign.Center,
             modifier = Modifier

@@ -23,7 +23,7 @@ import com.rarilabs.rarime.ui.components.AppTextFieldState
 import com.rarilabs.rarime.ui.components.PasscodeField
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PasscodeScreenLayout(
@@ -34,13 +34,13 @@ fun PasscodeScreenLayout(
     enabled: Boolean = true,
     onClose: (() -> Unit)? = null,
     iconId: Int = R.drawable.ic_user,
-    iconColors: Pair<Color, Color> = RarimeTheme.colors.componentPrimary to RarimeTheme.colors.textPrimary,
+    iconColors: Pair<Color, Color> = FoundationTheme.colors.componentPrimary to FoundationTheme.colors.textPrimary,
     action: @Composable () -> Unit = {}
 ) {
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .fillMaxSize()
     ) {
         onClose?.let {
@@ -60,7 +60,7 @@ fun PasscodeScreenLayout(
                     .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .fillMaxWidth()
                     .fillMaxHeight(0.9f)
-                    .background(RarimeTheme.colors.backgroundPure)
+                    .background(FoundationTheme.colors.backgroundPure)
                     .padding(top = 48.dp)
             ) {
                 Column(
@@ -69,8 +69,8 @@ fun PasscodeScreenLayout(
                 ) {
                     Text(
                         text = title,
-                        style = RarimeTheme.typography.h2,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.h2,
+                        color = FoundationTheme.colors.textPrimary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -78,8 +78,8 @@ fun PasscodeScreenLayout(
                     )
                     Text(
                         text = subtitle,
-                        style = RarimeTheme.typography.body3,
-                        color = RarimeTheme.colors.textSecondary,
+                        style = FoundationTheme.typography.body3,
+                        color = FoundationTheme.colors.textSecondary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth(0.75f)

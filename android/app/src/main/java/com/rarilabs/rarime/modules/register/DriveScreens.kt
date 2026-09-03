@@ -28,7 +28,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun RestoreScreen(
@@ -54,7 +54,7 @@ fun RestoreScreen(
 
     Column(
         modifier = modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .fillMaxSize()
             .padding(top = 10.dp, bottom = 16.dp)
             .padding(horizontal = 20.dp),
@@ -72,7 +72,7 @@ fun RestoreScreen(
                         modifier = Modifier.padding(10.dp),
                         id = R.drawable.ic_arrow_left,
                         size = 20.dp,
-                        tint = RarimeTheme.colors.textPrimary
+                        tint = FoundationTheme.colors.textPrimary
                     )
                 }
             )
@@ -84,22 +84,22 @@ fun RestoreScreen(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
             containerSize = 160,
-            contentColor = RarimeTheme.colors.textPrimary,
-            containerColor = RarimeTheme.colors.componentPrimary
+            contentColor = FoundationTheme.colors.textPrimary,
+            containerColor = FoundationTheme.colors.componentPrimary
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             stringResource(R.string.drive_title_restore_your_account),
-            style = RarimeTheme.typography.h2,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.h2,
+            color = FoundationTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             stringResource(R.string.drive_restore_description),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -154,7 +154,7 @@ fun BackUpScreen(
 
     Column(
         modifier = modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .fillMaxSize()
             .padding(top = 10.dp, bottom = 16.dp)
             .padding(horizontal = 20.dp),
@@ -172,7 +172,7 @@ fun BackUpScreen(
                         modifier = Modifier.padding(10.dp),
                         id = R.drawable.ic_arrow_left,
                         size = 20.dp,
-                        tint = RarimeTheme.colors.textPrimary
+                        tint = FoundationTheme.colors.textPrimary
                     )
                 }
             )
@@ -183,22 +183,22 @@ fun BackUpScreen(
             iconId = R.drawable.ic_backup,
             contentSize = 80,
             containerSize = 160,
-            contentColor = RarimeTheme.colors.textPrimary,
-            containerColor = RarimeTheme.colors.componentPrimary
+            contentColor = FoundationTheme.colors.textPrimary,
+            containerColor = FoundationTheme.colors.componentPrimary
         )
 
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             stringResource(R.string.drive_title_back_up_your_account),
-            style = RarimeTheme.typography.h2,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.h2,
+            color = FoundationTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             stringResource(R.string.drive_backup_description),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.weight(1f))

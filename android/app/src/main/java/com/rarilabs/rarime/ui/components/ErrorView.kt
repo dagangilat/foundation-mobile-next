@@ -9,7 +9,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ErrorView(
@@ -25,18 +25,18 @@ fun ErrorView(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AppIcon(id = iconId, size = 100.dp, tint = RarimeTheme.colors.errorDarker)
+            AppIcon(id = iconId, size = 100.dp, tint = FoundationTheme.colors.errorDarker)
 
             Text(
                 text = title,
-                style = RarimeTheme.typography.h2,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h2,
+                color = FoundationTheme.colors.textPrimary
             )
             Text(
                 text = subtitle,
                 textAlign = TextAlign.Center,
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textSecondary
             )
         }
 

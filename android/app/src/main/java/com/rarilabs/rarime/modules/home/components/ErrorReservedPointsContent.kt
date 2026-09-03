@@ -23,14 +23,14 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ErrorReservedPointsContent(onClose: () -> Unit, title: String, description: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(FoundationTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -47,13 +47,13 @@ fun ErrorReservedPointsContent(onClose: () -> Unit, title: String, description: 
             ) {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.h6,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.h6,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = description,
-                    style = RarimeTheme.typography.body2,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body2,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)
                 )
@@ -85,7 +85,7 @@ private fun ErrorReservedPointsContentPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(24.dp)
     ) {
         Dialog(onDismissRequest = {}) {

@@ -31,7 +31,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBackgroundGradient
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ZkLiveness(modifier: Modifier = Modifier, navigate: (String) -> Unit) {
@@ -83,8 +83,8 @@ private fun LivenessTitle(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.zk_liveness_title),
-            style = RarimeTheme.typography.h2,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.h2,
+            color = FoundationTheme.colors.textPrimary
         )
     }
 }
@@ -120,8 +120,8 @@ private fun LivenessRow(
         LivenessIcon(iconId = iconId, containerSize = 40.dp, iconSize = 24.dp)
         Text(
             text = stringResource(labelId),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textPrimary
         )
     }
 }
@@ -132,11 +132,11 @@ private fun LivenessIcon(@DrawableRes iconId: Int, containerSize: Dp, iconSize: 
         modifier = Modifier
             .size(containerSize)
             .clip(CircleShape)
-            .background(brush = RarimeTheme.colors.gradient1), contentAlignment = Alignment.Center
+            .background(brush = FoundationTheme.colors.gradient1), contentAlignment = Alignment.Center
     ) {
         AppIcon(
             id = iconId,
-            tint = RarimeTheme.colors.baseBlack,
+            tint = FoundationTheme.colors.baseBlack,
             size = iconSize,
         )
     }

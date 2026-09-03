@@ -41,7 +41,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TransparentButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.QueryProofField
 import com.rarilabs.rarime.util.WalletUtil.formatAddress
@@ -167,8 +167,8 @@ private fun HandlerPreviewerLayoutContent(
             Row(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = stringResource(R.string.light_proof_header),
-                    style = RarimeTheme.typography.h3,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h3,
+                    color = FoundationTheme.colors.textPrimary,
                     modifier = Modifier
                         .padding(top = 30.dp)
                 )
@@ -182,7 +182,7 @@ private fun HandlerPreviewerLayoutContent(
                 ) {
                     AppIcon(
                         id = R.drawable.ic_close_fill,
-                        tint = RarimeTheme.colors.textPrimary,
+                        tint = FoundationTheme.colors.textPrimary,
                         size = 30.dp
                     )
                 }
@@ -198,24 +198,24 @@ private fun HandlerPreviewerLayoutContent(
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = stringResource(R.string.light_proof_verification_criteria_section_title),
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 previewFields.forEach { it ->
                     Row(modifier = Modifier.padding(8.dp)) {
                         Text(
                             text = it.key,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textPrimary
                         )
                         Spacer(
                             modifier = Modifier.weight(1f)
                         )
                         Text(
                             text = it.value,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textPrimary
                         )
                     }
                 }
@@ -225,15 +225,15 @@ private fun HandlerPreviewerLayoutContent(
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = stringResource(R.string.light_proof_requestor_section_title),
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Row(modifier = Modifier.padding(8.dp)) {
                     Text(
                         text = stringResource(R.string.light_proof_id),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textPrimary
                     )
                     Spacer(
                         modifier = Modifier.weight(1f)
@@ -244,23 +244,23 @@ private fun HandlerPreviewerLayoutContent(
                             charsStartAmount = 8,
                             charsEndAmount = 8
                         ),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textPrimary
                     )
                 }
                 Row(modifier = Modifier.padding(8.dp)) {
                     Text(
                         text = stringResource(R.string.light_proof_host),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textPrimary
                     )
                     Spacer(
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = requestorHost,
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textPrimary
                     )
                 }
             }
@@ -270,8 +270,8 @@ private fun HandlerPreviewerLayoutContent(
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
                     text = stringResource(R.string.ligth_profe_revealed_data_section_title),
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textSecondary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 FlowRow(
@@ -283,15 +283,15 @@ private fun HandlerPreviewerLayoutContent(
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = RarimeTheme.colors.componentPrimary,
+                                    color = FoundationTheme.colors.componentPrimary,
                                     shape = RoundedCornerShape(12.dp)
                                 )
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Text(
                                 text = it.displayName,
-                                style = RarimeTheme.typography.subtitle6,
-                                color = RarimeTheme.colors.textPrimary
+                                style = FoundationTheme.typography.subtitle6,
+                                color = FoundationTheme.colors.textPrimary
                             )
                         }
 
@@ -319,9 +319,9 @@ private fun HandlerPreviewerLayoutContent(
                     onClick = { onCancel() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
-                        contentColor = RarimeTheme.colors.textPrimary,
+                        contentColor = FoundationTheme.colors.textPrimary,
                         disabledContainerColor = Color.Transparent,
-                        disabledContentColor = RarimeTheme.colors.textDisabled
+                        disabledContentColor = FoundationTheme.colors.textDisabled
                     )
                 )
 
@@ -346,15 +346,15 @@ fun HandlerPreviewerLayoutRow(
     ) {
         Text(
             text = key,
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textPrimary,
             textAlign = TextAlign.End,
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = value,
-            style = RarimeTheme.typography.subtitle4,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.subtitle4,
+            color = FoundationTheme.colors.textPrimary,
             textAlign = TextAlign.End
         )
     }

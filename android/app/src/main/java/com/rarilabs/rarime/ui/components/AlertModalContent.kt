@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AlertModalContent(
@@ -34,22 +34,22 @@ fun AlertModalContent(
         AppIcon(
             id = R.drawable.ic_check,
             size = 24.dp,
-            tint = RarimeTheme.colors.invertedLight,
+            tint = FoundationTheme.colors.invertedLight,
             modifier = Modifier
-                .background(RarimeTheme.colors.primaryMain, CircleShape)
+                .background(FoundationTheme.colors.primaryMain, CircleShape)
                 .padding(28.dp)
         )
     },
     title: String,
     subtitle: String,
     buttonText: String,
-    buttonColor: Color = RarimeTheme.colors.invertedLight,
-    buttonBg: Color = RarimeTheme.colors.primaryMain
+    buttonColor: Color = FoundationTheme.colors.invertedLight,
+    buttonBg: Color = FoundationTheme.colors.primaryMain
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(FoundationTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
     ) {
         if (withConfetti) {
             Image(
@@ -75,13 +75,13 @@ fun AlertModalContent(
             ) {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.h4,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.h4,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = subtitle,
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)
                 )

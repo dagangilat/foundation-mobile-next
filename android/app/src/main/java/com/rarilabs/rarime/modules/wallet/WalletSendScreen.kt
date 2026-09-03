@@ -46,7 +46,7 @@ import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldNumberState
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.WalletUtil
 import kotlinx.coroutines.delay
@@ -224,16 +224,16 @@ private fun WalletSendScreenContent(
                             ) {
                                 Text(
                                     text = stringResource(R.string.available_hint),
-                                    style = RarimeTheme.typography.body5,
-                                    color = RarimeTheme.colors.textSecondary
+                                    style = FoundationTheme.typography.body5,
+                                    color = FoundationTheme.colors.textSecondary
                                 )
                                 Text(
                                     text = "${
                                         selectedWalletAsset.humanBalance().stripTrailingZeros()
                                             .toPlainString()
                                     } ${selectedWalletAsset.getTokenSymbol().uppercase()}",
-                                    style = RarimeTheme.typography.body5,
-                                    color = RarimeTheme.colors.textPrimary
+                                    style = FoundationTheme.typography.body5,
+                                    color = FoundationTheme.colors.textPrimary
                                 )
                             }
                         },
@@ -261,28 +261,28 @@ private fun WalletSendScreenContent(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(RarimeTheme.colors.backgroundPure)
+                    .background(FoundationTheme.colors.backgroundPure)
                     .padding(top = 12.dp, bottom = 20.dp),
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
                         text = stringResource(R.string.receiver_gets),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textSecondary
                     )
                     if (isFeeLoading) {
                         Text(
                             text = "Loading...",
-                            style = RarimeTheme.typography.subtitle5,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.subtitle5,
+                            color = FoundationTheme.colors.textPrimary
                         )
                     } else {
                         Text(
                             text = "${calculateWithFee(humanAmountState.text)} ${
                                 selectedWalletAsset.getTokenSymbol().uppercase()
                             }",
-                            style = RarimeTheme.typography.subtitle5,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.subtitle5,
+                            color = FoundationTheme.colors.textPrimary
                         )
                     }
 

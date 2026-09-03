@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 /**
  * Widget header component with optional overline, title, gradient subtitle, and caption.
@@ -42,34 +42,34 @@ fun BaseWidgetTitle(
     overline: String? = null,
     overlineModifier: Modifier = Modifier,
     overlineStyle: TextStyle = TextStyle(
-        fontSize = RarimeTheme.typography.overline1.fontSize,
-        fontWeight = RarimeTheme.typography.overline1.fontWeight,
-        color = RarimeTheme.colors.baseBlackOp50
+        fontSize = FoundationTheme.typography.overline1.fontSize,
+        fontWeight = FoundationTheme.typography.overline1.fontWeight,
+        color = FoundationTheme.colors.baseBlackOp50
     ),
 
     title: String? = null,
     titleModifier: Modifier = Modifier,
     titleStyle: TextStyle = TextStyle(
-        fontSize = RarimeTheme.typography.h2.fontSize,
-        fontWeight = RarimeTheme.typography.h2.fontWeight,
-        color = RarimeTheme.colors.baseBlack
+        fontSize = FoundationTheme.typography.h2.fontSize,
+        fontWeight = FoundationTheme.typography.h2.fontWeight,
+        color = FoundationTheme.colors.baseBlack
     ),
 
     accentTitle: String? = null,
     accentTitleModifier: Modifier = Modifier,
-    gradient: Brush = RarimeTheme.colors.gradient6,
+    gradient: Brush = FoundationTheme.colors.gradient6,
     accentTitleStyle: TextStyle = TextStyle(
         brush = gradient,
-        fontSize = RarimeTheme.typography.additional2.fontSize,
-        fontWeight = RarimeTheme.typography.additional2.fontWeight
+        fontSize = FoundationTheme.typography.additional2.fontSize,
+        fontWeight = FoundationTheme.typography.additional2.fontWeight
     ),
 
     caption: String? = null,
     captionModifier: Modifier = Modifier,
     captionStyle: TextStyle = TextStyle(
-        fontSize = RarimeTheme.typography.body4.fontSize,
-        fontWeight = RarimeTheme.typography.body4.fontWeight,
-        color = RarimeTheme.colors.baseBlackOp40
+        fontSize = FoundationTheme.typography.body4.fontSize,
+        fontWeight = FoundationTheme.typography.body4.fontWeight,
+        color = FoundationTheme.colors.baseBlackOp40
     ),
 ) {
     Column(modifier = modifier) {

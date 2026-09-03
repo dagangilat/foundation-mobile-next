@@ -17,13 +17,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 @Composable
 fun CardContainer(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = RarimeTheme.colors.componentPrimary,
+    backgroundColor: Color = FoundationTheme.colors.componentPrimary,
     content: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(
@@ -49,20 +49,20 @@ private fun CardContainerPreview() {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = "My Card Title",
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle4,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = "Some card description",
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
                         .padding(top = 12.dp)
-                        .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
+                        .background(FoundationTheme.colors.componentPrimary, RoundedCornerShape(16.dp))
                 )
             }
         }

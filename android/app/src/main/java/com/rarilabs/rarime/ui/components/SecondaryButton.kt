@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun SecondaryButton(
@@ -36,10 +36,10 @@ fun SecondaryButton(
         enabled = enabled,
         size = size,
         colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.componentPrimary,
-            contentColor = RarimeTheme.colors.textPrimary,
-            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
+            containerColor = FoundationTheme.colors.componentPrimary,
+            contentColor = FoundationTheme.colors.textPrimary,
+            disabledContainerColor = FoundationTheme.colors.componentDisabled,
+            disabledContentColor = FoundationTheme.colors.textDisabled
         ),
         text = text,
         leftIcon = leftIcon,
@@ -84,8 +84,8 @@ private fun SecondaryButtonPreview() {
                 .width(220.dp), onClick = { }) {
             Text(
                 text = "Custom content",
-                color = RarimeTheme.colors.errorDark,
-                style = RarimeTheme.typography.subtitle5
+                color = FoundationTheme.colors.errorDark,
+                style = FoundationTheme.typography.subtitle5
             )
         }
     }

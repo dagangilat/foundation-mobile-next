@@ -36,7 +36,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.UiPrivacyCheckbox
 import com.rarilabs.rarime.ui.components.rememberAppCheckboxState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.ZkpException
@@ -110,7 +110,7 @@ fun VerifyPassportScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(top = 80.dp, bottom = 20.dp)
     ) {
         Column(
@@ -121,10 +121,10 @@ fun VerifyPassportScreen(
                 AppIcon(
                     id = R.drawable.ic_rarimo,
                     size = 32.dp,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                     modifier = Modifier
-                        .background(RarimeTheme.colors.backgroundPure, CircleShape)
-                        .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                        .background(FoundationTheme.colors.backgroundPure, CircleShape)
+                        .border(2.dp, FoundationTheme.colors.backgroundPrimary, CircleShape)
                         .padding(20.dp),
                 )
                 Column(
@@ -132,13 +132,13 @@ fun VerifyPassportScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .size(72.dp)
-                        .background(RarimeTheme.colors.backgroundPure, CircleShape)
-                        .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                        .background(FoundationTheme.colors.backgroundPure, CircleShape)
+                        .border(2.dp, FoundationTheme.colors.backgroundPrimary, CircleShape)
                 ) {
                     Text(
                         text = reserveTokenViewModel.getFlag(),
-                        style = RarimeTheme.typography.h5,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.h5,
+                        color = FoundationTheme.colors.textPrimary,
                     )
                 }
             }
@@ -154,14 +154,14 @@ fun VerifyPassportScreen(
                     text = stringResource(
                         R.string.reserve_tokens_title, Constants.SCAN_PASSPORT_REWARD.toInt()
                     ),
-                    style = RarimeTheme.typography.h6,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h6,
+                    color = FoundationTheme.colors.textPrimary,
                 )
                 Text(
                     text = stringResource(R.string.reserve_tokens_description),
-                    style = RarimeTheme.typography.body3,
+                    style = FoundationTheme.typography.body3,
                     textAlign = TextAlign.Center,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = FoundationTheme.colors.textSecondary,
                 )
             }
         }
@@ -196,10 +196,10 @@ private fun VerifyPoitntsScreenPreview() {
         AppIcon(
             id = R.drawable.ic_rarimo,
             size = 32.dp,
-            tint = RarimeTheme.colors.textPrimary,
+            tint = FoundationTheme.colors.textPrimary,
             modifier = Modifier
-                .background(RarimeTheme.colors.backgroundPure, CircleShape)
-                .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                .background(FoundationTheme.colors.backgroundPure, CircleShape)
+                .border(2.dp, FoundationTheme.colors.backgroundPrimary, CircleShape)
                 .padding(20.dp),
         )
         Column(
@@ -207,13 +207,13 @@ private fun VerifyPoitntsScreenPreview() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .size(72.dp)
-                .background(RarimeTheme.colors.backgroundPure, CircleShape)
-                .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                .background(FoundationTheme.colors.backgroundPure, CircleShape)
+                .border(2.dp, FoundationTheme.colors.backgroundPrimary, CircleShape)
         ) {
             Text(
                 text = "🇺🇦",
-                style = RarimeTheme.typography.h5,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h5,
+                color = FoundationTheme.colors.textPrimary,
             )
         }
     }

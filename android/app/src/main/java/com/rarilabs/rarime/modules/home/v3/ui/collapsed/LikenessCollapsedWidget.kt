@@ -46,7 +46,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @Composable
@@ -149,9 +149,9 @@ private fun Header(
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_rarime,
-                backgroundColor = RarimeTheme.colors.componentPrimary,
+                backgroundColor = FoundationTheme.colors.componentPrimary,
                 size = 40,
-                tint = RarimeTheme.colors.textPrimary.copy(alpha = 1f),
+                tint = FoundationTheme.colors.textPrimary.copy(alpha = 1f),
             )
         }
     }
@@ -184,10 +184,10 @@ private fun Footer(
                 BaseWidgetTitle(
                     title = stringResource(R.string.digital_likeness_collapsed_widget_title),
                     accentTitle = stringResource(R.string.digital_likeness_collapsed_widget_accent_title),
-                    titleStyle = RarimeTheme.typography.h2.copy(
-                        color = RarimeTheme.colors.invertedDark
+                    titleStyle = FoundationTheme.typography.h2.copy(
+                        color = FoundationTheme.colors.invertedDark
                     ),
-                    accentTitleStyle = RarimeTheme.typography.h2.copy(brush = RarimeTheme.colors.gradient14),
+                    accentTitleStyle = FoundationTheme.typography.h2.copy(brush = FoundationTheme.colors.gradient14),
                     titleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -211,14 +211,14 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    captionStyle = RarimeTheme.typography.body4.copy(color = RarimeTheme.colors.textSecondary)
+                    captionStyle = FoundationTheme.typography.body4.copy(color = FoundationTheme.colors.textSecondary)
 
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
                     modifier = Modifier.align(Alignment.Bottom),
-                    tint = RarimeTheme.colors.textPrimary
+                    tint = FoundationTheme.colors.textPrimary
                 )
             }
         }
@@ -247,7 +247,7 @@ private fun Background(
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
 
                 .fillMaxSize()
         ) {

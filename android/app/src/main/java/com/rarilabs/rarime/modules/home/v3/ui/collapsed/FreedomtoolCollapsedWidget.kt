@@ -40,7 +40,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -116,10 +116,10 @@ private fun Header(
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_check_unframed,
-                backgroundColor = RarimeTheme.colors.componentPrimary,
+                backgroundColor = FoundationTheme.colors.componentPrimary,
                 size = 40,
                 iconSize = 24,
-                tint = RarimeTheme.colors.textPrimary
+                tint = FoundationTheme.colors.textPrimary
             )
         }
     }
@@ -150,7 +150,7 @@ private fun Footer(
             BaseWidgetTitle(
                 title = stringResource(R.string.freedomtool_title),
                 accentTitle = stringResource(R.string.fredomtool_accent_title),
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.invertedDark),
+                titleStyle = FoundationTheme.typography.h1.copy(color = FoundationTheme.colors.invertedDark),
                 titleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(HomeSharedKeys.title(layoutId)),
@@ -158,7 +158,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient15),
+                accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient15),
                 accentTitleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -176,7 +176,7 @@ private fun Footer(
             AppIcon(
                 id = R.drawable.ic_arrow_right_up_line,
                 modifier = Modifier.align(Alignment.Bottom),
-                tint = RarimeTheme.colors.invertedDark,
+                tint = FoundationTheme.colors.invertedDark,
                 size = 24.dp
             )
         }
@@ -195,7 +195,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient5)
+                .background(FoundationTheme.colors.gradient5)
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_bg_freedomtool_voting),

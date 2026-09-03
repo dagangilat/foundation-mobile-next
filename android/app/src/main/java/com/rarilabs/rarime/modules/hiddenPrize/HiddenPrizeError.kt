@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun HiddenPrizeError(
@@ -46,14 +46,14 @@ fun HiddenPrizeError(
                     Icon(
                         painter = painterResource(R.drawable.ic_wrong_face),
                         contentDescription = null,
-                        tint = RarimeTheme.colors.baseWhite,
+                        tint = FoundationTheme.colors.baseWhite,
                     )
                     Spacer(Modifier.height(32.dp))
                     Text(
                         stringResource(R.string.query_proof_error_subtitle),
-                        color = RarimeTheme.colors.baseWhite,
+                        color = FoundationTheme.colors.baseWhite,
                         textAlign = TextAlign.Center,
-                        style = RarimeTheme.typography.h3
+                        style = FoundationTheme.typography.h3
                     )
                 }
             }
@@ -65,17 +65,17 @@ fun HiddenPrizeError(
                     .padding(16.dp),
                 size = ButtonSize.Large,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.baseWhite.copy(0.1f),
-                    contentColor = RarimeTheme.colors.invertedLight,
-                    disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                    disabledContentColor = RarimeTheme.colors.textDisabled
+                    containerColor = FoundationTheme.colors.baseWhite.copy(0.1f),
+                    contentColor = FoundationTheme.colors.invertedLight,
+                    disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                    disabledContentColor = FoundationTheme.colors.textDisabled
                 ),
                 onClick = {
                     onBack()
                 }) {
                 Text(
                     stringResource(R.string.hidden_prize_wrong_screen_back_home),
-                    color = RarimeTheme.colors.baseWhite
+                    color = FoundationTheme.colors.baseWhite
                 )
             }
 

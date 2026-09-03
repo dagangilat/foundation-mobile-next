@@ -53,7 +53,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
@@ -223,20 +223,20 @@ fun DigitalLikenessCamera(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppIcon(
-                id = R.drawable.ic_face_scan, size = 40.dp, tint = RarimeTheme.colors.baseWhite
+                id = R.drawable.ic_face_scan, size = 40.dp, tint = FoundationTheme.colors.baseWhite
             )
             Text(
                 text = "Keep your face in the frame",
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.baseWhite
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.baseWhite
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
                 text = "Your face never leaves the device. You create an anonymous record that carries your rules, so AI knows how to treat you.",
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.baseWhite.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
             )
 

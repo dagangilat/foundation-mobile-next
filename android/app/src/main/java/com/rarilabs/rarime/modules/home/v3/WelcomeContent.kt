@@ -38,7 +38,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 
 data class WelcomeCardContent(
@@ -55,10 +55,10 @@ fun WelcomeBottomSheet(
     onClose: () -> Unit,
 ) {
 
-    val welcomeAccentColor1 = RarimeTheme.colors.welcomeAccent1
-    val welcomeAccentColor2 = RarimeTheme.colors.welcomeAccent2
-    val welcomeAccentColor3 = RarimeTheme.colors.welcomeAccent3
-    val welcomeAccentColor4 = RarimeTheme.colors.welcomeAccent4
+    val welcomeAccentColor1 = FoundationTheme.colors.welcomeAccent1
+    val welcomeAccentColor2 = FoundationTheme.colors.welcomeAccent2
+    val welcomeAccentColor3 = FoundationTheme.colors.welcomeAccent3
+    val welcomeAccentColor4 = FoundationTheme.colors.welcomeAccent4
 
     val context = LocalContext.current
 
@@ -119,7 +119,7 @@ fun WelcomeBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxSize()
-                    .background(RarimeTheme.colors.backgroundSurface1)
+                    .background(FoundationTheme.colors.backgroundSurface1)
             ) {}
         }
 
@@ -179,7 +179,7 @@ fun BaseWelcomeContent(
         Row(modifier = Modifier.fillMaxWidth()) {
             CircledBadge(
                 iconId = R.drawable.ic_rarime,
-                containerColor = RarimeTheme.colors.componentPrimary,
+                containerColor = FoundationTheme.colors.componentPrimary,
                 contentSize = 24,
                 containerSize = 40
             )
@@ -201,12 +201,12 @@ fun BaseWelcomeContent(
         }
 
         Column(modifier = Modifier.padding(top = 32.dp)) {
-            Text(title, style = RarimeTheme.typography.h2, color = RarimeTheme.colors.textPrimary)
+            Text(title, style = FoundationTheme.typography.h2, color = FoundationTheme.colors.textPrimary)
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 description,
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary
             )
 
 
@@ -243,8 +243,8 @@ fun WelcomeBottomBar(
                 defaultRadius = 6.dp,
                 selectedLength = 16.dp,
                 space = 8.dp,
-                selectedColor = RarimeTheme.colors.primaryMain,
-                defaultColor = RarimeTheme.colors.primaryLight,
+                selectedColor = FoundationTheme.colors.primaryMain,
+                defaultColor = FoundationTheme.colors.primaryLight,
                 selectedPage = selectedPage,
                 numberOfPages = numberOfPages
             )

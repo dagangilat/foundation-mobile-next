@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.data.tokens.PreviewerToken
 import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.NumberUtil
 
 @Composable
@@ -32,8 +32,8 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
         modifier = Modifier
             .requiredWidthIn(min = 300.dp)
             .clip(RoundedCornerShape(24.dp))
-            .border(1.dp, RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
-            .background(RarimeTheme.colors.backgroundPure)
+            .border(1.dp, FoundationTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(FoundationTheme.colors.backgroundPure)
             .padding(16.dp)
     ) {
         Row(
@@ -44,17 +44,17 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(999.dp))
-                    .border(1.dp, RarimeTheme.colors.backgroundPure, RoundedCornerShape(999.dp))
-                    .background(RarimeTheme.colors.baseBlack),
+                    .border(1.dp, FoundationTheme.colors.backgroundPure, RoundedCornerShape(999.dp))
+                    .background(FoundationTheme.colors.baseBlack),
                 contentAlignment = Alignment.Center
             ) {
-                AppIcon(id = walletAsset.getTokenIcon(), tint = RarimeTheme.colors.baseWhite)
+                AppIcon(id = walletAsset.getTokenIcon(), tint = FoundationTheme.colors.baseWhite)
             }
 
             Text(
                 text = walletAsset.getTokenSymbol().uppercase(),
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary
             )
         }
 
@@ -64,8 +64,8 @@ fun WalletTokenCard(walletAsset: WalletAsset) {
         ) {
             Text(
                 text = NumberUtil.formatAmount(walletAsset.humanBalance()),
-                color = RarimeTheme.colors.textPrimary,
-                style = RarimeTheme.typography.subtitle4
+                color = FoundationTheme.colors.textPrimary,
+                style = FoundationTheme.typography.subtitle4
             )
 
         }

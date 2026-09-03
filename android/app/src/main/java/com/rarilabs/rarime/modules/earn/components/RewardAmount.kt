@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun RewardAmount(
@@ -29,10 +29,10 @@ fun RewardAmount(
         ) {
             Text(
                 text = "+${amount}",
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textSecondary,
             )
-            AppIcon(id = tokenIconId, size = 14.dp, tint = RarimeTheme.colors.primaryMain)
+            AppIcon(id = tokenIconId, size = 14.dp, tint = FoundationTheme.colors.primaryMain)
         }
     }
 }

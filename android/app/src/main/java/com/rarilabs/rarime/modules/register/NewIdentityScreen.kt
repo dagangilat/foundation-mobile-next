@@ -49,7 +49,7 @@ import com.rarilabs.rarime.ui.components.PrimaryTextButton
 import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.isKeyValid
 import kotlinx.coroutines.delay
@@ -333,12 +333,12 @@ fun NewIdentityScreenContent(
                         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             Text(
                                 text = privateKey,
-                                style = RarimeTheme.typography.body3,
-                                color = RarimeTheme.colors.textPrimary,
+                                style = FoundationTheme.typography.body3,
+                                color = FoundationTheme.colors.textPrimary,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        RarimeTheme.colors.componentPrimary,
+                                        FoundationTheme.colors.componentPrimary,
                                         RoundedCornerShape(8.dp)
                                     )
                                     .padding(vertical = 14.dp, horizontal = 16.dp)

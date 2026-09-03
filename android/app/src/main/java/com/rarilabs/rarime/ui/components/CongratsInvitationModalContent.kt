@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun CongratsInvitationModalContent(
@@ -31,7 +31,7 @@ fun CongratsInvitationModalContent(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
+            .background(FoundationTheme.colors.backgroundPure, RoundedCornerShape(24.dp))
     ) {
         Image(
             painter = painterResource(id = R.drawable.confetti),
@@ -50,9 +50,9 @@ fun CongratsInvitationModalContent(
             AppIcon(
                 id = R.drawable.ic_check,
                 size = 24.dp,
-                tint = RarimeTheme.colors.backgroundPure,
+                tint = FoundationTheme.colors.backgroundPure,
                 modifier = Modifier
-                    .background(RarimeTheme.colors.successMain, CircleShape)
+                    .background(FoundationTheme.colors.successMain, CircleShape)
                     .padding(28.dp)
             )
             Column(
@@ -62,13 +62,13 @@ fun CongratsInvitationModalContent(
             ) {
                 Text(
                     text = stringResource(R.string.congrats_accept_invite_title),
-                    style = RarimeTheme.typography.h4,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.h4,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = stringResource(R.string.congrats_accept_invite_subtitle),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(240.dp)
                 )

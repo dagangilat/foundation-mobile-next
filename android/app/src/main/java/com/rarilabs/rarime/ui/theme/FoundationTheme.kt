@@ -3,13 +3,13 @@ package com.rarilabs.rarime.ui.theme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 
-object RarimeTheme {
-    val colors: RarimeColors
+object FoundationTheme {
+    val colors: FoundationColors
         @Composable
         @ReadOnlyComposable
         get() = LocalColors.current
 
-    val typography: RarimeTypography
+    val typography: FoundationTypography
         @Composable
         @ReadOnlyComposable
         get() = LocalTypography.current

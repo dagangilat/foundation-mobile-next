@@ -49,7 +49,7 @@ import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun DigitalLikenessRuleSheet(
@@ -106,18 +106,18 @@ fun DigitalLikenessRuleSheet(
                 ) {
                     Text(
                         "Set a rule",
-                        style = RarimeTheme.typography.h2,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.h2,
+                        color = FoundationTheme.colors.textPrimary
                     )
 
                     Text(
                         "The rules are yours to change",
-                        color = RarimeTheme.colors.textSecondary
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
                 IconButton(onClick = { state.hide() }) {
                     Icon(
-                        tint = RarimeTheme.colors.textPrimary,
+                        tint = FoundationTheme.colors.textPrimary,
                         painter = painterResource(R.drawable.ic_close),
                         contentDescription = "Close"
                     )
@@ -158,21 +158,21 @@ fun RuleOption(
     modifier: Modifier = Modifier
 ) {
     val iconBackground = if (item.isSelected) {
-        RarimeTheme.colors.textPrimary
+        FoundationTheme.colors.textPrimary
     } else {
-        RarimeTheme.colors.componentPrimary
+        FoundationTheme.colors.componentPrimary
     }
 
     val iconTint = if (item.isSelected) {
-        RarimeTheme.colors.invertedLight
+        FoundationTheme.colors.invertedLight
     } else {
-        RarimeTheme.colors.textPrimary
+        FoundationTheme.colors.textPrimary
     }
 
     val cardContainerColor = if (item.isSelected) {
-        RarimeTheme.colors.componentPrimary
+        FoundationTheme.colors.componentPrimary
     } else {
-        RarimeTheme.colors.backgroundSurface1
+        FoundationTheme.colors.backgroundSurface1
     }
 
     Card(
@@ -188,7 +188,7 @@ fun RuleOption(
             containerColor = cardContainerColor
         ),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, RarimeTheme.colors.componentPrimary),
+        border = BorderStroke(1.dp, FoundationTheme.colors.componentPrimary),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
@@ -220,10 +220,10 @@ fun RuleOption(
                         text = text.uppercase(),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = RarimeTheme.colors.infoDarker,
+                        color = FoundationTheme.colors.infoDarker,
                         modifier = Modifier
                             .background(
-                                color = RarimeTheme.colors.infoLighter,
+                                color = FoundationTheme.colors.infoLighter,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -232,8 +232,8 @@ fun RuleOption(
 
                 Text(
                     text = item.title,
-                    style = RarimeTheme.typography.subtitle6,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle6,
+                    color = FoundationTheme.colors.textPrimary
                 )
             }
         }

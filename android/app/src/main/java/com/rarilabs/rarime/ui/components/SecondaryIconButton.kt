@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseIconButton
 import com.rarilabs.rarime.ui.base.ButtonIconSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun SecondaryIconButton(
@@ -31,10 +31,10 @@ fun SecondaryIconButton(
         enabled = enabled,
         size = size,
         colors = ButtonDefaults.buttonColors(
-            containerColor = RarimeTheme.colors.componentPrimary,
-            contentColor = RarimeTheme.colors.textPrimary,
-            disabledContainerColor = RarimeTheme.colors.componentDisabled,
-            disabledContentColor = RarimeTheme.colors.textDisabled
+            containerColor = FoundationTheme.colors.componentPrimary,
+            contentColor = FoundationTheme.colors.textPrimary,
+            disabledContainerColor = FoundationTheme.colors.componentDisabled,
+            disabledContentColor = FoundationTheme.colors.textDisabled
         ),
         icon = icon,
     )

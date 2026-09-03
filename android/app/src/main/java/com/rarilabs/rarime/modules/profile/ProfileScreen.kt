@@ -41,7 +41,7 @@ import com.rarilabs.rarime.data.enums.toLocalizedString
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
 import com.rarilabs.rarime.ui.components.PassportImage
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Screen
 import com.rarilabs.rarime.util.SendEmailUtil
 import com.rarilabs.rarime.util.WalletUtil
@@ -99,13 +99,13 @@ fun ProfileScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
         Text(
             text = stringResource(R.string.profile),
-            style = RarimeTheme.typography.subtitle4,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.subtitle4,
+            color = FoundationTheme.colors.textPrimary,
         )
 
         Column(
@@ -115,7 +115,7 @@ fun ProfileScreenContent(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
                     )
                     .padding(20.dp)
             ) {
@@ -127,8 +127,8 @@ fun ProfileScreenContent(
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = stringResource(R.string.account),
-                            style = RarimeTheme.typography.buttonLarge,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.buttonLarge,
+                            color = FoundationTheme.colors.textPrimary
                         )
                         Text(
                             text = WalletUtil.formatAddress(
@@ -136,8 +136,8 @@ fun ProfileScreenContent(
                                     R.string.user_address, evmAddress
                                 )
                             ),
-                            style = RarimeTheme.typography.body5,
-                            color = RarimeTheme.colors.textSecondary
+                            style = FoundationTheme.typography.body5,
+                            color = FoundationTheme.colors.textSecondary
                         )
                     }
                     PassportImage(image = passportImage, size = 40.dp)
@@ -146,7 +146,7 @@ fun ProfileScreenContent(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
                     )
                     .padding(16.dp)
             ) {
@@ -164,7 +164,7 @@ fun ProfileScreenContent(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
                     )
                     .padding(16.dp)
             ) {
@@ -185,7 +185,7 @@ fun ProfileScreenContent(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
                     )
                     .padding(16.dp)
             ) {
@@ -212,7 +212,7 @@ fun ProfileScreenContent(
             Column(
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
+                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
                     )
                     .padding(16.dp)
             ) {
@@ -223,10 +223,10 @@ fun ProfileScreenContent(
                     title = "Delete account",
                     onClick = { isDeleteAccountDialogShown = true },
                     contentColors = getProfileRowContentColors(
-                        leadingIcon = RarimeTheme.colors.errorMain,
-                        leadingIconBg = RarimeTheme.colors.errorLighter,
-                        title = RarimeTheme.colors.errorMain,
-                        value = RarimeTheme.colors.errorMain,
+                        leadingIcon = FoundationTheme.colors.errorMain,
+                        leadingIconBg = FoundationTheme.colors.errorLighter,
+                        title = FoundationTheme.colors.errorMain,
+                        value = FoundationTheme.colors.errorMain,
                         trailingIcon = Color.Transparent,
                     ),
                 )
@@ -248,8 +248,8 @@ fun ProfileScreenContent(
             }
             Text(
                 text = stringResource(R.string.app_version, BuildConfig.VERSION_NAME),
-                style = RarimeTheme.typography.body5,
-                color = RarimeTheme.colors.textPlaceholder
+                style = FoundationTheme.typography.body5,
+                color = FoundationTheme.colors.textPlaceholder
             )
         }
     }
@@ -265,11 +265,11 @@ data class ProfileRowContentColors(
 
 @Composable
 fun getProfileRowContentColors(
-    leadingIcon: Color = RarimeTheme.colors.textPrimary,
-    leadingIconBg: Color = RarimeTheme.colors.componentPrimary,
-    title: Color = RarimeTheme.colors.textPrimary,
-    value: Color = RarimeTheme.colors.textSecondary,
-    trailingIcon: Color = RarimeTheme.colors.textSecondary,
+    leadingIcon: Color = FoundationTheme.colors.textPrimary,
+    leadingIconBg: Color = FoundationTheme.colors.componentPrimary,
+    title: Color = FoundationTheme.colors.textPrimary,
+    value: Color = FoundationTheme.colors.textSecondary,
+    trailingIcon: Color = FoundationTheme.colors.textSecondary,
 ): ProfileRowContentColors {
     return ProfileRowContentColors(
         leadingIcon = leadingIcon,
@@ -314,7 +314,7 @@ private fun ProfileRow(
             )
             Text(
                 text = title,
-                style = RarimeTheme.typography.buttonMedium,
+                style = FoundationTheme.typography.buttonMedium,
                 color = contentColors.title
             )
         }
@@ -324,7 +324,7 @@ private fun ProfileRow(
         ) {
             Text(
                 text = value ?: "",
-                style = RarimeTheme.typography.body4,
+                style = FoundationTheme.typography.body4,
                 color = contentColors.value
             )
             AppIcon(

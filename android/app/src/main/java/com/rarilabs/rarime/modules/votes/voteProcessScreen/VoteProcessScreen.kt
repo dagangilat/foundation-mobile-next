@@ -41,7 +41,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.VerticalDivider
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 @Composable
@@ -60,7 +60,7 @@ fun VoteProcessScreen(
 
     Column(
         modifier = Modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
         Row(
@@ -76,8 +76,8 @@ fun VoteProcessScreen(
                 onClick = { onBackClick.invoke() },
                 icon = R.drawable.ic_close,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.componentPrimary,
-                    contentColor = RarimeTheme.colors.textPrimary
+                    containerColor = FoundationTheme.colors.componentPrimary,
+                    contentColor = FoundationTheme.colors.textPrimary
                 ),
             )
         }
@@ -119,16 +119,16 @@ fun VoteProcessCard(
         ) {
             Text(
                 voteOption.title,
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h4,
+                color = FoundationTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 "Select Answer",
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -136,11 +136,11 @@ fun VoteProcessCard(
                 voteOption.variants.forEachIndexed { idx, it ->
 
                     val isSelectedModifier = Modifier.border(
-                        1.dp, RarimeTheme.colors.primaryMain, RoundedCornerShape(16.dp)
+                        1.dp, FoundationTheme.colors.primaryMain, RoundedCornerShape(16.dp)
                     )
 
                     val isNotSelectedModifier =
-                        Modifier.background(RarimeTheme.colors.componentPrimary)
+                        Modifier.background(FoundationTheme.colors.componentPrimary)
 
                     Row(
                         modifier = Modifier
@@ -157,15 +157,15 @@ fun VoteProcessCard(
                         horizontalArrangement = Arrangement.Start
                     ) {
                         if (selectedOption?.answerIndex == idx) {
-                            AppIcon(id = R.drawable.ic_check, tint = RarimeTheme.colors.textPrimary)
+                            AppIcon(id = R.drawable.ic_check, tint = FoundationTheme.colors.textPrimary)
                         } else {
                             Box(
                                 modifier = Modifier.size(20.dp), contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = (idx + 1).toString(),
-                                    color = RarimeTheme.colors.textSecondary,
-                                    style = RarimeTheme.typography.overline2,
+                                    color = FoundationTheme.colors.textSecondary,
+                                    style = FoundationTheme.typography.overline2,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -177,8 +177,8 @@ fun VoteProcessCard(
                         )
                         Text(
                             it,
-                            color = RarimeTheme.colors.textPrimary,
-                            style = RarimeTheme.typography.buttonMedium
+                            color = FoundationTheme.colors.textPrimary,
+                            style = FoundationTheme.typography.buttonMedium
                         )
                     }
                 }

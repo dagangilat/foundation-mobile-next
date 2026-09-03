@@ -35,7 +35,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.BiometricUtil
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.Screen
@@ -155,8 +155,8 @@ fun LockScreen(
             ),
             subtitle = if (isAttemptsDisabled) appLockedSubtitle else "",
             iconId = if (isAttemptsDisabled) R.drawable.ic_lock else R.drawable.ic_user,
-            iconColors = if (isAttemptsDisabled) RarimeTheme.colors.baseBlack to RarimeTheme.colors.baseWhite
-            else RarimeTheme.colors.primaryMain to RarimeTheme.colors.baseBlack,
+            iconColors = if (isAttemptsDisabled) FoundationTheme.colors.baseBlack to FoundationTheme.colors.baseWhite
+            else FoundationTheme.colors.primaryMain to FoundationTheme.colors.baseBlack,
             passcodeState = passcodeState,
             enabled = !isAttemptsDisabled,
             onPasscodeFilled = { verifyPasscode() }) {
@@ -168,7 +168,7 @@ fun LockScreen(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
-                        contentColor = RarimeTheme.colors.textPrimary
+                        contentColor = FoundationTheme.colors.textPrimary
                     ),
                     onClick = { authenticateWithBiometrics() },
                     enabled = !isAttemptsDisabled
@@ -176,7 +176,7 @@ fun LockScreen(
                     AppIcon(
                         id = R.drawable.ic_fingerprint,
                         size = 24.dp,
-                        tint = RarimeTheme.colors.textPrimary
+                        tint = FoundationTheme.colors.textPrimary
                     )
                 }
             }
@@ -186,17 +186,17 @@ fun LockScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .background(RarimeTheme.colors.backgroundPrimary)
+                .background(FoundationTheme.colors.backgroundPrimary)
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
             AppIcon(
-                id = R.drawable.ic_fingerprint, size = 80.dp, tint = RarimeTheme.colors.textPrimary
+                id = R.drawable.ic_fingerprint, size = 80.dp, tint = FoundationTheme.colors.textPrimary
             )
             Text(
                 text = stringResource(R.string.biometric_lock_title),
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h4,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -211,8 +211,8 @@ fun LockScreen(
             } else {
                 Text(
                     text = stringResource(R.string.enable_biometrics_msg),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AppRadioButton(
@@ -35,10 +35,10 @@ fun AppRadioButton(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(12.dp))
+            .background(FoundationTheme.colors.backgroundPrimary, RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                color = RarimeTheme.colors.componentPrimary,
+                color = FoundationTheme.colors.componentPrimary,
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable(
@@ -54,7 +54,7 @@ fun AppRadioButton(
                 .size(20.dp)
                 .border(
                     width = 1.dp,
-                    color = if (isSelected) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textPlaceholder,
+                    color = if (isSelected) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textPlaceholder,
                     shape = CircleShape
                 )
         ) {
@@ -63,7 +63,7 @@ fun AppRadioButton(
                     .size(10.dp)
                     .align(Alignment.Center)
                     .background(
-                        color = if (isSelected) RarimeTheme.colors.textPrimary else Color.Transparent,
+                        color = if (isSelected) FoundationTheme.colors.textPrimary else Color.Transparent,
                         shape = CircleShape
                     )
             )
@@ -81,15 +81,15 @@ private fun AppRadioButtonPreview() {
         AppRadioButton(isSelected = true, onClick = {}) {
             Text(
                 text = "Selected label",
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textPrimary
             )
         }
         AppRadioButton(isSelected = false, onClick = {}) {
             Text(
                 text = "Unselected label",
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textPrimary
             )
         }
     }

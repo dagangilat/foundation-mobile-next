@@ -20,7 +20,7 @@ import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
 import com.rarilabs.rarime.modules.wallet.models.TransactionType
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 import java.util.Date
 
@@ -33,8 +33,8 @@ fun WalletTransactionsList(
     ) {
         Text(
             text = stringResource(R.string.transactions_title),
-            style = RarimeTheme.typography.subtitle5,
-            color = RarimeTheme.colors.textPrimary
+            style = FoundationTheme.typography.subtitle5,
+            color = FoundationTheme.colors.textPrimary
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -42,8 +42,8 @@ fun WalletTransactionsList(
         if (transactions.isEmpty()) {
             Text(
                 text = stringResource(R.string.no_transactions_msg),
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary
             )
         } else {
             Column(
@@ -63,7 +63,7 @@ fun WalletTransactionsListPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
         WalletTransactionsList(

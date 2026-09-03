@@ -20,7 +20,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.toLocalizedString
 import com.rarilabs.rarime.ui.components.AppRadioButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun AppIconScreen(
@@ -60,14 +60,14 @@ private fun AppIconItem(
                     .clip(RoundedCornerShape(10.dp))
                     .border(
                         width = 1.dp,
-                        color = RarimeTheme.colors.componentPrimary,
+                        color = FoundationTheme.colors.componentPrimary,
                         shape = RoundedCornerShape(10.dp)
                     )
             )
             Text(
                 text = appIcon.toLocalizedString(),
-                style = RarimeTheme.typography.buttonMedium,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.buttonMedium,
+                color = FoundationTheme.colors.textPrimary
             )
         }
     }

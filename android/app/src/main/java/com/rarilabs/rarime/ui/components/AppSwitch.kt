@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.ui.theme.dropShadow
 import kotlinx.coroutines.launch
 
@@ -47,9 +47,9 @@ fun AppSwitch(
     val alpha = if (enabled) 1f else 0.8f
 
     val backgroundModifier = if (checked) {
-        Modifier.background(RarimeTheme.colors.gradient6, CircleShape)
+        Modifier.background(FoundationTheme.colors.gradient6, CircleShape)
     } else {
-        Modifier.background(RarimeTheme.colors.componentPrimary, CircleShape)
+        Modifier.background(FoundationTheme.colors.componentPrimary, CircleShape)
     }
 
     LaunchedEffect(checked) {
@@ -79,7 +79,7 @@ fun AppSwitch(
                 .size(20.dp)
                 .offset(animatedOffset.value.dp, 0.dp)
                 .dropShadow(borderRadius = 250.dp)
-                .background(RarimeTheme.colors.baseWhite.copy(alpha = alpha), CircleShape)
+                .background(FoundationTheme.colors.baseWhite.copy(alpha = alpha), CircleShape)
         )
     }
 }
@@ -98,7 +98,7 @@ private fun AppSwitchPreview() {
             Text(
                 text = "Regular",
                 modifier = Modifier.padding(8.dp, 0.dp),
-                style = RarimeTheme.typography.subtitle6,
+                style = FoundationTheme.typography.subtitle6,
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -110,8 +110,8 @@ private fun AppSwitchPreview() {
             Text(
                 text = "Disabled",
                 modifier = Modifier.padding(8.dp, 0.dp),
-                style = RarimeTheme.typography.subtitle6,
-                color = RarimeTheme.colors.textDisabled
+                style = FoundationTheme.typography.subtitle6,
+                color = FoundationTheme.colors.textDisabled
             )
         }
     }

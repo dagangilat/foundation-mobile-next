@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun HiddenPrizeLoadingML(
@@ -52,28 +52,28 @@ fun HiddenPrizeLoadingML(
                     Icon(
                         painter = painterResource(R.drawable.ic_dots_three_outline_rounded),
                         contentDescription = null,
-                        tint = RarimeTheme.colors.baseWhite,
+                        tint = FoundationTheme.colors.baseWhite,
                     )
                     Spacer(Modifier.height(32.dp))
                     Text(
                         stringResource(R.string.hidden_prize_loading_ml_title),
-                        color = RarimeTheme.colors.baseWhite,
+                        color = FoundationTheme.colors.baseWhite,
                         textAlign = TextAlign.Center,
-                        style = RarimeTheme.typography.h3
+                        style = FoundationTheme.typography.h3
                     )
                     Spacer(Modifier.height(12.dp))
                     Text(
                         stringResource(R.string.hidden_prize_loading_ml_description),
-                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
-                        style = RarimeTheme.typography.body3,
+                        color = FoundationTheme.colors.baseWhite.copy(alpha = 0.6f),
+                        style = FoundationTheme.typography.body3,
                         textAlign = TextAlign.Center,
                     )
 
                     Spacer(modifier = Modifier.height(52.dp))
 
                     LinearProgressIndicator(
-                        color = RarimeTheme.colors.baseWhite,
-                        trackColor = RarimeTheme.colors.textDisabled,
+                        color = FoundationTheme.colors.baseWhite,
+                        trackColor = FoundationTheme.colors.textDisabled,
                         progress = { (processingValue.toFloat() / 100.0f) },
                     )
 
@@ -81,9 +81,9 @@ fun HiddenPrizeLoadingML(
 
                     Text(
                         text = "${processingValue}%",
-                        color = RarimeTheme.colors.baseWhite.copy(alpha = 0.6f),
+                        color = FoundationTheme.colors.baseWhite.copy(alpha = 0.6f),
                         textAlign = TextAlign.Center,
-                        style = RarimeTheme.typography.body3,
+                        style = FoundationTheme.typography.body3,
 
                         )
                 }

@@ -16,7 +16,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun IdentityStepLayout(
@@ -36,8 +36,8 @@ fun IdentityStepLayout(
             Text(
                 modifier = Modifier,
                 text = title,
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textPrimary
             )
         }
         content()

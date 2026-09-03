@@ -41,7 +41,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -128,7 +128,7 @@ private fun Header(
                 resId = R.drawable.ic_rarimo,
                 backgroundColor = Color.Transparent,
                 size = 50,
-                tint = RarimeTheme.colors.baseBlack.copy(alpha = 0.1f)
+                tint = FoundationTheme.colors.baseBlack.copy(alpha = 0.1f)
             )
         }
     }
@@ -168,7 +168,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                accentTitleStyle = RarimeTheme.typography.additional2.copy(color = RarimeTheme.colors.baseBlackOp40),
+                accentTitleStyle = FoundationTheme.typography.additional2.copy(color = FoundationTheme.colors.baseBlackOp40),
                 accentTitleModifier =
                     Modifier.sharedBounds(
                         rememberSharedContentState(
@@ -198,7 +198,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient3)
+                .background(FoundationTheme.colors.gradient3)
         ) {
             Image(
                 painter = painterResource(R.drawable.claim_rmo_image),

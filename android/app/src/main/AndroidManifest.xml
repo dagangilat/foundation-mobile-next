@@ -34,7 +34,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:largeHeap="true"
-        android:theme="@style/Theme.Rarime"
+        android:theme="@style/Theme.Foundation"
         tools:targetApi="31">
 
 
@@ -44,32 +44,19 @@
             android:launchMode="singleTask"
             android:localeConfig="@xml/locales_config"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Rarime">
+            android:theme="@style/Theme.Foundation">
 
 
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="https" />
-                <data android:host="app.rarime.com" />
-                <data android:pathPrefix="/external" />
-
-                <data android:scheme="http" />
-                <data android:host="app.rarime.com" />
-                <data android:pathPrefix="/external" />
-            </intent-filter>
-
-            <!-- Custom URI scheme rarime://external -->
+            <!-- Custom URI scheme foundationmobile://external. The previous
+                 autoVerify https/http filters for app.rarime.com are dropped:
+                 we do not own that domain's Digital Asset Links file, so they
+                 could only ever fail verification. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:scheme="rarime"
-                    android:host="external" />
+                <data android:scheme="foundationmobile" />
+                <data android:host="external" />
             </intent-filter>
 
         </activity>

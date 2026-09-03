@@ -39,7 +39,7 @@ import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.GifViewer
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 
 enum class SpecificPassportGuide {
@@ -81,7 +81,7 @@ fun ScanGuidesTrigger(
                 Image(
                     modifier = Modifier.clip(RoundedCornerShape(8.dp)),
                     colorFilter = ColorFilter.tint(
-                        RarimeTheme.colors.componentPrimary,
+                        FoundationTheme.colors.componentPrimary,
                         blendMode = BlendMode.Darken
                     ),
                     painter = painterResource(id = R.drawable.how_to_scan_preview),
@@ -92,8 +92,8 @@ fun ScanGuidesTrigger(
                     containerSize = 32,
                     contentSize = 16,
                     iconId = R.drawable.ic_caret_right,
-                    containerColor = RarimeTheme.colors.baseBlack,
-                    contentColor = RarimeTheme.colors.baseWhite,
+                    containerColor = FoundationTheme.colors.baseBlack,
+                    contentColor = FoundationTheme.colors.baseWhite,
                 )
             }
         },
@@ -177,15 +177,15 @@ fun ScanGuides(
         Spacer(modifier = Modifier.height(40.dp))
         Text(
             text = title,
-            style = RarimeTheme.typography.h4,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.h4,
+            color = FoundationTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = desc,
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textSecondary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.weight(1f))

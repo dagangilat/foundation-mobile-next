@@ -33,7 +33,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.LivenessProcessingStatus
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.GifViewer
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -101,7 +101,7 @@ fun DigitalLikenessProcessing(
     Column(
         Modifier
             .padding(horizontal = 16.dp)
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .then(modifier)
     ) {
         GifViewer(
@@ -116,8 +116,8 @@ fun DigitalLikenessProcessing(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             text = "Please wait",
-            color = RarimeTheme.colors.textPrimary,
-            style = RarimeTheme.typography.h1
+            color = FoundationTheme.colors.textPrimary,
+            style = FoundationTheme.typography.h1
         )
 
         Text(
@@ -126,8 +126,8 @@ fun DigitalLikenessProcessing(
                 .padding(top = 16.dp),
             textAlign = TextAlign.Center,
             text = currentProcessingState.title,
-            color = RarimeTheme.colors.textSecondary,
-            style = RarimeTheme.typography.body3
+            color = FoundationTheme.colors.textSecondary,
+            style = FoundationTheme.typography.body3
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -202,7 +202,7 @@ fun ProcessItemLoading(
                 )
                 .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(RarimeTheme.colors.componentPrimary)
+                .background(FoundationTheme.colors.componentPrimary)
                 .align(Alignment.CenterStart)
         )
 
@@ -212,7 +212,7 @@ fun ProcessItemLoading(
                 .border(
                     1.dp,
                     shape = RoundedCornerShape(24.dp),
-                    color = RarimeTheme.colors.componentPrimary
+                    color = FoundationTheme.colors.componentPrimary
                 )
                 .fillMaxWidth()
                 .padding(20.dp),
@@ -221,14 +221,14 @@ fun ProcessItemLoading(
         ) {
             Text(
                 title,
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textPrimary
             )
 
             Text(
                 text = "$progress %",
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textPrimary
             )
 
         }
@@ -248,7 +248,7 @@ fun ProcessItemError(
                 )
                 .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(RarimeTheme.colors.errorLighter)
+                .background(FoundationTheme.colors.errorLighter)
                 .align(Alignment.CenterStart)
         )
 
@@ -258,7 +258,7 @@ fun ProcessItemError(
                 .border(
                     1.dp,
                     shape = RoundedCornerShape(24.dp),
-                    color = RarimeTheme.colors.componentPrimary
+                    color = FoundationTheme.colors.componentPrimary
                 )
                 .fillMaxWidth()
                 .padding(20.dp),
@@ -267,21 +267,21 @@ fun ProcessItemError(
         ) {
             Text(
                 title,
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.errorDark
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.errorDark
             )
 
             if (onRetry != null) {
                 AppIcon(
                     id = R.drawable.ic_restart_line,
-                    tint = RarimeTheme.colors.errorDark,
+                    tint = FoundationTheme.colors.errorDark,
                     modifier = Modifier
                         .clickable(onClick = onRetry)
                         .size(20.dp)
                         .clip(CircleShape)
                 )
             } else {
-                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.errorDark)
+                AppIcon(id = R.drawable.ic_close, tint = FoundationTheme.colors.errorDark)
             }
         }
     }
@@ -300,7 +300,7 @@ fun ProcessItemFinished(
                 )
                 .height(60.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(RarimeTheme.colors.successLighter)
+                .background(FoundationTheme.colors.successLighter)
                 .align(Alignment.CenterStart)
         )
 
@@ -310,7 +310,7 @@ fun ProcessItemFinished(
                 .border(
                     1.dp,
                     shape = RoundedCornerShape(24.dp),
-                    color = RarimeTheme.colors.componentPrimary
+                    color = FoundationTheme.colors.componentPrimary
                 )
                 .fillMaxWidth()
                 .padding(20.dp),
@@ -319,12 +319,12 @@ fun ProcessItemFinished(
         ) {
             Text(
                 title,
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.successDark
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.successDark
             )
 
 
-            AppIcon(id = R.drawable.ic_check, tint = RarimeTheme.colors.successDarker)
+            AppIcon(id = R.drawable.ic_check, tint = FoundationTheme.colors.successDarker)
 
         }
     }
@@ -344,7 +344,7 @@ fun ProcessItemNotActive(
                 )
                 .height(62.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(RarimeTheme.colors.componentPrimary)
+                .background(FoundationTheme.colors.componentPrimary)
                 .align(Alignment.CenterStart)
         )
 
@@ -355,7 +355,7 @@ fun ProcessItemNotActive(
                 .border(
                     1.dp,
                     shape = RoundedCornerShape(24.dp),
-                    color = RarimeTheme.colors.componentPrimary
+                    color = FoundationTheme.colors.componentPrimary
                 )
                 .padding(20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -363,8 +363,8 @@ fun ProcessItemNotActive(
         ) {
             Text(
                 title,
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textSecondary
             )
         }
     }

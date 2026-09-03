@@ -46,7 +46,7 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetLogo
 import com.rarilabs.rarime.modules.home.v3.ui.components.BaseWidgetTitle
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -62,7 +62,7 @@ fun HiddenPrizeCollapsedWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(RarimeTheme.colors.backgroundPrimary)
+                    .background(FoundationTheme.colors.backgroundPrimary)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .sharedElement(
                         state = rememberSharedContentState(HomeSharedKeys.background(layoutId)),
@@ -120,9 +120,9 @@ private fun Header(
         ) {
             BaseWidgetLogo(
                 resId = R.drawable.ic_rarime,
-                backgroundColor = RarimeTheme.colors.componentPrimary,
+                backgroundColor = FoundationTheme.colors.componentPrimary,
                 size = 40,
-                tint = RarimeTheme.colors.textSecondary.copy(alpha = 1f),
+                tint = FoundationTheme.colors.textSecondary.copy(alpha = 1f),
             )
         }
     }
@@ -150,7 +150,7 @@ private fun Footer(
         ) {
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = RarimeTheme.colors.componentPrimary,
+                    containerColor = FoundationTheme.colors.componentPrimary,
                 ),
                 modifier = Modifier
                     .sharedBounds(
@@ -169,11 +169,11 @@ private fun Footer(
                 ) {
                     Text(
                         "Prize-pool: ",
-                        style = RarimeTheme.typography.subtitle6.copy(color = RarimeTheme.colors.textPrimary)
+                        style = FoundationTheme.typography.subtitle6.copy(color = FoundationTheme.colors.textPrimary)
                     )
                     Text(
                         text = stringResource(R.string.hidden_prize_prize_pool_value), //TODO Maybe give this from backend in future
-                        style = RarimeTheme.typography.h6.copy(color = RarimeTheme.colors.textPrimary),
+                        style = FoundationTheme.typography.h6.copy(color = FoundationTheme.colors.textPrimary),
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     Image(
@@ -194,8 +194,8 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    titleStyle = RarimeTheme.typography.h1.copy(RarimeTheme.colors.textPrimary),
-                    accentTitleStyle = RarimeTheme.typography.additional1.copy(brush = RarimeTheme.colors.gradient8),
+                    titleStyle = FoundationTheme.typography.h1.copy(FoundationTheme.colors.textPrimary),
+                    accentTitleStyle = FoundationTheme.typography.additional1.copy(brush = FoundationTheme.colors.gradient8),
                     accentTitleModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.accentTitle(
@@ -206,7 +206,7 @@ private fun Footer(
                         boundsTransform = { _, _ -> tween(durationMillis = ANIMATION_DURATION_MS) },
                         resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                     ),
-                    captionStyle = RarimeTheme.typography.body4.copy(RarimeTheme.colors.textSecondary),
+                    captionStyle = FoundationTheme.typography.body4.copy(FoundationTheme.colors.textSecondary),
                     captionModifier = Modifier.sharedBounds(
                         rememberSharedContentState(
                             HomeSharedKeys.caption(
@@ -223,7 +223,7 @@ private fun Footer(
                 AppIcon(
                     id = R.drawable.ic_arrow_right_up_line,
                     modifier = Modifier.align(Alignment.Bottom),
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                     size = 24.dp
                 )
             }
@@ -253,7 +253,7 @@ private fun Background(
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
                 .clip(RoundedCornerShape(40.dp))
                 .fillMaxSize()
         ) {

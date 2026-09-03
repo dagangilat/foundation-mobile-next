@@ -52,7 +52,7 @@ import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Screen
 
 val mainRoutes = listOf(
@@ -106,7 +106,7 @@ fun AppLoadingScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = RarimeTheme.colors.backgroundPrimary),
+            .background(color = FoundationTheme.colors.backgroundPrimary),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -115,7 +115,7 @@ fun AppLoadingScreen() {
                 .scale(scale),
             contentDescription = "Rarime app icon pulsing",
             painter = painterResource(R.drawable.ic_rarime),
-            colorFilter = ColorFilter.tint(RarimeTheme.colors.primaryMain)
+            colorFilter = ColorFilter.tint(FoundationTheme.colors.primaryMain)
         )
     }
 }
@@ -125,7 +125,7 @@ fun AppLoadingFailedScreen() {
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        AppIcon(id = R.drawable.ic_warning, tint = RarimeTheme.colors.errorDark, size = 140.dp)
+        AppIcon(id = R.drawable.ic_warning, tint = FoundationTheme.colors.errorDark, size = 140.dp)
     }
 }
 
@@ -210,7 +210,7 @@ fun MainScreenContent(
 
     AppTheme(colorScheme = colorSchema) {
         Scaffold(
-            containerColor = RarimeTheme.colors.backgroundPrimary,
+            containerColor = FoundationTheme.colors.backgroundPrimary,
             bottomBar = {
                 if (isBottomBarShown) {
                     BottomTabBar(

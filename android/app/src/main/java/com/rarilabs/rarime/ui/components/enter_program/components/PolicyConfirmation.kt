@@ -24,7 +24,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.UiPrivacyCheckbox
 import com.rarilabs.rarime.ui.components.rememberAppCheckboxState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun PolicyConfirmation(
@@ -53,8 +53,8 @@ fun PolicyConfirmation(
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     text = stringResource(R.string.checking_eligibility),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textPrimary
                 )
             }
         }
@@ -85,7 +85,7 @@ fun PolicyConfirmation(
 private fun PolicyConfirmationPreview() {
     Column(
         modifier = Modifier
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
     ) {
         PolicyConfirmation(onNext = {})
     }

@@ -35,7 +35,7 @@ import androidx.compose.ui.zIndex
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ScanQrScreen(
@@ -72,7 +72,7 @@ fun ScanQrScreenContent(
             AppIcon(
                 id = R.drawable.ic_caret_left,
                 size = 20.dp,
-                tint = RarimeTheme.colors.baseWhite,
+                tint = FoundationTheme.colors.baseWhite,
                 modifier = Modifier
                     .padding(
                         top = (20.0 + innerPaddings[ScreenInsets.TOP]!!.toInt()).dp,
@@ -82,8 +82,8 @@ fun ScanQrScreenContent(
             )
             Text(
                 text = stringResource(R.string.scan_qr_title),
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.baseWhite,
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.baseWhite,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = (20.0 + innerPaddings[ScreenInsets.TOP]!!.toInt()).dp)
@@ -102,8 +102,8 @@ fun ScanQrScreenContent(
                 )
                 Text(
                     text = stringResource(R.string.scan_qr_description),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.baseWhite,
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.baseWhite,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.width(200.dp)
                 )

@@ -36,7 +36,7 @@ import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.TransparentButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
 
@@ -178,8 +178,8 @@ private fun Body(
             BaseWidgetTitle(
                 title = "Your Device",
                 accentTitle = "Your Identity",
-                titleStyle = RarimeTheme.typography.h1.copy(color = RarimeTheme.colors.baseBlack),
-                accentTitleStyle = RarimeTheme.typography.additional1.copy(color = RarimeTheme.colors.baseBlackOp40),
+                titleStyle = FoundationTheme.typography.h1.copy(color = FoundationTheme.colors.baseBlack),
+                accentTitleStyle = FoundationTheme.typography.additional1.copy(color = FoundationTheme.colors.baseBlackOp40),
                 titleModifier = Modifier.sharedBounds(
                     rememberSharedContentState(HomeSharedKeys.title(layoutId)),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -195,8 +195,8 @@ private fun Body(
             )
             Text(
                 text = "This app is where you privately store your digital identities, enabling you to go incognito across the web.",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.baseBlackOp50
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.baseBlackOp50
             )
         }
     }
@@ -248,7 +248,7 @@ private fun Background(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(RarimeTheme.colors.gradient1)
+                .background(FoundationTheme.colors.gradient1)
         ) {
             Image(
                 painter = painterResource(R.drawable.drawable_hand_phone),

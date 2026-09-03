@@ -47,7 +47,7 @@ import com.rarilabs.rarime.ui.components.AppTextFieldState
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 import kotlinx.coroutines.launch
 
@@ -157,10 +157,10 @@ private fun InvitationContent(
                             onClick = { verifyCode() },
                             enabled = invitationCodeState.text.isNotEmpty() && !isSubmitting,
                             colors = ButtonColors(
-                                containerColor = RarimeTheme.colors.primaryMain,
-                                contentColor = RarimeTheme.colors.baseBlack,
-                                disabledContainerColor = RarimeTheme.colors.componentDisabled,
-                                disabledContentColor = RarimeTheme.colors.textPrimary.copy(alpha = 0.5f),
+                                containerColor = FoundationTheme.colors.primaryMain,
+                                contentColor = FoundationTheme.colors.baseBlack,
+                                disabledContainerColor = FoundationTheme.colors.componentDisabled,
+                                disabledContentColor = FoundationTheme.colors.textPrimary.copy(alpha = 0.5f),
                             ),
                         )
                     }
@@ -175,14 +175,14 @@ private fun InvitationContent(
 
                 Text(
                     text = "How can I get a code?",
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textSecondary
                 )
 
                 Text(
                     text = "You must be invited or receive a code from social channels",
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textPrimary
                 )
             }
 
@@ -210,7 +210,7 @@ private fun InvitationContent(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(RarimeTheme.colors.componentPrimary)
+                            .background(FoundationTheme.colors.componentPrimary)
                             .requiredHeight(78.dp)
                             .clickable { it.onClick() },
                         contentAlignment = Alignment.Center
@@ -226,8 +226,8 @@ private fun InvitationContent(
 
                             Text(
                                 text = it.title,
-                                style = RarimeTheme.typography.buttonSmall,
-                                color = RarimeTheme.colors.textSecondary
+                                style = FoundationTheme.typography.buttonSmall,
+                                color = FoundationTheme.colors.textSecondary
                             )
                         }
                     }
@@ -247,8 +247,8 @@ private fun InvitationContent(
                             updateStep(UNSPECIFIED_PASSPORT_STEPS.ABOUT_PROGRAM)
                         },
                     text = stringResource(id = R.string.invitation_about_step_link),
-                    style = RarimeTheme.typography.buttonSmall,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.buttonSmall,
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
         }

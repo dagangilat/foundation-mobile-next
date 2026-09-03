@@ -25,7 +25,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun RarimeInfoScreen(onClose: () -> Unit) {
@@ -37,12 +37,12 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                 modifier = Modifier
                     .width(72.dp)
                     .height(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
+                    .background(FoundationTheme.colors.componentPrimary, CircleShape)
             ) {
                 AppIcon(
                     id = R.drawable.ic_rarime,
                     size = 32.dp,
-                    tint = RarimeTheme.colors.textPrimary
+                    tint = FoundationTheme.colors.textPrimary
                 )
             }
         },
@@ -59,7 +59,7 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                     withStyle(
                         SpanStyle(
                             fontWeight = FontWeight.Bold,
-                            color = RarimeTheme.colors.textPrimary
+                            color = FoundationTheme.colors.textPrimary
                         )
                     ) {
                         append(stringResource(R.string.what_is_rarimo_text_item_3_accent))
@@ -82,21 +82,21 @@ private fun DescriptionStepRow(text: String? = null, annotatedText: AnnotatedStr
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = "•",
-            style = RarimeTheme.typography.subtitle3,
-            color = RarimeTheme.colors.textSecondary,
+            style = FoundationTheme.typography.subtitle3,
+            color = FoundationTheme.colors.textSecondary,
         )
         text?.let {
             Text(
                 text = it,
-                style = RarimeTheme.typography.body2,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body2,
+                color = FoundationTheme.colors.textSecondary,
             )
         }
         annotatedText?.let {
             Text(
                 text = it,
-                style = RarimeTheme.typography.body2,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body2,
+                color = FoundationTheme.colors.textSecondary,
             )
         }
     }

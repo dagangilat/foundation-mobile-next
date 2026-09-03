@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 
 @Composable
@@ -23,7 +23,7 @@ fun MaintenanceScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary),
+            .background(FoundationTheme.colors.backgroundPrimary),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -42,14 +42,14 @@ fun MaintenanceScreen() {
             ) {
                 Text(
                     text = stringResource(R.string.maintenance_in_progress),
-                    style = RarimeTheme.typography.h3,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h3,
+                    color = FoundationTheme.colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = stringResource(R.string.we_re_upgrading_for_a_better_experience_back_soon),
-                    style = RarimeTheme.typography.body3,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body3,
+                    color = FoundationTheme.colors.textSecondary,
                     textAlign = TextAlign.Center
                 )
             }

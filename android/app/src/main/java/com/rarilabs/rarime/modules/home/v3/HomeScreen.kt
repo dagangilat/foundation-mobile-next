@@ -55,7 +55,7 @@ import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsBottomSheet
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.delay
@@ -88,7 +88,7 @@ fun HomeScreenV3(
     val sheetManageWidgets = rememberAppSheetState()
     AppBottomSheet(
         state = sheetManageWidgets,
-        backgroundColor = RarimeTheme.colors.backgroundPrimary,
+        backgroundColor = FoundationTheme.colors.backgroundPrimary,
         isHeaderEnabled = false,
         fullScreen = false,
     ) {
@@ -254,8 +254,8 @@ fun HomeScreenContent(
                             selectedPage = pagerState.currentPage,
                             modifier = Modifier.padding(end = 8.dp),
                             defaultSize = 6.dp,
-                            selectedColor = RarimeTheme.colors.primaryMain,
-                            defaultColor = RarimeTheme.colors.primaryLight,
+                            selectedColor = FoundationTheme.colors.primaryMain,
+                            defaultColor = FoundationTheme.colors.primaryLight,
                             selectedHeight = 16.dp,
                             space = 8.dp
                         )

@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun TaskCard(
@@ -37,9 +37,9 @@ fun TaskCard(
 ) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = RarimeTheme.colors.backgroundSurface1),
+        colors = CardDefaults.cardColors(containerColor = FoundationTheme.colors.backgroundSurface1),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(width = 1.dp, color = RarimeTheme.colors.componentPrimary),
+        border = BorderStroke(width = 1.dp, color = FoundationTheme.colors.componentPrimary),
         onClick = onClick,
         modifier = Modifier
     ) {
@@ -54,12 +54,12 @@ fun TaskCard(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(color = RarimeTheme.colors.componentPrimary)
+                        .background(color = FoundationTheme.colors.componentPrimary)
                 ) {
                     Icon(
                         painter = painterResource(taskIconId),
                         contentDescription = "",
-                        tint = RarimeTheme.colors.textPrimary,
+                        tint = FoundationTheme.colors.textPrimary,
                         modifier = Modifier
                             .size(20.dp)
                             .align(Alignment.Center)
@@ -70,7 +70,7 @@ fun TaskCard(
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .background(
-                            color = RarimeTheme.colors.textPrimary,
+                            color = FoundationTheme.colors.textPrimary,
                             shape = RoundedCornerShape(20.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 3.dp)
@@ -78,14 +78,14 @@ fun TaskCard(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = ("+" + rewardInRMO),
-                            style = RarimeTheme.typography.overline3,
-                            color = RarimeTheme.colors.invertedLight
+                            style = FoundationTheme.typography.overline3,
+                            color = FoundationTheme.colors.invertedLight
                         )
 
                         Icon(
                             painter = painterResource(R.drawable.ic_rarimo),
                             contentDescription = "",
-                            tint = RarimeTheme.colors.invertedLight,
+                            tint = FoundationTheme.colors.invertedLight,
                             modifier = Modifier
                                 .size(16.dp)
                                 .padding(start = 4.dp)
@@ -105,13 +105,13 @@ fun TaskCard(
             ) {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.subtitle4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle4,
+                    color = FoundationTheme.colors.textPrimary,
                 )
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_right_line),
                     contentDescription = "",
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                     modifier = Modifier
                         .padding(start = 6.dp, top = 3.dp)
                         .size(20.dp)
@@ -132,8 +132,8 @@ fun TaskCard(
             ) {
                 Text(
                     text = "$description: $currentVal/$maxVal",
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
             Spacer(

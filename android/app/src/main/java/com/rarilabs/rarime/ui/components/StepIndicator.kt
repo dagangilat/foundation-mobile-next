@@ -11,7 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun StepIndicator(
@@ -26,7 +26,7 @@ fun StepIndicator(
                     .width(if (index == selectedIndex) 16.dp else 8.dp)
                     .height(8.dp)
                     .background(
-                        color = if (index == selectedIndex) RarimeTheme.colors.primaryMain else RarimeTheme.colors.componentPrimary,
+                        color = if (index == selectedIndex) FoundationTheme.colors.primaryMain else FoundationTheme.colors.componentPrimary,
                         shape = CircleShape
                     )
                     .clickable { updateSelectedIndex(index) }

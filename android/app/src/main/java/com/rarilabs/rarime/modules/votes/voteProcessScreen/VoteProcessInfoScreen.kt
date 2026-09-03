@@ -41,7 +41,7 @@ import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.DateUtil.getDateMessage
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.launch
@@ -115,8 +115,8 @@ fun VoteProcessInfoScreen(
                 onClick = onClose,
                 icon = R.drawable.ic_close,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RarimeTheme.colors.inverted,
-                    contentColor = RarimeTheme.colors.textPrimary
+                    containerColor = FoundationTheme.colors.inverted,
+                    contentColor = FoundationTheme.colors.textPrimary
                 ),
             )
 
@@ -147,8 +147,8 @@ fun VoteProcessInfoScreen(
         Column(modifier = Modifier.padding(vertical = 20.dp, horizontal = 24.dp)) {
             Text(
                 text = userInPoll.poll.title,
-                color = RarimeTheme.colors.textPrimary,
-                style = RarimeTheme.typography.h3
+                color = FoundationTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h3
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -160,12 +160,12 @@ fun VoteProcessInfoScreen(
                 ) {
                     AppIcon(
                         id = R.drawable.ic_timer_line,
-                        tint = RarimeTheme.colors.textSecondary
+                        tint = FoundationTheme.colors.textSecondary
                     )
                     Text(
                         text = getDateMessage(poll = userInPoll.poll, context),
-                        style = RarimeTheme.typography.subtitle7,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.subtitle7,
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
 
@@ -175,12 +175,12 @@ fun VoteProcessInfoScreen(
                 ) {
                     AppIcon(
                         id = R.drawable.ic_group_line,
-                        tint = RarimeTheme.colors.textSecondary
+                        tint = FoundationTheme.colors.textSecondary
                     )
                     Text(
                         text = userInPoll.poll.proposalResults[0].sum().toString(),
-                        style = RarimeTheme.typography.subtitle7,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.subtitle7,
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
             }
@@ -188,15 +188,15 @@ fun VoteProcessInfoScreen(
 
             Text(
                 text = userInPoll.poll.description,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary
             )
             Spacer(modifier = Modifier.height(12.dp))
             if (!userInPoll.poll.isRankingBased) {
                 Text(
                     text = userInPoll.poll.questionList.size.toString() + " questions",
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -208,8 +208,8 @@ fun VoteProcessInfoScreen(
             ) {
                 Text(
                     "Criteria",
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textSecondary
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -217,7 +217,7 @@ fun VoteProcessInfoScreen(
                         Row {
                             AppIcon(
                                 id = if (it.accomplished) R.drawable.ic_checkbox_circle_fill else R.drawable.ic_close_circle_fill,
-                                tint = if (it.accomplished) RarimeTheme.colors.secondaryMain else RarimeTheme.colors.errorMain
+                                tint = if (it.accomplished) FoundationTheme.colors.secondaryMain else FoundationTheme.colors.errorMain
                             )
                             Text(it.title)
                         }

@@ -13,7 +13,7 @@ import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ex
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.light_proof_handler.LightProofHandler
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.vote_handler.VoteHandler
 import com.rarilabs.rarime.api.ext_integrator.models.ExtIntegratorActions
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ExtIntActionPreview(
@@ -69,8 +69,8 @@ fun ExtIntActionPreview(
                 ) {
                     Text(
                         text = "Not implemented",
-                        style = RarimeTheme.typography.subtitle4,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.subtitle4,
+                        color = FoundationTheme.colors.textPrimary
                     )
                 }
             }

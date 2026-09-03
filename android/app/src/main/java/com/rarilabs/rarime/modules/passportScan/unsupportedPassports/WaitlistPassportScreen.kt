@@ -36,7 +36,7 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Country
 import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.SendEmailUtil
@@ -101,7 +101,7 @@ private fun WaitlistPassportScreenContent(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(top = 80.dp, bottom = 20.dp)
     ) {
         Column(
@@ -114,13 +114,13 @@ private fun WaitlistPassportScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .size(72.dp)
-                    .background(RarimeTheme.colors.componentPrimary, CircleShape)
-                    .border(2.dp, RarimeTheme.colors.backgroundPrimary, CircleShape)
+                    .background(FoundationTheme.colors.componentPrimary, CircleShape)
+                    .border(2.dp, FoundationTheme.colors.backgroundPrimary, CircleShape)
             ) {
                 Text(
                     text = Country.fromISOCode(eDocument.personDetails!!.nationality).flag,
-                    style = RarimeTheme.typography.h3,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h3,
+                    color = FoundationTheme.colors.textPrimary,
                 )
             }
 
@@ -136,14 +136,14 @@ private fun WaitlistPassportScreenContent(
                     text = stringResource(
                         R.string.waitlist_title
                     ),
-                    style = RarimeTheme.typography.h4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h4,
+                    color = FoundationTheme.colors.textPrimary,
                 )
                 Text(
                     text = Country.fromISOCode(eDocument.personDetails!!.nationality).localizedName,
-                    style = RarimeTheme.typography.body4,
+                    style = FoundationTheme.typography.body4,
                     textAlign = TextAlign.Center,
-                    color = RarimeTheme.colors.textSecondary,
+                    color = FoundationTheme.colors.textSecondary,
                 )
 
                 HorizontalDivider()
@@ -156,14 +156,14 @@ private fun WaitlistPassportScreenContent(
             ) {
                 Text(
                     text = stringResource(id = R.string.waitlist_subtitle),
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.subtitle4
+                    color = FoundationTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle4
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     text = stringResource(id = R.string.waitlist_description),
-                    color = RarimeTheme.colors.textPrimary,
-                    style = RarimeTheme.typography.body4
+                    color = FoundationTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.body4
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 InfoAlert(text = stringResource(id = R.string.waitlist_info))

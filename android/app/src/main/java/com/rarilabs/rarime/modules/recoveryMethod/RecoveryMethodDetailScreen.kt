@@ -47,7 +47,7 @@ import com.rarilabs.rarime.ui.components.CirclesLoader
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -145,8 +145,8 @@ fun RecoveryMethodDetailScreen(
                 )
                 Text(
                     text = stringResource(R.string.recovery_method_details_screen_title),
-                    style = RarimeTheme.typography.subtitle6,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle6,
+                    color = FoundationTheme.colors.textPrimary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -160,22 +160,22 @@ fun RecoveryMethodDetailScreen(
                 .padding(horizontal = 8.dp),
             shape = RoundedCornerShape(corner = CornerSize(20.dp)),
             elevation = CardDefaults.cardElevation(0.dp),
-            colors = CardDefaults.cardColors(containerColor = RarimeTheme.colors.componentPrimary)
+            colors = CardDefaults.cardColors(containerColor = FoundationTheme.colors.componentPrimary)
 
         ) {
             Row(modifier = Modifier.padding(top = 20.dp, start = 20.dp, bottom = 20.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.ic_key_2_line),
                     contentDescription = "",
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                     modifier = Modifier
                         .padding(end = 20.dp)
                         .size(20.dp)
                 )
                 Text(
                     text = stringResource(R.string.recovery_method_detail_screen_card_holder_title),
-                    style = RarimeTheme.typography.subtitle5,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.subtitle5,
+                    color = FoundationTheme.colors.textPrimary,
 
                     )
             }
@@ -189,12 +189,12 @@ fun RecoveryMethodDetailScreen(
                     ),
                 shape = RoundedCornerShape(corner = CornerSize(12.dp)),
                 elevation = CardDefaults.cardElevation(0.dp),
-                colors = CardDefaults.cardColors(containerColor = RarimeTheme.colors.backgroundSurface1)
+                colors = CardDefaults.cardColors(containerColor = FoundationTheme.colors.backgroundSurface1)
             ) {
                 Text(
                     text = privateKey,
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textPrimary,
                     modifier = Modifier.padding(20.dp)
                 )
 
@@ -219,7 +219,7 @@ fun RecoveryMethodDetailScreen(
                             R.drawable.ic_file_copy_line
                         ),
                         contentDescription = "",
-                        tint = RarimeTheme.colors.textPrimary,
+                        tint = FoundationTheme.colors.textPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.size(12.dp))
@@ -227,17 +227,17 @@ fun RecoveryMethodDetailScreen(
                         text = if (isCopied) stringResource(R.string.recovery_method_detail_screen_copied) else stringResource(
                             R.string.recovery_method_detail_screen_copy
                         ),
-                        style = RarimeTheme.typography.buttonMedium,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.buttonMedium,
+                        color = FoundationTheme.colors.textPrimary,
                         modifier = Modifier
                     )
                 }
             }
             Text(
                 text = stringResource(R.string.recovery_method_detal_screen_card_holder_description),
-                style = RarimeTheme.typography.body5,
+                style = FoundationTheme.typography.body5,
                 minLines = 3,
-                color = RarimeTheme.colors.textSecondary,
+                color = FoundationTheme.colors.textSecondary,
                 modifier = Modifier.padding(20.dp)
             )
 
@@ -294,12 +294,12 @@ fun RecoveryMethodDetailScreen(
                 rightContent = {
                     Text(
                         text = "SOON",
-                        style = RarimeTheme.typography.overline3,
-                        color = RarimeTheme.colors.baseBlack,
+                        style = FoundationTheme.typography.overline3,
+                        color = FoundationTheme.colors.baseBlack,
                         modifier = Modifier
                             .padding(vertical = 15.dp)
                             .background(
-                                brush = RarimeTheme.colors.gradient12,
+                                brush = FoundationTheme.colors.gradient12,
                                 shape = RoundedCornerShape(20.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -315,12 +315,12 @@ fun RecoveryMethodDetailScreen(
                 rightContent = {
                     Text(
                         text = "SOON",
-                        style = RarimeTheme.typography.overline3,
-                        color = RarimeTheme.colors.baseBlack,
+                        style = FoundationTheme.typography.overline3,
+                        color = FoundationTheme.colors.baseBlack,
                         modifier = Modifier
                             .padding(vertical = 15.dp)
                             .background(
-                                brush = RarimeTheme.colors.gradient12,
+                                brush = FoundationTheme.colors.gradient12,
                                 shape = RoundedCornerShape(20.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -341,13 +341,13 @@ private fun RecoveryMethodCard(
     description: String,
     rightContent: @Composable () -> Unit = {}
 ) {
-    val borderColor = if (!isEnabled) RarimeTheme.colors.componentDisabled
-    else if (isRecommended) RarimeTheme.colors.warningBase else RarimeTheme.colors.componentPrimary
+    val borderColor = if (!isEnabled) FoundationTheme.colors.componentDisabled
+    else if (isRecommended) FoundationTheme.colors.warningBase else FoundationTheme.colors.componentPrimary
     val iconTint =
-        if (isEnabled) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary
+        if (isEnabled) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textSecondary
     val titleColor =
-        if (isEnabled) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary
-    val descColor = RarimeTheme.colors.textSecondary
+        if (isEnabled) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textSecondary
+    val descColor = FoundationTheme.colors.textSecondary
     val verticalPadding = if (isEnabled) 8.dp else 6.dp
     val contentPadding =
         if (isEnabled) PaddingValues(start = 30.dp, end = 30.dp, bottom = 20.dp, top = 10.dp)
@@ -368,11 +368,11 @@ private fun RecoveryMethodCard(
             ) {
                 Text(
                     text = "RECOMENDED",
-                    style = RarimeTheme.typography.overline3,
-                    color = RarimeTheme.colors.baseWhite,
+                    style = FoundationTheme.typography.overline3,
+                    color = FoundationTheme.colors.baseWhite,
                     modifier = Modifier
                         .background(
-                            color = if (isEnabled) RarimeTheme.colors.warningBase else RarimeTheme.colors.componentPrimary,
+                            color = if (isEnabled) FoundationTheme.colors.warningBase else FoundationTheme.colors.componentPrimary,
                             shape = RoundedCornerShape(bottomStart = 8.dp)
                         )
                         .padding(horizontal = 8.dp, vertical = 2.dp)
@@ -398,13 +398,13 @@ private fun RecoveryMethodCard(
             Column {
                 Text(
                     text = title,
-                    style = RarimeTheme.typography.subtitle5,
+                    style = FoundationTheme.typography.subtitle5,
                     color = titleColor,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
                     text = description,
-                    style = RarimeTheme.typography.body5,
+                    style = FoundationTheme.typography.body5,
                     color = descColor,
                 )
             }

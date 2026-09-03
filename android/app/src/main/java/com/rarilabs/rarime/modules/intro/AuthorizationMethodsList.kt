@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.HorizontalDivider
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 data class AuthorizationMethod(
     val title: String, @DrawableRes val icon: Int, val onSelect: () -> Unit
@@ -45,14 +45,14 @@ fun AuthorizationMethodsList(
     ) {
         Text(
             text = stringResource(id = R.string.create_identity_selector_subtitle),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textSecondary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textSecondary,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(24.dp))
-                .border(1.dp, RarimeTheme.colors.componentPrimary, RoundedCornerShape(24.dp))
+                .border(1.dp, FoundationTheme.colors.componentPrimary, RoundedCornerShape(24.dp))
                 .fillMaxWidth()
         ) {
             variants.forEachIndexed { index, item ->
@@ -72,17 +72,17 @@ fun AuthorizationMethodsList(
                         modifier = Modifier
                             .size(40.dp)
                             .background(
-                                RarimeTheme.colors.gradient1, shape = RoundedCornerShape(50)
+                                FoundationTheme.colors.gradient1, shape = RoundedCornerShape(50)
                             ),
                         contentAlignment = Alignment.Center,
                     ) {
-                        AppIcon(id = item.icon, tint = RarimeTheme.colors.baseBlack)
+                        AppIcon(id = item.icon, tint = FoundationTheme.colors.baseBlack)
                     }
 
                     Text(
                         text = item.title,
-                        style = RarimeTheme.typography.h6,
-                        color = RarimeTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.h6,
+                        color = FoundationTheme.colors.textPrimary,
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -93,13 +93,13 @@ fun AuthorizationMethodsList(
                         contentDescription = stringResource(
                             R.string.select_icon_description
                         ),
-                        tint = RarimeTheme.colors.textSecondary
+                        tint = FoundationTheme.colors.textSecondary
                     )
                 }
 
                 if (index < variants.lastIndex) {
                     HorizontalDivider(
-                        color = RarimeTheme.colors.componentPrimary,
+                        color = FoundationTheme.colors.componentPrimary,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }

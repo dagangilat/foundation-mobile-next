@@ -28,7 +28,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 data class DropdownOption(
     val value: String,
@@ -69,8 +69,8 @@ fun TextDropdown(
             ) {
                 Text(
                     text = options.find { it.value == value }?.label ?: label ?: "",
-                    style = RarimeTheme.typography.overline2,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.overline2,
+                    color = FoundationTheme.colors.textPrimary,
                 )
 
                 AppIcon(
@@ -78,7 +78,7 @@ fun TextDropdown(
                         .rotate(if (isDropdownExpanded) 180f else 0f),
                     id = R.drawable.ic_carret_down,
                     size = 12.dp,
-                    tint = RarimeTheme.colors.textPrimary,
+                    tint = FoundationTheme.colors.textPrimary,
                 )
             }
         }
@@ -90,7 +90,7 @@ fun TextDropdown(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
                     .fillMaxWidth(0.5f)
-                    .background(RarimeTheme.colors.backgroundPure)
+                    .background(FoundationTheme.colors.backgroundPure)
                     .padding(0.dp),
                 expanded = isDropdownExpanded,
                 onDismissRequest = { closeDropdown() },
@@ -98,12 +98,12 @@ fun TextDropdown(
                 options.forEachIndexed { idx, option ->
                     run {
                         DropdownMenuItem(
-                            modifier = Modifier.background(RarimeTheme.colors.backgroundPure),
+                            modifier = Modifier.background(FoundationTheme.colors.backgroundPure),
                             trailingIcon = {
                                 if (option.value == value) AppIcon(
                                     id = R.drawable.ic_check,
                                     size = 18.dp,
-                                    tint = RarimeTheme.colors.textPrimary
+                                    tint = FoundationTheme.colors.textPrimary
                                 ) else null
                             },
                             colors = MenuItemColors(
@@ -117,7 +117,7 @@ fun TextDropdown(
                             text = {
                                 Text(
                                     text = option.label,
-                                    color = RarimeTheme.colors.textPrimary
+                                    color = FoundationTheme.colors.textPrimary
                                 )
                             },
                             onClick = {
@@ -126,7 +126,7 @@ fun TextDropdown(
                             }
                         )
                         if (idx < options.size - 1) {
-                            HorizontalDivider(color = RarimeTheme.colors.backgroundPrimary)
+                            HorizontalDivider(color = FoundationTheme.colors.backgroundPrimary)
                         }
                     }
                 }

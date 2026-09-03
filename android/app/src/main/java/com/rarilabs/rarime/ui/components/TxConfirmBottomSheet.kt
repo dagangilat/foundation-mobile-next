@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun TxConfirmBottomSheet(
@@ -59,7 +59,7 @@ private fun TxConfirmBottomSheetContent(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .background(RarimeTheme.colors.backgroundPure)
+            .background(FoundationTheme.colors.backgroundPure)
     ) {
         Row(
             modifier = Modifier
@@ -70,12 +70,12 @@ private fun TxConfirmBottomSheetContent(
         ) {
             Text(
                 text = "Review Transaction",
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.h4,
+                color = FoundationTheme.colors.textPrimary
             )
 
             IconButton(onClick = { hide() }) {
-                AppIcon(id = R.drawable.ic_close, tint = RarimeTheme.colors.textPrimary)
+                AppIcon(id = R.drawable.ic_close, tint = FoundationTheme.colors.textPrimary)
             }
         }
 
@@ -100,14 +100,14 @@ private fun TxConfirmBottomSheetContent(
                     ) {
                         Text(
                             text = key,
-                            style = RarimeTheme.typography.body4,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.body4,
+                            color = FoundationTheme.colors.textPrimary
                         )
 
                         Text(
                             text = value,
-                            style = RarimeTheme.typography.subtitle6,
-                            color = RarimeTheme.colors.textPrimary
+                            style = FoundationTheme.typography.subtitle6,
+                            color = FoundationTheme.colors.textPrimary
                         )
                     }
                 }
@@ -133,8 +133,8 @@ private fun TxConfirmBottomSheetContent(
                 ) {
                     Text(
                         text = "Cancel",
-                        style = RarimeTheme.typography.buttonLarge,
-                        color = RarimeTheme.colors.errorDark
+                        style = FoundationTheme.typography.buttonLarge,
+                        color = FoundationTheme.colors.errorDark
                     )
                 }
             }

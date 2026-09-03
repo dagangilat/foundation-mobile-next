@@ -13,14 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun RewardChip(reward: Int, isActive: Boolean = false) {
     val bgColor =
-        if (isActive) RarimeTheme.colors.warningLight else RarimeTheme.colors.componentPrimary
+        if (isActive) FoundationTheme.colors.warningLight else FoundationTheme.colors.componentPrimary
     val contentColor =
-        if (isActive) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textSecondary
+        if (isActive) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textSecondary
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -31,7 +31,7 @@ fun RewardChip(reward: Int, isActive: Boolean = false) {
     ) {
         Text(
             text = "+$reward",
-            style = RarimeTheme.typography.subtitle7,
+            style = FoundationTheme.typography.subtitle7,
             color = contentColor,
         )
         AppIcon(

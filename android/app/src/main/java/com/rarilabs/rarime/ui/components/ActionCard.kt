@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 enum class ActionCardVariants {
     Filled,
@@ -58,22 +58,22 @@ fun ActionCardContent(
         ) {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle5,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle5,
+                color = FoundationTheme.colors.textPrimary
             )
             Text(
                 text = description,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary
             )
         }
         if (isNextIconEnabled) {
             AppIcon(
                 id = R.drawable.ic_caret_right,
                 size = 16.dp,
-                tint = RarimeTheme.colors.invertedLight,
+                tint = FoundationTheme.colors.invertedLight,
                 modifier = Modifier
-                    .background(RarimeTheme.colors.primaryMain, CircleShape)
+                    .background(FoundationTheme.colors.primaryMain, CircleShape)
                     .padding(4.dp)
             )
         }
@@ -118,7 +118,7 @@ fun ActionCard(
                 )
                 .border(
                     width = 1.dp,
-                    color = RarimeTheme.colors.componentPrimary,
+                    color = FoundationTheme.colors.componentPrimary,
                     shape = RoundedCornerShape(24.dp)
                 ),
             backgroundColor = Color.Transparent
@@ -140,7 +140,7 @@ private fun ActionCardPreview() {
         modifier = Modifier
             .fillMaxSize()
             .padding(vertical = 16.dp, horizontal = 12.dp)
-            .background(RarimeTheme.colors.backgroundPrimary),
+            .background(FoundationTheme.colors.backgroundPrimary),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         ActionCard(
@@ -157,10 +157,10 @@ private fun ActionCardPreview() {
                     modifier = Modifier
                         .width(38.dp)
                         .height(38.dp)
-                        .background(RarimeTheme.colors.componentPrimary, CircleShape),
+                        .background(FoundationTheme.colors.componentPrimary, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    AppIcon(id = R.drawable.ic_share, tint = RarimeTheme.colors.textPrimary)
+                    AppIcon(id = R.drawable.ic_share, tint = FoundationTheme.colors.textPrimary)
                 }
             },
             onClick = {}
@@ -185,8 +185,8 @@ private fun ActionCardPreview() {
             leadingContent = {
                 Text(
                     text = "🇺🇦",
-                    style = RarimeTheme.typography.h5,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = FoundationTheme.typography.h5,
+                    color = FoundationTheme.colors.textPrimary,
                     textAlign = TextAlign.Center
                 )
             },
@@ -200,7 +200,7 @@ private fun ActionCardPreview() {
                 AppIcon(
                     id = R.drawable.ic_info,
                     size = 24.dp,
-                    tint = RarimeTheme.colors.textPrimary
+                    tint = FoundationTheme.colors.textPrimary
                 )
             },
             variant = ActionCardVariants.Outlined,

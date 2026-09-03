@@ -68,7 +68,7 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.BackgroundRemover
 import com.rarilabs.rarime.util.DateUtil
 import net.sf.scuba.data.Gender
@@ -145,7 +145,7 @@ fun IdentityCard(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = RarimeTheme.colors.backgroundPrimary)
+                .background(color = FoundationTheme.colors.backgroundPrimary)
                 .then(modifier)
         ) {
 
@@ -170,7 +170,7 @@ fun IdentityCard(
                         .align(Alignment.End)
                         .padding(top = 16.dp, end = 14.dp)
                         .clip(RoundedCornerShape(106.dp))
-                        .background(RarimeTheme.colors.componentPrimary)
+                        .background(FoundationTheme.colors.componentPrimary)
                 ) {
                     Text(
                         modifier = Modifier
@@ -181,8 +181,8 @@ fun IdentityCard(
                                 }
                             },
                         text = "PASSPORT",
-                        color = RarimeTheme.colors.textPrimary,
-                        style = RarimeTheme.typography.overline2
+                        color = FoundationTheme.colors.textPrimary,
+                        style = FoundationTheme.typography.overline2
                     )
                 }
 
@@ -193,8 +193,8 @@ fun IdentityCard(
                         " ",
                         passport.personDetails!!.name!!
                     ),
-                    style = RarimeTheme.typography.h2,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.h2,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     modifier = Modifier.padding(start = 24.dp),
@@ -202,8 +202,8 @@ fun IdentityCard(
                         " ",
                         passport.personDetails!!.surname!!
                     ),
-                    style = RarimeTheme.typography.additional2,
-                    color = RarimeTheme.colors.textPlaceholder
+                    style = FoundationTheme.typography.additional2,
+                    color = FoundationTheme.colors.textPlaceholder
                 )
                 Spacer(Modifier.height(10.dp))
 
@@ -219,8 +219,8 @@ fun IdentityCard(
                             )
                         ),
 
-                        style = RarimeTheme.typography.body3,
-                        color = RarimeTheme.colors.textSecondary,
+                        style = FoundationTheme.typography.body3,
+                        color = FoundationTheme.colors.textSecondary,
                     )
 
                     Box(
@@ -326,8 +326,8 @@ private fun PassportCardSettings(
         ) {
             Text(
                 text = stringResource(R.string.settings_title),
-                style = RarimeTheme.typography.h4,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h4,
+                color = FoundationTheme.colors.textPrimary,
                 modifier = Modifier.padding(vertical = 16.dp, horizontal = 20.dp)
             )
 
@@ -343,8 +343,8 @@ private fun PassportCardSettings(
         ) {
             Text(
                 text = stringResource(R.string.card_visual),
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.overline2,
+                color = FoundationTheme.colors.textSecondary
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -374,8 +374,8 @@ private fun PassportIdentifiersPicker(
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 text = stringResource(R.string.passport_card_identifiers_title),
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary
+                style = FoundationTheme.typography.overline2,
+                color = FoundationTheme.colors.textSecondary
             )
 
         }
@@ -389,14 +389,14 @@ private fun PassportIdentifiersPicker(
                 Column {
                     Text(
                         text = identifier.toLocalizedTitle(),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textSecondary
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = identifier.toLocalizedValue(eDocument),
-                        style = RarimeTheme.typography.subtitle5,
-                        color = RarimeTheme.colors.textPrimary
+                        style = FoundationTheme.typography.subtitle5,
+                        color = FoundationTheme.colors.textPrimary
                     )
                 }
 
@@ -422,7 +422,7 @@ private fun PassportLookOption(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = if (isActive) RarimeTheme.colors.textPrimary else RarimeTheme.colors.componentPrimary,
+                color = if (isActive) FoundationTheme.colors.textPrimary else FoundationTheme.colors.componentPrimary,
                 shape = RoundedCornerShape(8.dp)
             )
             .background(
@@ -523,12 +523,12 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .background(RarimeTheme.colors.componentPrimary, RoundedCornerShape(24.dp))
+            .background(FoundationTheme.colors.componentPrimary, RoundedCornerShape(24.dp))
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             AppIcon(
                 id = statusIcon,
-                tint = if (passportStatus == PassportStatus.UNSUPPORTED_FOR_REWARDS) RarimeTheme.colors.errorMain else RarimeTheme.colors.warningMain,
+                tint = if (passportStatus == PassportStatus.UNSUPPORTED_FOR_REWARDS) FoundationTheme.colors.errorMain else FoundationTheme.colors.warningMain,
                 modifier = Modifier.padding(vertical = 4.dp),
                 size = 24.dp
             )
@@ -536,14 +536,14 @@ fun StatusCard(modifier: Modifier = Modifier, passportStatus: PassportStatus) {
             Column {
                 Text(
                     text = stringResource(id = statusTitle),
-                    style = RarimeTheme.typography.subtitle5,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle5,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 if (passportStatus == PassportStatus.WAITLIST || passportStatus == PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS) {
                     Text(
                         text = stringResource(id = statusDescription),
-                        style = RarimeTheme.typography.body4,
-                        color = RarimeTheme.colors.textSecondary
+                        style = FoundationTheme.typography.body4,
+                        color = FoundationTheme.colors.textSecondary
                     )
                 }
 

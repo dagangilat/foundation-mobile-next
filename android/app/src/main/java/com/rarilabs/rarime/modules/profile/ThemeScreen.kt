@@ -21,7 +21,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.toLocalizedString
 import com.rarilabs.rarime.ui.components.AppRadioButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ThemeScreen(
@@ -68,8 +68,8 @@ private fun SchemeItem(
             )
             Text(
                 text = scheme.toLocalizedString(),
-                style = RarimeTheme.typography.buttonMedium,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.buttonMedium,
+                color = FoundationTheme.colors.textPrimary
             )
         }
     }

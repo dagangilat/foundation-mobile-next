@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.BaseButton
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun ConfirmationDialog(
@@ -29,7 +29,7 @@ fun ConfirmationDialog(
     onConfirm: () -> Unit = {},
 
     iconId: Int = R.drawable.ic_trash_simple,
-    iconContainerColor: Color = RarimeTheme.colors.errorLight,
+    iconContainerColor: Color = FoundationTheme.colors.errorLight,
     cancelButtonText: String = "Cancel",
 
     title: String,
@@ -37,12 +37,12 @@ fun ConfirmationDialog(
 
     confirmButtonText: String = "Confirm",
     confirmButtonColors: ButtonColors = ButtonDefaults.buttonColors(
-        contentColor = RarimeTheme.colors.errorDarker,
-        containerColor = RarimeTheme.colors.errorLight,
+        contentColor = FoundationTheme.colors.errorDarker,
+        containerColor = FoundationTheme.colors.errorLight,
     ),
 ) {
     AlertDialog(
-        containerColor = RarimeTheme.colors.backgroundPure,
+        containerColor = FoundationTheme.colors.backgroundPure,
         icon = {
             Box(
                 modifier = Modifier
@@ -54,15 +54,15 @@ fun ConfirmationDialog(
                 AppIcon(
                     id = iconId,
                     size = 32.dp,
-                    tint = RarimeTheme.colors.errorDarker
+                    tint = FoundationTheme.colors.errorDarker
                 )
             }
         },
         title = {
             Text(
                 text = title,
-                style = RarimeTheme.typography.subtitle4,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.subtitle4,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center
             )
         },
@@ -70,8 +70,8 @@ fun ConfirmationDialog(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = subtitle,
-                style = RarimeTheme.typography.body4,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body4,
+                color = FoundationTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
         },

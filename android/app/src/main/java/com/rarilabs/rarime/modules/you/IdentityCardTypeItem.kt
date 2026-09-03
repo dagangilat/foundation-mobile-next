@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 @Composable
 fun IdentityCardTypeItem(
@@ -60,19 +60,19 @@ fun IdentityCardTypeItem(
                 Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(brush = RarimeTheme.colors.gradient1)
+                    .background(brush = FoundationTheme.colors.gradient1)
             } else {
                 Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(RarimeTheme.colors.componentDisabled)
+                    .background(FoundationTheme.colors.componentDisabled)
 
             },
             contentAlignment = Alignment.Center
         ) {
             AppIcon(
                 id = iconId,
-                tint = if (isActive) RarimeTheme.colors.baseBlack else RarimeTheme.colors.textDisabled.copy(
+                tint = if (isActive) FoundationTheme.colors.baseBlack else FoundationTheme.colors.textDisabled.copy(
                     alpha = 0.28f
                 ),
                 size = iconSize.dp,
@@ -81,8 +81,8 @@ fun IdentityCardTypeItem(
 
         Text(
             name,
-            style = RarimeTheme.typography.buttonLarge,
-            color = if (isActive) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textDisabled
+            style = FoundationTheme.typography.buttonLarge,
+            color = if (isActive) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textDisabled
         )
         Spacer(modifier = Modifier.weight(1f))
 
@@ -90,13 +90,13 @@ fun IdentityCardTypeItem(
             AppIcon(
                 id = R.drawable.ic_caret_right,
                 size = 16.dp,
-                tint = RarimeTheme.colors.textSecondary
+                tint = FoundationTheme.colors.textSecondary
             )
         } else {
             Text(
                 text = "SOON",
-                color = RarimeTheme.colors.textSecondary,
-                style = RarimeTheme.typography.overline2
+                color = FoundationTheme.colors.textSecondary,
+                style = FoundationTheme.typography.overline2
             )
         }
 

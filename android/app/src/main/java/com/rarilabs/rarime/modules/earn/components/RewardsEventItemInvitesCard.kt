@@ -27,7 +27,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.points.models.ReferralCode
 import com.rarilabs.rarime.api.points.models.ReferralCodeStatuses
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.InvitationUtil
 
 enum class RewardsEventItemInvitesCardContainerVariants(val value: String) {
@@ -46,7 +46,7 @@ private fun RewardsEventItemInvitesCardContainer(
     actionContent: @Composable () -> Unit = {},
 ) {
     val boxBackground = when (variant) {
-        RewardsEventItemInvitesCardContainerVariants.FILLED -> RarimeTheme.colors.componentPrimary
+        RewardsEventItemInvitesCardContainerVariants.FILLED -> FoundationTheme.colors.componentPrimary
         RewardsEventItemInvitesCardContainerVariants.OUTLINED -> Color.Transparent
     }
 
@@ -59,7 +59,7 @@ private fun RewardsEventItemInvitesCardContainer(
             .then(
                 if (isCodeDisabled) Modifier.border(
                     1.dp,
-                    RarimeTheme.colors.componentPrimary,
+                    FoundationTheme.colors.componentPrimary,
                     RoundedCornerShape(16.dp)
                 ) else Modifier
             )
@@ -79,13 +79,13 @@ private fun RewardsEventItemInvitesCardContainer(
                 Text(
                     textDecoration = if (isCodeDisabled) TextDecoration.LineThrough else null,
                     text = title,
-                    style = if (isCodeDisabled) RarimeTheme.typography.subtitle6 else RarimeTheme.typography.h5,
-                    color = RarimeTheme.colors.textPrimary,
+                    style = if (isCodeDisabled) FoundationTheme.typography.subtitle6 else FoundationTheme.typography.h5,
+                    color = FoundationTheme.colors.textPrimary,
                 )
                 Text(
                     text = description,
-                    style = RarimeTheme.typography.body4,
-                    color = RarimeTheme.colors.textSecondary,
+                    style = FoundationTheme.typography.body4,
+                    color = FoundationTheme.colors.textSecondary,
                 )
                 columnContent()
             }
@@ -149,14 +149,14 @@ fun RewardsEventItemInvitesCard(
                                 InvitationUtil.shareInvitation(context, invitationUrl)
                             }
                         ) {
-                            AppIcon(id = R.drawable.ic_share, tint = RarimeTheme.colors.textPrimary)
+                            AppIcon(id = R.drawable.ic_share, tint = FoundationTheme.colors.textPrimary)
                         }
                     },
                     columnContent = {
                         Text(
                             text = stringResource(id = R.string.invite_status_active_card_desc),
-                            style = RarimeTheme.typography.subtitle7,
-                            color = RarimeTheme.colors.successDarker,
+                            style = FoundationTheme.typography.subtitle7,
+                            color = FoundationTheme.colors.successDarker,
                         )
                     }
                 )

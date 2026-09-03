@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 import com.rarilabs.rarime.util.Country
 
@@ -24,7 +24,7 @@ fun AboutProgram(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPure)
+            .background(FoundationTheme.colors.backgroundPure)
             .padding(20.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(32.dp)
@@ -46,8 +46,8 @@ fun AboutProgram(
                 )
             }
             """.trimIndent(),
-            style = RarimeTheme.typography.body3,
-            color = RarimeTheme.colors.textPrimary,
+            style = FoundationTheme.typography.body3,
+            color = FoundationTheme.colors.textPrimary,
         )
 
         Column(
@@ -56,14 +56,14 @@ fun AboutProgram(
         ) {
             Text(
                 text = "HOW CAN I GET THE INVITE CODE?",
-                style = RarimeTheme.typography.overline2,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.overline2,
+                color = FoundationTheme.colors.textSecondary,
             )
 
             Text(
                 text = "The app’s rewards program is invite-only. Get invited by an authorized user or ask a community member for an invite code.",
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textPrimary,
             )
         }
     }
@@ -75,7 +75,7 @@ fun AboutProgrammPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
     ) {
         AboutProgram()
     }

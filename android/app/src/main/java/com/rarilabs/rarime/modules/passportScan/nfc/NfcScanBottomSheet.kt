@@ -21,7 +21,7 @@ import com.rarilabs.rarime.ui.components.AppSheetState
 import com.rarilabs.rarime.ui.components.DottedProgressBar
 import com.rarilabs.rarime.ui.components.SecondaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 val currentStepDescription = mapOf(
     Pair(NfcScanStep.PREPARING, "Place your passport cover to the back of your phone"),
@@ -52,7 +52,7 @@ fun NfcScanBottomSheet(
 
     Surface(
         modifier = modifier,
-        color = RarimeTheme.colors.backgroundPrimary
+        color = FoundationTheme.colors.backgroundPrimary
     ) {
         Column(
             modifier = Modifier
@@ -62,15 +62,15 @@ fun NfcScanBottomSheet(
             ) {
             Text(
                 text = "Ready to Scan",
-                style = RarimeTheme.typography.h3,
-                color = RarimeTheme.colors.textPrimary,
+                style = FoundationTheme.typography.h3,
+                color = FoundationTheme.colors.textPrimary,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = currentStepDescription[currentStep]!!,
-                style = RarimeTheme.typography.body3,
-                color = RarimeTheme.colors.textSecondary,
+                style = FoundationTheme.typography.body3,
+                color = FoundationTheme.colors.textSecondary,
                 textAlign = TextAlign.Center
             )
 

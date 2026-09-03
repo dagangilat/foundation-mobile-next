@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 
 open class AppTextFieldState(initialText: String, initialErrorMessage: String = "") {
     var text by mutableStateOf(initialText)
@@ -106,8 +106,8 @@ fun AppTextField(
         if (label.isNotEmpty()) {
             Text(
                 text = label,
-                style = RarimeTheme.typography.subtitle6,
-                color = if (enabled) RarimeTheme.colors.textPrimary else RarimeTheme.colors.textDisabled
+                style = FoundationTheme.typography.subtitle6,
+                color = if (enabled) FoundationTheme.colors.textPrimary else FoundationTheme.colors.textDisabled
             )
         }
         OutlinedTextField(
@@ -119,36 +119,36 @@ fun AppTextField(
             placeholder = {
                 Text(
                     text = placeholder,
-                    style = RarimeTheme.typography.body4,
+                    style = FoundationTheme.typography.body4,
                 )
             },
             enabled = enabled,
             isError = state.isError,
-            textStyle = RarimeTheme.typography.body4,
+            textStyle = FoundationTheme.typography.body4,
             singleLine = true,
             trailingIcon = trailingItem,
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = RarimeTheme.colors.componentPrimary,
-                unfocusedPlaceholderColor = RarimeTheme.colors.textSecondary,
-                unfocusedTextColor = RarimeTheme.colors.textPrimary,
+                unfocusedIndicatorColor = FoundationTheme.colors.componentPrimary,
+                unfocusedPlaceholderColor = FoundationTheme.colors.textSecondary,
+                unfocusedTextColor = FoundationTheme.colors.textPrimary,
 
                 focusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = RarimeTheme.colors.componentPressed,
-                focusedPlaceholderColor = RarimeTheme.colors.textSecondary,
-                focusedTextColor = RarimeTheme.colors.textPrimary,
+                focusedIndicatorColor = FoundationTheme.colors.componentPressed,
+                focusedPlaceholderColor = FoundationTheme.colors.textSecondary,
+                focusedTextColor = FoundationTheme.colors.textPrimary,
 
-                disabledContainerColor = RarimeTheme.colors.componentDisabled,
+                disabledContainerColor = FoundationTheme.colors.componentDisabled,
                 disabledIndicatorColor = Color.Transparent,
-                disabledPlaceholderColor = RarimeTheme.colors.textDisabled,
-                disabledTextColor = RarimeTheme.colors.textDisabled,
+                disabledPlaceholderColor = FoundationTheme.colors.textDisabled,
+                disabledTextColor = FoundationTheme.colors.textDisabled,
 
                 errorContainerColor = Color.Transparent,
-                errorIndicatorColor = RarimeTheme.colors.errorMain,
-                errorPlaceholderColor = RarimeTheme.colors.textSecondary,
-                errorTextColor = RarimeTheme.colors.textPrimary,
+                errorIndicatorColor = FoundationTheme.colors.errorMain,
+                errorPlaceholderColor = FoundationTheme.colors.textSecondary,
+                errorTextColor = FoundationTheme.colors.textPrimary,
 
-                cursorColor = RarimeTheme.colors.textPrimary,
+                cursorColor = FoundationTheme.colors.textPrimary,
 
                 ),
             shape = RoundedCornerShape(12.dp),
@@ -157,8 +157,8 @@ fun AppTextField(
         if (state.isError) {
             Text(
                 text = state.errorMessage,
-                style = RarimeTheme.typography.caption2,
-                color = RarimeTheme.colors.errorMain
+                style = FoundationTheme.typography.caption2,
+                color = FoundationTheme.colors.errorMain
             )
         } else {
             hint?.invoke()

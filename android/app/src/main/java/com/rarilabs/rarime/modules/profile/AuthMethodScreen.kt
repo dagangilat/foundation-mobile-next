@@ -27,7 +27,7 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.modules.security.PasscodeScreen
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.AppSwitch
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.BiometricUtil
 
 @Composable
@@ -106,10 +106,10 @@ private fun AuthMethodItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary, RoundedCornerShape(20.dp))
+            .background(FoundationTheme.colors.backgroundPrimary, RoundedCornerShape(20.dp))
             .border(
                 width = 1.dp,
-                color = RarimeTheme.colors.componentPrimary,
+                color = FoundationTheme.colors.componentPrimary,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(16.dp),
@@ -121,14 +121,14 @@ private fun AuthMethodItem(
             AppIcon(
                 id = iconId,
                 size = 20.dp,
-                tint = RarimeTheme.colors.textPrimary,
+                tint = FoundationTheme.colors.textPrimary,
                 modifier = Modifier
                     .padding(6.dp)
             )
             Text(
                 text = label,
-                style = RarimeTheme.typography.subtitle6,
-                color = RarimeTheme.colors.textPrimary
+                style = FoundationTheme.typography.subtitle6,
+                color = FoundationTheme.colors.textPrimary
             )
         }
         AppSwitch(

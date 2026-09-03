@@ -27,7 +27,7 @@ import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.modules.wallet.models.TransactionState
 import com.rarilabs.rarime.modules.wallet.models.TransactionType
 import com.rarilabs.rarime.ui.components.AppIcon
-import com.rarilabs.rarime.ui.theme.RarimeTheme
+import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.Constants
 import com.rarilabs.rarime.util.DateUtil
 import com.rarilabs.rarime.util.NumberUtil
@@ -63,23 +63,23 @@ fun WalletTransactionCard(
             AppIcon(
                 id = transaction.getIconId(),
                 size = 20.dp,
-                tint = RarimeTheme.colors.textSecondary,
+                tint = FoundationTheme.colors.textSecondary,
                 modifier = Modifier
                     .background(
-                        RarimeTheme.colors.componentPrimary, shape = CircleShape
+                        FoundationTheme.colors.componentPrimary, shape = CircleShape
                     )
                     .padding(10.dp)
             )
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(transaction.getStringId()),
-                    style = RarimeTheme.typography.subtitle6,
-                    color = RarimeTheme.colors.textPrimary
+                    style = FoundationTheme.typography.subtitle6,
+                    color = FoundationTheme.colors.textPrimary
                 )
                 Text(
                     text = DateUtil.formatDate(transaction.date),
-                    style = RarimeTheme.typography.body5,
-                    color = RarimeTheme.colors.textSecondary
+                    style = FoundationTheme.typography.body5,
+                    color = FoundationTheme.colors.textSecondary
                 )
             }
         }
@@ -89,11 +89,11 @@ fun WalletTransactionCard(
                 txHumanAmount.toBigDecimal().stripTrailingZeros().toPlainString()
                     .replace(Regex("(\\.\\d{4})\\d+"), "$1")
             } ${asset.getTokenSymbol()}",
-            style = RarimeTheme.typography.subtitle7,
+            style = FoundationTheme.typography.subtitle7,
             color = if (transaction.state == TransactionState.INCOMING) {
-                RarimeTheme.colors.successMain
+                FoundationTheme.colors.successMain
             } else {
-                RarimeTheme.colors.errorMain
+                FoundationTheme.colors.errorMain
             }
         )
     }
@@ -105,7 +105,7 @@ fun WalletTransactionCardPreview() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RarimeTheme.colors.backgroundPrimary)
+            .background(FoundationTheme.colors.backgroundPrimary)
             .padding(20.dp)
     ) {
         WalletTransactionCard(
