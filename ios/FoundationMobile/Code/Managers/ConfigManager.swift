@@ -50,7 +50,6 @@ extension ConfigManager {
 
 extension ConfigManager {
     class Secrets {
-        let joinRewardsKey: String = try! readFromInfoPlist(key: "JOIN_REWARDS_KEY")
         let lightSignaturePrivateKey: String = try! readFromInfoPlist(key: "LIGHT_SIGNATURE_PRIVATE_KEY")
     }
 }

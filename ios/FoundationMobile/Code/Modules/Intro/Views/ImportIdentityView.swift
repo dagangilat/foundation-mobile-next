@@ -138,10 +138,9 @@ struct ImportIdentityView: View {
                 try userManager.user?.save()
                 
                 LoggerUtil.common.info("Identity was imported")
-                
-                
+
                 securityManager.disablePasscode()
-                
+
                 onNext()
             } catch {
                 LoggerUtil.common.error("Failed to restore from iCloud: \(error, privacy: .public)")
@@ -172,10 +171,9 @@ struct ImportIdentityView: View {
                 try userManager.user?.save()
                 
                 LoggerUtil.common.info("Identity was imported")
-                
-                
+
                 securityManager.disablePasscode()
-                
+
                 onNext()
             } catch {
                 LoggerUtil.common.error("failed to import identity: \(error, privacy: .public)")

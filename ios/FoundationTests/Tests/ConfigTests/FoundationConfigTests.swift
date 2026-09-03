@@ -39,9 +39,10 @@ final class FoundationConfigTests: XCTestCase {
     }
 
     func testNoInheritedPrivateKeys() {
-        // Upstream committed real keys here. Blanked in the fork.
+        // Upstream committed a real key here. Blanked in the fork.
+        // JOIN_REWARDS_KEY was removed outright in Task B5 (Earn module strip)
+        // rather than blanked, so there's no config value left to assert on.
         XCTAssertEqual(configValue("LIGHT_SIGNATURE_PRIVATE_KEY"), "")
-        XCTAssertEqual(configValue("JOIN_REWARDS_KEY"), "")
     }
 
     func testFoundationFunctionsRegionIsSet() {

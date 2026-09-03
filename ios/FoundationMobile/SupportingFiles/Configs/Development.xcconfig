@@ -41,5 +41,4 @@ EVM_SCAN_API_URL="https:${SLASH}/evmscan.l2.rarimo.com"
 
 // MARK: Secrets
 // Upstream committed live Rarimo keys here. Never repopulate from upstream.
-JOIN_REWARDS_KEY=""
 LIGHT_SIGNATURE_PRIVATE_KEY=""
