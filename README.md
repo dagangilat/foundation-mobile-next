@@ -25,9 +25,33 @@ once that work completes.
 
 ## Building
 
-See [`docs/build-identity-sdk.md`](docs/build-identity-sdk.md) for building
-the identity SDK dependency (`Identity.xcframework`), and each platform's
-own project files (`ios/`, `android/`) for the app build itself.
+### iOS
+
+    cd ios && ./prebuild.sh          # builds Identity.xcframework (Go + gomobile)
+    open FoundationMobile.xcodeproj
+
+Requires `ios/FoundationMobile/GoogleService-Info.plist` (gitignored) — generate with
+`firebase apps:sdkconfig IOS --project foundation-next-app`.
+
+### Android
+
+    cd android && ./gradlew :app:assembleDebug
+
+See docs/android-local-setup.md — `app/google-services.json` and a
+`GOOGLE_WEB_KEY` Gradle property are required, and the app builds for
+`arm64-v8a` only.
+
+### Before any store upload
+
+    ./scripts/brand-sweep.sh
+
+Both fastlane lanes run this first. A leftover Rarimo string or logo reaching a
+store listing is the failure mode this guards.
+
+Neither platform has a real Firebase app registered yet as of this writing —
+both `GoogleService-Info.plist` and `google-services.json` are gitignored
+local stubs, not the real `foundation-next-app` project. This is a known,
+separately-tracked pending item; builds and unit tests are unaffected.
 
 ## Staying in sync with upstream
 

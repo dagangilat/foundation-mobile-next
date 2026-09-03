@@ -10,28 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Scoped to `ios` only for now: Phase C (Android rebrand) has not
-      # started, so `android/` still carries ~4250 un-rebranded Rarimo
-      # references (Task A3's import count). Widen this to
-      # `./scripts/brand-sweep.sh ios android` once Task C9 lands — see that
-      # task's brief and the Phase C section of the rebrand plan.
+      # Widened to `ios android` as of Task C9: Phase C's Android rebrand
+      # (C1-C9) is done, so both platforms are now swept together on every
+      # push/PR.
       #
-      # continue-on-error is deliberate, not a silenced gate: even scoped to
-      # `ios`, this currently fails with 33 hits, none of them shipped-app
-      # leaks — 5 are the FoundationMobile/NotificationBackgroundProcessor
-      # entitlements' still-Rarimo applinks/App-Group identifiers (Task B2's
-      # tracked, not-yet-owned gap; scripts/brand-sweep.sh's own EXCLUDES
-      # comments explain why these stay red on purpose rather than getting
-      # exempted), 5 are binary asset content (video/image/zkey files, not
-      # text a CI step could ever "fix"), and the remainder is this app's own
-      # source honestly documenting what it does NOT do (e.g. rejecting
-      # rarime:// URLs by name) plus test fixtures asserting the same. A red
-      # step here is a real, currently-expected signal — remove
-      # continue-on-error once the entitlements gap is closed, don't add a
-      # new exemption to force green early.
+      # continue-on-error stays in place — not a silenced gate, a structural
+      # necessity. `android/` alone reports 1500+ hits and always will:
+      # Open Decision OD-3 (confirmed by the user 2026-08-31) keeps the
+      # Kotlin namespace `com.rarilabs.rarime` unrenamed forever, and the
+      # sweep's `rarilabs|rarime` token matches that package/import prefix in
+      # essentially every Android source file. There is no future task that
+      # closes this the way the iOS entitlements gap can eventually close —
+      # `./scripts/brand-sweep.sh android` cannot reach 0 hits while OD-3
+      # stands, by design. `ios` alone still separately fails today too (the
+      # FoundationMobile/NotificationBackgroundProcessor entitlements'
+      # still-Rarimo applinks/App-Group identifiers — Task B2's tracked,
+      # not-yet-owned gap) — see scripts/brand-sweep.sh's own EXCLUDES
+      # comments for the full breakdown of what's expected-red on each
+      # platform and why. A red step here is a real, expected signal on
+      # `android` permanently and on `ios` until the entitlements gap closes
+      # — don't add a new exemption to either platform's sweep to force
+      # green, and don't remove continue-on-error for `android`.
       - name: No residual Rarimo branding
         continue-on-error: true
-        run: ./scripts/brand-sweep.sh ios
+        run: ./scripts/brand-sweep.sh ios android
       - name: Licensing files present
         run: |
           test -f LICENSE
@@ -39,6 +41,12 @@ jobs:
           test -f THIRD_PARTY_LICENSES.md
           grep -q "GNU GENERAL PUBLIC LICENSE" LICENSE
           grep -q "Rarimo Foundation" NOTICE
+      - name: Copyleft inventory is accurate
+        run: |
+          test -f android/app/src/main/cpp/CMakeLists.txt
+          grep -q "librapidsnark.so" android/app/src/main/cpp/CMakeLists.txt
+          grep -q "librapidsnark" THIRD_PARTY_LICENSES.md
+          grep -q "witnesscalc" THIRD_PARTY_LICENSES.md
       # --exclude-dir=.github is required here: this step's own grep pattern
       # literally contains the string it searches for, so without excluding
       # its own directory this check would permanently fail against itself.

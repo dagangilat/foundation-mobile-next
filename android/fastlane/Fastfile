@@ -1,0 +1,16 @@
+default_platform(:android)
+
+platform :android do
+  desc "Fail if any Rarimo branding survives"
+  lane :brand_sweep do
+    sh("cd ../.. && ./scripts/brand-sweep.sh android")
+  end
+
+  desc "Build and upload an internal-testing release"
+  lane :internal do
+    brand_sweep
+    gradle(task: "clean")
+    gradle(task: "bundle", build_type: "Release")
+    upload_to_play_store(track: "internal")
+  end
+end
