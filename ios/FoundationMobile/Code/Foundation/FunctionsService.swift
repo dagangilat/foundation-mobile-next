@@ -40,78 +40,6 @@ struct VerifySignInCodeResult: Decodable, Sendable {
     let expiresInSeconds: Int
 }
 
-// Phase 2 — seal commitment anchor.
-//
-// The client produces an EnclaveSeal.Commitment locally (SHA-256 over the
-// canonical artifact bytes) and posts it here. The server re-derives the
-// canonical bytes from the same `artifacts` payload, verifies the hash
-// matches, persists to Firestore, and writes the hash to Solana devnet
-// via the shared Anchor client. The mobile side never holds a Solana
-// keypair (hard invariant).
-//
-// `kinds` is the rawValue list of ProofArtifact.Kind values in the seal,
-// sorted the same way EnclaveSeal.seal sorts them (alphabetical by
-// rawValue). `producedAtMs` is EnclaveSeal.Commitment.producedAtMs.
-struct AnchorCommitmentRequest: Encodable, Sendable {
-    let commitment: CommitmentPayload
-    let artifacts: [ArtifactPayload]
-    /// Optional biometric seal sidecar — present when BiometricSealer
-    /// successfully signed the commitment.hashHex with the user's
-    /// Secure-Enclave-bound, Face-ID-protected key. Server stores the
-    /// fields on the commitment doc; cryptographic verification lives
-    /// in a follow-on task. Sending it on every successful seal lets
-    /// the server log + audit even before verification ships.
-    let biometricSeal: BiometricSealPayload?
-    /// Optional biometric seal of the passport dg1Hash — present when the
-    /// user completed Face ID on the "Passport scanned" screen before verify.
-    /// Signing the dg1Hash (32-byte SHA-256 of DG1) creates a proof that this
-    /// specific face authorized this specific passport's identity data.
-    let passportBiometricSeal: BiometricSealPayload?
-
-    struct CommitmentPayload: Encodable, Sendable {
-        let hashHex: String
-        let producedAtMs: Int64
-        let kinds: [String]
-    }
-
-    struct ArtifactPayload: Encodable, Sendable {
-        let kind: String
-        let producedAtMs: Int64
-        let payloadHashHex: String
-        let signatureBase64: String
-    }
-
-    struct BiometricSealPayload: Encodable, Sendable {
-        /// SEC1 / X9.63 uncompressed public key, base64-encoded. Sent
-        /// every call so the server can lazily build a per-uid public
-        /// key registry without a separate enrollment round-trip.
-        let publicKeyB64: String
-        /// DER ECDSA-P256 signature over UTF-8 bytes of
-        /// commitment.hashHex, base64-encoded. SecKey signs with
-        /// `.ecdsaSignatureMessageX962SHA256` so the algorithm hashes
-        /// the payload internally.
-        let signatureB64: String
-        /// Local timestamp the signature was produced. Surfaces clock
-        /// skew vs server time at audit; not enforced.
-        let signedAtMs: Int64
-    }
-}
-
-struct AnchorCommitmentResult: Decodable, Sendable, Equatable {
-    let accepted: Bool
-    // "queued" — server enqueued the on-chain write; poll the Firestore doc
-    // at commitmentDocPath for the transition to "anchored" or "anchor-failed".
-    // "anchored" — tx landed on-chain; slot + txSignature populated.
-    // "anchor-failed" — DLQ'd after 24h retry budget.
-    // nil — legacy stub response shape.
-    let status: String?
-    let slot: Int64?
-    let txSignature: String?
-    let commitmentDocPath: String?
-    let recordAddress: String?
-    let reason: String?
-}
-
 struct StartL2VerificationResult: Decodable, Sendable {
     let status: String
     /// The universal link Foundation's backend builds for RariMe. The fork
@@ -226,13 +154,6 @@ actor FunctionsService {
             "code": code,
         ])
         return try decode(VerifySignInCodeResult.self, from: result.data)
-    }
-
-    func anchorCommitment(_ req: AnchorCommitmentRequest) async throws -> AnchorCommitmentResult {
-        try await refreshIDTokenIfStale()
-        let payload = try encodeToDict(req)
-        let result = try await functions.httpsCallable("anchorCommitment").call(payload)
-        return try decode(AnchorCommitmentResult.self, from: result.data)
     }
 
     func startL2Verification() async throws -> StartL2VerificationResult {

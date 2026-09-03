@@ -161,8 +161,6 @@
 		CB92544B052C005370F67268 /* FunctionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6247714B2C3D98B179615273 /* FunctionsService.swift */; };
 		F04968B17F4AF09EE0FFA14A /* AttestationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C267A852D2BE7112BC3A62 /* AttestationService.swift */; };
 		DEFE3DCB4E2AC7BE42DD6E70 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3216985F025DA9AD553BE06C /* AppCheckFactory.swift */; };
-		79ACDCC14D17CB5341F34E88 /* ProofArtifact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DFA4F8160E1E7C4E6C9916 /* ProofArtifact.swift */; };
-		29139FA7D0F766A42CCE570E /* EnclaveSeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81CA2535852BE56584BC9E6 /* EnclaveSeal.swift */; };
 		B8A1F0001A2B3C4D5E6F7002 /* FoundationVerificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */; };
 		B8A1F0001A2B3C4D5E6F7004 /* FoundationVerifyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */; };
 		CD7DA7FF37ED5CACA22BEF8A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705B896C98AA4E0666FDE02F /* SignInView.swift */; };
@@ -460,8 +458,6 @@
 		6247714B2C3D98B179615273 /* FunctionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionsService.swift; sourceTree = "<group>"; };
 		96C267A852D2BE7112BC3A62 /* AttestationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttestationService.swift; sourceTree = "<group>"; };
 		3216985F025DA9AD553BE06C /* AppCheckFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCheckFactory.swift; sourceTree = "<group>"; };
-		43DFA4F8160E1E7C4E6C9916 /* ProofArtifact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofArtifact.swift; sourceTree = "<group>"; };
-		C81CA2535852BE56584BC9E6 /* EnclaveSeal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnclaveSeal.swift; sourceTree = "<group>"; };
 		638BBB1C2E99302800222A6C /* Identity.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Identity.xcframework; sourceTree = "<group>"; };
 		705B896C98AA4E0666FDE02F /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		C71161B22CAAE3DB00ED41EA /* String+BigUInt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+BigUInt.swift"; sourceTree = "<group>"; };
@@ -1505,8 +1501,6 @@
 				DEB969531739D4B78C5561C5 /* AuthService.swift */,
 				96C267A852D2BE7112BC3A62 /* AttestationService.swift */,
 				3216985F025DA9AD553BE06C /* AppCheckFactory.swift */,
-				43DFA4F8160E1E7C4E6C9916 /* ProofArtifact.swift */,
-				C81CA2535852BE56584BC9E6 /* EnclaveSeal.swift */,
 				B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */,
 			);
 			path = Foundation;
@@ -1973,8 +1967,6 @@
 				CD7DA7FF37ED5CACA22BEF8A /* SignInView.swift in Sources */,
 				F04968B17F4AF09EE0FFA14A /* AttestationService.swift in Sources */,
 				DEFE3DCB4E2AC7BE42DD6E70 /* AppCheckFactory.swift in Sources */,
-				79ACDCC14D17CB5341F34E88 /* ProofArtifact.swift in Sources */,
-				29139FA7D0F766A42CCE570E /* EnclaveSeal.swift in Sources */,
 				B8A1F0001A2B3C4D5E6F7002 /* FoundationVerificationManager.swift in Sources */,
 				B8A1F0001A2B3C4D5E6F7004 /* FoundationVerifyCardView.swift in Sources */,
 			);
