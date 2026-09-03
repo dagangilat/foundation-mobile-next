@@ -20,7 +20,6 @@ fun ZkIdentityScreen(
     modifier: Modifier = Modifier,
     navigate: (String) -> Unit,
     onClose: () -> Unit,
-    onClaim: () -> Unit,
     setBottomBarVisibility: (Boolean) -> Unit,
     zkIdentityScreenViewModel: ZkIdentityScreenViewModel = hiltViewModel()
 ) {
@@ -42,10 +41,6 @@ fun ZkIdentityScreen(
                 onClose = {
                     setBottomBarVisibility(true)
                     onClose()
-                },
-                onClaim = {
-
-                    onClaim()
                 },
                 innerPaddings = innerPaddings,
                 setVisibilityOfBottomBar = setBottomBarVisibility

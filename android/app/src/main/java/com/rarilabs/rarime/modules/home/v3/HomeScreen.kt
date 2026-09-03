@@ -39,15 +39,9 @@ import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.EarnCollapsedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.FreedomtoolCollapsedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.collapsed.HiddenPrizeCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.collapsed.RecoveryMethodCollapsedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.components.HomeHeader
 import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.EarnExpandedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.FreedomtoolExpandedWidget
-import com.rarilabs.rarime.modules.home.v3.ui.expanded.HiddenPrizeExpandedWidget
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -214,30 +208,6 @@ fun HomeScreenContent(
                                 alpha = lerp(0.8f, 1f, 1f - absoluteOffset)
                             }
                             when (widgetType) {
-                                WidgetType.EARN -> EarnCollapsedWidget(
-                                    collapsedWidgetProps = collapsedWidgetProps,
-                                    colorScheme = colorScheme
-
-                                )
-
-
-                                WidgetType.FREEDOMTOOL -> FreedomtoolCollapsedWidget(
-                                    collapsedWidgetProps = collapsedWidgetProps,
-                                    modifier = baseCollapsedModifier,
-                                )
-
-//                                WidgetType.LIKENESS -> LikenessCollapsedWidget(
-//                                    collapsedWidgetProps = collapsedWidgetProps,
-//
-//                                    modifier = baseCollapsedModifier,
-//                                )
-
-                                WidgetType.HIDDEN_PRIZE -> HiddenPrizeCollapsedWidget(
-                                    collapsedWidgetProps = collapsedWidgetProps,
-                                    modifier = baseCollapsedModifier,
-                                    colorScheme = colorScheme
-                                )
-
                                 WidgetType.RECOVERY_METHOD -> RecoveryMethodCollapsedWidget(
                                     collapsedWidgetProps = collapsedWidgetProps,
                                     modifier = baseCollapsedModifier,
@@ -286,32 +256,6 @@ fun HomeScreenContent(
                     )
 
                     when (targetCardType) {
-                        WidgetType.FREEDOMTOOL -> FreedomtoolExpandedWidget(
-                            expandedWidgetProps = expandedCardProps,
-                            innerPaddings = innerPaddings,
-                            navigate = navigate
-                        )
-
-//                        WidgetType.LIKENESS -> DigitalLikenessExpandedWidget(
-//                            expandedWidgetProps = expandedCardProps,
-//                            innerPaddings = innerPaddings,
-//                            navigate = navigate
-//                        )
-
-                        WidgetType.EARN -> EarnExpandedWidget(
-
-                            expandedWidgetProps = expandedCardProps,
-                            innerPaddings = innerPaddings,
-                            navigate = navigate,
-
-                            )
-
-                        WidgetType.HIDDEN_PRIZE -> HiddenPrizeExpandedWidget(
-                            expandedWidgetProps = expandedCardProps,
-                            innerPaddings = innerPaddings,
-                            navigate = navigate,
-                        )
-
                         WidgetType.RECOVERY_METHOD -> RecoveryMethodExpandedWidget(
                             expandedWidgetProps = expandedCardProps,
                             innerPaddings = innerPaddings,

@@ -7,10 +7,6 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.rarilabs.rarime.store.room.notifications.models.NotificationEntityData
-import com.rarilabs.rarime.store.room.transactons.TransactionDao
-import com.rarilabs.rarime.store.room.transactons.models.TransactionEntityData
-import com.rarilabs.rarime.store.room.voting.VotingDao
-import com.rarilabs.rarime.store.room.voting.models.VotingEntityData
 
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -57,17 +53,29 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     }
 }
 
+/**
+ * Drops the two tables that backed the stripped Freedom Tool voting and EVM
+ * wallet features. Room derives an identity hash from the entity set, so
+ * removing `VotingEntityData`/`TransactionEntityData` from `@Database` is a
+ * schema change: without this migration and the version bump, every upgrading
+ * install would fail its first database open with "Room cannot verify the data
+ * integrity". The rows themselves belong to removed products, so dropping them
+ * is the intended outcome; `notifications` is untouched.
+ */
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("DROP TABLE IF EXISTS voting")
+        db.execSQL("DROP TABLE IF EXISTS transactions")
+    }
+}
+
 @Database(
-    entities = [NotificationEntityData::class, VotingEntityData::class, TransactionEntityData::class],
-    version = 5,
+    entities = [NotificationEntityData::class],
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationsDao(): NotificationsDao
-
-    abstract fun votingDao(): VotingDao
-
-    abstract fun transactionDao(): TransactionDao
 
     companion object {
         @Volatile
@@ -77,8 +85,9 @@ abstract class AppDatabase : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext, AppDatabase::class.java, "room_database"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
-                    .build()
+                ).addMigrations(
+                    MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6
+                ).build()
 
                 INSTANCE = instance
                 instance

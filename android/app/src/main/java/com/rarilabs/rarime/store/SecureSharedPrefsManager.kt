@@ -8,11 +8,8 @@ import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.data.enums.SecurityCheckState
-import com.rarilabs.rarime.manager.LikenessRule
-import com.rarilabs.rarime.manager.WalletAsset
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
-import com.rarilabs.rarime.modules.wallet.models.Transaction
 import com.rarilabs.rarime.util.data.GrothProof
 import com.rarilabs.rarime.util.data.UniversalProof
 
@@ -46,13 +43,6 @@ interface SecureSharedPrefsManager {
     fun readLanguage(): AppLanguage
     fun saveLanguage(language: AppLanguage)
 
-    fun readWalletAssets(assetsToPopulate: List<WalletAsset>): List<WalletAsset>
-    fun saveWalletAssets(walletAssets: List<WalletAsset>)
-
-    fun readSelectedWalletAsset(walletAssets: List<WalletAsset>): WalletAsset
-
-    fun saveSelectedWalletAsset(walletAsset: WalletAsset)
-
     fun saveEDocument(eDocument: EDocument)
     fun readEDocument(): EDocument?
 
@@ -61,9 +51,6 @@ interface SecureSharedPrefsManager {
 
     @Deprecated("use Universal proof")
     fun readRegistrationProof(): GrothProof?
-
-    fun readTransactions(): List<Transaction>
-    fun addTransaction(transaction: Transaction)
 
     fun readPasscode(): String
     fun savePasscode(passcode: String)
@@ -88,28 +75,8 @@ interface SecureSharedPrefsManager {
     fun readIsLogsDeleted(): Boolean
     fun saveIsLogsDeleted(isLogsDeleted: Boolean)
 
-    fun saveDeferredReferralCode(referralCode: String)
-    fun getDeferredReferralCode(): String?
-
-    fun saveGuessReferralCode(referralCode: String)
-    fun getGuessReferralCode(): String?
-
     fun saveLightRegistrationData(lightRegistrationData: LightRegistrationData)
     fun getLightRegistrationData(): LightRegistrationData?
-
-
-    fun saveIsAlreadyReserved(isAlreadyReserved: Boolean)
-    fun getIsAlreadyReserved(): Boolean
-
-    fun saveSelectedLikenessRule(likenessRule: LikenessRule)
-    fun getSelectedLikenessRule(): LikenessRule?
-
-    fun saveLikenessFace(face: Bitmap)
-    fun getLikenessFace(): Bitmap?
-
-    fun saveLivenessProof(proof: GrothProof)
-    fun getLivenessProof(): GrothProof?
-
 
     fun saveUniversalProof(proof: UniversalProof)
     fun readUniversalProof(): UniversalProof?

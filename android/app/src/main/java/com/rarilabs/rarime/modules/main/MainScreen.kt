@@ -48,8 +48,6 @@ import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.UiSnackbarDefault
-import com.rarilabs.rarime.ui.components.enter_program.EnterProgramFlow
-import com.rarilabs.rarime.ui.components.enter_program.UNSPECIFIED_PASSPORT_STEPS
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.AppTheme
 import com.rarilabs.rarime.ui.theme.FoundationTheme
@@ -57,8 +55,6 @@ import com.rarilabs.rarime.util.Screen
 
 val mainRoutes = listOf(
     Screen.Main.Home.route,
-    Screen.Main.Rewards.RewardsMain.route,
-    Screen.Main.Wallet.route,
     Screen.Main.Profile.route,
     Screen.Main.Identity.route
 )
@@ -138,17 +134,14 @@ fun MainScreenContent(
     val context = LocalContext.current
 
 
-    val passportStatus by mainViewModel.passportStatus.collectAsState()
     val isModalShown by mainViewModel.isModalShown.collectAsState()
     val modalContent by mainViewModel.modalContent.collectAsState()
-    val pointsToken by mainViewModel.pointsToken.collectAsState()
 
     val snackbarHostState by mainViewModel.snackbarHostState.collectAsState()
     val snackbarContent by mainViewModel.snackbarContent.collectAsState()
 
     val colorSchema by mainViewModel.colorScheme.collectAsState()
 
-    val enterProgramSheetState = rememberAppSheetState()
     val qrCodeState = rememberAppSheetState()
     val isBottomBarShown by mainViewModel.isBottomBarShown.collectAsState()
     // Use remember to cache navBackStackEntry and currentRoute
@@ -167,9 +160,6 @@ fun MainScreenContent(
         mainViewModel.setBottomBarVisibility(shouldShowBottomBar)
     }
 
-    // Use rememberUpdatedState for pointsToken and enterProgramSheetState
-    val pointsTokenState = rememberUpdatedState(pointsToken)
-    val enterProgramSheetStateState = rememberUpdatedState(enterProgramSheetState)
     val qrCodeSheetState = rememberUpdatedState(qrCodeState)
 
     // Define navigation functions using remember to prevent recomposition
@@ -181,21 +171,8 @@ fun MainScreenContent(
 
     val navigateWithPopUp = remember(navController) {
         { route: String ->
-            val currentPointsToken = pointsTokenState.value
-            val currentEnterProgramSheetState = enterProgramSheetStateState.value
-
             Log.d("URL string", route)
-            if (route == Screen.Main.Rewards.RewardsMain.route) {
-                if (currentPointsToken?.balanceDetails?.attributes == null) {
-                    currentEnterProgramSheetState.show()
-                } else {
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.id) { inclusive = true }
-                        restoreState = true
-                        launchSingleTop = true
-                    }
-                }
-            } else if (route == Screen.Main.QrScan.route) {
+            if (route == Screen.Main.QrScan.route) {
                 val currentQrCodeSheetState = qrCodeSheetState.value
                 currentQrCodeSheetState.show()
             } else {
@@ -279,24 +256,6 @@ fun MainScreenContent(
                     qrCodeState.hide()
                     mainViewModel.setExtIntDataURI(uri)
                 })
-            }
-
-            AppBottomSheet(
-                state = enterProgramSheetState,
-                fullScreen = true,
-                isHeaderEnabled = false,
-            ) { hide ->
-                EnterProgramFlow(
-                    initialStep = UNSPECIFIED_PASSPORT_STEPS.ONLY_INVITATION,
-                    onFinish = {
-                        hide {
-                            navController.navigate(Screen.Main.Rewards.RewardsMain.route)
-                        }
-                    },
-                    sheetState = enterProgramSheetState,
-                    hide = hide,
-                    passportStatus = passportStatus,
-                )
             }
         }
     }

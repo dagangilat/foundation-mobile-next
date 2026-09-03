@@ -284,8 +284,10 @@ dependencies {
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.0-alpha")
 
-    // AppsFlyer
-    implementation("com.appsflyer:af-android-sdk:6.15.1")
+    // The upstream attribution SDK was here. Its only use in this app was
+    // delivering deferred referral codes into the rewards and hidden-prize
+    // programmes, both removed in Task C5, so the dependency goes with them.
+    // Dropping it also drops its install-attribution reporting.
 
     implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 

@@ -14,11 +14,6 @@ sealed class Screen(val route: String) {
         data object ImportIdentity : Screen("import_identity")
     }
 
-    data object Claim : Screen("claim") {
-        data object Reserve : Screen("reserve")
-        data object Specific : Screen("specific")
-    }
-
     data object Passcode : Screen("security") {
         data object EnablePasscode : Screen("enable_passcode")
         data object AddPasscode : Screen("add_passcode")
@@ -36,24 +31,11 @@ sealed class Screen(val route: String) {
 
     data object Main : Screen("main") {
         data object Home : Screen("home")
-        data object Vote : Screen("vote/{vote_id}")
-        data object Wallet : Screen("wallet") {
-            data object Receive : Screen("receive")
-            data object Send : Screen("send")
-        }
-
 
         data object DebugIdentity : Screen("identity_debug")
 
         data object Identity : Screen("identity")
         data object QrScan : Screen("qr_scan")
-        data object Rewards : Screen("rewards") {
-            data object RewardsMain : Screen("rewards_main")
-
-            data object RewardsEventsItem : Screen("rewards_events_item/{item_id}")
-
-            data object RewardsClaim : Screen("rewards_claim")
-        }
 
         data object Profile : Screen("profile") {
             data object AuthMethod : Screen("auth_method")
@@ -66,6 +48,5 @@ sealed class Screen(val route: String) {
         }
     }
 
-    data object Invitation : Screen("invitation/{code}")
     data object ExtIntegrator : Screen("external")
 }

@@ -11,10 +11,8 @@ import com.rarilabs.rarime.data.enums.SecurityCheckState
 import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
-import com.rarilabs.rarime.manager.PointsManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
-import com.rarilabs.rarime.manager.WalletManager
 import com.rarilabs.rarime.ui.components.SnackbarShowOptions
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.ErrorHandler
@@ -42,11 +40,9 @@ class MainViewModel @Inject constructor(
     private val app: Application,
     private val securityManager: SecurityManager,
     private val settingsManager: SettingsManager,
-    private val walletManager: WalletManager,
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
-    private val pointsManager: PointsManager,
 
     ) : AndroidViewModel(app) {
 
@@ -67,8 +63,6 @@ class MainViewModel @Inject constructor(
 
     val appIcon: StateFlow<AppIcon>
         get() = _appIcon.asStateFlow()
-
-    val pointsToken = walletManager.pointsToken
 
     private var _isModalShown = MutableStateFlow(false)
 
@@ -146,10 +140,10 @@ class MainViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             _appLoadingState.value = AppLoadingStates.LOADING
 
-            if (pointsManager.getMaintenanceStatus()) {
-                _appLoadingState.value = AppLoadingStates.MAINTENANCE
-                return@withContext
-            }
+            // The maintenance gate used to be read from the upstream points
+            // service, which is removed. `AppLoadingStates.MAINTENANCE` and
+            // `MaintenanceScreen` remain wired up but are now unreachable until
+            // a Foundation-owned source supplies the flag.
             if (identityManager.privateKey.value == null) {
                 _appLoadingState.value = AppLoadingStates.LOADED
                 return@withContext
@@ -183,10 +177,7 @@ class MainViewModel @Inject constructor(
 
     private suspend fun loadUserDetails() = coroutineScope {
         android.util.Log.d("User Details", "LOAD USER DETAILS")
-        val walletDeferred = async { walletManager.loadBalances() }
-        val passportDeferred = async { passportManager.loadPassportStatus() }
-
-        awaitAll(passportDeferred, walletDeferred)
+        passportManager.loadPassportStatus()
     }
 
     suspend fun tryLogin() = runCatching {
@@ -232,10 +223,6 @@ class MainViewModel @Inject constructor(
             tryLogin()
             loadUserDetails()
         }
-    }
-
-    suspend fun acceptInvitation(code: String) {
-        pointsManager.createPointsBalance(code)
     }
 
     fun updatePasscodeState(state: SecurityCheckState) {

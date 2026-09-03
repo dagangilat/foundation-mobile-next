@@ -6,56 +6,32 @@ import com.rarilabs.rarime.data.RarimoChains
 val BaseConfig: IConfig = if (BuildConfig.isTestnet) TestNetConfig else MainnetConfig
 
 interface IConfig {
-    val APPSFLYER_DEV_KEY: String
     val RELAYER_URL: String
     val EVM_RPC_URL: String
     val COSMOS_RPC_URL: String
-    val EVM_SERVICE_URL: String
-    val DISCORD_URL: String
-    val TWITTER_URL: String
-    val INVITATION_BASE_URL: String
     val POINTS_SVC_ID: String
-    val AIRDROP_SVC_ID: String
     val ICAO_COSMOS_RPC: String
     val MASTER_CERTIFICATES_FILENAME: String
     val MASTER_CERTIFICATES_BUCKETNAME: String
-    val EVM_STABLE_COIN_RPC: String
-    val STABLE_COIN_ADDRESS: String
     val REGISTER_CONTRACT_ADDRESS: String
     val CERTIFICATES_SMT_CONTRACT_ADDRESS: String
     val REGISTRATION_SMT_CONTRACT_ADDRESS: String
     val STATE_KEEPER_CONTRACT_ADDRESS: String
     val REGISTRATION_SIMPLE_CONTRACT_ADRRESS: String
-    val POINTS_SVC_SELECTOR: String
-    val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP: Long
     val FEEDBACK_EMAIL: String
     val CHAIN: RarimoChains
-    val lightVerificationSKHex: String
     val GLOBAL_NOTIFICATION_TOPIC: String
-    val REWARD_NOTIFICATION_TOPIC: String
     val GOOGLE_WEB_KEY: String
     val APP_ID_FIREBASE: String
-    val EXPLORER_API_URL: String
-    val VOTING_RELAYER_URL: String
-    val RARIMO_EXPLORER: String
-    val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String
-
-    val VOTING_RPC_URL: String
-
-    val PROPOSAL_CONTRACT_ADDRESS: String
-
-    val MULTICALL_CONTRACT_ADDRRESS: String
-
-    val VOTING_WEBSITE_URL: String
-
-    val FACE_REGISTRY_ADDRESS: String
-
-    val FACE_REGISTRY_ZKEY_URL: String
 
 
-    val FACE_RECOGNITION_MODEL_URL: String
 
-    val GUESS_CELEBRITY_CONTRACT_ADDRESS: String
+
+
+
+
+
+
 
     val NOIR_TRUSTED_SETUP_URL: String
 
@@ -193,68 +169,39 @@ interface IConfig {
 object TestNetConfig : IConfig {
     override val RELAYER_URL = "https://api.orgs.app.stage.rarime.com"
     override val COSMOS_RPC_URL = "https://rpc-api.node1.mainnet-beta.rarimo.com"
-    override val EVM_SERVICE_URL =
-        "https://api.orgs.app.stage.rarime.com/integrations/evm-airdrop-svc-glo/"
-    override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
-    override val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
-    override val INVITATION_BASE_URL = "https://app.stage.rarime.com"
 
     override val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
-    override val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
 
     override val ICAO_COSMOS_RPC = "core-api.node1.mainnet-beta.rarimo.com:443"
     override val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
     override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
-    override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
-    override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-    override val EXPLORER_API_URL = "https://api.evmscan.rarimo.com"
-    override val RARIMO_EXPLORER = "https://api.evmscan.rarimo.com/tx"
     override val EVM_RPC_URL = "https://rpc.evm.mainnet.rarimo.com"
     override val REGISTER_CONTRACT_ADDRESS = "0x435E8833bC8c6F5Fdfc1cd7E45D5760b523f4020"
     override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0xd63782478CA40b587785700Ce49248775398b045"
     override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xc2974679359c756bf97ff6B698377E02c083F3D4"
     override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0xF19a85B10d705Ed3bAF3c0eCe3E73d8077Bf6481"
     override val STATE_KEEPER_CONTRACT_ADDRESS = "0x9EDADB216C1971cf0343b8C687cF76E7102584DB"
-    override val POINTS_SVC_SELECTOR = "23073"
-    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
 
     override val FEEDBACK_EMAIL = "apereliez1@gmail.com"
     override val CHAIN = RarimoChains.MainnetBeta
-    override val lightVerificationSKHex = Keys.lightVerificationSKHex
     override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
     override val APP_ID_FIREBASE = Keys.APP_ID
 
 
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime-stage"
-    override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable-stage"
 
-    override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
 
-    override val VOTING_RELAYER_URL: String = "https://api.stage.freedomtool.org"
-    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
-        "0xFbae44a113A6f07687b180605f425e43066a6179"
-    override val VOTING_RPC_URL: String = "https://rpc.qtestnet.org"
 
-    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x4C61d7454653720DAb9e26Ca25dc7B8a5cf7065b"
-    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xcA11bde05977b3631167028862bE2a173976CA11"
 
-    override val VOTING_WEBSITE_URL: String = "https://freedomtool.org"
 
     override val NOIR_TRUSTED_SETUP_URL: String =
         "https://storage.googleapis.com/rarimo-store/trusted-setups/ultraPlonkTrustedSetup.dat"
 
 
-    override val FACE_REGISTRY_ADDRESS: String = "0x3C0f27AC1817820C1BA41337B53090652aE4F448"
-
-    override val GUESS_CELEBRITY_CONTRACT_ADDRESS: String =
-        "0x411AA3eF21AdC9e84c60e17451B0732119C8f0c7"
 
 
-    override val FACE_REGISTRY_ZKEY_URL: String =
-        "https://storage.googleapis.com/rarimo-store/zkey/circuit_final.zkey"
-    override val FACE_RECOGNITION_MODEL_URL: String =
-        "https://storage.googleapis.com/rarimo-store/face-recognition/face-recognition.tflite"
+
 
 
     override val registerIdentity_1_160_3_4_576_200_NA: String =
@@ -475,61 +422,32 @@ object MainnetConfig : IConfig {
     override val RELAYER_URL = "https://api.app.rarime.com"
     override val EVM_RPC_URL = "https://l2.rarimo.com"
     override val COSMOS_RPC_URL = "https://rpc-api.mainnet.rarimo.com"
-    override val EVM_SERVICE_URL =
-        "https://api.orgs.app.rarime.com/integrations/evm-airdrop-svc-glo/"
-    override val DISCORD_URL = "https://discord.gg/Bzjm5MDXrU"
-    override val TWITTER_URL = "https://x.com/Rarimo_protocol"
 
-    override val INVITATION_BASE_URL = "https://app.rarime.com"
 
     override val POINTS_SVC_ID = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
-    override val AIRDROP_SVC_ID = "0xac42d1a986804618c7a793fbe814d9b31e47be51e082806363dca6958f3062"
 
     override val ICAO_COSMOS_RPC = "core-api.mainnet.rarimo.com:443"
     override val MASTER_CERTIFICATES_FILENAME = "icaopkd-list.ldif"
     override val MASTER_CERTIFICATES_BUCKETNAME = "rarimo-temp"
-    override val EVM_STABLE_COIN_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
 
     override val REGISTER_CONTRACT_ADDRESS = "0x11BB4B14AA6e4b836580F3DBBa741dD89423B971"
-    override val STABLE_COIN_ADDRESS = "0xbd03f0fC994fd1015eAdc37c943055330e238Ad9"
-    override val EXPLORER_API_URL = "https://evmscan.l2.rarimo.com"
     override val CERTIFICATES_SMT_CONTRACT_ADDRESS = "0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
     override val REGISTRATION_SMT_CONTRACT_ADDRESS = "0x479F84502Db545FA8d2275372E0582425204A879"
     override val STATE_KEEPER_CONTRACT_ADDRESS = "0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
     override val REGISTRATION_SIMPLE_CONTRACT_ADRRESS = "0x497D6957729d3a39D43843BD27E6cbD12310F273"
 
-    override val POINTS_SVC_SELECTOR = "23073"
-    override val POINTS_SVC_ALLOWED_IDENTITY_TIMESTAMP = 1715688000L
     override val FEEDBACK_EMAIL = "info@rarilabs.com"
     override val CHAIN = RarimoChains.Mainnet
-    override val lightVerificationSKHex = Keys.lightVerificationSKHex
     override val GOOGLE_WEB_KEY = Keys.GOOGLE_WEB_KEY
     override val APP_ID_FIREBASE = Keys.APP_ID
-    override val RARIMO_EXPLORER = "https://scan.rarimo.com/tx"
     override val GLOBAL_NOTIFICATION_TOPIC = "rarime"
-    override val REWARD_NOTIFICATION_TOPIC: String = "rarime-rewardable"
-    override val APPSFLYER_DEV_KEY = Keys.APPSFLYER_DEV_KEY
-
-    override val VOTING_WEBSITE_URL = "https://freedomtool.org"
-    override val VOTING_RELAYER_URL: String = "https://api.freedomtool.org"
-    override val VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS: String =
-        "0x479F84502Db545FA8d2275372E0582425204A879"
-    override val VOTING_RPC_URL: String = "https://l2.rarimo.com"
-    override val PROPOSAL_CONTRACT_ADDRESS: String = "0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
-    override val MULTICALL_CONTRACT_ADDRRESS: String = "0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
-
-    override val FACE_REGISTRY_ADDRESS: String = "0x15DCd57B70D97F1D1F220ccb4e6B8E886aF3e3B9"
 
 
-    override val GUESS_CELEBRITY_CONTRACT_ADDRESS: String =
-        "0x5283f7B6A011433A6631701875A6f147e5c17a96"
 
 
-    override val FACE_REGISTRY_ZKEY_URL: String =
-        "https://storage.googleapis.com/rarimo-store/zkey/circuit_final.zkey"
 
-    override val FACE_RECOGNITION_MODEL_URL: String =
-        "https://storage.googleapis.com/rarimo-store/face-recognition/face-recognition.tflite"
+
+
 
     override val NOIR_TRUSTED_SETUP_URL: String =
         "https://storage.googleapis.com/rarimo-store/trusted-setups/ultraPlonkTrustedSetup.dat"

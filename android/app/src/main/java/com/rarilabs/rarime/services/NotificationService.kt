@@ -218,10 +218,6 @@ class NotificationService :
             return FirebaseMessaging.getInstance().token
         }
 
-        fun subscribeToRewardableTopic() {
-            subscribeToTopic(BaseConfig.REWARD_NOTIFICATION_TOPIC)
-        }
-
         private fun subscribeToTopic(topic: String) {
 
             val task = getToken()

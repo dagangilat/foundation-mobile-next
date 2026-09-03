@@ -2,7 +2,6 @@ package com.rarilabs.rarime.manager
 
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.api.registration.models.LightRegistrationData
-import com.rarilabs.rarime.contracts.rarimo.FaceRegistry
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.store.SecureSharedPrefsManager
 import com.rarilabs.rarime.util.ErrorHandler
@@ -75,20 +74,14 @@ class IdentityManager @Inject constructor(
         return ""
     }
 
-    fun getUserAirDropNullifier(): String {
-        return getProfiler().calculateEventNullifierInt(BaseConfig.AIRDROP_SVC_ID)
-    }
-
-    fun getNullifierForFaceLikeness(): String {
-        return getProfiler().calculateEventNullifierHex(FaceRegistry.EVENT_ID)
-    }
-
-    fun getUserAirDropNullifierHex(): String {
-        return "0x" + BigInteger(this.getUserAirDropNullifier())
-            .toByteArray()
-            .toHexString()
-    }
-
+    /**
+     * The app's per-user identifier towards the Foundation relayer.
+     *
+     * `POINTS_SVC_ID` is an upstream *event id* baked into the login protocol —
+     * `AuthManager` signs a challenge over the nullifier derived from it — not a
+     * points feature. It therefore survives the removal of the rewards
+     * programme; renaming it would change every existing user's identifier.
+     */
     fun getUserPointsNullifier(): String {
         return getProfiler().calculateEventNullifierInt(BaseConfig.POINTS_SVC_ID)
     }

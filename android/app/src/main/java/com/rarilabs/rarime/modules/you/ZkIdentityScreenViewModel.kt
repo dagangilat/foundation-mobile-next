@@ -81,7 +81,4 @@ class ZkIdentityScreenViewModel @Inject constructor(
         passportManager.updatePassportIdentifiers(passportIdentifiers)
     }
 
-    fun getIsAlreadyReserved(): Boolean {
-        return sharedPrefsManager.getIsAlreadyReserved()
-    }
 }
