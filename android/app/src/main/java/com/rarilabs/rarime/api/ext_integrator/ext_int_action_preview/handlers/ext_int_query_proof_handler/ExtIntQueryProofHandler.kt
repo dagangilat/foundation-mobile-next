@@ -68,10 +68,18 @@ import java.net.URL
 import java.net.UnknownHostException
 
 
+/**
+ * @param proofParamsUrl loads these proof params directly, bypassing
+ *   [queryParams] parsing. Foundation's own verification flow already holds the
+ *   URL - `startL2Verification` hands it back - so it has no query string to
+ *   round-trip through, unlike an externally scanned deep link. When null the
+ *   URL is read from `queryParams["proof_params_url"]` exactly as before.
+ */
 @Composable
 fun ExtIntQueryProofHandler(
     viewModel: ExtIntQueryProofHandlerViewModel = hiltViewModel(),
     queryParams: Map<String, String?>?,
+    proofParamsUrl: String? = null,
     onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
     onCancel: () -> Unit = {}
@@ -201,21 +209,31 @@ fun ExtIntQueryProofHandler(
         }
     }
 
-    LaunchedEffect(Unit) {
+    // The proof-loading body, taking the URL directly. Both entry points - a
+    // scanned deep link's query params and Foundation's in-process flow - land
+    // here, so there is exactly one place that loads proof params.
+    suspend fun loadProofDetails(url: String, redirectUrl: String?) {
+        isLoaded = false
+
+        try {
+            viewModel.loadDetails(url, redirectUrl)
+        } catch (e: Exception) {
+            onFailGetHandler(e)
+        }
+
+        isLoaded = true
+    }
+
+    LaunchedEffect(proofParamsUrl) {
         scope.launch {
-            isLoaded = false
+            val url = proofParamsUrl ?: queryParams?.get("proof_params_url")
 
-            try {
-                val proofParamsUrl = queryParams?.get("proof_params_url")
-                    ?: throw Exception("Missing required parameters")
-                val redirectUrl = queryParams["redirect_uri"]
-
-                viewModel.loadDetails(proofParamsUrl, redirectUrl)
-            } catch (e: Exception) {
-                onFailGetHandler(e)
+            if (url == null) {
+                onFailGetHandler(Exception("Missing required parameters"))
+                return@launch
             }
 
-            isLoaded = true
+            loadProofDetails(url, queryParams?.get("redirect_uri"))
         }
     }
     AppBottomSheet(
