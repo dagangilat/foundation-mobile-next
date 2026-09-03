@@ -156,7 +156,7 @@ fun LockScreen(
             subtitle = if (isAttemptsDisabled) appLockedSubtitle else "",
             iconId = if (isAttemptsDisabled) R.drawable.ic_lock else R.drawable.ic_user,
             iconColors = if (isAttemptsDisabled) FoundationTheme.colors.baseBlack to FoundationTheme.colors.baseWhite
-            else FoundationTheme.colors.primaryMain to FoundationTheme.colors.baseBlack,
+            else FoundationTheme.colors.primaryMain to FoundationTheme.colors.baseWhite,
             passcodeState = passcodeState,
             enabled = !isAttemptsDisabled,
             onPasscodeFilled = { verifyPasscode() }) {

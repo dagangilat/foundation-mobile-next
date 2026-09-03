@@ -34,7 +34,7 @@ fun AlertModalContent(
         AppIcon(
             id = R.drawable.ic_check,
             size = 24.dp,
-            tint = FoundationTheme.colors.invertedLight,
+            tint = FoundationTheme.colors.baseWhite,
             modifier = Modifier
                 .background(FoundationTheme.colors.primaryMain, CircleShape)
                 .padding(28.dp)
@@ -43,7 +43,7 @@ fun AlertModalContent(
     title: String,
     subtitle: String,
     buttonText: String,
-    buttonColor: Color = FoundationTheme.colors.invertedLight,
+    buttonColor: Color = FoundationTheme.colors.baseWhite,
     buttonBg: Color = FoundationTheme.colors.primaryMain
 ) {
     Box(

@@ -116,7 +116,7 @@ private fun BaseIconButtonPreview() {
             icon = R.drawable.ic_arrow_right,
             colors = ButtonColors(
                 containerColor = FoundationTheme.colors.primaryMain,
-                contentColor = FoundationTheme.colors.textPrimary,
+                contentColor = FoundationTheme.colors.baseWhite,
                 disabledContainerColor = FoundationTheme.colors.componentDisabled,
                 disabledContentColor = FoundationTheme.colors.textPrimary.copy(alpha = 0.5f),
             ),

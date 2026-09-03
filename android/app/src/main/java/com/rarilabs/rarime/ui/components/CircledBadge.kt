@@ -31,7 +31,9 @@ fun CircledBadge(
     containerSize: Int = 80,
     containerColor: Color = FoundationTheme.colors.primaryMain,
     contentSize: Int = 40,
-    contentColor: Color = FoundationTheme.colors.baseBlack,
+    // Pairs with the default containerColor (primaryMain = brandGreen):
+    // baseBlack on brandGreen is 2.9:1, baseWhite is 5.5:1.
+    contentColor: Color = FoundationTheme.colors.baseWhite,
     content: @Composable () -> Unit = {}
 ) {
     Box(
@@ -63,7 +65,9 @@ fun CircledBadgeWithCounter(
     containerSize: Int = 80,
     containerColor: Color = FoundationTheme.colors.primaryMain,
     contentSize: Int = 40,
-    contentColor: Color = FoundationTheme.colors.baseBlack,
+    // Pairs with the default containerColor (primaryMain = brandGreen):
+    // baseBlack on brandGreen is 2.9:1, baseWhite is 5.5:1.
+    contentColor: Color = FoundationTheme.colors.baseWhite,
     count: Int = 0,
     badgeSize: Int = 20,
     content: @Composable () -> Unit = {}

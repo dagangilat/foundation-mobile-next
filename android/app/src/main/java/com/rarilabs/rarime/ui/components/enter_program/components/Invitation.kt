@@ -158,7 +158,7 @@ private fun InvitationContent(
                             enabled = invitationCodeState.text.isNotEmpty() && !isSubmitting,
                             colors = ButtonColors(
                                 containerColor = FoundationTheme.colors.primaryMain,
-                                contentColor = FoundationTheme.colors.baseBlack,
+                                contentColor = FoundationTheme.colors.baseWhite,
                                 disabledContainerColor = FoundationTheme.colors.componentDisabled,
                                 disabledContentColor = FoundationTheme.colors.textPrimary.copy(alpha = 0.5f),
                             ),

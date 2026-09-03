@@ -37,12 +37,12 @@ fun TipAlert(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AppIcon(id = R.drawable.ic_bulb, tint = Color(0xFF863AC4))
+            AppIcon(id = R.drawable.ic_bulb, tint = FoundationTheme.colors.primaryMain)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = title,
                 style = FoundationTheme.typography.subtitle7,
-                color = Color(0xFF863AC4),
+                color = FoundationTheme.colors.primaryMain,
                 modifier = Modifier.weight(1f)
             )
 

@@ -50,8 +50,8 @@ fun WinningFaceCard(
         modifier = modifier.shadow(
             elevation = 12.dp,
             shape = RoundedCornerShape(16.dp),
-            ambientColor = Color(0xFF9D4EDD).copy(alpha = 1f),
-            spotColor = Color(0xFF9D4EDD).copy(alpha = 1f)
+            ambientColor = FoundationTheme.colors.hiddenPrizeAccent.copy(alpha = 1f),
+            spotColor = FoundationTheme.colors.hiddenPrizeAccent.copy(alpha = 1f)
         )
     ) {
         Card(

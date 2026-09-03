@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_primary">#FFF2F3F2</color>
+    <!-- Foundation `bg` #F6F9FC - matches lightColors().backgroundPrimary and
+         iOS's BgPrimary colorset, so the window background behind the Compose
+         tree is the same ground the app itself paints. -->
+    <color name="background_primary">#FFF6F9FC</color>
 </resources>

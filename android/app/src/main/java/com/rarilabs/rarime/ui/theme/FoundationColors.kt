@@ -521,19 +521,21 @@ class FoundationColors(
 
 
 fun darkColors() = FoundationColors(
-    // primary
-    primaryDarker = Color(0xFFFFFFFF),
-    primaryDark = Color(0xFFFFFFFF),
-    primaryMain = Color(0xFFFFFFFF),
-    primaryLight = Color(0x1FFFFFFF),
-    primaryLighter = Color(0x0FFFFFFF),
+    // primary - Foundation brandGreen #047857 (iOS PrimaryMain/Dark/Darker,
+    // which carries the same value in its dark appearance)
+    primaryDarker = Color(0xFF047857),
+    primaryDark = Color(0xFF047857),
+    primaryMain = Color(0xFF047857),
+    primaryLight = Color(0x1F047857),
+    primaryLighter = Color(0x0F047857),
 
-    // secondary
-    secondaryDarker = Color(0xFFA8E152),
-    secondaryDark = Color(0xFF99D838),
-    secondaryMain = Color(0xFF8CCD28),
-    secondaryLight = Color(0x1F8CCD28),
-    secondaryLighter = Color(0x0F8CCD28),
+    // secondary - Foundation brandCyan #22D3EE (iOS SecondaryMain);
+    // replaces Rarimo's lime secondary ramp
+    secondaryDarker = Color(0xFF22D3EE),
+    secondaryDark = Color(0xFF22D3EE),
+    secondaryMain = Color(0xFF22D3EE),
+    secondaryLight = Color(0x1F22D3EE),
+    secondaryLighter = Color(0x0F22D3EE),
 
     // success
     successDarker = Color(0xFF4AD07B),
@@ -594,80 +596,132 @@ fun darkColors() = FoundationColors(
     invertedLight = Color(0xFF141614),
 
     // additional
-    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
+    // gradient1 == iOS Gradients.gradientFirst (AdditionalGradientFirstStart /
+    // End): the brand mark tint, the identity widget background and the
+    // auth-method chips. brandGreen -> brandFill, the value iOS resolved to.
+    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF047857), Color(0xFF34D399))),
+    // gradient2/3/4 are byte-identical to iOS's AdditionalGradientSecond /
+    // Third / Fourth, which Task B3 left unmapped: pale washes carrying no
+    // Rarimo brand hex. Kept as-is so the two platforms stay in step; the
+    // faint lime cast in gradient3 (#DFFCC4) and the lavender in gradient4
+    // are flagged in the C3 report as a cross-platform follow-up, since
+    // changing them here alone would create drift.
     gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
+    // gradient5 - Freedomtool widget background. Deep forest green fading to
+    // near-black: no Rarimo signature hex (their brand lime is #84CC16 /
+    // #9AFE8A), so it is left as-is.
     gradient5 = Brush.linearGradient(
         colors = listOf(
             Color(0xFF255130),
             Color(0xFF0F1611)
         )
     ),
+    // gradient6 is byte-identical to iOS's AdditionalGradientSixth and fills
+    // the same control on both platforms (the checkbox/switch), where B3 left
+    // it unmapped. Mid green/teal, not Rarimo's lime and not their purple, so
+    // it stays put rather than drifting away from iOS.
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
+    // gradient7 - no consumer in the app today; Rarimo's pale lavender wash
+    // swapped for a Foundation surface -> bg -> surface wash of the same
+    // character, so no purple-family value survives anywhere in the palette.
     gradient7 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
-                0xFFF8F3FE
+            Color(0xFFFFFFFF), Color(0xFFF6F9FC), Color(
+                0xFFFFFFFF
             )
         )
     ),
+    // gradient8 - Rarimo's purple, used BOTH as an accent-title text brush and
+    // as a button fill that draws baseWhite content on top. iOS maps its
+    // purple gradients to brandFill -> brandCyan, but copying that here would
+    // put white text on #34D399/#22D3EE (1.9:1 / 1.8:1). A dark Foundation
+    // green ramp keeps the original's dark->mid structure and stays >=5.5:1
+    // against white across both stops.
     gradient8 = Brush.linearGradient(
-        colors = listOf(Color(0xFF651C9F), Color(0xFF9D4EDD))
+        colors = listOf(Color(0xFF024A36), Color(0xFF047857))
     ),
+    // gradient9 - no consumer today. Only the tinted first stop carried
+    // Rarimo's mauve; it becomes brandGreen, whose luminance (0.139) is
+    // within a hair of the mauve it replaces (0.150), so the fade into the
+    // near-black stops keeps its shape in the dark theme.
     gradient9 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF786586),
+            Color(0xFF047857),
             Color(0xFF1C1B1D),
             Color(0xFF1C1B1D)
         )
     ),
+    // gradient10 - TipAlert background. Rarimo's purple-cast near-blacks
+    // become neutral Foundation dark surfaces at the same lightness.
     gradient10 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF151118),
-            Color(0xFF17121A),
+            Color(0xFF141614),
+            Color(0xFF171717),
         )
     ),
 
+    // gradient11 - recovery-method accent title. iOS paints the same screen's
+    // accent with Gradients.greenText (brandGreen -> brandFill).
     gradient11 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF286D26),
-            Color(0xFF338D3A),
+            Color(0xFF047857),
+            Color(0xFF34D399),
         )
     ),
+    // gradient12 - the "SOON" badge capsule, which draws baseBlack text on
+    // top, so the fill has to stay pale. Same role and same pastel-mint values
+    // as iOS's Gradients.lightGreenBg (LightGreenBgGradient1/2).
     gradient12 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF8AFECC),
-            Color(0xFF9AFE8A),
+            Color(0xFFC2F2E0),
+            Color(0xFF8FE7C7),
         )
     ),
+    // gradient13 - Earn/RMO accent title, the role iOS paints with
+    // Gradients.darkerGreenText. iOS's DarkerGreenTextGradient1/2 resolve to
+    // #34D399 in the DARK appearance (and #024A36 in the light one), so the
+    // dark theme keeps a bright stop rather than inheriting the light value.
     gradient13 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF40A661),
-            Color(0xFF43C46C)
+            Color(0xFF34D399),
+            Color(0xFF34D399)
         )
     ),
+    // gradient14 - Likeness accent title. Rarimo's olive/lime pair replaced by
+    // iOS's Gradients.greenText values (brandGreen -> brandFill), which carry
+    // the same hex in both iOS appearances.
     gradient14 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF518119),
-            Color(0xFF71BB1D)
+            Color(0xFF047857),
+            Color(0xFF34D399)
         )
     ),
+    // gradient15 - Freedomtool/voting accent title, the same role iOS paints
+    // with Gradients.darkGreenText (DarkGreenTextGradient1/2 = brandGreen on
+    // both stops, which is also how near-flat Rarimo's original pair was).
     gradient15 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF1A833A),
-            Color(0xFF1E853C)
+            Color(0xFF047857),
+            Color(0xFF047857)
         )
     ),
 
-    additionalGreen = Color(0xFFF1F7F1),
+    // additionalGreen - iOS AdditionalGreen, dark appearance (#1C211D). No
+    // consumer on Android today; kept at parity with iOS rather than left on
+    // Rarimo's near-white value.
+    additionalGreen = Color(0xFF1C211D),
 
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
     inverted = Color(0xFF000000),
-    hiddenPrizeAccent = Color(0xFF9D4EDD),
-    hiddenPrizeBackground = Color(0xFFF5EDFC),
+    // hiddenPrize* - Rarimo purple replaced by the Foundation brand family;
+    // the accent is drawn as icon/title colour over a 10% tint of itself, so
+    // the dark theme takes brandFill and the light theme brandGreen.
+    hiddenPrizeAccent = Color(0xFF34D399),
+    hiddenPrizeBackground = Color(0xFF1C211D),
     welcomeAccent1 = Color(0xFF1B1B1A),
     welcomeAccent2 = Color(0xFF1E2020),
     welcomeAccent3 = Color(0xFF1F221F),
@@ -675,19 +729,23 @@ fun darkColors() = FoundationColors(
 )
 
 fun lightColors() = FoundationColors(
-    // primary
-    primaryDarker = Color(0xFF050505),
-    primaryDark = Color(0xFF111211),
-    primaryMain = Color(0xFF141614),
-    primaryLight = Color(0x1416141F),
-    primaryLighter = Color(0x1416140F),
+    // primary - Foundation brandGreen #047857 (iOS PrimaryMain/Dark/Darker).
+    // primaryLight/Lighter were written as 0x1416141F / 0x1416140F upstream,
+    // i.e. RGBA instead of ARGB, so they rendered an 8%-alpha #16141F rather
+    // than a 12%/6% tint of the primary; they now carry the intended alphas.
+    primaryDarker = Color(0xFF047857),
+    primaryDark = Color(0xFF047857),
+    primaryMain = Color(0xFF047857),
+    primaryLight = Color(0x1F047857),
+    primaryLighter = Color(0x0F047857),
 
-    // secondary
-    secondaryDarker = Color(0xFF4D7C0F),
-    secondaryDark = Color(0xFF65A30D),
-    secondaryMain = Color(0xFF84CC16),
-    secondaryLight = Color(0x1F84CC16),
-    secondaryLighter = Color(0x0F84CC16),
+    // secondary - Foundation brandCyan #22D3EE (iOS SecondaryMain);
+    // replaces Rarimo's lime secondary ramp
+    secondaryDarker = Color(0xFF22D3EE),
+    secondaryDark = Color(0xFF22D3EE),
+    secondaryMain = Color(0xFF22D3EE),
+    secondaryLight = Color(0x1F22D3EE),
+    secondaryLighter = Color(0x0F22D3EE),
 
     // success
     successDarker = Color(0xFF15803D),
@@ -718,11 +776,13 @@ fun lightColors() = FoundationColors(
     warningLight = Color(0x1FF59E0B),
     warningLighter = Color(0x0FF59E0B),
 
-    // text
-    textPrimary = Color(0xFF141614),
-    textSecondary = Color(0x8F141614),
-    textPlaceholder = Color(0x70141614),
-    textDisabled = Color(0x47141614),
+    // text - Foundation `text` #0A0E27 and `muted` #596171, keeping each
+    // tier's own alpha (iOS TextPrimary / TextSecondary 0.56 / TextPlaceholder
+    // 0.44 / TextDisabled 0.28)
+    textPrimary = Color(0xFF0A0E27),
+    textSecondary = Color(0x8F596171),
+    textPlaceholder = Color(0x70596171),
+    textDisabled = Color(0x47596171),
 
     // component
     componentPrimary = Color(0x0D141614),
@@ -731,11 +791,13 @@ fun lightColors() = FoundationColors(
     componentSelected = Color(0x0D141614),
     componentDisabled = Color(0x0D141614),
 
-    // background
-    backgroundPrimary = Color(0xFFFFFFFF),
+    // background - Foundation `bg` #F6F9FC for the page ground (iOS BgPrimary,
+    // BgPure), `surface` #FFFFFF for raised surfaces (iOS BgContainer,
+    // BgSurface1/2, BgBlur at 90%)
+    backgroundPrimary = Color(0xFFF6F9FC),
     backgroundContainer = Color(0xFFFFFFFF),
     backgroundBlur = Color(0xE5FFFFFF),
-    backgroundPure = Color(0xFFFFFFFF),
+    backgroundPure = Color(0xFFF6F9FC),
     backgroundSurface1 = Color(0xFFFFFFFF),
     backgroundSurface2 = Color(0xFFFFFFFF),
 
@@ -749,81 +811,122 @@ fun lightColors() = FoundationColors(
     invertedLight = Color(0xFFFFFFFF),
 
     // additional
-    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF9AFE8A), Color(0xFF8AFECC))),
+    // gradient1 == iOS Gradients.gradientFirst (AdditionalGradientFirstStart /
+    // End): the brand mark tint, the identity widget background and the
+    // auth-method chips. brandGreen -> brandFill, the value iOS resolved to.
+    gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF047857), Color(0xFF34D399))),
+    // gradient2/3/4 are byte-identical to iOS's AdditionalGradientSecond /
+    // Third / Fourth, which Task B3 left unmapped: pale washes carrying no
+    // Rarimo brand hex. Kept as-is so the two platforms stay in step; the
+    // faint lime cast in gradient3 (#DFFCC4) and the lavender in gradient4
+    // are flagged in the C3 report as a cross-platform follow-up, since
+    // changing them here alone would create drift.
     gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
     gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
     gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
+    // gradient5 - Freedomtool widget background. Soft mint fading to
+    // near-white; sits in the brandFill family rather than Rarimo's neon
+    // lime, so it is left as-is.
     gradient5 = Brush.linearGradient(
         colors = listOf(
             Color(0xFFA2F0B6),
             Color(0xFFF2F9F0)
         )
     ),
+    // gradient6 is byte-identical to iOS's AdditionalGradientSixth and fills
+    // the same control on both platforms (the checkbox/switch), where B3 left
+    // it unmapped. Mid green/teal, not Rarimo's lime and not their purple, so
+    // it stays put rather than drifting away from iOS.
     gradient6 = Brush.linearGradient(colors = listOf(Color(0xFF39CDA0), Color(0xFF45C45C))),
+    // gradient7 - no consumer in the app today; Rarimo's pale lavender wash
+    // swapped for a Foundation surface -> bg -> surface wash of the same
+    // character, so no purple-family value survives anywhere in the palette.
     gradient7 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFFF8F3FE), Color(0xFFEEE9FE), Color(
-                0xFFF8F3FE
+            Color(0xFFFFFFFF), Color(0xFFF6F9FC), Color(
+                0xFFFFFFFF
             )
         )
     ),
 
-    gradient8 = Brush.linearGradient(colors = listOf(Color(0xFF651C9F), Color(0xFF9D4EDD))),
+    // gradient8 - see the dark-theme block: dark Foundation green ramp,
+    // white-content-safe, replacing Rarimo's purple.
+    gradient8 = Brush.linearGradient(colors = listOf(Color(0xFF024A36), Color(0xFF047857))),
+    // gradient9 - no consumer today. Rarimo's pale lavender first stop becomes
+    // the pastel mint iOS already uses for its light green background
+    // (LightGreenBgGradient1), at a matching lightness.
     gradient9 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFFE3C4F3),
+            Color(0xFFC2F2E0),
             Color(0xFFF1F0F2),
             Color(0xFFF1F0F2)
         )
     ),
+    // gradient10 - TipAlert background. Rarimo's purple-cast near-whites
+    // become Foundation `bg` -> `surface`.
     gradient10 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFFF8F5FB),
-            Color(0xFFFAF6FD),
+            Color(0xFFF6F9FC),
+            Color(0xFFFFFFFF),
         )
     ),
+    // gradient11 - recovery-method accent title. iOS paints the same screen's
+    // accent with Gradients.greenText (brandGreen -> brandFill).
     gradient11 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF286D26),
-            Color(0xFF338D3A),
+            Color(0xFF047857),
+            Color(0xFF34D399),
         )
     ),
+    // gradient12 - the "SOON" badge capsule, which draws baseBlack text on
+    // top, so the fill has to stay pale. Same role and same pastel-mint values
+    // as iOS's Gradients.lightGreenBg (LightGreenBgGradient1/2).
     gradient12 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF8AFECC),
-            Color(0xFF9AFE8A),
+            Color(0xFFC2F2E0),
+            Color(0xFF8FE7C7),
         )
     ),
 
+    // gradient13 - Earn/RMO accent title; iOS DarkerGreenTextGradient1/2,
+    // light appearance (#024A36).
     gradient13 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF144C26),
-            Color(0xFF258D46)
+            Color(0xFF024A36),
+            Color(0xFF024A36)
         )
     ),
 
+    // gradient14 - Likeness accent title; see the dark-theme block.
     gradient14 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF518219),
-            Color(0xFF72BB1D)
+            Color(0xFF047857),
+            Color(0xFF34D399)
         )
     ),
 
+    // gradient15 - Freedomtool/voting accent title, the same role iOS paints
+    // with Gradients.darkGreenText (DarkGreenTextGradient1/2 = brandGreen on
+    // both stops, which is also how near-flat Rarimo's original pair was).
     gradient15 = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF1A833A),
-            Color(0xFF1E853C)
+            Color(0xFF047857),
+            Color(0xFF047857)
         )
     ),
 
     baseBlackOp40 = Color(0x66141614),
     baseBlackOp50 = Color(0x80141614),
 
-    additionalGreen = Color(0xFFF1F7F1),
+    // additionalGreen - iOS AdditionalGreen, light appearance (Foundation
+    // `bg` #F6F9FC). No consumer on Android today.
+    additionalGreen = Color(0xFFF6F9FC),
     inverted = Color(0xFFFFFFFF),
 
-    hiddenPrizeAccent = Color(0xFF9D4EDD),
-    hiddenPrizeBackground = Color(0xFFF5EDFC),
+    // hiddenPrize* - Rarimo purple replaced by the Foundation brand family;
+    // see the dark-theme block.
+    hiddenPrizeAccent = Color(0xFF047857),
+    hiddenPrizeBackground = Color(0xFFF6F9FC),
 
     welcomeAccent1 = Color(0xFFF9F9F2),
     welcomeAccent2 = Color(0xFFE2EBED),

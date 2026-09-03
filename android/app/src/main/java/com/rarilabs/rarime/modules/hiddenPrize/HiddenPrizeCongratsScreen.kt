@@ -149,8 +149,8 @@ fun HiddenPrizeCongratsScreen(
                     .shadow(
                         elevation = 60.dp,
                         shape = RoundedCornerShape(20.dp),
-                        ambientColor = Color(0xFF9D4EDD),
-                        spotColor = Color(0xFF9D4EDD)
+                        ambientColor = FoundationTheme.colors.hiddenPrizeAccent,
+                        spotColor = FoundationTheme.colors.hiddenPrizeAccent
                     )
                     .padding(vertical = 20.dp, horizontal = 23.dp),
                 shape = RoundedCornerShape(20.dp),

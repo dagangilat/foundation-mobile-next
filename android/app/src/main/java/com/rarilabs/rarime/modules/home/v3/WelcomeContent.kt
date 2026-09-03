@@ -180,6 +180,9 @@ fun BaseWelcomeContent(
             CircledBadge(
                 iconId = R.drawable.ic_rarime,
                 containerColor = FoundationTheme.colors.componentPrimary,
+                // Overrides the default: this badge sits on a translucent
+                // neutral, not on primaryMain.
+                contentColor = FoundationTheme.colors.baseBlack,
                 contentSize = 24,
                 containerSize = 40
             )

@@ -71,7 +71,7 @@ fun ActionCardContent(
             AppIcon(
                 id = R.drawable.ic_caret_right,
                 size = 16.dp,
-                tint = FoundationTheme.colors.invertedLight,
+                tint = FoundationTheme.colors.baseWhite,
                 modifier = Modifier
                     .background(FoundationTheme.colors.primaryMain, CircleShape)
                     .padding(4.dp)
