@@ -239,6 +239,7 @@
 		CE51E2E52C21790700043D9A /* DownloadableDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE51E2E42C21790700043D9A /* DownloadableDataManager.swift */; };
 		CE51E2FB2C21CA0B00043D9A /* StateKeeperContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE51E2FA2C21CA0B00043D9A /* StateKeeperContract.swift */; };
 		CE5315C32C77664C0087D53D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE5315C22C77664C0087D53D /* GoogleService-Info.plist */; };
+		39D631DABB5A1C9298A3319C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 962DFE58E381BA9C693C8453 /* PrivacyInfo.xcprivacy */; };
 		CE5315CA2C7769A20087D53D /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5315C92C7769A20087D53D /* NotificationManager.swift */; };
 		CE53BCC22D9A9A2C007B1892 /* Swoir in Frameworks */ = {isa = PBXBuildFile; productRef = CE53BCC12D9A9A2C007B1892 /* Swoir */; settings = {ATTRIBUTES = (Required, ); }; };
 		CE5980DC2D07B288000B6261 /* RegisterIdentityLightInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5980DB2D07B279000B6261 /* RegisterIdentityLightInputs.swift */; };
@@ -548,6 +549,7 @@
 		CE51E2E42C21790700043D9A /* DownloadableDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadableDataManager.swift; sourceTree = "<group>"; };
 		CE51E2FA2C21CA0B00043D9A /* StateKeeperContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateKeeperContract.swift; sourceTree = "<group>"; };
 		CE5315C22C77664C0087D53D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		962DFE58E381BA9C693C8453 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CE5315C92C7769A20087D53D /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		CE5980DB2D07B279000B6261 /* RegisterIdentityLightInputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterIdentityLightInputs.swift; sourceTree = "<group>"; };
 		CE61E88C2C247B4700940129 /* HMACUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HMACUtils.swift; sourceTree = "<group>"; };
@@ -1288,6 +1290,7 @@
 				56A6C75D2BBC2FE900992562 /* FoundationMobile.entitlements */,
 				CE5315C22C77664C0087D53D /* GoogleService-Info.plist */,
 				CE9E82E62BA89CE300AAF885 /* Info.plist */,
+				962DFE58E381BA9C693C8453 /* PrivacyInfo.xcprivacy */,
 				CE9E82C62BA8851B00AAF885 /* Code */,
 				CE9E82C42BA8850800AAF885 /* Resources */,
 				CE9E82C32BA884B900AAF885 /* SupportingFiles */,
@@ -1685,6 +1688,7 @@
 				C72F33292D68AC6F00AC1814 /* Inter-SemiBold.ttf in Resources */,
 				568B4FE02BB70852001C9C74 /* Localizable.xcstrings in Resources */,
 				CE5315C32C77664C0087D53D /* GoogleService-Info.plist in Resources */,
+				39D631DABB5A1C9298A3319C /* PrivacyInfo.xcprivacy in Resources */,
 				C75512882C8603D3000258AD /* ScanMrz.mp4 in Resources */,
 				C75512962C87617B000258AD /* RemoveCase.mp4 in Resources */,
 				56A6C7672BBC342A00992562 /* masterList.pem in Resources */,

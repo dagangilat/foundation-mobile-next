@@ -52,9 +52,17 @@ platform :ios do
 
     increment_build_number(xcodeproj: "FoundationMobile.xcodeproj")
 
+    # "FoundationMobile" is the DEVELOPMENT scheme (Task B2's rename kept
+    # the upstream fork's original scheme layout) - its own ArchiveAction builds the
+    # "Release (Development)" configuration, which sets the DEVELOPMENT
+    # compilation flag (shows a "Development" badge, -dev notification
+    # topics, a Debug Options row in Profile). "Production" is the scheme
+    # that archives "Release (Production)" and is the one that must ship.
+    # Confirmed directly: grep ArchiveAction/buildConfiguration in both
+    # ios/FoundationMobile.xcodeproj/xcshareddata/xcschemes/*.xcscheme.
     build_app(
       project: "FoundationMobile.xcodeproj",
-      scheme: "FoundationMobile",
+      scheme: "Production",
       export_method: "app-store"
     )
 

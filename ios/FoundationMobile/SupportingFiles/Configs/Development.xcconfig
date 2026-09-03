@@ -9,6 +9,9 @@ DEFAULT_REFERRAL_CODE=""
 WEB_APP_URL="https:${SLASH}/foundation-next-app-web.web.app"
 TERMS_OF_USE_URL="https:${SLASH}/foundation-next-app-web.web.app/legal/terms"
 PRIVACY_POLICY_URL="https:${SLASH}/foundation-next-app-web.web.app/legal/privacy"
+// RETAINED FROM UPSTREAM, not Foundation-owned like the rest of this block
+// (see OD-5): registration is anchored on Rarimo's L2, so this must keep
+// pointing at Rarimo's own API host.
 APP_API_URL="https:${SLASH}/api.app.rarime.com"
 
 // MARK: Foundation backend

@@ -29,13 +29,18 @@ review.
 | Capability | Why the app needs it |
 |---|---|
 | NFC (`NFCReaderUsageDescription`) | Reading the passport chip — the core function. |
-| Camera | MRZ scan and liveness. |
+| Camera | MRZ scan. |
 | App Attest entitlement | Anti-spoofing: proves requests come from a genuine build. |
 | Face ID | Local app lock only; no biometric data leaves the device. |
 
 ## Privacy positioning
 
 All passport data is processed on-device; only a zero-knowledge proof leaves the
-phone. The privacy manifest (`PrivacyInfo.xcprivacy`) must reflect that no
-personal data is collected. Re-audit it after Task B5 removed AppsFlyer — the
-inherited manifest may still declare tracking domains.
+phone. `PrivacyInfo.xcprivacy` (recovered from the pre-fork shell after the
+Phase B final review found it had been dropped entirely during the shell's
+deletion — Apple requires one for submission) declares `NSPrivacyTracking:
+false` at the top level and `NSPrivacyCollectedDataTypeTracking: false` on
+every individual data type — checked directly, it never declared an
+`NSPrivacyTrackingDomains` array, so there was nothing AppsFlyer-related to
+strip when Task B5 removed that SDK. Re-audit only if a future task adds a
+new required-reason API or a new data collection surface.

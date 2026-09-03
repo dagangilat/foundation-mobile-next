@@ -46,11 +46,25 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #  - GoogleService-Info.plist: gitignored, locally-varying dev artifact, never
 #    committed — not something this sweep (which gates committed source) needs
 #    to check.
-#  - FoundationTests/Tests/{BrandingTests,ConfigTests,NavigationTests}: these tests deliberately
-#    assert specific Rarimo strings are ABSENT (or, for retained OD-5 defaults,
-#    that a specific known value survived) — the test source itself must name
-#    Rarimo to test for it. Excluding the whole test directory rather than
-#    individual files since new tests in this style will keep landing here.
+#  - FoundationTests/Tests/{BrandingTests,ConfigTests,NavigationTests} (whole
+#    directories) and VerificationManagerTests.swift (a single file, since it
+#    sits inside Tests/FoundationTests/ alongside other tests that do NOT
+#    need this exemption): these tests deliberately assert specific Rarimo
+#    strings are ABSENT (or, for retained OD-5 defaults, that a specific
+#    known value survived) — the test source itself must name Rarimo to test
+#    for it.
+#    CORRECTION (Phase B final review): this comment used to claim "excluding
+#    the whole test directory rather than individual files since new tests in
+#    this style will keep landing here" — that was never actually true. Every
+#    entry above is added by name as each test lands; there is no mechanism
+#    that catches a new one automatically, and Task B8's VerificationManagerTests
+#    proved it by landing unexempted for two tasks' worth of sweeps before this
+#    review caught it. `Tests/FoundationTests/` can't get a single directory
+#    exclude the way the other three did — it also holds QueryProofTests-style
+#    files with no reason to be exempt, and directory basenames collide with
+#    the outer FoundationTests/ target dir — so a new absence-assertion test
+#    landing in that directory needs its own line here. Check this list
+#    against any new test file using this pattern before assuming it's covered.
 #
 # NOT exempt (deliberately still red until a later task fixes it): entitlements
 # files (iCloud.Rarilabs.Rarime / group.rarilabs.rarime / applinks:app.rarime.com)
@@ -77,6 +91,7 @@ EXCLUDES=(
   --exclude=ZKUtils.swift
   --exclude=CloudStorage.swift
   --exclude=NotificationManager.swift
+  --exclude=VerificationManagerTests.swift
   --exclude=Development.xcconfig
   --exclude=Production.xcconfig
   --exclude=prebuild.sh

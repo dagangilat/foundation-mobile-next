@@ -9,6 +9,9 @@ DEFAULT_REFERRAL_CODE=""
 WEB_APP_URL="https:${SLASH}/foundation-next-app-web.web.app"
 TERMS_OF_USE_URL="https:${SLASH}/foundation-next-app-web.web.app/legal/terms"
 PRIVACY_POLICY_URL="https:${SLASH}/foundation-next-app-web.web.app/legal/privacy"
+// RETAINED FROM UPSTREAM, not Foundation-owned like the rest of this block
+// (see OD-5): registration is anchored on Rarimo's L2, so this must keep
+// pointing at Rarimo's own API host.
 APP_API_URL="https:${SLASH}/api.app.rarime.com"
 
 // MARK: Foundation backend
@@ -22,17 +25,19 @@ GENERAL_NOTIFICATION_TOPIC="foundation"
 CLAIMABLE_NOTIFICATION_TOPIC="foundation-rewardable"
 
 // MARK: Contracts
-// RETAINED FROM UPSTREAM (except GUESS_CELEBRITY below). Passport registration
-// is anchored on Rarimo's L2 and our verificator-svc validates against that
-// same registration state, so these addresses must keep matching Rarimo's
-// mainnet deployment. See Open Decision OD-5 before changing any of them.
+// RETAINED FROM UPSTREAM. Passport registration is anchored on Rarimo's L2
+// and our verificator-svc validates against that same registration state, so
+// these addresses must keep matching Rarimo's mainnet deployment. See Open
+// Decision OD-5 before changing any of them.
+// (GUESS_CELEBRITY_CONTRACT_ADDRESS was here too, zeroed and NOT retained —
+// the Guess-the-Celebrity mini-game isn't part of Foundation's product
+// surface. Task B5 deleted the key outright along with the HiddenKeys
+// module; nothing here needs it anymore.)
 REGISTRATION2_CONTRACT_ADDRESS="0x11BB4B14AA6e4b836580F3DBBa741dD89423B971"
 REGISTRATION_SIMPLE_CONTRACT_ADRRESS="0x497D6957729d3a39D43843BD27E6cbD12310F273"
 CERTIFICATES_SMT_CONTRACT_ADDRESS="0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
 REGISTRATION_SMT_CONTRACT_ADDRESS="0x479F84502Db545FA8d2275372E0582425204A879"
 STATE_KEEPER_CONTRACT_ADDRESS="0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
-// Zeroed, NOT retained: the Guess-the-Celebrity mini-game isn't part of
-// Foundation's product surface, so this address is deliberately dead.
 
 // MARK: EVM
 // RETAINED: the registration relayer and RPC are the proving substrate.
