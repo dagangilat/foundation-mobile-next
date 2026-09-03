@@ -1,4 +1,5 @@
 import Foundation
+import FirebaseFunctions
 import SwiftUI
 
 enum VerificationState: Equatable {
@@ -152,11 +153,40 @@ final class FoundationVerificationManager: ObservableObject {
             guard state == .polling else { return }
             do {
                 let status = try await FunctionsService.shared.getL2VerificationStatus()
-                if status.status == "verified" || status.status == "already_verified_l2" {
+                // The server (functions/founders/passport.js) never returns
+                // "verified" - that was this method's original, unverified
+                // assumption. On success it returns "member_created" (first
+                // member record) or "member_upgraded" (existing member
+                // reaching l2), and "already_verified_l2" on a pre-checked
+                // short-circuit. Checking only "verified" meant every real,
+                // successful verification silently ran out the clock into
+                // .failed below - found and fixed 2026-09-03 while porting
+                // this poller's Android counterpart (Task C8), which caught
+                // the mismatch against the real backend response shape.
+                if status.status == "member_created" || status.status == "member_upgraded"
+                    || status.status == "already_verified_l2" {
                     guard state == .polling else { return }
                     state = .verified(memberNumber: status.memberNumber)
                     return
                 }
+                // Any other status ("pending", "request_created", or an
+                // unrecognized future value) is not terminal - keep polling.
+            } catch let error as NSError where error.domain == FunctionsErrorDomain
+                && error.code == FunctionsErrorCode.failedPrecondition.rawValue {
+                // A terminal rejection (failed_verification /
+                // uniqueness_check_failed - see passport.js's
+                // getL2VerificationStatus), not a transient failure. The
+                // server's HttpsError message is the real, user-facing
+                // rejection reason ("We couldn't verify that passport...",
+                // "This passport is already linked to a different
+                // member..."); the original code caught every error the
+                // same way and silently retried until timeout, discarding
+                // this message in favor of a generic "taking longer than
+                // expected" - which also meant a legitimately duplicate or
+                // failed passport was mis-reported as a transient slowdown.
+                guard state == .polling else { return }
+                state = .failed(error.localizedDescription)
+                return
             } catch {
                 LoggerUtil.common.error("getL2VerificationStatus failed: \(error.localizedDescription, privacy: .public)")
             }
