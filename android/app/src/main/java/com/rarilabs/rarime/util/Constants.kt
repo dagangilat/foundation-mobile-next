@@ -10,9 +10,15 @@ import com.rarilabs.rarime.data.RarimoChains
 import kotlin.time.Duration.Companion.minutes
 
 object Constants {
-    const val TERMS_URL = "https://rarime.com/general-terms.html"
-    const val PRIVACY_URL = "https://rarime.com/privacy-notice.html"
-    const val AIRDROP_TERMS_URL = "https://rarime.com/airdrop-terms.html"
+    const val TERMS_URL = "https://foundation-next-app-web.web.app/legal/terms"
+    const val PRIVACY_URL = "https://foundation-next-app-web.web.app/legal/privacy"
+
+    // Retained (not blanked to ""): ClaimExpandedWidget.kt (earn/claim, Task C5 territory)
+    // opens this via LocalUriHandler.openUri() when tapped, which throws
+    // ActivityNotFoundException on an empty/unparseable URL - a real, tap-triggered
+    // crash risk, not just a compile hazard. Points at the same Foundation legal hub
+    // pending Task C5's deletion of this link's only remaining call site.
+    const val AIRDROP_TERMS_URL = "https://foundation-next-app-web.web.app/legal/terms"
 
     const val MAX_PASSCODE_ATTEMPTS = 5
     val PASSCODE_LOCK_PERIOD = 5.minutes

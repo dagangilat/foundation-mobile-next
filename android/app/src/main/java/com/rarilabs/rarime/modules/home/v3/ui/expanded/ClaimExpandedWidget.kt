@@ -210,19 +210,19 @@ fun TermsAndConditionsText() {
         append(stringResource(R.string.terms_check_agreement))
         pushStringAnnotation("URL", Constants.TERMS_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_general_terms_conditions))
+            append(stringResource(R.string.foundation_general_terms_conditions))
         }
         pop()
         append(", ")
         pushStringAnnotation("URL", Constants.PRIVACY_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_privacy_notice))
+            append(stringResource(R.string.foundation_privacy_notice))
         }
         pop()
         append(stringResource(R.string.and))
         pushStringAnnotation("URL", Constants.AIRDROP_TERMS_URL)
         withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
-            append(stringResource(R.string.rarimo_airdrop_program_terms_conditions))
+            append(stringResource(R.string.foundation_airdrop_program_terms_conditions))
         }
         pop()
     }
