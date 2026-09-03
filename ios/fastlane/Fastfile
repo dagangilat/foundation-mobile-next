@@ -1,0 +1,66 @@
+# Foundation Mobile (foundation-mobile-next) — a public rebrand fork; see
+# README.md and NOTICE for full upstream attribution and licensing.
+#
+# This file replaces the one inherited from the live foundation-mobile app,
+# whose beta lane rewrote the bundle id to that live app's real production
+# identifier and uploaded straight to that live App Store Connect record (the
+# exact identifier is intentionally not repeated here — see this repo's
+# commit history — so this comment itself does not trip the brand-sweep /
+# live-identifier CI gates below). Never reintroduce a hardcoded bundle id
+# here; it comes from Appfile.
+#
+# Working-directory note (verified against fastlane's own docs before writing
+# this file): every action's own code — including build_app,
+# update_code_signing_settings, increment_build_number, upload_to_testflight —
+# runs with fastlane's process cwd, which is the directory fastlane was
+# invoked from one level ABOVE this fastlane/ folder, i.e. ios/. That is why
+# bare relative paths like "FoundationMobile.xcodeproj" below resolve
+# correctly. The `sh` action is the one documented exception: it always runs
+# relative to THIS fastlane/ folder regardless of where fastlane was invoked
+# from, which is why the sh() calls below `cd` up before reaching
+# ios/prebuild.sh (one level) or the repo-root scripts/brand-sweep.sh (two
+# levels).
+
+default_platform(:ios)
+
+APP_IDENTIFIER = "com.foundationnext.mobile".freeze
+TEAM_ID = "F9F26FQW95".freeze
+
+platform :ios do
+  desc "Build the identity SDK framework (required before any build)"
+  lane :prebuild do
+    sh("cd .. && ./prebuild.sh")
+  end
+
+  desc "Fail if any residual pre-fork brand tokens survive"
+  lane :brand_sweep do
+    sh("cd ../.. && ./scripts/brand-sweep.sh ios")
+  end
+
+  desc "Build and upload a TestFlight build"
+  lane :beta do
+    brand_sweep
+    prebuild
+
+    update_code_signing_settings(
+      path: "FoundationMobile.xcodeproj",
+      use_automatic_signing: false,
+      team_id: TEAM_ID,
+      bundle_identifier: APP_IDENTIFIER,
+      code_sign_identity: "Apple Distribution"
+    )
+
+    increment_build_number(xcodeproj: "FoundationMobile.xcodeproj")
+
+    build_app(
+      project: "FoundationMobile.xcodeproj",
+      scheme: "FoundationMobile",
+      export_method: "app-store"
+    )
+
+    upload_to_testflight(
+      app_identifier: APP_IDENTIFIER,
+      skip_waiting_for_build_processing: true
+    )
+  end
+end

@@ -1,0 +1,39 @@
+name: brand-sweep
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  brand-sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Scoped to `ios` only for now: Phase C (Android rebrand) has not
+      # started, so `android/` still carries ~4250 un-rebranded Rarimo
+      # references (Task A3's import count). Widen this to
+      # `./scripts/brand-sweep.sh ios android` once Task C9 lands — see that
+      # task's brief and the Phase C section of the rebrand plan.
+      - name: No residual Rarimo branding
+        run: ./scripts/brand-sweep.sh ios
+      - name: Licensing files present
+        run: |
+          test -f LICENSE
+          test -f NOTICE
+          test -f THIRD_PARTY_LICENSES.md
+          grep -q "GNU GENERAL PUBLIC LICENSE" LICENSE
+          grep -q "Rarimo Foundation" NOTICE
+      # --exclude-dir=.github is required here: this step's own grep pattern
+      # literally contains the string it searches for, so without excluding
+      # its own directory this check would permanently fail against itself.
+      - name: No inherited live-app identifiers
+        run: |
+          ! grep -rn "com.foundationglobal.mobile" \
+              --exclude-dir=.git --exclude-dir=docs --exclude-dir=.github . || \
+            { echo "live bundle id leaked into the fork"; exit 1; }
+      - name: No third-party secrets republished
+        run: |
+          ! grep -rnE 'LIGHT_SIGNATURE_PRIVATE_KEY="[0-9a-f]{16,}"|JOIN_REWARDS_KEY="[0-9a-f]{16,}"' \
+              --exclude-dir=.git . || \
+            { echo "Rarimo private key present"; exit 1; }
