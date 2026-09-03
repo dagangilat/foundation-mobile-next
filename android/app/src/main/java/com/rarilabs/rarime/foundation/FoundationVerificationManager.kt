@@ -207,10 +207,11 @@ class FoundationVerificationManager internal constructor(
                 throw e
             } catch (e: Exception) {
                 // A rejection (bad passport, passport already linked to another
-                // member) arrives as a thrown FAILED_PRECONDITION carrying a
-                // written-for-humans message - it is terminal, and swallowing it
-                // as a retry would discard that message and make the user wait
-                // out the full timeout for a generic one instead.
+                // member) arrives as a thrown FAILED_PRECONDITION or
+                // ALREADY_EXISTS carrying a written-for-humans message - both
+                // are terminal, and swallowing either as a retry would discard
+                // that message and make the user wait out the full timeout for
+                // a generic one instead. See firebaseRejectionMessage below.
                 val rejection = terminalFailureMessage(e)
                 if (rejection != null) {
                     logError("getL2VerificationStatus rejected", e)
@@ -267,14 +268,53 @@ class FoundationVerificationManager internal constructor(
 }
 
 /**
- * A `FAILED_PRECONDITION` from a Foundation callable is a considered, terminal
- * rejection whose message is written for the user (see
- * `getL2VerificationStatus` in foundation-next `functions/founders/passport.js`).
- * Everything else - network blips, transient 5xx - is worth another poll.
+ * A `FAILED_PRECONDITION` or `ALREADY_EXISTS` from a Foundation callable is a
+ * considered, terminal rejection whose message is written for the user (see
+ * `getL2VerificationStatus` / `upsertMemberWithLaneTx` in foundation-next
+ * `functions/founders/passport.js`). Everything else - network blips,
+ * transient 5xx - is worth another poll.
+ *
+ * Two distinct codes land here:
+ *   - FAILED_PRECONDITION: failed_verification / uniqueness_check_failed
+ *     (the svc-side check).
+ *   - ALREADY_EXISTS: the lane-doc uniqueness guard (`members.js`'s
+ *     `credentialClaimError`) rejecting a duplicate passport - found
+ *     2026-09-03 (whole-plan review finding I-2) to be the ONE that
+ *     actually fires in practice, because the svc-side check above "went
+ *     blind" (see the passport.js comment: every verification-link re-POST
+ *     resets verify_users and wipes nullifiers, so uniqueness_check_failed
+ *     no longer fires). Before this fix only FAILED_PRECONDITION was
+ *     classified terminal, so a real duplicate-passport rejection was
+ *     retried 40x over two minutes and reported as a generic timeout
+ *     instead of the server's real, specific rejection message.
+ *
+ * Delegates the actual decision to `terminalRejectionMessage(codeName:)`
+ * below rather than comparing `e.code` to the `Code` enum constants
+ * directly: `FirebaseFunctionsException.Code`'s static initializer calls
+ * into `android.util.SparseArray`, which is unmocked (and this module
+ * deliberately does not set `testOptions.unitTests.isReturnDefaultValues`,
+ * see `logError`'s doc above) - so simply *referencing* a `Code` constant
+ * crashes a plain JVM unit test with "SparseArray.get not mocked" before any
+ * test body even runs. Working off `e.code.name` (a stable string on this
+ * gRPC canonical-status enum) never touches the enum's companion, so the
+ * classification is directly unit-testable without Robolectric or an
+ * instrumented test.
  */
 internal fun firebaseRejectionMessage(throwable: Throwable): String? {
     val e = throwable as? FirebaseFunctionsException ?: return null
-    if (e.code != FirebaseFunctionsException.Code.FAILED_PRECONDITION) return null
-    return e.message?.takeIf { it.isNotBlank() }
+    return terminalRejectionMessage(codeName = e.code.name, message = e.message)
+}
+
+/**
+ * Pure decision, factored out of [firebaseRejectionMessage] so it is testable
+ * without ever class-loading `FirebaseFunctionsException.Code` - see that
+ * function's doc for why that class load itself crashes local unit tests.
+ */
+internal fun terminalRejectionMessage(codeName: String, message: String?): String? {
+    if (codeName !in TERMINAL_REJECTION_CODE_NAMES) return null
+    return message?.takeIf { it.isNotBlank() }
         ?: FoundationVerificationManager.MESSAGE_PROOF_FAILED
 }
+
+/** `.name` of the two terminal [FirebaseFunctionsException.Code] constants. */
+internal val TERMINAL_REJECTION_CODE_NAMES = setOf("FAILED_PRECONDITION", "ALREADY_EXISTS")
