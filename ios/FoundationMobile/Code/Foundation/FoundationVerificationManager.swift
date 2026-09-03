@@ -92,7 +92,9 @@ final class FoundationVerificationManager: ObservableObject {
     /// Such a request has nothing to do with this member's L2 status, and
     /// polling `getL2VerificationStatus` for it would burn ~2 minutes and end
     /// in a bogus `.failed`.
-    @discardableResult
+    // No @discardableResult: the caller MUST check this. A dropped `false`
+    // means a foreign proof's success silently falls through to the poller
+    // it explicitly should not reach.
     func proofRequestSucceeded() -> Bool {
         guard state == .awaitingProof else { return false }
         state = .polling

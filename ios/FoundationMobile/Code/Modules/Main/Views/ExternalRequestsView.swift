@@ -75,9 +75,11 @@ struct ExternalRequestsView: View {
                     // proof-params load failure, a failed uniqueness check,
                     // any generateProof error. Without it, .awaitingProof is
                     // terminal and the Home verify card is stuck on "Working…"
-                    // for the rest of the process. A success has already moved
-                    // to .polling synchronously in onSuccess, so this only
-                    // fires for a genuine abandonment.
+                    // for the rest of the process. This fires on EVERY close,
+                    // success included - proofSheetDismissed()'s own guard is
+                    // what makes it a no-op there, since a success has already
+                    // moved state to .polling synchronously in onSuccess by
+                    // the time this runs.
                     FoundationVerificationManager.shared.proofSheetDismissed()
                 }
             }
