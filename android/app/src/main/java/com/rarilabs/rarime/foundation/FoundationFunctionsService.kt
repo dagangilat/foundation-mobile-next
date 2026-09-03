@@ -18,6 +18,7 @@ object FoundationCallables {
     const val RECORD_MOBILE_ATTESTATION = "recordMobileAttestation"
     const val START_L2_VERIFICATION = "startL2Verification"
     const val GET_L2_VERIFICATION_STATUS = "getL2VerificationStatus"
+    const val DELETE_MY_ACCOUNT = "deleteMyAccount"
 }
 
 data class SignInCodeResult(val status: String, val sent: Boolean)
@@ -31,6 +32,77 @@ data class StartL2VerificationResult(
     val getProofParamsUrl: String?,
 )
 data class L2VerificationStatusResult(val status: String, val memberNumber: Int?)
+
+/**
+ * `deleteMyAccount`'s real reply shape. Mirrors iOS's `DeleteAccountResult`.
+ *
+ * The callable (foundation-next `functions/account-deletion.js`) returns
+ * whatever `deleteAccount(uid, foundationDataMap, …)` from `@plantagoai/auth`
+ * returns, i.e. that package's `DeletionResult`:
+ * `{ userId, deletedDocs, anonymizedDocs, retainedDocs, authDeleted,
+ *    collections, external, completedAt, dryRun }`.
+ *
+ * Two of those are deliberately NOT modelled. `collections` is a per-collection
+ * `Record<string, { mode, count }>` and `external` a list of provider names -
+ * server-side bookkeeping this client has no use for, and modelling them would
+ * only create a shape to drift out of sync with.
+ *
+ * Everything that IS modelled is nullable, and that is a correctness decision
+ * rather than defensiveness: by the time this is built the server has already
+ * performed an irreversible hard delete, so a decode that threw on an
+ * added/renamed/missing field would report a *successful* deletion as a failure
+ * and strand the member signed in to an account that no longer exists.
+ */
+data class DeleteAccountResult(
+    val userId: String? = null,
+    val deletedDocs: Int? = null,
+    val anonymizedDocs: Int? = null,
+    val retainedDocs: Int? = null,
+    /**
+     * Informational only - never gate on it. `deleteAccount()` swallows
+     * "user not found" from `auth.deleteUser` and reports `false`, which is
+     * exactly what a re-run against an already-deleted account produces.
+     */
+    val authDeleted: Boolean? = null,
+    val completedAt: String? = null,
+    /**
+     * The live callable never passes `dryRun`, so this is `false` or absent in
+     * practice. It is read anyway because `dryRun: true` is the one reply that
+     * means "the server reported success and deleted nothing" - the single case
+     * where a 200 must not unlock the local erase.
+     */
+    val dryRun: Boolean? = null,
+)
+
+/** The server answered, but said it did not actually delete anything. */
+class AccountDeletionNotPerformedException :
+    Exception("deleteMyAccount returned dryRun: nothing was deleted")
+
+/**
+ * The whole `deleteMyAccount` contract minus the network call, as a pure
+ * function so it is unit-testable without Firebase - the same reason
+ * `firebaseRejectionMessage` sits outside `FoundationVerificationManager`.
+ *
+ * Past the callable returning, the server has already run the deletion, so
+ * nothing about the *shape* of its answer may be turned into a failure: every
+ * field is read tolerantly and an unrecognisable body decodes to all-nulls.
+ * The one exception - and the only reason `dryRun` is decoded at all - is the
+ * server explicitly reporting that it deleted nothing.
+ */
+internal fun deleteAccountResultOrThrow(data: Map<*, *>?): DeleteAccountResult {
+    val d = data ?: emptyMap<String, Any?>()
+    val decoded = DeleteAccountResult(
+        userId = d["userId"] as? String,
+        deletedDocs = (d["deletedDocs"] as? Number)?.toInt(),
+        anonymizedDocs = (d["anonymizedDocs"] as? Number)?.toInt(),
+        retainedDocs = (d["retainedDocs"] as? Number)?.toInt(),
+        authDeleted = d["authDeleted"] as? Boolean,
+        completedAt = d["completedAt"] as? String,
+        dryRun = d["dryRun"] as? Boolean,
+    )
+    if (decoded.dryRun == true) throw AccountDeletionNotPerformedException()
+    return decoded
+}
 
 @Singleton
 class FoundationFunctionsService @Inject constructor() {
@@ -100,6 +172,20 @@ class FoundationFunctionsService @Inject constructor() {
             getProofParamsUrl = d["getProofParamsUrl"] as? String,
         )
     }
+
+    /**
+     * Hard-delete this member's account, server-side.
+     *
+     * The callable is `requireAuth`-gated, so this only ever works while the
+     * Firebase session is live: callers MUST invoke it BEFORE signing out.
+     * See [FoundationAccountDeletionManager], which owns that ordering.
+     *
+     * Throws only when the deletion genuinely did not happen: a transport /
+     * auth / server error out of `call()`, or a `dryRun` reply. A malformed or
+     * unexpected response body does NOT throw - see [DeleteAccountResult].
+     */
+    suspend fun deleteMyAccount(): DeleteAccountResult =
+        deleteAccountResultOrThrow(call(FoundationCallables.DELETE_MY_ACCOUNT, emptyMap()))
 
     suspend fun getL2VerificationStatus(): L2VerificationStatusResult {
         val d = call(FoundationCallables.GET_L2_VERIFICATION_STATUS, emptyMap())
