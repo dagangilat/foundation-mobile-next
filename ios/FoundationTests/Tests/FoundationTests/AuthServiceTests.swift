@@ -35,4 +35,34 @@ final class AuthServiceTests: XCTestCase {
         XCTAssertNil(auth.uid)
         XCTAssertFalse(auth.isSignedIn)
     }
+
+    /// The App Attest keyId is device-bound, but the credential it registers
+    /// server-side is uid-bound. Leaving it in the Keychain across a sign-out
+    /// makes the NEXT member to sign in on this device pass straight through
+    /// `registerDeviceAttestationIfNeeded()`'s `getAttestedKeyId() == nil`
+    /// guard, so they never register a credential of their own and instead
+    /// hold a keyId naming someone else's.
+    func testSignOutClearsTheAttestedKeyId() {
+        Keychain.setAttestedKeyId("key-from-the-previous-member")
+        XCTAssertNotNil(Keychain.getAttestedKeyId())
+
+        AuthService().signOut()
+
+        XCTAssertNil(
+            Keychain.getAttestedKeyId(),
+            "sign-out must not leave the departing member's attested keyId behind"
+        )
+    }
+
+    /// The same guarantee for the pending-email entry, which is the other half
+    /// of the identity a sign-out has to leave behind. Stated as its own test
+    /// because `signOut()` is the delete-account flow's only eraser of either.
+    func testSignOutClearsThePendingEmail() {
+        Keychain.setPendingEmail("previous-member@example.com")
+        XCTAssertNotNil(Keychain.getPendingEmail())
+
+        AuthService().signOut()
+
+        XCTAssertNil(Keychain.getPendingEmail())
+    }
 }

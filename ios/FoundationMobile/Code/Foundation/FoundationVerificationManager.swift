@@ -115,6 +115,21 @@ final class FoundationVerificationManager: ObservableObject {
         state = .idle
     }
 
+    /// Return to the starting state, unconditionally.
+    ///
+    /// `state` describes ONE Foundation member identity. When that identity
+    /// stops being this device's - account deletion, sign-out - the state has
+    /// to go with it, or the next person to use the device inherits it. The
+    /// concrete leak this closes: a `.verified` left standing across an account
+    /// deletion makes the app show the new user as a verified member having
+    /// performed zero verification for them.
+    ///
+    /// Unlike `proofSheetDismissed()` this is not a release valve for one
+    /// state; it is a full reset, so it deliberately has no guard.
+    func reset() {
+        state = .idle
+    }
+
     /// The polling loop, started only after `proofRequestSucceeded()` returned
     /// true and therefore only from this manager's own flow.
     ///
@@ -127,9 +142,18 @@ final class FoundationVerificationManager: ObservableObject {
     func pollUntilVerified() async {
         guard state == .polling else { return }
         for _ in 0 ..< pollLimit {
+            // Re-checked every iteration, and again right before the write
+            // below, rather than only at entry. This loop lives for up to two
+            // minutes across `await`s, and `reset()` can land in any of them
+            // (account deletion, sign-out). Without these checks the loop is
+            // the one writer that could stamp a stale `.verified` - or a
+            // `.failed("taking longer than expected")` - back over the `.idle`
+            // a reset just established, for the NEXT user of the device.
+            guard state == .polling else { return }
             do {
                 let status = try await FunctionsService.shared.getL2VerificationStatus()
                 if status.status == "verified" || status.status == "already_verified_l2" {
+                    guard state == .polling else { return }
                     state = .verified(memberNumber: status.memberNumber)
                     return
                 }
@@ -138,6 +162,7 @@ final class FoundationVerificationManager: ObservableObject {
             }
             try? await Task.sleep(for: pollInterval)
         }
+        guard state == .polling else { return }
         state = .failed("The check is taking longer than expected. Please try again.")
     }
 }

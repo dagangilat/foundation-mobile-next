@@ -115,6 +115,50 @@ final class VerificationManagerTests: XCTestCase {
         }
     }
 
+    // MARK: - reset() detaches the state from a departing member
+
+    /// Delete Account / Sign Out must not leave the departing member's
+    /// verification state standing. The concrete leak: a `.verified` that
+    /// survives account deletion shows the NEXT person to use the device as a
+    /// verified member having performed zero verification of their own.
+    ///
+    /// Unlike `proofSheetDismissed()`, this is unconditional - it must clear
+    /// EVERY state, not just `.awaitingProof`.
+    @MainActor
+    func testResetReturnsEveryStateToIdle() {
+        for state in Self.allStates {
+            let m = FoundationVerificationManager(state: state)
+            m.reset()
+            XCTAssertEqual(m.state, .idle, "reset() must clear \(state)")
+        }
+    }
+
+    /// `pollUntilVerified` runs for up to two minutes across `await`s, and it
+    /// is the one writer that could stamp a stale result back over the `.idle`
+    /// a `reset()` just established. Entering it from a non-`.polling` state
+    /// (which is what a mid-flight reset leaves behind) must be a no-op, with
+    /// no network round-trip - the same guarantee
+    /// `testPollUntilVerifiedNoOpsOutsidePolling` asserts, restated here from
+    /// the reset's point of view because the in-loop re-checks are what make it
+    /// hold for a reset that lands *after* the loop has already started.
+    @MainActor
+    func testResetMidPollLeavesTheStateIdle() async {
+        let m = FoundationVerificationManager(state: .polling)
+        m.reset()
+        XCTAssertEqual(m.state, .idle)
+
+        let started = ContinuousClock.now
+        await m.pollUntilVerified()
+
+        XCTAssertEqual(m.state, .idle, "a poll must not resurrect the departed member's state")
+        XCTAssertLessThan(started.duration(to: .now), .seconds(1))
+    }
+
+    private static let allStates: [VerificationState] = [
+        .idle, .notRegistered, .starting, .awaitingProof, .polling,
+        .verified(memberNumber: 42), .failed("nope"),
+    ]
+
     private static let statesOtherThanAwaitingProof: [VerificationState] = [
         .idle, .notRegistered, .starting, .polling, .verified(memberNumber: 42), .failed("nope"),
     ]

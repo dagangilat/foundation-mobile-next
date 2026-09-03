@@ -18,9 +18,18 @@ struct RecordAttestationRequest: Encodable, Sendable {
     }
 }
 
+/// `recordMobileAttestation`'s real reply shape. The server (Foundation's
+/// `functions/index.js` → `@plantagoai/attestation`'s `recordAttestation`)
+/// answers `{ accepted, platform, credentialId }`.
+///
+/// The field this used to carry — `commitment` — belonged to the Phase 7
+/// enclave-seal flow that Task B9 removed along with `anchorCommitment`; the
+/// live callable has never returned it. `platform`/`credentialId` are optional
+/// so a server that answers with only `accepted` still decodes.
 struct RecordAttestationResult: Decodable, Sendable {
     let accepted: Bool
-    let commitment: String?
+    let platform: String?
+    let credentialId: String?
 }
 
 // OTP sign-in (iOS-only path). See requestSignInCode / verifySignInCode

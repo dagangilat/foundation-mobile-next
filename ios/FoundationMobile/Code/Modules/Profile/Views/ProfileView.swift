@@ -156,6 +156,21 @@ struct ProfileView: View {
                         }
 #endif
                         CardContainer {
+                            Button(action: signOutOfFoundation) {
+                                HStack {
+                                    Image(.arrowRightUpLine)
+                                        .iconMedium()
+                                        .padding(6)
+                                        .background(.bgComponentPrimary, in: Circle())
+                                    Text("Sign Out")
+                                        .buttonMedium()
+                                    Spacer()
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.textPrimary)
+                        }
+                        CardContainer {
                             Button(action: { isAccountDeleting = true }) {
                                 HStack {
                                     Image(.deleteBin6Line)
@@ -192,6 +207,19 @@ struct ProfileView: View {
                         AppUserDefaults.shared.isHomeOnboardingCompleted = false
                         AppUserDefaults.shared.hasPointsBalance = false
 
+                        // The Foundation member identity goes FIRST. Every
+                        // reset below only touches Rarimo's local identity;
+                        // before this call the Firebase session survived
+                        // "Delete Account" untouched, and because
+                        // `securityManager.reset()` sends AppView back to the
+                        // intro the UI looked like the deletion had worked.
+                        // The next person to set the device up would then scan
+                        // their own passport, tap Verify, and have
+                        // `startL2Verification` answer `already_verified_l2`
+                        // for the PREVIOUS member's still-signed-in uid -
+                        // verified without a single check of their own.
+                        signOutOfFoundation()
+
                         passportManager.reset()
                         securityManager.reset()
                         userManager.reset()
@@ -209,6 +237,22 @@ struct ProfileView: View {
                 }
             )
         }
+    }
+
+    /// Everything that has to happen for the Foundation member identity to stop
+    /// being this device's. Shared verbatim by the Sign Out row and the Delete
+    /// Account handler so the two cannot drift apart - deletion is sign-out
+    /// plus the local resets, never less.
+    ///
+    /// `AuthService.signOut()` ends the Firebase session and clears both the
+    /// pending-email and attested-key Keychain entries; `reset()` drops any
+    /// `.verified`/in-flight verification state that described the departing
+    /// member. `AppView` keys its first branch on `authService.isSignedIn`, so
+    /// the effect either way is an immediate return to `SignInView`.
+    @MainActor
+    private func signOutOfFoundation() {
+        AuthService.shared.signOut()
+        FoundationVerificationManager.shared.reset()
     }
 }
 

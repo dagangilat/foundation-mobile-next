@@ -66,6 +66,45 @@ final class AuthService: ObservableObject {
         try await Auth.auth().signIn(withCustomToken: result.customToken)
         Keychain.clearPendingEmail()
         await FunctionsService.shared.markIDTokenJustRefreshed()
+        registerDeviceAttestationIfNeeded()
+    }
+
+    /// Register this device's App Attest key against the uid that just signed
+    /// in. This is the app's ONLY caller of `AttestationService` — without it
+    /// the whole subsystem (`issueAttestationNonce`, `recordMobileAttestation`,
+    /// the Keychain keyId) is dead code and no member ever gets a server-side
+    /// device credential.
+    ///
+    /// Deliberately fire-and-forget, and deliberately AFTER
+    /// `markIDTokenJustRefreshed()`: attestation is a nicety layered on a
+    /// successful sign-in, never a precondition for one, so it must not be able
+    /// to delay or fail the sign-in the user is waiting on. A failure is logged
+    /// and dropped — the same "follow-on write, not a gate" posture
+    /// `FoundationVerificationManager` takes with its own non-fatal callables.
+    ///
+    /// Guarded on the same condition `AttestationService.generateAssertion`
+    /// uses for its self-heal branch (`Keychain.getAttestedKeyId() == nil`), so
+    /// an already-attested device doesn't repeat the
+    /// nonce → generateKey → attestKey round-trip on every sign-in.
+    /// `signOut()` clears that keyId, so the next member to sign in on this
+    /// device does get their own registration.
+    private func registerDeviceAttestationIfNeeded() {
+        guard Keychain.getAttestedKeyId() == nil else { return }
+        Task {
+            // Checked before the first network call. `attestDeviceEndToEnd()`
+            // issues a server nonce BEFORE `generateKey()` gets the chance to
+            // throw `.unsupported`, so on the Simulator or any device without
+            // App Attest an unguarded call burns a callable round-trip on a
+            // result that cannot succeed.
+            guard await AttestationService.shared.isSupported else { return }
+            do {
+                _ = try await AttestationService.shared.attestDeviceEndToEnd()
+            } catch {
+                LoggerUtil.common.error(
+                    "device attestation registration failed: \(error.localizedDescription, privacy: .public)"
+                )
+            }
+        }
     }
 
     func signOut() {
@@ -73,6 +112,12 @@ final class AuthService: ObservableObject {
         uid = nil
         isSignedIn = false
         Keychain.clearPendingEmail()
+        // The App Attest keyId is device-bound but the credential it registers
+        // server-side is uid-bound. Leaving it behind would make the NEXT
+        // member to sign in on this device pass straight through
+        // `registerDeviceAttestationIfNeeded()`'s guard and never register at
+        // all, inheriting a keyId that names someone else's credential.
+        Keychain.clearAttestedKeyId()
         Task { await FunctionsService.shared.invalidateIDTokenCache() }
     }
 

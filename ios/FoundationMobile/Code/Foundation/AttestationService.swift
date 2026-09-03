@@ -89,9 +89,18 @@ actor AttestationService {
         error.domain == "com.apple.devicecheck.error" && error.code == 3
     }
 
-    /// Full nonce → attest → submit round-trip. Feeds the Phase 7 enclave seal
-    /// via the `recordMobileAttestation` callable. Persists the attested keyId
-    /// so future runs use `generateAssertion` instead.
+    /// Full nonce → attest → submit round-trip. The `recordMobileAttestation`
+    /// callable hands the CBOR blob to the server-side verifier, which checks
+    /// it against Apple's App Attest root and stores the resulting credential
+    /// (uid, platform, credentialId, raw blob) under
+    /// `identity_proofs/{uid}/mobile_attestations/`. That stored record is what
+    /// lets the backend treat this device as a genuine, unmodified build of
+    /// this app rather than an unattested client. Persists the attested keyId
+    /// locally so future runs use `generateAssertion` instead.
+    ///
+    /// (The retired Phase 7 enclave seal this comment used to describe was
+    /// deleted in Task B9 along with `anchorCommitment`; nothing here feeds a
+    /// seal any more.)
     func attestDeviceEndToEnd() async throws -> RecordAttestationResult {
         let nonce = try await FunctionsService.shared.issueAttestationNonce()
         let keyId = try await generateKey()
