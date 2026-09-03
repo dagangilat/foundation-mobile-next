@@ -1,3 +1,4 @@
+import FirebaseAppCheck
 import FirebaseCore
 import FirebaseMessaging
 import SwiftUI
@@ -29,6 +30,7 @@ struct FoundationApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        AppCheck.setAppCheckProviderFactory(AppCheckFactory())
         FirebaseApp.configure()
         
         Messaging.messaging().delegate = self
