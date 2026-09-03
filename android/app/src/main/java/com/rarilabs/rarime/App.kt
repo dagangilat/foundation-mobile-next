@@ -2,6 +2,8 @@ package com.rarilabs.rarime
 
 import android.app.Application
 import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.HiltAndroidApp
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -11,6 +13,9 @@ import java.security.Security
 class App : Application() {
     private fun setupFireBase() {
         FirebaseApp.initializeApp(this)
+        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
     }
 
     override fun onCreate() {
