@@ -24,6 +24,7 @@ struct FoundationApp: App {
                 .environmentObject(NotificationManager.shared)
                 .environmentObject(ExternalRequestsManager.shared)
                 .environmentObject(InternetConnectionManager.shared)
+                .environmentObject(FoundationVerificationManager.shared)
         }
     }
 }

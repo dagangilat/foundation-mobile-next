@@ -72,6 +72,9 @@ struct HomeView: View {
         MainViewLayout {
             VStack(spacing: 0) {
                 header
+                FoundationVerifyCardView()
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
                 HomeWidgetsView(
                     selectedWidget: $selectedWidget,
                     namespaceProvider: namespace
@@ -151,4 +154,5 @@ struct HomeView: View {
         .environmentObject(PassportManager())
         .environmentObject(NotificationManager())
         .environmentObject(ConfigManager())
+        .environmentObject(FoundationVerificationManager.shared)
 }

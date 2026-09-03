@@ -163,6 +163,8 @@
 		DEFE3DCB4E2AC7BE42DD6E70 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3216985F025DA9AD553BE06C /* AppCheckFactory.swift */; };
 		79ACDCC14D17CB5341F34E88 /* ProofArtifact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DFA4F8160E1E7C4E6C9916 /* ProofArtifact.swift */; };
 		29139FA7D0F766A42CCE570E /* EnclaveSeal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81CA2535852BE56584BC9E6 /* EnclaveSeal.swift */; };
+		B8A1F0001A2B3C4D5E6F7002 /* FoundationVerificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */; };
+		B8A1F0001A2B3C4D5E6F7004 /* FoundationVerifyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */; };
 		CD7DA7FF37ED5CACA22BEF8A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705B896C98AA4E0666FDE02F /* SignInView.swift */; };
 		CE00DF4B2D9AC1F700614151 /* ZkProof.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68BE3C2BD9B23D00D92EBB /* ZkProof.swift */; };
 		CE00DF4D2D9ACD5E00614151 /* NoirRegisterIdentityInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE00DF4C2D9ACD5C00614151 /* NoirRegisterIdentityInputs.swift */; };
@@ -629,6 +631,8 @@
 		CEFF68C02CB6AF46008769EA /* Encodable+json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+json.swift"; sourceTree = "<group>"; };
 		DEB969531739D4B78C5561C5 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		FC3A86E50FD85AD86F0C7CAB /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationVerificationManager.swift; sourceTree = "<group>"; };
+		B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationVerifyCardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -1073,6 +1077,7 @@
 				564715F52DEF146700B1334B /* HomeOnboardingView.swift */,
 				C726E8D12D647FE9000C9CA6 /* SnapCarouselView.swift */,
 				C7DF8BDE2D5F686200C8E2D2 /* HomeCardView.swift */,
+				B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1502,6 +1507,7 @@
 				3216985F025DA9AD553BE06C /* AppCheckFactory.swift */,
 				43DFA4F8160E1E7C4E6C9916 /* ProofArtifact.swift */,
 				C81CA2535852BE56584BC9E6 /* EnclaveSeal.swift */,
+				B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -1969,6 +1975,8 @@
 				DEFE3DCB4E2AC7BE42DD6E70 /* AppCheckFactory.swift in Sources */,
 				79ACDCC14D17CB5341F34E88 /* ProofArtifact.swift in Sources */,
 				29139FA7D0F766A42CCE570E /* EnclaveSeal.swift in Sources */,
+				B8A1F0001A2B3C4D5E6F7002 /* FoundationVerificationManager.swift in Sources */,
+				B8A1F0001A2B3C4D5E6F7004 /* FoundationVerifyCardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

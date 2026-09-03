@@ -96,20 +96,26 @@ class ExternalRequestsManager: ObservableObject {
         setRequest(.lightVerification(verificationParamsUrl: proofParamsUrl, urlQueryParams: params))
     }
 
-    private func isValidExternalUrl(_ url: URL) -> Bool {
-        if url.scheme == "rarime", url.host == "external" {
-            return true
-        }
-
-        if url.scheme == "https", let host = url.host, ["app.rarime.com", "app.stage.rarime.com"].contains(host), url.path.hasPrefix("/external") {
-            return true
-        }
-
-        return false
+    /// Only this fork's own scheme. Rarimo's `rarime://` scheme and their
+    /// `app.rarime.com` universal-link hosts are deliberately NOT honoured:
+    /// we do not control their AASA files, so an https link to those hosts
+    /// opens RariMe (if installed) rather than this app.
+    ///
+    /// `internal` rather than `private` so VerificationManagerTests can assert
+    /// the allowlist directly - it is the boundary between us and the outside.
+    func isValidExternalUrl(_ url: URL) -> Bool {
+        url.scheme == "foundationmobile" && url.host == FoundationUrlHosts.external.rawValue
     }
 
     func setRequest(_ request: ExternalRequests) {
         self.request = request
+    }
+
+    /// AD-2: start a proof request from a bare proof-params URL, with no deep
+    /// link involved. `startL2Verification` returns this URL alongside a
+    /// RariMe deep link; we use the URL and ignore the link.
+    func setProofRequest(proofParamsUrl: URL) {
+        setRequest(.proofRequest(proofParamsUrl: proofParamsUrl, urlQueryParams: []))
     }
 
     func resetRequest() {

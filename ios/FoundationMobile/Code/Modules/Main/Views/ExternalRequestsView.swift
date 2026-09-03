@@ -25,6 +25,13 @@ struct ExternalRequestsView: View {
                             isSheetPresented = false
 
                             handleRedirect(urlQueryParams)
+
+                            // AD-2: the proof this sheet just posted may be the
+                            // one our own startL2Verification asked for, so ask
+                            // Foundation's backend when the member flips to l2.
+                            // Only the proofRequest path does this -
+                            // lightVerification is not part of the L2 flow.
+                            Task { await FoundationVerificationManager.shared.pollUntilVerified() }
                         },
                         onDismiss: { isSheetPresented = false }
                     )
