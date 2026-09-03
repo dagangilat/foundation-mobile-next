@@ -29,13 +29,17 @@ struct AppView: View {
                     MaintenanceView()
                 } else if !authService.isSignedIn {
                     // Sits ahead of BOTH the MainView and LockScreenView
-                    // branches, so MainView is structurally unreachable while
-                    // signed out. It cannot preempt IntroView: every intro exit
-                    // path (IntroView.createNewUser, both ImportIdentityView
-                    // paths) calls securityManager.disablePasscode() before
-                    // onFinish, which moves passcodeState off .unset — so this
-                    // is the first moment a signed-out state is observable, for
-                    // brand-new and returning users alike.
+                    // branches, and above the terminal `else` (IntroView) too,
+                    // so MainView is structurally unreachable while signed out
+                    // — no reasoning about passcodeState is even needed. This
+                    // DOES preempt IntroView: a brand-new, signed-out user sees
+                    // SignInView before ever reaching identity creation, so the
+                    // real onboarding order this produces is
+                    // sign-in -> intro/identity -> passcode -> MainView.
+                    // (An earlier version of this comment claimed the opposite
+                    // — that sign-in comes after intro — which was wrong: an
+                    // if/else chain, `!isSignedIn` above the terminal `else`
+                    // preempts it, full stop.)
                     SignInView().transition(.backslide)
                 } else if
                     securityManager.passcodeState != .unset,

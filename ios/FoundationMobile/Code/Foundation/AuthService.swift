@@ -22,9 +22,12 @@ final class AuthService: ObservableObject {
         // state-did-change callback asynchronously, so a listener-only
         // initialisation reports `isSignedIn == false` for the first turn of
         // the run loop and AppView flashes SignInView on every signed-in
-        // cold launch. `currentUser` is populated synchronously from the
-        // keychain-backed session by `FirebaseApp.configure()`, so reading it
-        // here is the flash-free path.
+        // cold launch. `Auth` is registered `.alwaysEager`, so its keychain
+        // restore is STARTED at `FirebaseApp.configure()`, not guaranteed
+        // complete — `currentUser` reads whatever that restore has produced
+        // so far. It's usually already landed by the time the scene body
+        // evaluates, closing the flash; if it hasn't, this read is just nil
+        // and behavior degrades to the listener-only path, never worse.
         let restored = Auth.auth().currentUser
         uid = restored?.uid
         isSignedIn = restored != nil
