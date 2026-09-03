@@ -83,7 +83,7 @@ fun TaskCard(
                         )
 
                         Icon(
-                            painter = painterResource(R.drawable.ic_rarimo),
+                            painter = painterResource(R.drawable.ic_foundation_token),
                             contentDescription = "",
                             tint = FoundationTheme.colors.invertedLight,
                             modifier = Modifier

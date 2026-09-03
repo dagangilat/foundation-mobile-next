@@ -72,7 +72,7 @@ private fun AppIconPreview() {
         AppIcon(id = R.drawable.ic_cardholder, size = 32.dp, tint = FoundationTheme.colors.errorMain)
 
         AppIconWithGradient(
-            id = R.drawable.ic_rarime,
+            id = R.drawable.ic_foundation_mark,
             size = 32.dp,
             gradient = FoundationTheme.colors.gradient1
         )

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Gradient icon variant: brandGreen -> brandFill, replacing Rarimo's neon lime #A5F9A0 -> #42F6AC. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient
-        android:startColor="#A5F9A0"
-        android:endColor="#42F6AC"
-        android:angle="270"
+        android:startColor="#047857"
+        android:endColor="#34D399"
+        android:angle="315"
         android:type="linear" />
 </shape>

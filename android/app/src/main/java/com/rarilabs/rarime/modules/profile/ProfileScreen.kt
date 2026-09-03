@@ -175,7 +175,7 @@ fun ProfileScreenContent(
                         value = colorScheme.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.Theme.route) })
                     ProfileRow(
-                        iconId = R.drawable.ic_rarime,
+                        iconId = R.drawable.ic_foundation_mark,
                         title = stringResource(R.string.app_icon),
                         value = appIcon.toLocalizedString(),
                         onClick = { navigate(Screen.Main.Profile.AppIcon.route) })

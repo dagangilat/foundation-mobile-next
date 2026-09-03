@@ -119,19 +119,6 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias
-            android:name="com.rarilabs.rarime.MainActivityCat"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher_cat"
-            android:roundIcon="@mipmap/ic_launcher_cat_round"
-            android:label="@string/app_name"
-            android:targetActivity="com.rarilabs.rarime.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
 
         <!-- 5) Remaining app components -->
         <service

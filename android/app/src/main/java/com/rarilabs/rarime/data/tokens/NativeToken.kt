@@ -31,7 +31,7 @@ class NativeToken @Inject constructor(
     override var name: String = "Ethereum"
     override var symbol: String = "ETH"
     override var decimals: Int = 18
-    override var icon: Int = R.drawable.ic_rarimo
+    override var icon: Int = R.drawable.ic_foundation_token
     override val tokenType: TokenType = TokenType.RARIMO_ETH
 
     override suspend fun loadDetails() {

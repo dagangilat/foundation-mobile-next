@@ -239,7 +239,7 @@ private fun Header(
                         modifier = Modifier
                     )
                     AppIcon(
-                        id = (R.drawable.ic_rarimo),
+                        id = (R.drawable.ic_foundation_token),
                         size = 17.dp,
                         tint = FoundationTheme.colors.textPrimary,
                     )

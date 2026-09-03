@@ -148,7 +148,7 @@ private fun Header(
                 .fillMaxWidth()
         ) {
             BaseWidgetLogo(
-                resId = R.drawable.ic_rarime,
+                resId = R.drawable.ic_foundation_mark,
                 backgroundColor = FoundationTheme.colors.componentPrimary,
                 size = 40,
                 tint = FoundationTheme.colors.textPrimary.copy(alpha = 1f),

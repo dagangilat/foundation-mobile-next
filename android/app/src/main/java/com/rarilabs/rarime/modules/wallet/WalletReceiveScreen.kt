@@ -109,7 +109,7 @@ fun WalletReceiveScreenContent(
                             .padding(4.dp)
                     ) {
                         AppIcon(
-                            id = R.drawable.ic_rarime,
+                            id = R.drawable.ic_foundation_mark,
                             size = 36.dp,
                             tint = FoundationTheme.colors.textPrimary,
                         )

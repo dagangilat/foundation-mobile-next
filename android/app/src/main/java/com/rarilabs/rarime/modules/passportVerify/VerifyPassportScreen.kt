@@ -119,7 +119,7 @@ fun VerifyPassportScreen(
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy((-32).dp)) {
                 AppIcon(
-                    id = R.drawable.ic_rarimo,
+                    id = R.drawable.ic_foundation_token,
                     size = 32.dp,
                     tint = FoundationTheme.colors.textPrimary,
                     modifier = Modifier
@@ -194,7 +194,7 @@ fun VerifyPassportScreen(
 private fun VerifyPoitntsScreenPreview() {
     Row(horizontalArrangement = Arrangement.spacedBy((-32).dp)) {
         AppIcon(
-            id = R.drawable.ic_rarimo,
+            id = R.drawable.ic_foundation_token,
             size = 32.dp,
             tint = FoundationTheme.colors.textPrimary,
             modifier = Modifier

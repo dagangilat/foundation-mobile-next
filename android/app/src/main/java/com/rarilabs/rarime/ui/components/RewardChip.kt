@@ -35,7 +35,7 @@ fun RewardChip(reward: Int, isActive: Boolean = false) {
             color = contentColor,
         )
         AppIcon(
-            id = R.drawable.ic_rarimo,
+            id = R.drawable.ic_foundation_token,
             size = 16.dp,
             tint = contentColor,
         )

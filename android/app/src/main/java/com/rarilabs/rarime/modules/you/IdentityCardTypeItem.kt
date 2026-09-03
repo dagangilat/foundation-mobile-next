@@ -110,14 +110,14 @@ private fun IdentityCardTypeItemPreview() {
         Column {
             IdentityCardTypeItem(
                 isActive = true,
-                iconId = R.drawable.ic_rarimo,
+                iconId = R.drawable.ic_foundation_token,
                 name = "Identity Card",
                 onClick = {}
             )
             Spacer(Modifier.height(16.dp))
             IdentityCardTypeItem(
                 isActive = false,
-                iconId = R.drawable.ic_rarimo,
+                iconId = R.drawable.ic_foundation_token,
                 name = "Identity Card",
                 onClick = {}
             )

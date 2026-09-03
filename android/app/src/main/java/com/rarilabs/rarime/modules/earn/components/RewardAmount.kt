@@ -17,7 +17,7 @@ import com.rarilabs.rarime.ui.theme.FoundationTheme
 fun RewardAmount(
     modifier: Modifier = Modifier,
     amount: Long = 0,
-    tokenIconId: Int = R.drawable.ic_rarimo,
+    tokenIconId: Int = R.drawable.ic_foundation_token,
 ) {
     Box(
         modifier = modifier

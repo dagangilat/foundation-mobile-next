@@ -38,7 +38,7 @@ fun AppLogo(
         ) {
             AppIconWithGradient(
                 modifier = Modifier.scale(scale),
-                id = R.drawable.ic_rarime,
+                id = R.drawable.ic_foundation_mark,
                 size = iconSize.dp,
             )
         }

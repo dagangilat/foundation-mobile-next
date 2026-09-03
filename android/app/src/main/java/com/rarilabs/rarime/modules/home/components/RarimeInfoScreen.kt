@@ -40,7 +40,7 @@ fun RarimeInfoScreen(onClose: () -> Unit) {
                     .background(FoundationTheme.colors.componentPrimary, CircleShape)
             ) {
                 AppIcon(
-                    id = R.drawable.ic_rarime,
+                    id = R.drawable.ic_foundation_mark,
                     size = 32.dp,
                     tint = FoundationTheme.colors.textPrimary
                 )

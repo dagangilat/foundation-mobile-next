@@ -21,10 +21,6 @@ enum class AppIcon(val activity: String, @DrawableRes val iconId: Int) {
     GRADIENT(
         activity = "com.rarilabs.rarime.MainActivityBG",
         iconId = R.drawable.ic_logo_gradient
-    ),
-    CAT(
-        activity = "com.rarilabs.rarime.MainActivityCat",
-        iconId = R.drawable.ic_logo_cat
     )
 
 
@@ -37,7 +33,6 @@ fun AppIcon.toLocalizedString(): String {
         AppIcon.BLACK -> stringResource(R.string.icon_black)
         AppIcon.GREEN -> stringResource(R.string.icon_green)
         AppIcon.GRADIENT -> stringResource(R.string.icon_gradient)
-        AppIcon.CAT -> stringResource(R.string.icon_cat)
     }
 }
 
@@ -48,6 +43,5 @@ fun AppIcon.getInAppIcon(): Int {
         AppIcon.BLACK -> R.drawable.app_icon_black
         AppIcon.GREEN -> R.drawable.app_icon_green
         AppIcon.GRADIENT -> R.drawable.app_icon_gradeint
-        AppIcon.CAT -> R.drawable.app_icon_cat
     }
 }

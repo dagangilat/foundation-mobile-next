@@ -27,7 +27,7 @@ fun BaseWidgetLogo(
     iconSize: Int = size,
     contentPadding: Int = 8,
     @DrawableRes
-    resId: Int = R.drawable.ic_rarime,
+    resId: Int = R.drawable.ic_foundation_mark,
     tint: Color = FoundationTheme.colors.textPrimary,
     shape: Shape = CircleShape,
     backgroundColor: Color = FoundationTheme.colors.backgroundBlur

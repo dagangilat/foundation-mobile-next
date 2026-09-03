@@ -178,7 +178,7 @@ fun BaseWelcomeContent(
     Column(modifier) {
         Row(modifier = Modifier.fillMaxWidth()) {
             CircledBadge(
-                iconId = R.drawable.ic_rarime,
+                iconId = R.drawable.ic_foundation_mark,
                 containerColor = FoundationTheme.colors.componentPrimary,
                 // Overrides the default: this badge sits on a translucent
                 // neutral, not on primaryMain.
