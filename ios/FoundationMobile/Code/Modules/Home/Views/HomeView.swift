@@ -1,7 +1,4 @@
-import Alamofire
-import BigInt
 import SwiftUI
-import Web3
 
 private enum HomeRoute: String, Hashable {
     case notifications
@@ -13,18 +10,12 @@ struct HomeView: View {
     @EnvironmentObject private var passportManager: PassportManager
 
     @StateObject var viewModel = ViewModel()
-    @StateObject var hiddenKeysViewModel = HiddenKeysViewModel()
 
     @State private var path: [HomeRoute] = []
     @State private var selectedWidget: HomeWidget? = nil
     @State private var isOnboardingPresented = false
 
     @Namespace private var recoveryNamespace
-    @Namespace private var hiddenKeysNamespace
-    @Namespace private var likenessNamespace
-    @Namespace private var freedomToolNamespace
-    @Namespace private var earnNamespace
-    @Namespace private var claimTokensNamespace
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -38,8 +29,6 @@ struct HomeView: View {
                             .navigationBarBackButtonHidden()
                     }
                 }
-                .task { await viewModel.fetchBalance() }
-                .task { await hiddenKeysViewModel.loadUser() }
         }
     }
 
@@ -52,34 +41,6 @@ struct HomeView: View {
                     animation: namespace(for: .recovery),
                     onClose: { selectedWidget = nil }
                 )
-
-            case .hiddenKeys:
-                HiddenKeysView(
-                    animation: namespace(for: .hiddenKeys),
-                    onClose: { selectedWidget = nil },
-                    onViewWallet: { mainViewModel.selectedTab = .wallet }
-                )
-                .environmentObject(hiddenKeysViewModel)
-
-            case .freedomTool:
-                PollsView(
-                    onClose: { selectedWidget = nil },
-                    animation: namespace(for: .freedomTool)
-                )
-
-            case .likeness:
-                LikenessView(
-                    onClose: { selectedWidget = nil },
-                    animation: namespace(for: .likeness)
-                )
-
-            case .earn:
-                EarnRmoView(
-                    balance: viewModel.pointsBalance,
-                    onClose: { selectedWidget = nil },
-                    animation: namespace(for: .earn)
-                )
-                .environmentObject(viewModel)
 
             default:
                 mainLayoutContent
@@ -116,7 +77,6 @@ struct HomeView: View {
                     namespaceProvider: namespace
                 )
                 .environmentObject(viewModel)
-                .environmentObject(hiddenKeysViewModel)
             }
             .background(.bgPrimary)
         }
@@ -148,11 +108,6 @@ struct HomeView: View {
                 .padding(.vertical, 4)
                 .background(Color.warningLighter, in: Capsule())
                 .foregroundStyle(Color.warningDark)
-            ReserveTokensButton()
-                .environmentObject(viewModel)
-                .environmentObject(UserManager.shared)
-                .environmentObject(DecentralizedAuthManager.shared)
-                .environmentObject(PassportManager.shared)
             #endif
 
             Spacer()
@@ -185,11 +140,7 @@ struct HomeView: View {
 
     private func namespace(for key: HomeWidget) -> Namespace.ID {
         switch key {
-        case .earn: return earnNamespace
-        case .freedomTool: return freedomToolNamespace
-        case .hiddenKeys: return hiddenKeysNamespace
         case .recovery: return recoveryNamespace
-        case .likeness: return likenessNamespace
         }
     }
 }
@@ -199,7 +150,5 @@ struct HomeView: View {
         .environmentObject(MainView.ViewModel())
         .environmentObject(PassportManager())
         .environmentObject(NotificationManager())
-        .environmentObject(LikenessManager())
         .environmentObject(ConfigManager())
-        .environmentObject(PollsViewModel())
 }

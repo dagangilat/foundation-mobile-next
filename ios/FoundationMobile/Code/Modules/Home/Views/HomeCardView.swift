@@ -100,20 +100,20 @@ struct HomeCardView<Content: View, TopContent: View, BottomContent: View>: View 
 
 #Preview {
     HomeCardView(
-        foregroundGradient: Gradients.darkerGreenText,
+        foregroundGradient: Gradients.greenText,
         foregroundColor: .invertedDark,
         topIcon: .foundationMark,
         bottomIcon: .arrowRightUpLine,
         imageContent: {
-            Image(.earnBg)
+            Image(.recoveryBg)
                 .resizable()
                 .scaledToFill()
                 .clipShape(RoundedRectangle(cornerRadius: 32))
         },
-        title: "Earn",
-        subtitle: "RMO",
+        title: "Recovery",
+        subtitle: "Method",
         bottomContent: {
-            Text("Complete various tasks and get rewarded with Rarimo tokens")
+            Text("Set up a new way to recover your account")
                 .body4()
                 .foregroundStyle(.textSecondary)
                 .frame(maxWidth: 220, alignment: .leading)

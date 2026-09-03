@@ -396,6 +396,11 @@ class UserManager: ObservableObject {
         return ZkProof.groth(GrothZkProof(proof: proof, pubSignals: pubSignals))
     }
     
+    /// Event id the anonymous ID is derived from. Inlined here in Task B5 when
+    /// the upstream points-service client was deleted - the value is a protocol
+    /// constant of the retained verification flow, not a rewards feature.
+    static let anonymousIdEventId = "0x77fabbc6cb41a11d4fb6918696b3550d5d602f252436dd587f9065b7c4e62b"
+
     func collectPubSignals(
         passport: Passport,
         params: GetProofParamsResponseAttributes
@@ -404,7 +409,7 @@ class UserManager: ObservableObject {
         let currentTimestamp = String(format: "%.0f", Date().timeIntervalSince1970 * 1000)
         
         var calculateAnonymousIDError: NSError?
-        let anonymousID = IdentityCalculateAnonymousID(passport.dg1, Points.PointsEventId, &calculateAnonymousIDError)
+        let anonymousID = IdentityCalculateAnonymousID(passport.dg1, UserManager.anonymousIdEventId, &calculateAnonymousIDError)
         if let calculateAnonymousIDError {
             throw calculateAnonymousIDError
         }
@@ -438,100 +443,6 @@ class UserManager: ObservableObject {
             params.expirationDateUpperBound.toBigUInt(),
             params.citizenshipMask.toBigUInt()
         ]
-    }
-    
-    func generatePointsProof(_ passport: Passport) async throws -> ZkProof {
-        guard let secretKey = self.user?.secretKey else { throw UserManagerError.secretKeyNotInitialized }
-        
-        let stateKeeperContract = try StateKeeperContract()
-        
-        let registrationSmtContractAddress = try EthereumAddress(hex: ConfigManager.shared.contracts.registrationSmtAddress, eip55: false)
-        
-        let registrationSmtContract = try PoseidonSMT(contractAddress: registrationSmtContractAddress)
-        
-        guard let passportKey = getPassportKey(passport) else {
-            throw UserManagerError.passportKeyNotFound
-        }
-        
-        guard let identityKey = getIdentityKey(passport) else {
-            throw UserManagerError.identityKeyNotFound
-        }
-        
-        var error: NSError? = nil
-        let proofIndex = IdentityCalculateProofIndex(
-            passportKey,
-            identityKey,
-            &error
-        )
-        if let error { throw error }
-        guard let proofIndex else { throw UserManagerError.proofIndexNotInitialized }
-        
-        let smtProof = try await registrationSmtContract.getProof(proofIndex)
-        
-        let smtProofJson = try JSONEncoder().encode(smtProof)
-        
-        let profileInitializer = IdentityProfile()
-        let profile = try profileInitializer.newProfile(secretKey)
-        
-        let (passportInfo, identityInfo) = try await stateKeeperContract.getPassportInfo(passportKey)
-        
-        let queryProofInputs = try profile.buildAirdropQueryIdentityInputs(
-            passport.dg1,
-            smtProofJSON: smtProofJson,
-            selector: "23073",
-            pkPassportHash: passportKey,
-            issueTimestamp: identityInfo.issueTimestamp.description,
-            identityCounter: passportInfo.identityReissueCounter.description,
-            eventID: Points.PointsEventId,
-            startedAt: 1715688000
-        )
-        
-        let wtns = try ZKUtils.calcWtns_queryIdentity(Circuits.queryIdentityDat, queryProofInputs)
-        let (proofJson, pubSignalsJson) = try ZKUtils.groth16QueryIdentity(wtns)
-        
-        let proof = try JSONDecoder().decode(GrothZkProofPoints.self, from: proofJson)
-        let pubSignals = try JSONDecoder().decode(GrothZkProofPubSignals.self, from: pubSignalsJson)
-        
-        return ZkProof.groth(GrothZkProof(proof: proof, pubSignals: pubSignals))
-    }
-    
-    func fetchPointsBalance(_ jwt: JWT) async throws -> PointsBalanceRaw {
-        let points = Points(ConfigManager.shared.general.appApiURL)
-        
-        let balanceResponse = try await points.getPointsBalance(jwt, true, true)
-        
-        return balanceResponse.data.attributes
-    }
-    
-    func reserveTokens(_ jwt: JWT, _ passport: Passport) async throws {
-        let queryProof = try await generatePointsProof(passport)
-        
-        var calculateAnonymousIDError: NSError?
-        let anonymousID = IdentityCalculateAnonymousID(passport.dg1, Points.PointsEventId, &calculateAnonymousIDError)
-        if let calculateAnonymousIDError {
-            throw calculateAnonymousIDError
-        }
-        
-        var error: NSError?
-        let hmacMessage = IdentityCalculateHmacMessage(jwt.payload.sub, passport.nationality, anonymousID, &error)
-        if let error {
-            throw error
-        }
-        
-        let key = Data(hex: ConfigManager.shared.secrets.joinRewardsKey) ?? Data()
-        
-        let hmacSingature = HMACUtils.hmacSha256(hmacMessage ?? Data(), key)
-        
-        let points = Points(ConfigManager.shared.general.appApiURL)
-        let _ = try await points.verifyPassport(
-            jwt,
-            queryProof,
-            hmacSingature.hex,
-            passport.nationality,
-            anonymousID?.hex ?? ""
-        )
-        
-        LoggerUtil.common.info("Passport verified, token reserved")
     }
     
     func reset() {

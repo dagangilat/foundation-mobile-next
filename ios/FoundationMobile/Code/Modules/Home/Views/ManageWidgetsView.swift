@@ -91,7 +91,7 @@ private struct WidgetItemView: View {
 
 #Preview {
     ManageWidgetsView(
-        selectedWidgets: [.hiddenKeys, .recovery],
+        selectedWidgets: [.recovery],
         onAdd: { _ in },
         onRemove: { _ in }
     )

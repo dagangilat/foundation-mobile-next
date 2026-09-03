@@ -2,8 +2,6 @@ import Alamofire
 import SwiftUI
 
 struct ImportIdentityView: View {
-    @EnvironmentObject private var walletManager: WalletManager
-    @EnvironmentObject private var likenessManager: LikenessManager
     @EnvironmentObject private var decentralizedAuthManager: DecentralizedAuthManager
     @EnvironmentObject private var userManager: UserManager
     @EnvironmentObject private var securityManager: SecurityManager
@@ -139,13 +137,9 @@ struct ImportIdentityView: View {
                 
                 try userManager.user?.save()
                 
-                try await setReferralCodeIfUserHasPointsBalance()
-                
                 LoggerUtil.common.info("Identity was imported")
                 
-                walletManager.privateKey = userManager.user?.secretKey
                 
-                likenessManager.postInitialization()
                 securityManager.disablePasscode()
                 
                 onNext()
@@ -177,46 +171,15 @@ struct ImportIdentityView: View {
                 try userManager.createFromSecretKey(privateKey)
                 try userManager.user?.save()
                 
-                try await setReferralCodeIfUserHasPointsBalance()
-                
                 LoggerUtil.common.info("Identity was imported")
                 
-                walletManager.privateKey = userManager.user?.secretKey
                 
-                likenessManager.postInitialization()
                 securityManager.disablePasscode()
                 
                 onNext()
             } catch {
                 LoggerUtil.common.error("failed to import identity: \(error, privacy: .public)")
             }
-        }
-    }
-    
-    func setReferralCodeIfUserHasPointsBalance() async throws {
-        do {
-            guard let user = userManager.user else { throw UserManagerError.userNotInitialized }
-            
-            let accessJwt = try await decentralizedAuthManager.getAccessJwt(user)
-            
-            let points = Points(ConfigManager.shared.general.appApiURL)
-            let _ = try await points.getPointsBalance(accessJwt)
-            
-            LoggerUtil.common.info("User has points balance, setting referral code")
-            
-            userManager.user?.userReferralCode = "placeholder"
-        } catch {
-            guard let error = error as? AFError else { throw error }
-            
-            let openApiHttpCode = try error.retriveOpenApiHttpCode()
-            
-            if openApiHttpCode == HTTPStatusCode.notFound.rawValue {
-                LoggerUtil.common.info("User has no points balance")
-                
-                return
-            }
-            
-            throw error
         }
     }
 }
@@ -238,7 +201,5 @@ private func isValidPrivateKey(_ privateKey: String) throws -> Bool {
     ImportIdentityView(onNext: {}, onBack: {})
         .environmentObject(DecentralizedAuthManager.shared)
         .environmentObject(UserManager.shared)
-        .environmentObject(LikenessManager.shared)
-        .environmentObject(WalletManager.shared)
         .environmentObject(SecurityManager.shared)
 }

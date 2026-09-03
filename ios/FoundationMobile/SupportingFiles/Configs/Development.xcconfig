@@ -3,7 +3,7 @@ SLASH=/
 
 // MARK: General
 // Foundation-owned. AppsFlyer and the referral programme are Rarimo-ecosystem
-// features stripped in Task B5 - the keys are blanked, not repointed.
+// features removed outright in Task B5.
 FEEDBACK_EMAIL="support@foundation-global.com"
 DEFAULT_REFERRAL_CODE=""
 WEB_APP_URL="https:${SLASH}/foundation-next-app-web.web.app"
@@ -31,11 +31,6 @@ REGISTRATION_SIMPLE_CONTRACT_ADRRESS="0x497D6957729d3a39D43843BD27E6cbD12310F273
 CERTIFICATES_SMT_CONTRACT_ADDRESS="0xA8b350d699632569D5351B20ffC1b31202AcEDD8"
 REGISTRATION_SMT_CONTRACT_ADDRESS="0x479F84502Db545FA8d2275372E0582425204A879"
 STATE_KEEPER_CONTRACT_ADDRESS="0x61aa5b68D811884dA4FEC2De4a7AA0464df166E1"
-MULTICALL3_CONTRACT_ADDRESS="0xb4EE49BDf7cf199081b2a286B2B9B5f87AE930b1"
-VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS="0x479F84502Db545FA8d2275372E0582425204A879"
-PROPOSALS_STATE_CONTRACT_ADDRESS="0x9C4b84a940C9D3140a1F40859b3d4367DC8d099a"
-FACE_REGISTRY_CONTRACT_ADDRESS="0x15DCd57B70D97F1D1F220ccb4e6B8E886aF3e3B9"
-GUESS_CELEBRITY_CONTRACT_ADDRESS="0x0000000000000000000000000000000000000000"
 
 // MARK: EVM
 // RETAINED: the registration relayer and RPC are the proving substrate.
@@ -43,21 +38,6 @@ EVM_RPC_URL="https:${SLASH}/l2.rarimo.com"
 EVM_CHAIN_ID="7368"
 EVM_SCAN_URL="https:${SLASH}/scan.rarimo.com"
 EVM_SCAN_API_URL="https:${SLASH}/evmscan.l2.rarimo.com"
-
-// MARK: Freedom Tool
-// STRIPPED in Task B5 - the Polls module is removed. Not blanked to "" -
-// ConfigManager.FreedomTool still reads these as non-optional URL via try!,
-// and URL(string: "") is nil, which crashes the app at launch (verified).
-// "about:blank" keeps decoding total until Task B5 removes this struct.
-FREEDOM_TOOL_RPC_URL="about:blank"
-FREEDOM_TOOL_IPFS_NODE_URL="https:${SLASH}/ipfs.rarimo.com"
-FREEDOM_TOOL_WEBSITE_URL="about:blank"
-FREEDOM_TOOL_API_URL="about:blank"
-
-// MARK: AppsFlyer
-// STRIPPED - see Task B5. Blank keys make AppsFlyerLib a no-op.
-APPSFLYER_DEV_KEY=""
-APPSFLYER_APP_ID=""
 
 // MARK: Secrets
 // Upstream committed live Rarimo keys here. Never repopulate from upstream.

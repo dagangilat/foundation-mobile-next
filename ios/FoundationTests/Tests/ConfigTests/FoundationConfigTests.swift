@@ -16,10 +16,12 @@ final class FoundationConfigTests: XCTestCase {
         return raw.starts(with: "\"") ? String(raw.dropFirst().dropLast()) : raw
     }
 
-    func testAppsFlyerIsDisabled() {
-        // Rarimo's dev key must never ship in a Foundation build - it would
-        // attribute our installs to their AppsFlyer account.
-        XCTAssertEqual(configValue("APPSFLYER_DEV_KEY"), "")
+    func testAppsFlyerIsRemoved() {
+        // Task B5 removed the AppsFlyer SDK outright, so the key must be absent
+        // from the built Info.plist - not merely blank. Asserting on the blank
+        // value would pass vacuously once the key is gone.
+        XCTAssertNil(Bundle.main.object(forInfoDictionaryKey: "APPSFLYER_DEV_KEY"))
+        XCTAssertNil(Bundle.main.object(forInfoDictionaryKey: "APPSFLYER_APP_ID"))
     }
 
     func testNoRarimoReferralCode() {

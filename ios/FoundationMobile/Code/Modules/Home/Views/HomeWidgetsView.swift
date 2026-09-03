@@ -7,9 +7,7 @@ private struct WidgetWrapper {
 }
 
 struct HomeWidgetsView: View {
-    @EnvironmentObject private var likenessManager: LikenessManager
     @EnvironmentObject private var homeViewModel: HomeView.ViewModel
-    @EnvironmentObject private var hiddenKeysViewModel: HiddenKeysViewModel
 
     @Binding var selectedWidget: HomeWidget?
     let namespaceProvider: (HomeWidget) -> Namespace.ID
@@ -62,100 +60,10 @@ struct HomeWidgetsView: View {
 
     private var visibleWidgets: [WidgetWrapper] {
         [
-            earnWidget,
-            freedomToolWidget,
-            hiddenKeysWidget,
             recoveryWidget,
-            likenessWidget,
         ]
         .filter { $0.widget.isVisible }
-        .filter { $0.widget != .earn || homeViewModel.hasBalance }
         .filter { viewModel.widgets.contains($0.widget) }
-    }
-
-    private var earnWidget: WidgetWrapper {
-        WidgetWrapper(
-            widget: .earn,
-            card: SnapCarouselCard(
-                disabled: homeViewModel.isBalanceFetching || homeViewModel.pointsBalance == nil,
-                action: { selectedWidget = .earn }
-            ) {
-                HomeCardView(
-                    foregroundGradient: Gradients.darkerGreenText,
-                    foregroundColor: .invertedDark,
-                    topIcon: .foundationMark,
-                    bottomIcon: .arrowRightUpLine,
-                    imageContent: {
-                        Image(.earnBg)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(RoundedRectangle(cornerRadius: 32))
-                    },
-                    title: "Earn",
-                    subtitle: "RMO",
-                    bottomContent: {
-                        Text("Complete various tasks and get rewarded with Rarimo tokens")
-                            .body4()
-                            .foregroundStyle(.textSecondary)
-                            .frame(maxWidth: 220, alignment: .leading)
-                            .padding(.top, 12)
-                    },
-                    animation: namespaceProvider(.earn)
-                )
-            }
-        )
-    }
-
-    private var freedomToolWidget: WidgetWrapper {
-        WidgetWrapper(
-            widget: .freedomTool,
-            card: SnapCarouselCard(action: { selectedWidget = .freedomTool }) {
-                HomeCardView(
-                    foregroundGradient: Gradients.darkGreenText,
-                    foregroundColor: .invertedDark,
-                    topIcon: .freedomtool,
-                    bottomIcon: .arrowRightUpLine,
-                    imageContent: {
-                        Image(.freedomtoolBg)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(RoundedRectangle(cornerRadius: 32))
-                    },
-                    title: "Freedomtool",
-                    subtitle: "Voting",
-                    animation: namespaceProvider(.freedomTool)
-                )
-            }
-        )
-    }
-
-    private var hiddenKeysWidget: WidgetWrapper {
-        WidgetWrapper(
-            widget: .hiddenKeys,
-            card: SnapCarouselCard(
-                disabled: hiddenKeysViewModel.user == nil || hiddenKeysViewModel.user?.celebrity.status == .maintenance,
-                action: { selectedWidget = .hiddenKeys }
-            ) {
-                HomeCardView(
-                    foregroundGradient: Gradients.purpleText,
-                    foregroundColor: .invertedDark,
-                    topIcon: .foundationMark,
-                    bottomIcon: .arrowRightUpLine,
-                    imageContent: {
-                        Image(.hiddenKeysBg)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(RoundedRectangle(cornerRadius: 32))
-                    },
-                    title: "Hidden keys",
-                    subtitle: "Find a face",
-                    topContent: {
-                        HiddenKeysStatusChip(status: hiddenKeysViewModel.user?.celebrity.status ?? .maintenance)
-                    },
-                    animation: namespaceProvider(.hiddenKeys)
-                )
-            }
-        )
     }
 
     private var recoveryWidget: WidgetWrapper {
@@ -187,53 +95,6 @@ struct HomeWidgetsView: View {
             }
         )
     }
-
-    private var likenessWidget: WidgetWrapper {
-        WidgetWrapper(
-            widget: .likeness,
-            card: SnapCarouselCard(
-                disabled: likenessManager.isLoading,
-                action: { selectedWidget = .likeness }
-            ) {
-                HomeCardView(
-                    foregroundGradient: Gradients.limeText,
-                    foregroundColor: .invertedDark,
-                    topIcon: .foundationMark,
-                    bottomIcon: .arrowRightUpLine,
-                    imageContent: {
-                        Image(.likenessBg)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(RoundedRectangle(cornerRadius: 32))
-                    },
-                    title: likenessManager.isRegistered ? nil : "Digital likeness",
-                    subtitle: likenessManager.isRegistered ? nil : "Set a rule",
-                    bottomContent: {
-                        if likenessManager.isRegistered {
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text("My Rule:")
-                                    .subtitle5()
-                                    .foregroundStyle(.textPrimary)
-                                    .padding(.bottom, 8)
-                                Text(likenessManager.rule.title)
-                                    .additional1()
-                                    .fixedSize(horizontal: false, vertical: true)
-                                    .multilineTextAlignment(.leading)
-                                    .foregroundStyle(Gradients.limeText)
-                                    .frame(maxWidth: 306, alignment: .leading)
-                            }
-                        } else {
-                            Text("Your data, your rules")
-                                .body4()
-                                .foregroundStyle(.baseBlack.opacity(0.5))
-                                .padding(.top, 12)
-                        }
-                    },
-                    animation: namespaceProvider(.likeness)
-                )
-            }
-        )
-    }
 }
 
 #Preview {
@@ -244,7 +105,5 @@ struct HomeWidgetsView: View {
         ),
         namespaceProvider: { _ in Namespace().wrappedValue }
     )
-    .environmentObject(LikenessManager())
     .environmentObject(HomeView.ViewModel())
-    .environmentObject(HiddenKeysViewModel())
 }

@@ -7,7 +7,6 @@ struct MainView: View {
 
     @StateObject private var viewModel = ViewModel()
     @StateObject private var passportViewModel = PassportViewModel()
-    @StateObject private var pollsViewModel = PollsViewModel()
 
     var body: some View {
         ZStack {
@@ -15,14 +14,12 @@ struct MainView: View {
                 case .home: HomeView()
                 case .identity: IdentityView()
                 case .scanQr: EmptyView()
-                case .wallet: WalletView()
                 case .profile: ProfileView()
             }
             ExternalRequestsView()
         }
         .environmentObject(viewModel)
         .environmentObject(passportViewModel)
-        .environmentObject(pollsViewModel)
         .onAppear(perform: checkNotificationPermission)
         .dynamicSheet(isPresented: $viewModel.isQrCodeScanSheetShown, fullScreen: true) {
             ScanQRView(

@@ -23,14 +23,19 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #    not user-facing app copy)
 #  - .git, build outputs
 #  - CircuitData.swift, ZKUtils.swift, CloudStorage.swift, NotificationManager.swift,
-#    Points.swift, IPFS.swift, ProposalsStateContract.swift, Multicall3Contract.swift,
 #    Development.xcconfig, Production.xcconfig (Task B4 / Open Decision OD-5): these
 #    reference Rarimo INFRASTRUCTURE that is retained deliberately, not rebranded —
-#    circuit-artifact download URLs, the Rarimo ZK-proving SDK import, points-svc /
-#    IPFS / L2 contract endpoints, and the app's iCloud container / App Group
-#    identifiers (re-pointing those needs our own Apple developer account
+#    circuit-artifact download URLs, the Rarimo ZK-proving SDK import, the passport
+#    registration L2 RPC / contract addresses, and the app's iCloud container / App
+#    Group identifiers (re-pointing those needs our own Apple developer account
 #    entitlements, which is out of scope for the copy rebrand). Each file carries
 #    an inline comment explaining the specific retention.
+#    Task B5 note: Points.swift, IPFS.swift, ProposalsStateContract.swift and
+#    Multicall3Contract.swift were previously exempted here. They have since been
+#    DELETED (points-svc, Freedom Tool IPFS and the proposal/multicall L2 clients
+#    were backends of stripped products), so their excludes are gone — a filename
+#    exclude for a file that no longer exists is a latent hole, since re-adding
+#    the file would silently re-exempt it.
 #  - prebuild.sh: clones the upstream identity-SDK fork by its real repo name
 #    (Task A4) — a build script argument, not shipped app copy.
 #  - project.pbxproj / Package.resolved: SPM dependency declarations naming real
@@ -41,7 +46,7 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #  - GoogleService-Info.plist: gitignored, locally-varying dev artifact, never
 #    committed — not something this sweep (which gates committed source) needs
 #    to check.
-#  - FoundationTests/Tests/{BrandingTests,ConfigTests}: these tests deliberately
+#  - FoundationTests/Tests/{BrandingTests,ConfigTests,NavigationTests}: these tests deliberately
 #    assert specific Rarimo strings are ABSENT (or, for retained OD-5 defaults,
 #    that a specific known value survived) — the test source itself must name
 #    Rarimo to test for it. Excluding the whole test directory rather than
@@ -61,6 +66,7 @@ EXCLUDES=(
   --exclude-dir=.gradle
   --exclude-dir=BrandingTests
   --exclude-dir=ConfigTests
+  --exclude-dir=NavigationTests
   --exclude=NOTICE
   --exclude=THIRD_PARTY_LICENSES.md
   --exclude=LICENSE
@@ -71,10 +77,6 @@ EXCLUDES=(
   --exclude=ZKUtils.swift
   --exclude=CloudStorage.swift
   --exclude=NotificationManager.swift
-  --exclude=Points.swift
-  --exclude=IPFS.swift
-  --exclude=ProposalsStateContract.swift
-  --exclude=Multicall3Contract.swift
   --exclude=Development.xcconfig
   --exclude=Production.xcconfig
   --exclude=prebuild.sh

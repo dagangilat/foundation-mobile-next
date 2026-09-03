@@ -3,6 +3,9 @@ import Foundation
 
 class UpdateManager: ObservableObject {
     @Published var isDeprecated: Optional<Bool> = nil
+    /// Dormant since Task B5: the maintenance flag was served by the upstream
+    /// points service, which is no longer called. `MaintenanceView` stays wired
+    /// up so a Foundation-owned source can set this later.
     @Published var isMaintenance: Bool = false
     
     static let shared = UpdateManager()
@@ -30,18 +33,6 @@ class UpdateManager: ObservableObject {
         }
         
         return firstResult.version.compare(currentVersion, options: .numeric) == .orderedDescending
-    }
-    
-    @MainActor
-    func checkMaintenanceMode() async {
-        do {
-            let points = Points(ConfigManager.shared.general.appApiURL)
-            let maintenanceResponse = try await points.getMaintenanceMode()
-            
-            self.isMaintenance = maintenanceResponse.data.attributes.maintenance
-        } catch {
-            LoggerUtil.common.error("Failed to check for maintenance: \(error, privacy: .public)")
-        }
     }
     
     @MainActor

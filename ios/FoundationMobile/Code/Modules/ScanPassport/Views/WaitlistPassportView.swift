@@ -1,12 +1,8 @@
-import Alamofire
-import Identity
 import MessageUI
 import SwiftUI
 
 struct WaitlistPassportView: View {
-    @EnvironmentObject var decentralizedAuthManager: DecentralizedAuthManager
     @EnvironmentObject var passportManager: PassportManager
-    @EnvironmentObject var userManager: UserManager
 
     let onNext: () -> Void
     let onCancel: () -> Void
@@ -15,10 +11,6 @@ struct WaitlistPassportView: View {
     @State private var isSending = false
     @State private var isExporting = false
     @State private var isCopied = false
-    @State private var isBalanceLoading = false
-    @State private var isJoined = false
-    
-    @State private var cancelables: [Task<Void, Never>] = []
 
     var country: Country {
         passportManager.passportCountry
@@ -28,10 +20,6 @@ struct WaitlistPassportView: View {
         return (try? passportManager.passport?.serialize()) ?? Data()
     }
     
-    var isEligibleForReward: Bool {
-        !UNSUPPORTED_REWARD_COUNTRIES.contains(country)
-    }
-
     var body: some View {
         ZStack(alignment: .topTrailing) {
             AppIconButton(icon: .closeFill, action: onCancel)
@@ -54,7 +42,7 @@ struct WaitlistPassportView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("Become an ambassador")
                         .h4()
-                    Text("If you would like to enroll your country in the early phase, we will need your consent to share some data. Enrolling your country’s passports will entitle you to additional rewards")
+                    Text("If you would like to enroll your country in the early phase, we will need your consent to share some data.")
                         .body4()
                         .fixedSize(horizontal: false, vertical: true)
                     HStack(alignment: .top, spacing: 12) {
@@ -69,21 +57,18 @@ struct WaitlistPassportView: View {
                 Spacer()
                 VStack(spacing: 8) {
                     AppButton(
-                        text: "Join the program",
+                        text: "Continue",
                         rightIcon: .arrowRight,
                         action: {
-                            Task { @MainActor in
-                                await joinRewardsProgram()
-                                if isChecked {
-                                    isSending = true
-                                } else {
-                                    onNext()
-                                }
+                            if isChecked {
+                                isSending = true
+                            } else {
+                                onNext()
                             }
                         }
                     )
                     .controlSize(.large)
-                    .disabled(isJoined || isSending || isBalanceLoading)
+                    .disabled(isSending)
                     AppButton(
                         variant: .quartenary,
                         text: "Cancel",
@@ -95,8 +80,6 @@ struct WaitlistPassportView: View {
             .padding(.horizontal, 24)
             .padding(.top, 140)
         }
-        .onAppear(perform: checkIfUserJoined)
-        .onDisappear(perform: cleanup)
         .onChange(of: isSending) { isSending in
             if !isSending {
                 onNext()
@@ -201,81 +184,9 @@ struct WaitlistPassportView: View {
         .padding(.horizontal, 24)
     }
     
-    func joinRewardsProgram() async {
-        if !isEligibleForReward {
-            return
-        }
-        
-        do {
-            guard let user = userManager.user else { throw UserManagerError.userNotInitialized }
-                
-            let accessJwt = try await decentralizedAuthManager.getAccessJwt(user)
-                
-            let country = passportManager.passport?.nationality ?? ""
-                
-            let dg1 = passportManager.passport?.dg1 ?? Data()
-            
-            var calculateAnonymousIDError: NSError?
-            let anonymousID = IdentityCalculateAnonymousID(dg1, Points.PointsEventId, &calculateAnonymousIDError)
-            if let calculateAnonymousIDError {
-                throw calculateAnonymousIDError
-            }
-                
-            var error: NSError?
-            let hmacMessage = IdentityCalculateHmacMessage(accessJwt.payload.sub, country, anonymousID, &error)
-            if let error {
-                throw error
-            }
-                
-            let key = Data(hex: ConfigManager.shared.secrets.joinRewardsKey) ?? Data()
-                
-            let hmacSingature = HMACUtils.hmacSha256(hmacMessage ?? Data(), key)
-                
-            let points = Points(ConfigManager.shared.general.appApiURL)
-            let _ = try await points.joinRewardsProgram(
-                accessJwt,
-                country,
-                hmacSingature.hex,
-                anonymousID?.hex ?? ""
-            )
-                
-            LoggerUtil.common.info("User joined program")
-        } catch {
-            LoggerUtil.common.error("failed to join rewards program: \(error, privacy: .public)")
-        }
-    }
-    
-    func checkIfUserJoined() {
-        isBalanceLoading = true
-
-        let cancelable = Task { @MainActor in
-            defer { self.isBalanceLoading = false }
-            do {
-                guard let user = userManager.user else { throw UserManagerError.userNotInitialized }
-                let accessJwt = try await decentralizedAuthManager.getAccessJwt(user)
-
-                let pointsBalance = try await userManager.fetchPointsBalance(accessJwt)
-                isJoined = pointsBalance.isVerified
-            } catch let afError as AFError where afError.isExplicitlyCancelledError {
-                return
-            } catch {
-                LoggerUtil.common.error("failed to fetch balance: \(error.localizedDescription, privacy: .public)")
-            }
-        }
-
-        cancelables.append(cancelable)
-    }
-    
-    func cleanup() {
-        for cancelable in cancelables {
-            cancelable.cancel()
-        }
-    }
 }
 
 #Preview {
     WaitlistPassportView(onNext: {}, onCancel: {})
         .environmentObject(PassportViewModel())
-        .environmentObject(UserManager())
-        .environmentObject(DecentralizedAuthManager())
 }

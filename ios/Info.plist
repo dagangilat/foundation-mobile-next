@@ -4,20 +4,6 @@
 <dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-	<key>PROPOSALS_STATE_CONTRACT_ADDRESS</key>
-	<string>${PROPOSALS_STATE_CONTRACT_ADDRESS}</string>
-	<key>MULTICALL3_CONTRACT_ADDRESS</key>
-	<string>${MULTICALL3_CONTRACT_ADDRESS}</string>
-	<key>APPSFLYER_DEV_KEY</key>
-	<string>${APPSFLYER_DEV_KEY}</string>
-	<key>APPSFLYER_APP_ID</key>
-	<string>${APPSFLYER_APP_ID}</string>
-	<key>FREEDOM_TOOL_WEBSITE_URL</key>
-	<string>${FREEDOM_TOOL_WEBSITE_URL}</string>
-	<key>FREEDOM_TOOL_API_URL</key>
-	<string>${FREEDOM_TOOL_API_URL}</string>
-	<key>FREEDOM_TOOL_IPFS_NODE_URL</key>
-	<string>${FREEDOM_TOOL_IPFS_NODE_URL}</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
@@ -85,8 +71,6 @@
 	<string>${FOUNDATION_FUNCTIONS_REGION}</string>
 	<key>FOUNDATION_APP_SCHEME</key>
 	<string>${FOUNDATION_APP_SCHEME}</string>
-	<key>FREEDOM_TOOL_RPC_URL</key>
-	<string>${FREEDOM_TOOL_RPC_URL}</string>
 	<key>FEEDBACK_EMAIL</key>
 	<string>${FEEDBACK_EMAIL}</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
@@ -144,12 +128,6 @@
 	</array>
 	<key>REGISTRATION_SIMPLE_CONTRACT_ADRRESS</key>
 	<string>${REGISTRATION_SIMPLE_CONTRACT_ADRRESS}</string>
-	<key>VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS</key>
-	<string>${VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS}</string>
-	<key>FACE_REGISTRY_CONTRACT_ADDRESS</key>
-	<string>${FACE_REGISTRY_CONTRACT_ADDRESS}</string>
-	<key>GUESS_CELEBRITY_CONTRACT_ADDRESS</key>
-	<string>${GUESS_CELEBRITY_CONTRACT_ADDRESS}</string>
 	<key>EVM_CHAIN_ID</key>
 	<string>${EVM_CHAIN_ID}</string>
 	<key>EVM_SCAN_API_URL</key>

@@ -1,5 +1,5 @@
 {
-  "originHash" : "2dfc05be217c1b74db2a42a6519eba0c33daadf01967b529b5a17ae5885acdc4",
+  "originHash" : "9fff579e85d39d44e922b9e515fb2b2ddde1b429efca0bf30efb1c3c153f3500",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "61b85103a1aeed8218f17c794687781505fbbef5",
         "version" : "11.2.0"
-      }
-    },
-    {
-      "identity" : "appsflyerframework-static",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/AppsFlyerSDK/AppsFlyerFramework-Static",
-      "state" : {
-        "revision" : "65945f5d9c37bc98434d48af39540f326adbfa35",
-        "version" : "6.15.3"
       }
     },
     {
@@ -375,24 +366,6 @@
       "state" : {
         "revision" : "f0e469e0c73cf59444fa3cdf9a9ad61f5e79d280",
         "version" : "1.1.4"
-      }
-    },
-    {
-      "identity" : "tensorflowlitec",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/rarimo/TensorFlowLiteC.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "4238cdcaf1fb760d97808d3820c924514d683c6e"
-      }
-    },
-    {
-      "identity" : "tensorflowliteswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/rarimo/TensorFlowLiteSwift",
-      "state" : {
-        "branch" : "main",
-        "revision" : "189d43414cb0185f60d64328f3fd129e46281825"
       }
     },
     {

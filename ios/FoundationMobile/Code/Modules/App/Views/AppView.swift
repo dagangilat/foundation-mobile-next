@@ -71,7 +71,6 @@ struct AppView: View {
             LoggerUtil.common.info("Application started")
 
             Task { @MainActor in
-                await updateManager.checkMaintenanceMode()
                 await updateManager.checkForUpdate()
             }
 

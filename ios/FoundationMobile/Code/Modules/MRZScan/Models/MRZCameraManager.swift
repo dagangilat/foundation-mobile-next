@@ -60,11 +60,11 @@ class MRZCameraManager: NSObject {
         videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
             
         guard captureSession.canAddInput(deviceInput) else {
-            throw FaceCaptureSessionError.deviceInputNotAdded
+            throw MRZCaptureSessionError.deviceInputNotAdded
         }
             
         guard captureSession.canAddOutput(videoOutput) else {
-            throw FaceCaptureSessionError.videoOutputNotAdded
+            throw MRZCaptureSessionError.videoOutputNotAdded
         }
             
         captureSession.addInput(deviceInput)
@@ -94,5 +94,23 @@ extension MRZCameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
         
         connection.videoOrientation = .portrait
         addToPreviewStream?(currentFrame)
+    }
+}
+
+/// Moved here in Task B5: this AVCapture wiring error used to live in
+/// `Modules/Likeness/Models/FaceCaptureSession.swift` (as
+/// `FaceCaptureSessionError`), which was deleted with the Likeness module.
+/// It is generic capture-session plumbing that MRZ scanning still needs.
+enum MRZCaptureSessionError: Error {
+    case deviceInputNotAdded
+    case videoOutputNotAdded
+
+    var localizedDescription: String {
+        switch self {
+        case .deviceInputNotAdded:
+            return "Device input could not be added to the capture session."
+        case .videoOutputNotAdded:
+            return "Video output could not be added to the capture session."
+        }
     }
 }

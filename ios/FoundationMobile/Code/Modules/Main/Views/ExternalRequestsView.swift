@@ -14,16 +14,9 @@ struct ExternalRequestsView: View {
         }
     }
 
-    private var isFullScreen: Bool {
-        switch externalRequestsManager.request {
-        case .voting: return true
-        default: return false
-        }
-    }
-
     var body: some View {
         ZStack {}
-            .dynamicSheet(isPresented: $isSheetPresented, fullScreen: isFullScreen, title: sheetTitle) {
+            .dynamicSheet(isPresented: $isSheetPresented, title: sheetTitle) {
                 switch externalRequestsManager.request {
                 case let .proofRequest(proofParamsUrl, urlQueryParams):
                     ProofRequestView(
@@ -43,11 +36,6 @@ struct ExternalRequestsView: View {
 
                             handleRedirect(urlQueryParams)
                         },
-                        onDismiss: { isSheetPresented = false }
-                    )
-                case let .voting(qrCodeUrl):
-                    PollQRCodeView(
-                        qrCodeUrl: qrCodeUrl,
                         onDismiss: { isSheetPresented = false }
                     )
                 default:

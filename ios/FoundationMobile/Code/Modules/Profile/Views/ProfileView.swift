@@ -15,9 +15,6 @@ struct ProfileView: View {
     @EnvironmentObject private var securityManager: SecurityManager
     @EnvironmentObject private var decentralizedAuthManager: DecentralizedAuthManager
     @EnvironmentObject private var notificationManager: NotificationManager
-    @EnvironmentObject private var likenessManager: LikenessManager
-    @EnvironmentObject private var pollsViewModel: PollsViewModel
-    @EnvironmentObject private var walletManager: WalletManager
 
     @StateObject private var homeWidgetsViewModel = HomeWidgetsViewModel()
 
@@ -200,9 +197,6 @@ struct ProfileView: View {
                         userManager.reset()
                         decentralizedAuthManager.reset()
                         notificationManager.reset()
-                        pollsViewModel.reset()
-                        likenessManager.reset()
-                        walletManager.reset()
                         homeWidgetsViewModel.reset()
 
                         Task {
@@ -262,9 +256,7 @@ private struct ProfileRow: View {
         .environmentObject(AppIconManager())
         .environmentObject(DecentralizedAuthManager())
         .environmentObject(NotificationManager())
-        .environmentObject(LikenessManager())
         .environmentObject(userManager)
-        .environmentObject(WalletManager())
         .onAppear {
             _ = try? userManager.createNewUser()
         }

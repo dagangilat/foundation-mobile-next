@@ -7,8 +7,6 @@ class ConfigManager: ObservableObject {
     let notifications = Notifications()
     let contracts = Contracts()
     let evm = EVM()
-    let freedomTool = FreedomTool()
-    let appsFlyer = AppsFlyer()
     let secrets = Secrets()
 }
 
@@ -38,11 +36,6 @@ extension ConfigManager {
         let certificatesSmtAddress: String = try! readFromInfoPlist(key: "CERTIFICATES_SMT_CONTRACT_ADDRESS")
         let registrationSmtAddress: String = try! readFromInfoPlist(key: "REGISTRATION_SMT_CONTRACT_ADDRESS")
         let stateKeeperAddress: String = try! readFromInfoPlist(key: "STATE_KEEPER_CONTRACT_ADDRESS")
-        let multicall3Address: String = try! readFromInfoPlist(key: "MULTICALL3_CONTRACT_ADDRESS")
-        let votingRegistrationSmtAddress: String = try! readFromInfoPlist(key: "VOTING_REGISTRATION_SMT_CONTRACT_ADDRESS")
-        let proposalsStateAddress: String = try! readFromInfoPlist(key: "PROPOSALS_STATE_CONTRACT_ADDRESS")
-        let faceRegistryAddress: String = try! readFromInfoPlist(key: "FACE_REGISTRY_CONTRACT_ADDRESS")
-        let guessCelebrityAddress: String = try! readFromInfoPlist(key: "GUESS_CELEBRITY_CONTRACT_ADDRESS")
     }
 }
 
@@ -52,22 +45,6 @@ extension ConfigManager {
         let chainId: UInt64 = try! readUInt64FromInfoPlist(key: "EVM_CHAIN_ID")
         let scanUrl: URL = try! readURLFromInfoPlist(key: "EVM_SCAN_URL")
         let scanApiUrl: URL = try! readURLFromInfoPlist(key: "EVM_SCAN_API_URL")
-    }
-}
-
-extension ConfigManager {
-    class FreedomTool {
-        let rpcURL: URL = try! readURLFromInfoPlist(key: "FREEDOM_TOOL_RPC_URL")
-        let ipfsNodeURL: URL = try! readURLFromInfoPlist(key: "FREEDOM_TOOL_IPFS_NODE_URL")
-        let websiteURL: URL = try! readURLFromInfoPlist(key: "FREEDOM_TOOL_WEBSITE_URL")
-        let apiURL: URL = try! readURLFromInfoPlist(key: "FREEDOM_TOOL_API_URL")
-    }
-}
-
-extension ConfigManager {
-    class AppsFlyer {
-        let appId: String = try! readFromInfoPlist(key: "APPSFLYER_APP_ID")
-        let devKey: String = try! readFromInfoPlist(key: "APPSFLYER_DEV_KEY")
     }
 }
 
