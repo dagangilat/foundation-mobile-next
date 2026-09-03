@@ -180,6 +180,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.face.mesh.detection)
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -274,7 +275,17 @@ dependencies {
     implementation("com.google.api-client:google-api-client-android:1.32.1")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
     implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    // Foundation's backend is Firebase: Auth holds the account every callable's
+    // requireAuth checks, and Functions is the transport. The BOM was already
+    // here at 33.2.0 - bumped rather than declared a second time, since two
+    // platform() lines for the same BOM is a resolution hazard.
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-functions-ktx")
+    // `FirebaseFunctions.call()` and `signInWithCustomToken()` return Play
+    // Services Tasks; this is what makes `Task.await()` available. It arrives
+    // transitively today, but relying on another library's transitive for a
+    // direct import is how a harmless dependency bump becomes a compile break.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
     implementation("androidx.hilt:hilt-work:1.0.0") // ?
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
