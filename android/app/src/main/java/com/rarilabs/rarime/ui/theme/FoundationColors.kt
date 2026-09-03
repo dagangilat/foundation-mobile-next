@@ -545,7 +545,13 @@ fun darkColors() = FoundationColors(
     warningLight = Color(0x1FED9E19),
     warningLighter = Color(0x0FED9E19),
 
-    // text
+    // text - deliberately left on Rarimo's original WHITE base, unlike the
+    // light theme's `muted #596171`. These alphas were tuned for white-on-dark
+    // and still hold up against `backgroundPrimary #0E0E0E`: textSecondary is
+    // 6.46:1 and textPlaceholder 4.36:1, both clear of the bars the light
+    // theme had to be fixed to meet, so the light-theme alpha re-tune
+    // (0xE2/0xB0/0x6B) deliberately does NOT carry over here - applying it to
+    // a white base would only wash the text out. Guarded by TextContrastTest.
     textPrimary = Color(0xE5FFFFFF),
     textSecondary = Color(0x8FFFFFFF),
     textPlaceholder = Color(0x70FFFFFF),
@@ -746,13 +752,27 @@ fun lightColors() = FoundationColors(
     warningLight = Color(0x1FF59E0B),
     warningLighter = Color(0x0FF59E0B),
 
-    // text - Foundation `text` #0A0E27 and `muted` #596171, keeping each
-    // tier's own alpha (iOS TextPrimary / TextSecondary 0.56 / TextPlaceholder
-    // 0.44 / TextDisabled 0.28)
+    // text - Foundation `text` #0A0E27 and `muted` #596171.
+    //
+    // The alphas below are NOT Rarimo's originals (0.56 / 0.44 / 0.28). Those
+    // were tuned around Rarimo's much darker `#141614` base; Task B3 swapped
+    // in Foundation's lighter `muted #596171` on iOS without re-tuning them,
+    // and Task C3 inherited the same numbers here for hex parity. Composited
+    // over `backgroundPrimary #F6F9FC` that left textSecondary at 2.38:1 -
+    // below WCAG AA's 4.5:1 for normal text, and below even the 3:1 large-text
+    // floor. Alphas re-tuned against real relative-luminance math (values must
+    // stay byte-identical to the iOS colorsets - see TextContrastTest):
+    //   textSecondary   0x8F -> 0xE2 (0.886): 4.57:1 on #F6F9FC, 4.77:1 on #FFFFFF
+    //   textPlaceholder 0x70 -> 0xB0 (0.690): 3.03:1 / 3.13:1
+    //   textDisabled    0x47 -> 0x6B (0.420): 1.86:1 / 1.87:1
+    // textDisabled is NOT a WCAG claim - WCAG 1.4.3 exempts inactive
+    // components. 0x6B simply restores the perceptual weight the pre-fork
+    // `#141614 @ 0.28` had (1.86:1), which the base-colour swap had eroded to
+    // 1.49:1.
     textPrimary = Color(0xFF0A0E27),
-    textSecondary = Color(0x8F596171),
-    textPlaceholder = Color(0x70596171),
-    textDisabled = Color(0x47596171),
+    textSecondary = Color(0xE2596171),
+    textPlaceholder = Color(0xB0596171),
+    textDisabled = Color(0x6B596171),
 
     // component
     componentPrimary = Color(0x0D141614),
