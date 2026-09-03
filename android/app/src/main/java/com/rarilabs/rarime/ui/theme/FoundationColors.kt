@@ -90,9 +90,6 @@ class FoundationColors(
 
     // additional
     gradient1: Brush,
-    gradient2: Brush,
-    gradient3: Brush,
-    gradient4: Brush,
     gradient5: Brush,
     gradient6: Brush,
     gradient7: Brush,
@@ -227,15 +224,6 @@ class FoundationColors(
     var gradient1 by mutableStateOf(gradient1, structuralEqualityPolicy())
         internal set
 
-    var gradient2 by mutableStateOf(gradient2, structuralEqualityPolicy())
-        internal set
-
-    var gradient3 by mutableStateOf(gradient3, structuralEqualityPolicy())
-        internal set
-
-    var gradient4 by mutableStateOf(gradient4, structuralEqualityPolicy())
-        internal set
-
     var gradient5 by mutableStateOf(gradient5, structuralEqualityPolicy())
         internal set
 
@@ -326,9 +314,6 @@ class FoundationColors(
         baseWhite: Color = this.baseWhite,
         backgroundContainer: Color = this.backgroundContainer,
         gradient1: Brush = this.gradient1,
-        gradient2: Brush = this.gradient2,
-        gradient3: Brush = this.gradient3,
-        gradient4: Brush = this.gradient4,
         gradient5: Brush = this.gradient5,
         gradient6: Brush = this.gradient6,
         gradient7: Brush = this.gradient7,
@@ -411,9 +396,6 @@ class FoundationColors(
         invertedLight = invertedLight,
         backgroundContainer = backgroundContainer,
         gradient1 = gradient1,
-        gradient2 = gradient2,
-        gradient3 = gradient3,
-        gradient4 = gradient4,
         gradient5 = gradient5,
         gradient6 = gradient6,
         gradient7 = gradient7,
@@ -498,9 +480,6 @@ class FoundationColors(
         this.invertedLight = other.invertedLight
         this.backgroundContainer = other.backgroundContainer
         this.gradient1 = other.gradient1
-        this.gradient2 = other.gradient2
-        this.gradient3 = other.gradient3
-        this.gradient4 = other.gradient4
         this.gradient5 = other.gradient5
         this.gradient6 = other.gradient6
         this.gradient7 = other.gradient7
@@ -600,15 +579,6 @@ fun darkColors() = FoundationColors(
     // End): the brand mark tint, the identity widget background and the
     // auth-method chips. brandGreen -> brandFill, the value iOS resolved to.
     gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF047857), Color(0xFF34D399))),
-    // gradient2/3/4 are byte-identical to iOS's AdditionalGradientSecond /
-    // Third / Fourth, which Task B3 left unmapped: pale washes carrying no
-    // Rarimo brand hex. Kept as-is so the two platforms stay in step; the
-    // faint lime cast in gradient3 (#DFFCC4) and the lavender in gradient4
-    // are flagged in the C3 report as a cross-platform follow-up, since
-    // changing them here alone would create drift.
-    gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
-    gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
-    gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     // gradient5 - Freedomtool widget background. Deep forest green fading to
     // near-black: no Rarimo signature hex (their brand lime is #84CC16 /
     // #9AFE8A), so it is left as-is.
@@ -815,15 +785,6 @@ fun lightColors() = FoundationColors(
     // End): the brand mark tint, the identity widget background and the
     // auth-method chips. brandGreen -> brandFill, the value iOS resolved to.
     gradient1 = Brush.linearGradient(colors = listOf(Color(0xFF047857), Color(0xFF34D399))),
-    // gradient2/3/4 are byte-identical to iOS's AdditionalGradientSecond /
-    // Third / Fourth, which Task B3 left unmapped: pale washes carrying no
-    // Rarimo brand hex. Kept as-is so the two platforms stay in step; the
-    // faint lime cast in gradient3 (#DFFCC4) and the lavender in gradient4
-    // are flagged in the C3 report as a cross-platform follow-up, since
-    // changing them here alone would create drift.
-    gradient2 = Brush.linearGradient(colors = listOf(Color(0xFFF2F8EE), Color(0xFFCBE7EC))),
-    gradient3 = Brush.linearGradient(colors = listOf(Color(0xFFDFFCC4), Color(0xFFF4F3F0))),
-    gradient4 = Brush.linearGradient(colors = listOf(Color(0xFFD3D1EF), Color(0xFFFCE3FC))),
     // gradient5 - Freedomtool widget background. Soft mint fading to
     // near-white; sits in the brandFill family rather than Rarimo's neon
     // lime, so it is left as-is.

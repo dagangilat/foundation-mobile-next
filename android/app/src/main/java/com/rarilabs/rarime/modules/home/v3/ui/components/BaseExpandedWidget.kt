@@ -114,7 +114,7 @@ fun BaseExpandedWidgetPreview() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(FoundationTheme.colors.gradient3)
+                    .background(FoundationTheme.colors.gradient1)
             ) {
                 Image(
                     painter = painterResource(R.drawable.freedomtool_bg),

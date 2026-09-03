@@ -55,9 +55,6 @@ class BrandColorsTest {
 
     private fun FoundationColors.gradients(): Map<String, Brush> = mapOf(
         "gradient1" to gradient1,
-        "gradient2" to gradient2,
-        "gradient3" to gradient3,
-        "gradient4" to gradient4,
         "gradient5" to gradient5,
         "gradient6" to gradient6,
         "gradient7" to gradient7,
