@@ -62,10 +62,12 @@ enum class BottomTab(
         R.drawable.ic_user,
         R.drawable.ic_user_fill
     ),
+    // Testnet-only tab: a neutral glyph from the app's own icon set, not the
+    // upstream fork's mascot artwork.
     Debug(
         Screen.Main.DebugIdentity.route,
-        R.drawable.welcome_cat,
-        R.drawable.welcome_cat
+        R.drawable.ic_dots_three_outline,
+        R.drawable.ic_dots_three_outline_rounded
     )
 }
 

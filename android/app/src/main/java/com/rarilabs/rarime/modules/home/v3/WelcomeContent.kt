@@ -2,7 +2,6 @@ package com.rarilabs.rarime.modules.home.v3
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,15 +23,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.ui.base.ButtonSize
 import com.rarilabs.rarime.ui.components.AppBottomSheet
+import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.HorizontalPageIndicator
@@ -41,11 +38,18 @@ import com.rarilabs.rarime.ui.components.rememberAppSheetState
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 import kotlinx.coroutines.launch
 
+/**
+ * One page of the first-run welcome pager.
+ *
+ * [iconId] is a plain glyph rather than an illustration: no Foundation-specific
+ * onboarding artwork exists yet, so — mirroring the iOS client's
+ * `HomeOnboardingView` (Open Decision OD-6) — each step shows an icon from the
+ * app's own icon set instead of shipping the upstream fork's branded art.
+ */
 data class WelcomeCardContent(
     val title: String,
-    val imageId: Int,
+    val iconId: Int,
     val description: String,
-    val imageHeight: Dp,
     val accentColor: Color
 )
 
@@ -68,32 +72,31 @@ fun WelcomeBottomSheet(
         listOf(
             WelcomeCardContent(
                 title = context.getString(R.string.welcome_card1_title),
-                imageId = R.drawable.welcome_cat,
+                // iOS uses `.globeSimple` here; this fork's icon set has no plain
+                // globe (only the "x" and "time" variants, which read as
+                // blocked/pending), so follow the card's own copy instead.
+                iconId = R.drawable.ic_cardholder,
                 description = context.getString(R.string.welcome_card1_description),
-                imageHeight = 268.dp,
                 accentColor = welcomeAccentColor1
 
             ), WelcomeCardContent(
                 title = context.getString(R.string.welcome_card2_title),
-                imageId = R.drawable.welcome_lock,
+                iconId = R.drawable.ic_shield_keyhole_line,
                 description = context.getString(R.string.welcome_card2_description),
-                imageHeight = 206.dp,
                 accentColor = welcomeAccentColor2
 
 
             ), WelcomeCardContent(
                 title = context.getString(R.string.welcome_card3_title),
-                imageId = R.drawable.welcome_identity_card,
+                iconId = R.drawable.ic_identification_card,
                 description = context.getString(R.string.welcome_card3_description),
-                imageHeight = 224.dp,
                 accentColor = welcomeAccentColor3
 
 
             ), WelcomeCardContent(
                 title = context.getString(R.string.welcome_card4_title),
-                imageId = R.drawable.welcome_cards,
+                iconId = R.drawable.ic_box_3_line,
                 description = context.getString(R.string.welcome_card4_description),
-                imageHeight = 191.dp,
                 accentColor = welcomeAccentColor4
 
             )
@@ -129,10 +132,9 @@ fun WelcomeBottomSheet(
             ) {
                 BaseWelcomeContent(
                     modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp),
-                    imageId = cardContent[it].imageId,
+                    iconId = cardContent[it].iconId,
                     title = cardContent[it].title,
-                    description = cardContent[it].description,
-                    imageHeight = cardContent[it].imageHeight
+                    description = cardContent[it].description
                 )
             }
 
@@ -172,7 +174,7 @@ fun WelcomeBottomSheet(
 
 @Composable
 fun BaseWelcomeContent(
-    modifier: Modifier = Modifier, imageId: Int, title: String, description: String, imageHeight: Dp
+    modifier: Modifier = Modifier, iconId: Int, title: String, description: String
 ) {
 
     Column(modifier) {
@@ -188,15 +190,16 @@ fun BaseWelcomeContent(
             )
             Spacer(Modifier.weight(1f))
             Column(
+                // Height is fixed so every page reserves the same art slot and
+                // the pager does not resize between steps.
                 modifier = Modifier.height(268.dp),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(
-                    modifier = Modifier.height(imageHeight),
-                    contentScale = ContentScale.Crop,
-                    painter = painterResource(imageId),
-                    contentDescription = ""
+                AppIcon(
+                    id = iconId,
+                    size = 148.dp,
+                    tint = FoundationTheme.colors.textPrimary
                 )
             }
 
