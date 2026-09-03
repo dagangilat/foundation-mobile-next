@@ -44,6 +44,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rarilabs.rarime.R
+import com.rarilabs.rarime.foundation.ui.SignInScreen
+import com.rarilabs.rarime.foundation.ui.SignInViewModel
 import com.rarilabs.rarime.modules.qr.ScanQrScreen
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.AppIcon
@@ -142,6 +144,17 @@ fun MainScreenContent(
 
     val colorSchema by mainViewModel.colorScheme.collectAsState()
 
+    // Foundation's sign-in gate. It sits above the NavHost, so it precedes the
+    // existing intro/passcode flow rather than replacing it: on first sign-in
+    // the NavHost composes for the first time, at Screen.Loading, and that flow
+    // runs untouched. Note this is NOT a general reset - navController is owned
+    // above this composable, so a future sign-out/sign-in within one process
+    // would resume the prior back stack, not restart at Loading.
+    // Every Foundation callable runs requireAuth, so there is nothing useful
+    // the app can do before this.
+    val signInViewModel: SignInViewModel = hiltViewModel()
+    val isSignedIn by signInViewModel.isSignedIn.collectAsState()
+
     val qrCodeState = rememberAppSheetState()
     val isBottomBarShown by mainViewModel.isBottomBarShown.collectAsState()
     // Use remember to cache navBackStackEntry and currentRoute
@@ -186,6 +199,11 @@ fun MainScreenContent(
     }
 
     AppTheme(colorScheme = colorSchema) {
+        if (!isSignedIn) {
+            SignInScreen(viewModel = signInViewModel)
+            return@AppTheme
+        }
+
         Scaffold(
             containerColor = FoundationTheme.colors.backgroundPrimary,
             bottomBar = {
