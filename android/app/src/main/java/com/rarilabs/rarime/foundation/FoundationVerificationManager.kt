@@ -3,6 +3,7 @@ package com.rarilabs.rarime.foundation
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.util.ErrorHandler
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -198,6 +199,12 @@ class FoundationVerificationManager internal constructor(
                     _state.value = VerificationState.Verified(result.memberNumber)
                     return
                 }
+            } catch (e: CancellationException) {
+                // The caller's scope died (see resumePollingIfInterrupted). That
+                // is not a backend error and must not be logged as one, nor run
+                // through terminalFailureMessage - rethrow so cancellation stays
+                // cooperative and `state` is left on Polling to be resumed.
+                throw e
             } catch (e: Exception) {
                 // A rejection (bad passport, passport already linked to another
                 // member) arrives as a thrown FAILED_PRECONDITION carrying a

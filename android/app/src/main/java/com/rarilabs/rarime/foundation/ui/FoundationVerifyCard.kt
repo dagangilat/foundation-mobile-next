@@ -46,6 +46,26 @@ class FoundationVerifyCardViewModel @Inject constructor(
                 if (uid == null) verificationManager.reset()
             }
         }
+        resumePollingIfInterrupted()
+    }
+
+    /**
+     * Restart the poller when this ViewModel is rebuilt while the flow is still
+     * `Polling`.
+     *
+     * `MainScreen.navigateWithPopUp` pops with `popUpTo(graph.id) { inclusive =
+     * true }`, so leaving Home - a bottom-bar tap, say - can destroy Home's
+     * NavBackStackEntry and with it this ViewModel. That cancels `viewModelScope`
+     * and kills a running `pollUntilVerified()`. The manager is a @Singleton, so
+     * `state` survives at `Polling` with nothing left to advance it, and the card
+     * would sit disabled on "Working…" until the process dies.
+     *
+     * `pollUntilVerified()` guards on `Polling` itself, so this is a no-op in
+     * every other state.
+     */
+    private fun resumePollingIfInterrupted() {
+        if (verificationManager.state.value !is VerificationState.Polling) return
+        viewModelScope.launch { verificationManager.pollUntilVerified() }
     }
 
     fun beginVerification() {

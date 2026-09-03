@@ -1,5 +1,6 @@
 package com.rarilabs.rarime.foundation
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -247,6 +248,38 @@ class FoundationVerificationManagerTest {
         assertEquals(VerificationState.Verified(5), m.state.value)
         m.reset()
         assertEquals(VerificationState.Idle, m.state.value)
+    }
+
+    @Test
+    fun cancellationLeavesStateResumableRatherThanFailed() = runTest {
+        // Leaving Home destroys the card's ViewModel and cancels the poller.
+        // That must not be mistaken for a backend error: state has to stay on
+        // Polling so resumePollingIfInterrupted() can pick it back up.
+        val m = pollingManager(status = { throw CancellationException("scope died") })
+        var propagated = false
+        try {
+            m.pollUntilVerified()
+        } catch (e: CancellationException) {
+            propagated = true
+        }
+        assertTrue("CancellationException must propagate", propagated)
+        assertEquals(VerificationState.Polling, m.state.value)
+    }
+
+    @Test
+    fun anInterruptedPollCanBeResumed() = runTest {
+        var calls = 0
+        val m = pollingManager(status = {
+            calls++
+            if (calls == 1) throw CancellationException("scope died")
+            L2VerificationStatusResult("member_created", 11)
+        })
+        runCatching { m.pollUntilVerified() }
+        assertEquals(VerificationState.Polling, m.state.value)
+
+        // A rebuilt ViewModel calls straight back in.
+        m.pollUntilVerified()
+        assertEquals(VerificationState.Verified(11), m.state.value)
     }
 
     @Test
