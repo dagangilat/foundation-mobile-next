@@ -124,16 +124,22 @@ final class AuthService: ObservableObject {
 
     enum AuthError: Error { case noPendingEmail }
 
-    /// `requestSignInCode`/`verifySignInCode` (foundation-next functions/index.js)
-    /// throw `failed-precondition` with a real, specific, written-for-humans
-    /// message per reason ("No sign-in code on file...", "Sign-in code
-    /// expired...", "Too many wrong attempts...", "Wrong code. N attempts
-    /// left."). Before 2026-09-04 (scoped re-review finding M-5) `SignInView`
-    /// caught every error identically and showed a fixed generic string,
-    /// discarding that message - so an expired code or a lockout was
-    /// mis-reported to the user as an indistinguishable typo. Mirrors
+    /// `verifySignInCode` (foundation-next functions/index.js:3083-3096) throws
+    /// `failed-precondition` with a real, specific, written-for-humans message
+    /// per reason ("No sign-in code on file...", "Sign-in code expired...",
+    /// "Too many wrong attempts...", "Wrong code. N attempts left."). Before
+    /// 2026-09-04 (scoped re-review finding M-5) `SignInView.verify()` caught
+    /// every error identically and showed a fixed generic string, discarding
+    /// that message - so an expired code or a lockout was mis-reported to the
+    /// user as an indistinguishable typo. Mirrors
     /// `FoundationVerificationManager.terminalRejectionMessage(for:)`'s exact
     /// shape and reasoning.
+    ///
+    /// `requestSignInCode` (behind `SignInView.sendCode()`) has no such path
+    /// today - it only throws `invalid-argument` for a malformed email, plus
+    /// rate-limiting. Wiring `sendCode()` to this same classifier is a safe
+    /// no-op now and means a future per-reason `requestSignInCode` message
+    /// surfaces automatically, without a matching client change.
     nonisolated static func signInErrorMessage(for error: Error, fallback: String) -> String {
         let ns = error as NSError
         guard ns.domain == FunctionsErrorDomain,

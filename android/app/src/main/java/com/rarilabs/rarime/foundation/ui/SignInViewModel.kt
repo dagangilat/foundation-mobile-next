@@ -13,14 +13,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * `verifySignInCode`/`requestSignInCode` (foundation-next functions/index.js)
- * throw `failed-precondition` with a real, specific, written-for-humans
- * message per reason ("No sign-in code on file...", "Sign-in code
- * expired...", "Too many wrong attempts...", "Wrong code. N attempts
- * left."). Before 2026-09-04 (scoped re-review finding M-5) both
- * `sendCode`/`submitCode` below caught every error identically and showed
- * a fixed generic string, discarding that message - so an expired code or
- * a lockout was mis-reported to the user as an indistinguishable typo.
+ * `verifySignInCode` (foundation-next functions/index.js:3083-3096) throws
+ * `failed-precondition` with a real, specific, written-for-humans message
+ * per reason ("No sign-in code on file...", "Sign-in code expired...",
+ * "Too many wrong attempts...", "Wrong code. N attempts left."). Before
+ * 2026-09-04 (scoped re-review finding M-5) `submitCode` below caught every
+ * error identically and showed a fixed generic string, discarding that
+ * message - so an expired code or a lockout was mis-reported to the user
+ * as an indistinguishable typo.
+ *
+ * `requestSignInCode` (used by `sendCode`) has no such path today - it only
+ * throws `invalid-argument` for a malformed email, plus rate-limiting. Wiring
+ * `sendCode` to the same classifier is a safe no-op now and means a future
+ * per-reason `requestSignInCode` message surfaces automatically, without a
+ * matching client change.
  * This surfaces the real message when the SDK gives us one; unrelated
  * errors (network, etc.) keep their existing generic fallback.
  *
