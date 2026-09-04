@@ -16,6 +16,11 @@
 .cxx
 local.properties
 *.zkey
+# Release upload keystore (Play Console). Never commit this - back it up
+# somewhere durable outside git (password manager / secure cloud storage).
+# Losing it means asking Google Play support to reset the upload key.
+/keystore.properties
+/upload-keystore.jks
 /app/src/main/java/org/freedomtool/unitedgsh/config/
 *.aab
 *.apk

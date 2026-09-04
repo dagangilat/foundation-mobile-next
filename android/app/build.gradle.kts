@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -5,6 +7,22 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
+}
+
+// Release signing. Local-only, gitignored keystore.properties (see
+// docs/android-local-setup.md) — the real credentials never touch this
+// repo. Deliberately absent, not defaulted to the debug keystore: none of
+// the release build types below had ANY signingConfig until this file was
+// added (confirmed via grep — assembleRelease/bundleRelease previously
+// produced an unsigned artifact Play Console would reject on upload, not a
+// debug-signed one). A build that needs release signing and doesn't have
+// this file should fail loudly at configuration time, not silently fall
+// back to a debug key that could never be uploaded to Play anyway.
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) {
+        keystorePropsFile.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -76,6 +94,25 @@ android {
         generateLocaleConfig = true
     }
 
+    signingConfigs {
+        // Only registered when keystore.properties is actually present (a
+        // clean checkout has no release keystore, and assembleDebug/CI's
+        // unit tests must keep working without one). Real release builds
+        // (bundleRelease/assembleRelease) reference this by name below and
+        // will fail loudly - not fall back to debug signing - if it's
+        // missing, which is the correct failure mode: an unsigned or
+        // debug-signed bundle would just be rejected by Play Console later,
+        // less legibly.
+        if (keystorePropsFile.exists()) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         // `isTestnet` is read as BuildConfig.isTestnet from 8 source files, but
         // upstream only declares it on the four create(...) build types below -
@@ -91,6 +128,9 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
+            if (keystorePropsFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
 
         debug {
