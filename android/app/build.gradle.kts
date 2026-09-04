@@ -31,7 +31,10 @@ android {
     // Users see applicationId and app_name; the namespace is invisible, and
     // renaming it would conflict on every upstream merge.
     namespace = "com.rarilabs.rarime"
-    compileSdk = 35
+    // 36, not 35: Play Console requires targeting at least API 36 for new
+    // releases as of 2026 (Google's rolling annual API-level requirement).
+    // compileSdk must be >= targetSdk.
+    compileSdk = 36
 
     bundle {
         language {
@@ -51,7 +54,7 @@ android {
 
         applicationId = "com.foundationnext.mobile"
         minSdk = 27
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
 
