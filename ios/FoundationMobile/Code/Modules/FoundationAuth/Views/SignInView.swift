@@ -59,7 +59,9 @@ struct SignInView: View {
                 codeSent = true
             } catch {
                 LoggerUtil.common.error("sendCode failed: \(error.localizedDescription, privacy: .public)")
-                alertManager.emitError(.unknown("Couldn't send the code. Try again."))
+                alertManager.emitError(.unknown(
+                    AuthService.signInErrorMessage(for: error, fallback: "Couldn't send the code. Try again.")
+                ))
             }
         }
     }

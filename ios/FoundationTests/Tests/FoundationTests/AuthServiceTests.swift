@@ -1,3 +1,4 @@
+import FirebaseFunctions
 import XCTest
 @testable import FoundationMobile
 
@@ -64,5 +65,65 @@ final class AuthServiceTests: XCTestCase {
         AuthService().signOut()
 
         XCTAssertNil(Keychain.getPendingEmail())
+    }
+
+    // MARK: - signInErrorMessage: which requestSignInCode/verifySignInCode
+    // rejections surface their real, per-reason backend message instead of
+    // a generic fallback. Added 2026-09-04 (scoped re-review finding M-5,
+    // "9 minors" pass) - mirrors
+    // `FoundationVerificationManager.terminalRejectionMessage(for:)`'s test
+    // shape exactly, same fixture domain/code construction.
+
+    /// The real shape `verifySignInCode` throws for e.g. an expired code:
+    /// `failed-precondition` with a specific, written-for-humans message.
+    /// Before this fix `SignInView` discarded it for a fixed generic string.
+    func testFailedPreconditionSurfacesTheRealMessage() {
+        let message = "Sign-in code expired. Request a new one."
+        let error = NSError(
+            domain: FunctionsErrorDomain,
+            code: FunctionsErrorCode.failedPrecondition.rawValue,
+            userInfo: [NSLocalizedDescriptionKey: message]
+        )
+        XCTAssertEqual(
+            AuthService.signInErrorMessage(for: error, fallback: "fallback"),
+            message
+        )
+    }
+
+    /// A transient/unrelated code (network blip, etc.) isn't a considered
+    /// rejection - the real message, if any, isn't written for the user, so
+    /// this must fall back to the generic string rather than surface it.
+    func testUnrelatedCodeFallsBackToTheGenericMessage() {
+        let unavailable = NSError(
+            domain: FunctionsErrorDomain,
+            code: FunctionsErrorCode.unavailable.rawValue,
+            userInfo: [NSLocalizedDescriptionKey: "transient 503"]
+        )
+        XCTAssertEqual(
+            AuthService.signInErrorMessage(for: unavailable, fallback: "fallback"),
+            "fallback"
+        )
+
+        struct SomeOtherError: Error {}
+        XCTAssertEqual(
+            AuthService.signInErrorMessage(for: SomeOtherError(), fallback: "fallback"),
+            "fallback"
+        )
+    }
+
+    /// An explicitly blank description is the closest real-world analog to
+    /// Android's `signInErrorMessage`'s "message is blank" case - guards the
+    /// `description.isEmpty` fallback branch actually fires rather than
+    /// surfacing an empty string to the user.
+    func testFailedPreconditionWithBlankMessageFallsBack() {
+        let error = NSError(
+            domain: FunctionsErrorDomain,
+            code: FunctionsErrorCode.failedPrecondition.rawValue,
+            userInfo: [NSLocalizedDescriptionKey: ""]
+        )
+        XCTAssertEqual(
+            AuthService.signInErrorMessage(for: error, fallback: "fallback"),
+            "fallback"
+        )
     }
 }

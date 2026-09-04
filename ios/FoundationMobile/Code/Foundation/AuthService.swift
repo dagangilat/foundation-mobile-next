@@ -1,4 +1,5 @@
 import FirebaseAuth
+import FirebaseFunctions
 import Foundation
 
 /// Foundation's member identity, distinct from Rarimo's local identity secret.
@@ -122,4 +123,22 @@ final class AuthService: ObservableObject {
     }
 
     enum AuthError: Error { case noPendingEmail }
+
+    /// `requestSignInCode`/`verifySignInCode` (foundation-next functions/index.js)
+    /// throw `failed-precondition` with a real, specific, written-for-humans
+    /// message per reason ("No sign-in code on file...", "Sign-in code
+    /// expired...", "Too many wrong attempts...", "Wrong code. N attempts
+    /// left."). Before 2026-09-04 (scoped re-review finding M-5) `SignInView`
+    /// caught every error identically and showed a fixed generic string,
+    /// discarding that message - so an expired code or a lockout was
+    /// mis-reported to the user as an indistinguishable typo. Mirrors
+    /// `FoundationVerificationManager.terminalRejectionMessage(for:)`'s exact
+    /// shape and reasoning.
+    nonisolated static func signInErrorMessage(for error: Error, fallback: String) -> String {
+        let ns = error as NSError
+        guard ns.domain == FunctionsErrorDomain,
+              ns.code == FunctionsErrorCode.failedPrecondition.rawValue else { return fallback }
+        let description = ns.localizedDescription
+        return description.isEmpty ? fallback : description
+    }
 }
