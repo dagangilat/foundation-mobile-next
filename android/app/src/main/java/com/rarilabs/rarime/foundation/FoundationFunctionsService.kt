@@ -30,6 +30,14 @@ data class StartL2VerificationResult(
     /** Ignored on purpose - see AD-2. Decoded so the shape stays honest. */
     val deepLink: String?,
     val getProofParamsUrl: String?,
+    /**
+     * Set only on the `already_verified_l2` short-circuit (`passport.js:129`
+     * returns `{ status, memberNumber }` for that case specifically) - null
+     * on every other status. Added 2026-09-04 (scoped re-review finding
+     * M-6): this field previously wasn't decoded at all, so an already-verified
+     * member saw no member number, even though the server sent one.
+     */
+    val memberNumber: Int?,
 )
 data class L2VerificationStatusResult(val status: String, val memberNumber: Int?)
 
@@ -170,6 +178,7 @@ class FoundationFunctionsService @Inject constructor() {
             status = d["status"] as? String ?: "",
             deepLink = d["deepLink"] as? String,
             getProofParamsUrl = d["getProofParamsUrl"] as? String,
+            memberNumber = (d["memberNumber"] as? Number)?.toInt(),
         )
     }
 

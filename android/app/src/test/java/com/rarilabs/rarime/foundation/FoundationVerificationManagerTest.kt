@@ -21,7 +21,7 @@ class FoundationVerificationManagerTest {
     private val proofParamsUrl = "https://verificator.example/params/abc"
 
     private fun requestCreated() =
-        StartL2VerificationResult("request_created", "rarime://ignored", proofParamsUrl)
+        StartL2VerificationResult("request_created", "rarime://ignored", proofParamsUrl, null)
 
     private fun manager(
         start: suspend () -> StartL2VerificationResult = { requestCreated() },
@@ -104,9 +104,19 @@ class FoundationVerificationManagerTest {
 
     @Test
     fun alreadyVerifiedShortCircuitsWithoutAProofRequest() = runTest {
-        val m = manager(start = { StartL2VerificationResult("already_verified_l2", null, null) })
+        val m = manager(start = { StartL2VerificationResult("already_verified_l2", null, null, null) })
         m.beginVerification()
         assertEquals(VerificationState.Verified(null), m.state.value)
+    }
+
+    @Test
+    fun alreadyVerifiedShortCircuitCarriesTheRealMemberNumber() = runTest {
+        // Scoped re-review finding M-6: the backend sends memberNumber
+        // alongside already_verified_l2 (passport.js:129), and it must
+        // reach VerificationState.Verified, not be dropped to null.
+        val m = manager(start = { StartL2VerificationResult("already_verified_l2", null, null, 4242) })
+        m.beginVerification()
+        assertEquals(VerificationState.Verified(4242), m.state.value)
     }
 
     @Test
@@ -134,7 +144,7 @@ class FoundationVerificationManagerTest {
 
     @Test
     fun missingProofParamsUrlLandsInFailed() = runTest {
-        val m = manager(start = { StartL2VerificationResult("request_created", "deep://link", null) })
+        val m = manager(start = { StartL2VerificationResult("request_created", "deep://link", null, null) })
         m.beginVerification()
         assertEquals(
             VerificationState.Failed(FoundationVerificationManager.MESSAGE_NO_PROOF_PARAMS),

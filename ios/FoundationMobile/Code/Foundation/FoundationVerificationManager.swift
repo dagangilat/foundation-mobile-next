@@ -60,7 +60,7 @@ final class FoundationVerificationManager: ObservableObject {
             let result = try await FunctionsService.shared.startL2Verification()
 
             if result.status == "already_verified_l2" {
-                state = .verified(memberNumber: nil)
+                state = .verified(memberNumber: result.memberNumber)
                 return
             }
             guard let raw = result.getProofParamsUrl, let url = URL(string: raw) else {

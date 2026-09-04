@@ -112,11 +112,11 @@ class FoundationVerificationManager internal constructor(
             val result = startL2Verification()
 
             if (result.status == STATUS_ALREADY_VERIFIED) {
-                // memberNumber is null on purpose: StartL2VerificationResult
-                // (Task C6) does not decode the memberNumber the backend sends
-                // alongside this status. Cosmetic today - the card renders the
-                // membership, not the number. See the C8 report.
-                _state.value = VerificationState.Verified(memberNumber = null)
+                // memberNumber now decoded (2026-09-04, scoped re-review
+                // finding M-6) - StartL2VerificationResult previously left
+                // it null unconditionally even though the backend sends it
+                // for exactly this status.
+                _state.value = VerificationState.Verified(memberNumber = result.memberNumber)
                 return
             }
 

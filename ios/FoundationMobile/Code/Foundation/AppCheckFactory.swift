@@ -35,7 +35,9 @@ final class AppCheckFactory: NSObject, AppCheckProviderFactory {
         // console as "App Check debug token: …") which must be registered
         // in Firebase Console → App Check → debug tokens.
         //
-        // Deployment target is iOS 16+, so AppAttestProvider is always
+        // Deployment target is iOS 18+ (project.pbxproj's real value, not
+        // the plan's original iOS 16+ assumption - corrected 2026-09-04,
+        // scoped re-review finding M-1), so AppAttestProvider is always
         // available on real devices — no DeviceCheck-on-old-iOS fallback
         // needed in code (Firebase auto-falls-back to DeviceCheck for
         // pre-iOS-14 devices, which we don't support).

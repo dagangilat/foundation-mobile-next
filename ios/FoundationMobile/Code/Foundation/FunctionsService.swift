@@ -56,6 +56,13 @@ struct StartL2VerificationResult: Decodable, Sendable {
     /// AD-2 in the fork plan. Decoded only so the shape stays honest.
     let deepLink: String?
     let getProofParamsUrl: String?
+    /// Set only on the `already_verified_l2` short-circuit (`passport.js:129`
+    /// returns `{ status, memberNumber }` for that case specifically) - `nil`
+    /// on every other status. Added 2026-09-04 (scoped re-review finding
+    /// M-6): this field previously wasn't decoded at all, so a member who
+    /// was already verified saw no member number on their `.verified` state,
+    /// even though the server sent one.
+    let memberNumber: Int?
 }
 
 struct L2VerificationStatusResult: Decodable, Sendable {
