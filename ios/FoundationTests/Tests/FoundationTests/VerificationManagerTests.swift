@@ -211,6 +211,39 @@ final class VerificationManagerTests: XCTestCase {
         XCTAssertNil(FoundationVerificationManager.terminalRejectionMessage(for: SomeOtherError()))
     }
 
+    // MARK: - isTerminalSuccess: which getL2VerificationStatus status values
+    // end the poll with .verified. Added 2026-09-04 (scoped re-review finding
+    // N-2): "member_created"/"member_upgraded" were the exact strings this
+    // poller had wrong until 2026-09-03 (it only recognized "verified", which
+    // the backend never returns), so this is the platform that most needed a
+    // pin against real backend vocabulary, not least - Android already has 8
+    // equivalent cases.
+
+    func testRealBackendSuccessStatusesAreTerminal() {
+        XCTAssertTrue(FoundationVerificationManager.isTerminalSuccess("member_created"))
+        XCTAssertTrue(FoundationVerificationManager.isTerminalSuccess("member_upgraded"))
+        XCTAssertTrue(FoundationVerificationManager.isTerminalSuccess("already_verified_l2"))
+    }
+
+    /// The backend never actually returns this - kept as a defensive floor
+    /// against a future rename silently stranding the poller, matching
+    /// Android's identical inclusion of "verified" in its own accepted set.
+    func testVerifiedIsAcceptedDefensively() {
+        XCTAssertTrue(FoundationVerificationManager.isTerminalSuccess("verified"))
+    }
+
+    /// Non-terminal statuses ("pending", "request_created") and anything
+    /// unrecognized must NOT be classified success, or pollUntilVerified
+    /// would stop polling before the member actually reaches l2.
+    func testNonTerminalStatusesAreNotClassifiedSuccess() {
+        for status in ["pending", "request_created", "", "MEMBER_CREATED", "bogus-future-status"] {
+            XCTAssertFalse(
+                FoundationVerificationManager.isTerminalSuccess(status),
+                "\(status) must not be classified as terminal success"
+            )
+        }
+    }
+
     private static let allStates: [VerificationState] = [
         .idle, .notRegistered, .starting, .awaitingProof, .polling,
         .verified(memberNumber: 42), .failed("nope"),

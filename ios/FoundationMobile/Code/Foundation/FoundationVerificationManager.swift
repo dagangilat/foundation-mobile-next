@@ -166,8 +166,7 @@ final class FoundationVerificationManager: ObservableObject {
                 // "verified" itself is kept here too, defensively - matching
                 // Android's TERMINAL_SUCCESS_STATUSES - so a future backend
                 // rename to that value cannot silently strand this poller.
-                if status.status == "member_created" || status.status == "member_upgraded"
-                    || status.status == "already_verified_l2" || status.status == "verified" {
+                if FoundationVerificationManager.isTerminalSuccess(status.status) {
                     guard state == .polling else { return }
                     state = .verified(memberNumber: status.memberNumber)
                     return
@@ -227,5 +226,21 @@ final class FoundationVerificationManager: ObservableObject {
         guard ns.code == FunctionsErrorCode.failedPrecondition.rawValue
             || ns.code == FunctionsErrorCode.alreadyExists.rawValue else { return nil }
         return ns.localizedDescription
+    }
+
+    /// Whether a `getL2VerificationStatus` status string is terminal-success.
+    ///
+    /// Pulled out of `pollUntilVerified`'s loop for the same reason as
+    /// `terminalRejectionMessage(for:)` above: no DI seam on `FunctionsService
+    /// .shared` means this pure function, not a live round-trip, is what a
+    /// unit test can actually exercise. Added 2026-09-04 (scoped re-review
+    /// finding N-2 on the whole-plan review): Android pins its equivalent set
+    /// (`TERMINAL_SUCCESS_STATUSES`) with 8 test cases; this exact string set
+    /// was the one that was actually wrong before the 2026-09-03 fix (see
+    /// `pollUntilVerified`'s comment above), so it was the platform most in
+    /// need of a pin, not least.
+    nonisolated static func isTerminalSuccess(_ status: String) -> Bool {
+        status == "member_created" || status == "member_upgraded"
+            || status == "already_verified_l2" || status == "verified"
     }
 }

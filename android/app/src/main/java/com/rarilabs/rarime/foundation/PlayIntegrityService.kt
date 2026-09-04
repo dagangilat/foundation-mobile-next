@@ -12,9 +12,16 @@ import javax.inject.Singleton
  * Android's counterpart to iOS App Attest. Rarimo's apps ship no platform
  * attestation (spec section 3); this is added work, not inherited.
  *
- * The server side already exists: @plantagoai/attestation's
- * verifyPlayIntegrity, reached through recordMobileAttestation with
- * { platform: "android", token }.
+ * The server side is NOT ready: @plantagoai/attestation's verifyPlayIntegrity
+ * (shared/packages/attestation/src/server.ts) is an unimplemented stub that
+ * throws - recordMobileAttestation maps that to HttpsError("unimplemented"),
+ * so a call from here today always fails server-side. Confirmed live via
+ * the mobile-fork-rebrand plan's final review (finding I-4, 2026-09-04) -
+ * this class's own client-side logic is correct and complete; the gap is
+ * entirely server-side, blocked on real Play Console app registration this
+ * fork doesn't have yet. See progress.md's I-4 ruling for the full context.
+ * The call below is written correctly and will start working once that
+ * backend lands - nothing here needs to change for that.
  */
 @Singleton
 class PlayIntegrityService @Inject constructor(
