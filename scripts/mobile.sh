@@ -345,6 +345,18 @@ cmd_firebase() {
   has jq || die "jq missing - run: scripts/mobile.sh setup"
   step "Firebase login"
   firebase projects:list --json >/dev/null 2>&1 || firebase login
+  # Logged in is not enough: the account must be a member of the project, or
+  # every call below fails with 403 "The caller does not have permission".
+  if ! firebase projects:list --json 2>/dev/null | sed -n '/^{/,$p' \
+      | jq -e --arg p "$FIREBASE_PROJECT" '.result[]? | select(.projectId == $p)' >/dev/null 2>&1; then
+    bad "the logged-in Google account cannot access $FIREBASE_PROJECT"
+    firebase login:list 2>/dev/null | sed 's/^/    /' || true
+    echo "  Either log in with the account that owns the project:" >&2
+    echo "    firebase logout && firebase login" >&2
+    echo "  or add this account as Editor in the Firebase console (Project settings > Users and permissions):" >&2
+    echo "    https://console.firebase.google.com/project/$FIREBASE_PROJECT/settings/iam" >&2
+    die "no access to $FIREBASE_PROJECT"
+  fi
   ok "logged in; project $FIREBASE_PROJECT"
 
   step "iOS app"
@@ -385,8 +397,12 @@ cmd_firebase() {
       ok "already registered: $s"
     else
       # The API takes bare hex; keytool prints colon-separated uppercase.
-      firebase apps:android:sha:create "$and_id" "$(echo "$s" | tr -d ':' | tr 'A-F' 'a-f')" --project "$FIREBASE_PROJECT" >/dev/null
-      ok "registered: $s"
+      if firebase apps:android:sha:create "$and_id" "$(echo "$s" | tr -d ':' | tr 'A-F' 'a-f')" --project "$FIREBASE_PROJECT" >/dev/null; then
+        ok "registered: $s"
+      else
+        warn "could not register $s"
+        firebase_reason
+      fi
     fi
   done
   [ -z "${PLAY_APP_SIGNING_SHA256:-}" ] && warn "Play app signing key not added: copy its SHA-256 from Play Console > App integrity, set PLAY_APP_SIGNING_SHA256 in $ENV_FILE and re-run"
