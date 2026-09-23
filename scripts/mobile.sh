@@ -57,6 +57,10 @@ AVD_NAME="FoundationPixel"
 
 export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 ENV_FILE="$HOME/.foundation-mobile.env"
+# fastlane and its gems install here instead of Homebrew Ruby's shared gem
+# directory, which can hold root-owned files from an earlier `sudo gem install`
+# (bundle install then fails with "Permission denied ... plugins/rdoc_plugin.rb").
+export BUNDLE_PATH="${BUNDLE_PATH:-$HOME/.foundation-mobile/gems}"
 # shellcheck disable=SC1090
 [ -f "$ENV_FILE" ] && . "$ENV_FILE"
 
@@ -125,11 +129,66 @@ sha256_of() { # keystore alias storepass
 }
 
 # Firebase CLI JSON: the appId of the app registered for APP_ID on a platform.
+# Anything the CLI prints before the JSON (update notices) is dropped.
 firebase_app_id() { # IOS|ANDROID
   firebase apps:list "$1" --project "$FIREBASE_PROJECT" --json 2>/dev/null \
+    | sed -n '/^{/,$p' \
     | jq -r --arg id "$APP_ID" \
-        '.result[]? | select(.bundleId == $id or .packageName == $id or .namespace == $id) | .appId' \
+        '.result[]? | select(.bundleId == $id or .packageName == $id or .namespace == $id) | .appId' 2>/dev/null \
     | head -1 || true
+}
+
+# The appId in an existing config file, if that file is for APP_ID in
+# FIREBASE_PROJECT. Covers an app the list call does not return.
+config_app_id() { # IOS|ANDROID
+  if [ "$1" = IOS ]; then
+    [ -f "$IOS_PLIST" ] || return 0
+    [ "$(plutil -extract BUNDLE_ID raw -o - "$IOS_PLIST" 2>/dev/null || true)" = "$APP_ID" ] || return 0
+    [ "$(plutil -extract PROJECT_ID raw -o - "$IOS_PLIST" 2>/dev/null || true)" = "$FIREBASE_PROJECT" ] || return 0
+    plutil -extract GOOGLE_APP_ID raw -o - "$IOS_PLIST" 2>/dev/null || true
+  else
+    [ -f "$ANDROID_JSON" ] || return 0
+    jq -r --arg id "$APP_ID" --arg p "$FIREBASE_PROJECT" \
+      'select(.project_info.project_id == $p) | .client[]?
+       | select(.client_info.android_client_info.package_name == $id)
+       | .client_info.mobilesdk_app_id' "$ANDROID_JSON" 2>/dev/null | head -1 || true
+  fi
+}
+
+# Find the app for APP_ID on a platform, creating it if the project has none.
+# On failure, show what the project holds and the reason Firebase gave.
+ensure_firebase_app() { # IOS|ANDROID
+  local id
+  id="$(firebase_app_id "$1")"
+  [ -n "$id" ] || id="$(config_app_id "$1")"
+  if [ -z "$id" ]; then
+    local flag=--bundle-id name="Foundation Mobile iOS"
+    [ "$1" = ANDROID ] && { flag=--package-name; name="Foundation Mobile Android"; }
+    if firebase apps:create "$1" "$name" "$flag" "$APP_ID" --project "$FIREBASE_PROJECT" >&2; then
+      id="$(firebase_app_id "$1")"
+    else
+      firebase_failure "$1"
+    fi
+  fi
+  [ -n "$id" ] || die "could not find or create the $1 app in $FIREBASE_PROJECT"
+  echo "$id"
+}
+
+firebase_failure() { # IOS|ANDROID
+  {
+    echo
+    echo "$1 apps already in $FIREBASE_PROJECT:"
+    firebase apps:list "$1" --project "$FIREBASE_PROJECT" 2>&1 | sed 's/^/    /' || true
+    if [ -f firebase-debug.log ]; then
+      echo "Firebase's reason (from firebase-debug.log):"
+      grep -Eo '"message": *"[^"]*"|HTTP Error: [0-9]+[^"]*' firebase-debug.log | tail -3 | sed 's/^/    /' || true
+    fi
+    echo "Common causes:"
+    echo "  - PERMISSION_DENIED / 403: your Google account needs the Owner, Editor or Firebase Admin role on $FIREBASE_PROJECT."
+    echo "  - ALREADY_EXISTS / 409: $APP_ID is registered in another Firebase project, or was deleted here in the last 30 days"
+    echo "    (restore it under Project settings > General > Your apps, or remove it from the other project)."
+  } >&2
+  die "Firebase refused to create the $1 app; paste the lines above into the thread"
 }
 
 # Write a platform's Firebase config file. apps:sdkconfig --out will not
@@ -273,23 +332,13 @@ cmd_firebase() {
 
   step "iOS app"
   local ios_id
-  ios_id="$(firebase_app_id IOS)"
-  if [ -z "$ios_id" ]; then
-    firebase apps:create IOS "Foundation Mobile iOS" --bundle-id "$APP_ID" --project "$FIREBASE_PROJECT"
-    ios_id="$(firebase_app_id IOS)"
-  fi
-  [ -n "$ios_id" ] || die "could not find or create the iOS app in $FIREBASE_PROJECT"
+  ios_id="$(ensure_firebase_app IOS)"
   fetch_sdkconfig IOS "$ios_id" "$IOS_PLIST"
   ok "$IOS_PLIST ($ios_id)"
 
   step "Android app"
   local and_id
-  and_id="$(firebase_app_id ANDROID)"
-  if [ -z "$and_id" ]; then
-    firebase apps:create ANDROID "Foundation Mobile Android" --package-name "$APP_ID" --project "$FIREBASE_PROJECT"
-    and_id="$(firebase_app_id ANDROID)"
-  fi
-  [ -n "$and_id" ] || die "could not find or create the Android app in $FIREBASE_PROJECT"
+  and_id="$(ensure_firebase_app ANDROID)"
 
   step "Android SHA-256 fingerprints (Google sign-in for Drive backup, Play Integrity)"
   use_java
