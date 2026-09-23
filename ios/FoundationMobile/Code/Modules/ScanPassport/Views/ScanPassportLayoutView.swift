@@ -24,30 +24,44 @@ struct ScanPassportLayoutView<Content: View>: View {
         self.content = content()
     }
 
-    var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 38) {
-                ZStack(alignment: .center) {
-                    HorizontalStepIndicator(steps: steps, currentStep: currentStep)
+    /// The passport flow as the user sees it: photo page, chip, then the
+    /// proof being built (shown on Home's status card).
+    private static var displayedStepCount: Int { 3 }
 
-                    HStack(alignment: .center) {
-                        if let onPrevious {
-                            AppIconButton(icon: .arrowLeftSLine, action: onPrevious)
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 0) {
+                    FoundationBackHeader("Verify", onBack: onPrevious ?? onClose)
+                    if onPrevious != nil {
+                        Button(action: onClose) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(FoundationTheme.muted)
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
                         }
-                        Spacer()
-                        AppIconButton(icon: .closeFill, action: onClose)
+                        .accessibilityLabel(Text("Close"))
+                        .padding(.trailing, -12)
                     }
                 }
-                Text(title)
-                    .h2()
-                    .foregroundStyle(.textPrimary)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title)
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(FoundationTheme.text)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("Step \(currentStep + 1) of \(Self.displayedStepCount)")
+                        .font(.system(size: 16))
+                        .foregroundColor(FoundationTheme.muted)
+                }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 40)
+            .padding(.horizontal, FoundationTheme.horizontalPadding)
+            .padding(.bottom, 24)
             content
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.top, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.top, 12)
+        .background(FoundationTheme.bg.ignoresSafeArea())
     }
 }
 

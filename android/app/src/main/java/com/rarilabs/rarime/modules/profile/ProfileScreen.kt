@@ -3,20 +3,25 @@ package com.rarilabs.rarime.modules.profile
 import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,21 +32,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BuildConfig
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
 import com.rarilabs.rarime.data.enums.AppIcon
-import com.rarilabs.rarime.data.enums.toLocalizedString
-import com.rarilabs.rarime.ui.components.AppIcon
+import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
 import com.rarilabs.rarime.ui.components.ConfirmationDialog
-import com.rarilabs.rarime.ui.components.PassportImage
-import com.rarilabs.rarime.ui.theme.FoundationTheme
+import com.rarilabs.rarime.ui.theme.FoundationBrand
+import com.rarilabs.rarime.ui.theme.FoundationType
 import com.rarilabs.rarime.util.Screen
 import com.rarilabs.rarime.util.SendEmailUtil
 import com.rarilabs.rarime.util.WalletUtil
@@ -49,7 +58,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
-    appIcon: AppIcon, navigate: (String) -> Unit, viewModel: ProfileViewModel = hiltViewModel()
+    appIcon: AppIcon,
+    navigate: (String) -> Unit,
+    onBack: () -> Unit = {},
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var isFeedbackDialogShown by remember { mutableStateOf(false) }
@@ -74,6 +86,9 @@ fun ProfileScreen(
         navigate = navigate,
         colorScheme = colorScheme,
         appIcon = appIcon,
+        email = viewModel.signedInEmail,
+        onBack = onBack,
+        onSignOut = viewModel::signOut,
         isDeletingAccount = isDeletingAccount,
         deleteAccountError = deleteAccountError,
         onFeedbackConfirm = {
@@ -85,6 +100,17 @@ fun ProfileScreen(
         })
 }
 
+/**
+ * Foundation Profile (approved mockup "Profile"): who is signed in, then
+ * grouped rows - backup and recovery, passcode and biometrics; privacy,
+ * terms, help and feedback; sign out and delete account.
+ *
+ * Hidden, not deleted: the theme and app-icon rows (Foundation is light-only
+ * with one icon), the Ethereum address line and passport thumbnail. Their
+ * routes still exist in MainScreenRoutes; nothing links to them from here.
+ * [evmAddress], [passportImage], [colorScheme] and [appIcon] are still
+ * accepted so the call site is unchanged.
+ */
 @Composable
 fun ProfileScreenContent(
     appIcon: AppIcon,
@@ -92,6 +118,9 @@ fun ProfileScreenContent(
     passportImage: Bitmap?,
     navigate: (String) -> Unit,
     colorScheme: AppColorScheme,
+    email: String? = null,
+    onBack: () -> Unit = {},
+    onSignOut: () -> Unit = {},
     isDeletingAccount: Boolean = false,
     /** Non-empty only when the server refused the delete - see below. */
     deleteAccountError: String = "",
@@ -99,263 +128,187 @@ fun ProfileScreenContent(
     onClearConfirm: suspend () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
+    var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = Modifier
             .fillMaxSize()
+            .background(FoundationBrand.Bg)
             .verticalScroll(rememberScrollState())
-            .background(FoundationTheme.colors.backgroundPrimary)
-            .padding(20.dp)
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
-        Text(
-            text = stringResource(R.string.profile),
-            style = FoundationTheme.typography.subtitle4,
-            color = FoundationTheme.colors.textPrimary,
+        FoundationNavHeader(
+            title = stringResource(R.string.profile),
+            onBack = onBack,
+            modifier = Modifier.offset(x = (-12).dp),
         )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Column(
-                modifier = Modifier
-                    .background(
-                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
-                    )
-                    .padding(20.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(
-                            text = stringResource(R.string.account),
-                            style = FoundationTheme.typography.buttonLarge,
-                            color = FoundationTheme.colors.textPrimary
-                        )
-                        Text(
-                            text = WalletUtil.formatAddress(
-                                stringResource(
-                                    R.string.user_address, evmAddress
-                                )
-                            ),
-                            style = FoundationTheme.typography.body5,
-                            color = FoundationTheme.colors.textSecondary
-                        )
-                    }
-                    PassportImage(image = passportImage, size = 40.dp)
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .background(
-                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(
-                        iconId = R.drawable.ic_user_shared_2_line,
-                        title = stringResource(R.string.recovery_method),
-                        onClick = { navigate(Screen.Main.Profile.ExportKeys.route) })
-                    ProfileRow(
-                        iconId = R.drawable.ic_shield_keyhole_line,
-                        title = stringResource(R.string.auth_method),
-                        onClick = { navigate(Screen.Main.Profile.AuthMethod.route) })
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .background(
-                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(
-                        iconId = R.drawable.ic_sun_line,
-                        title = stringResource(R.string.theme),
-                        value = colorScheme.toLocalizedString(),
-                        onClick = { navigate(Screen.Main.Profile.Theme.route) })
-                    ProfileRow(
-                        iconId = R.drawable.ic_foundation_mark,
-                        title = stringResource(R.string.app_icon),
-                        value = appIcon.toLocalizedString(),
-                        onClick = { navigate(Screen.Main.Profile.AppIcon.route) })
-
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .background(
-                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    ProfileRow(
-                        iconId = R.drawable.ic_question_line,
-                        title = stringResource(R.string.privacy_policy),
-                        onClick = { navigate(Screen.Main.Profile.Privacy.route) })
-                    ProfileRow(
-                        iconId = R.drawable.ic_flag_line,
-                        title = stringResource(R.string.terms_of_use),
-                        onClick = { navigate(Screen.Main.Profile.Terms.route) })
-                    ProfileRow(
-                        iconId = R.drawable.ic_chat,
-                        title = stringResource(R.string.give_us_feedback),
-                        onClick = {
-                            scope.launch {
-                                onFeedbackConfirm.invoke()
-                            }
-                        })
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .background(
-                        FoundationTheme.colors.componentPrimary, RoundedCornerShape(20.dp)
-                    )
-                    .padding(16.dp)
-            ) {
-                var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
-
-                ProfileRow(
-                    iconId = R.drawable.ic_trash_simple,
-                    title = if (isDeletingAccount) "Deleting account…" else "Delete account",
-                    onClick = { if (!isDeletingAccount) isDeleteAccountDialogShown = true },
-                    contentColors = getProfileRowContentColors(
-                        leadingIcon = FoundationTheme.colors.errorMain,
-                        leadingIconBg = FoundationTheme.colors.errorLighter,
-                        title = FoundationTheme.colors.errorMain,
-                        value = FoundationTheme.colors.errorMain,
-                        trailingIcon = Color.Transparent,
-                    ),
-                )
-
-                if (isDeleteAccountDialogShown) {
-                    ConfirmationDialog(
-                        title = stringResource(R.string.delete_profile_title),
-                        subtitle = stringResource(R.string.delete_profile_desc),
-                        onConfirm = {
-                            // Dismiss FIRST. Deletion used to be unfailable from
-                            // this screen's point of view - it always ended in a
-                            // process restart - so leaving the dialog up cost
-                            // nothing. Now that a server refusal is a real
-                            // outcome, an undismissed AlertDialog would sit on
-                            // top of the error below and the user would see
-                            // nothing happen at all.
-                            isDeleteAccountDialogShown = false
-                            scope.launch {
-                                onClearConfirm.invoke()
-                            }
-                        },
-                        onCancel = { isDeleteAccountDialogShown = false },
-                        cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
-                        confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
-                    )
-                }
-
-                // Only ever reached when the server refused: on success the
-                // process restarts before this can recompose.
-                if (deleteAccountError.isNotEmpty()) {
+        if (!email.isNullOrBlank()) {
+            ProfileGroup(contentPadding = 16.dp) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
-                        modifier = Modifier.padding(top = 12.dp),
-                        text = deleteAccountError,
-                        style = FoundationTheme.typography.body4,
-                        color = FoundationTheme.colors.errorMain,
+                        text = "SIGNED IN AS",
+                        style = FoundationType.overline,
+                        color = FoundationBrand.Muted,
                     )
+                    Text(text = email, style = FoundationType.bodyLarge, color = FoundationBrand.Text)
                 }
             }
-            Text(
-                text = stringResource(R.string.app_version, BuildConfig.VERSION_NAME),
-                style = FoundationTheme.typography.body5,
-                color = FoundationTheme.colors.textPlaceholder
+        }
+
+        ProfileGroup {
+            ProfileRow(
+                title = "Backup and recovery",
+                onClick = { navigate(Screen.Main.Profile.ExportKeys.route) },
+            )
+            ProfileRow(
+                title = "Passcode and biometrics",
+                showDivider = false,
+                onClick = { navigate(Screen.Main.Profile.AuthMethod.route) },
             )
         }
+
+        ProfileGroup {
+            ProfileRow(
+                title = "Privacy policy",
+                onClick = { navigate(Screen.Main.Profile.Privacy.route) },
+            )
+            ProfileRow(
+                title = "Terms of use",
+                onClick = { navigate(Screen.Main.Profile.Terms.route) },
+            )
+            ProfileRow(
+                title = "Help and feedback",
+                showDivider = false,
+                onClick = {
+                    scope.launch {
+                        onFeedbackConfirm.invoke()
+                    }
+                },
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ProfileGroup {
+                ProfileRow(
+                    title = "Sign out",
+                    titleColor = FoundationBrand.Danger,
+                    showChevron = false,
+                    enabled = !isDeletingAccount,
+                    onClick = onSignOut,
+                )
+                ProfileRow(
+                    title = if (isDeletingAccount) "Deleting account…" else "Delete account",
+                    titleColor = FoundationBrand.Danger,
+                    showChevron = false,
+                    showDivider = false,
+                    onClick = { if (!isDeletingAccount) isDeleteAccountDialogShown = true },
+                )
+            }
+
+            // Only ever reached when the server refused: on success the
+            // process restarts before this can recompose.
+            if (deleteAccountError.isNotEmpty()) {
+                Text(
+                    text = deleteAccountError,
+                    style = FoundationType.callout,
+                    color = FoundationBrand.Danger,
+                )
+            }
+        }
+
+        if (isDeleteAccountDialogShown) {
+            ConfirmationDialog(
+                title = stringResource(R.string.delete_profile_title),
+                subtitle = stringResource(R.string.delete_profile_desc),
+                onConfirm = {
+                    // Dismiss FIRST. Deletion used to be unfailable from
+                    // this screen's point of view - it always ended in a
+                    // process restart - so leaving the dialog up cost
+                    // nothing. Now that a server refusal is a real
+                    // outcome, an undismissed AlertDialog would sit on
+                    // top of the error below and the user would see
+                    // nothing happen at all.
+                    isDeleteAccountDialogShown = false
+                    scope.launch {
+                        onClearConfirm.invoke()
+                    }
+                },
+                onCancel = { isDeleteAccountDialogShown = false },
+                cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
+                confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Foundation ${BuildConfig.VERSION_NAME}",
+            style = FoundationType.footnote,
+            color = FoundationBrand.Muted,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
-data class ProfileRowContentColors(
-    val leadingIcon: Color,
-    val leadingIconBg: Color,
-    val title: Color,
-    val value: Color,
-    val trailingIcon: Color,
-)
-
+/** White grouped container: 12 radius, hairline border, rows inside. */
 @Composable
-fun getProfileRowContentColors(
-    leadingIcon: Color = FoundationTheme.colors.textPrimary,
-    leadingIconBg: Color = FoundationTheme.colors.componentPrimary,
-    title: Color = FoundationTheme.colors.textPrimary,
-    value: Color = FoundationTheme.colors.textSecondary,
-    trailingIcon: Color = FoundationTheme.colors.textSecondary,
-): ProfileRowContentColors {
-    return ProfileRowContentColors(
-        leadingIcon = leadingIcon,
-        leadingIconBg = leadingIconBg,
-        title = title,
-        value = value,
-        trailingIcon = trailingIcon,
+private fun ProfileGroup(
+    contentPadding: Dp = 0.dp,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    val shape = RoundedCornerShape(12.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(FoundationBrand.Surface, shape)
+            .border(1.dp, FoundationBrand.Border, shape)
+            .padding(contentPadding),
+        content = content,
     )
 }
 
 @Composable
 private fun ProfileRow(
-    @DrawableRes iconId: Int,
     title: String,
-    value: String? = null,
     onClick: () -> Unit,
-
-    contentColors: ProfileRowContentColors = getProfileRowContentColors(),
+    titleColor: Color = FoundationBrand.Text,
+    showChevron: Boolean = true,
+    showDivider: Boolean = true,
+    enabled: Boolean = true,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            )
-    ) {
+    Column {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            AppIcon(
-                id = iconId,
-                size = 20.dp,
-                tint = contentColors.leadingIcon,
-                modifier = Modifier
-                    .background(contentColors.leadingIconBg, CircleShape)
-                    .padding(6.dp)
-            )
             Text(
                 text = title,
-                style = FoundationTheme.typography.buttonMedium,
-                color = contentColors.title
+                style = FoundationType.bodyLarge,
+                color = titleColor,
+                modifier = Modifier.weight(1f),
             )
+            if (showChevron) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_fnd_chevron_right),
+                    contentDescription = null,
+                    tint = FoundationBrand.Muted,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = value ?: "",
-                style = FoundationTheme.typography.body4,
-                color = contentColors.value
-            )
-            AppIcon(
-                id = R.drawable.ic_arrow_right_s_line,
-                size = 20.dp,
-                tint = contentColors.trailingIcon,
+        if (showDivider) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(FoundationBrand.Border)
             )
         }
     }
@@ -370,5 +323,6 @@ private fun ProfileScreenPreview() {
         navigate = {},
         colorScheme = AppColorScheme.LIGHT,
         appIcon = AppIcon.WHITE,
+        email = "you@example.com",
     )
 }

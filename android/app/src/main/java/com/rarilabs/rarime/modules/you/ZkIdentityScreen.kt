@@ -33,7 +33,10 @@ fun ZkIdentityScreen(
         })
         if (passport != null) {
 
-            ZkIdentityPassport(navigate = navigate)
+            ZkIdentityPassport(navigate = navigate, onBack = {
+                setBottomBarVisibility(true)
+                onClose()
+            })
         } else {
 
 

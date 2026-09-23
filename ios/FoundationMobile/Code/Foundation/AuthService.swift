@@ -17,6 +17,13 @@ final class AuthService: ObservableObject {
 
     private var listener: AuthStateDidChangeListenerHandle?
 
+    /// The signed-in member's email, when the Firebase user record carries
+    /// one. Display only (Profile's "Signed in as" card).
+    var email: String? {
+        guard isSignedIn else { return nil }
+        return Auth.auth().currentUser?.email
+    }
+
     init() {
         // Seed synchronously from the SDK's already-restored session BEFORE
         // attaching the listener. Firebase dispatches the first

@@ -25,6 +25,7 @@ import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.PassportCardLook
 import com.rarilabs.rarime.data.enums.PassportIdentifier
 import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -35,6 +36,7 @@ import com.rarilabs.rarime.util.ErrorHandler
 @Composable
 fun ZkIdentityPassport(
     navigate: (String) -> Unit,
+    onBack: (() -> Unit)? = null,
 ) {
 
     val homeViewModel = LocalZkIdentityScreenViewModel.current
@@ -77,6 +79,7 @@ fun ZkIdentityPassport(
         registrationStatus = registrationStatus,
         retryRegistration = retryRegistration,
         innerPaddings = innerPaddings,
+        onBack = onBack,
     )
 }
 
@@ -92,7 +95,8 @@ fun ZkIdentityPassportContent(
     onIdentifierChange: (PassportIdentifier) -> Unit,
     registrationStatus: IdentityCardBottomBarUiState,
     retryRegistration: () -> Unit,
-    innerPaddings: Map<ScreenInsets, Number>
+    innerPaddings: Map<ScreenInsets, Number>,
+    onBack: (() -> Unit)? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -100,9 +104,18 @@ fun ZkIdentityPassportContent(
                 .fillMaxWidth()
                 .padding(top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp)
                 .padding(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // With no tab bar, this screen is pushed from Home's status card
+            // and needs its own way back.
+            if (onBack != null) {
+                FoundationIconButton(
+                    icon = R.drawable.ic_fnd_chevron_left,
+                    contentDescription = "Back",
+                    onClick = onBack,
+                )
+            }
             Text(
                 text = stringResource(R.string.you),
                 style = FoundationTheme.typography.subtitle4,

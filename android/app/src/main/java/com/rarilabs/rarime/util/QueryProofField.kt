@@ -6,7 +6,7 @@ enum class QueryProofField(
     val bitIndex: Int,
     val displayName: String
 ) { //not sure is this good for app architecture
-    Nullifier(0, "Incognito ID"),
+    Nullifier(0, "Anonymous ID"),
     BirthDate(1, "Birth date"),
     ExpirationDate(2, "Expiration date"),
     Name(3, "Name"),

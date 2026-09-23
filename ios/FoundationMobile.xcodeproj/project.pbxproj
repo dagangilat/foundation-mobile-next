@@ -29,6 +29,9 @@
 		563529E92BB072B80027C910 /* IdentityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563529E82BB072B80027C910 /* IdentityView.swift */; };
 		563529EB2BB072FD0027C910 /* UINavigationController+HiddenNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563529EA2BB072FD0027C910 /* UINavigationController+HiddenNavBar.swift */; };
 		563529F62BB077AB0027C910 /* CardContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563529F52BB077AB0027C910 /* CardContainer.swift */; };
+		008DA92F2FB9714A0119833D /* FoundationTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BE308277ACD0E63BCA4EF /* FoundationTheme.swift */; };
+		91A5F433114EC4E0A35D7078 /* FoundationHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4BCFFF21641524FBF112D9 /* FoundationHero.swift */; };
+		24204EC11C2E476449502A6A /* FoundationLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C043041E7EF8612B50AE4E16 /* FoundationLoadingView.swift */; };
 		563706792C5CF374002F3AF4 /* MrzFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563706782C5CF374002F3AF4 /* MrzFormView.swift */; };
 		564169602BE273260057AC03 /* PassportCardLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5641695F2BE273260057AC03 /* PassportCardLook.swift */; };
 		5641CC432C872F77007B7A0D /* ExternalRequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5641CC422C872F77007B7A0D /* ExternalRequestsView.swift */; };
@@ -380,6 +383,9 @@
 		563529E82BB072B80027C910 /* IdentityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityView.swift; sourceTree = "<group>"; };
 		563529EA2BB072FD0027C910 /* UINavigationController+HiddenNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+HiddenNavBar.swift"; sourceTree = "<group>"; };
 		563529F52BB077AB0027C910 /* CardContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardContainer.swift; sourceTree = "<group>"; };
+		9C1BE308277ACD0E63BCA4EF /* FoundationTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationTheme.swift; sourceTree = "<group>"; };
+		7C4BCFFF21641524FBF112D9 /* FoundationHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationHero.swift; sourceTree = "<group>"; };
+		C043041E7EF8612B50AE4E16 /* FoundationLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationLoadingView.swift; sourceTree = "<group>"; };
 		563706782C5CF374002F3AF4 /* MrzFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MrzFormView.swift; sourceTree = "<group>"; };
 		5641695F2BE273260057AC03 /* PassportCardLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassportCardLook.swift; sourceTree = "<group>"; };
 		5641CC422C872F77007B7A0D /* ExternalRequestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalRequestsView.swift; sourceTree = "<group>"; };
@@ -1007,6 +1013,9 @@
 				56E2D91F2BCED460006E725D /* AppCheckbox.swift */,
 				5613F4312BD18409008E6CBE /* AppSkeleton.swift */,
 				563529F52BB077AB0027C910 /* CardContainer.swift */,
+				9C1BE308277ACD0E63BCA4EF /* FoundationTheme.swift */,
+				7C4BCFFF21641524FBF112D9 /* FoundationHero.swift */,
+				C043041E7EF8612B50AE4E16 /* FoundationLoadingView.swift */,
 				564CE3182DD7387A00D03E6D /* DotsLoadingView.swift */,
 				568B4FD02BB6D88F001C9C74 /* Divider.swift */,
 				56DAA3042BB72E35002CF710 /* InfoAlert.swift */,
@@ -1959,6 +1968,9 @@
 				56933DF32BBAC2940068C894 /* ScanPassportMRZView.swift in Sources */,
 				56A6C75C2BBC2CD500992562 /* PassportUtils.swift in Sources */,
 				563529F62BB077AB0027C910 /* CardContainer.swift in Sources */,
+				008DA92F2FB9714A0119833D /* FoundationTheme.swift in Sources */,
+				91A5F433114EC4E0A35D7078 /* FoundationHero.swift in Sources */,
+				24204EC11C2E476449502A6A /* FoundationLoadingView.swift in Sources */,
 				560F0C252BD036F900067054 /* AppTextField.swift in Sources */,
 				C75512902C86F4BC000258AD /* PushNotification.xcdatamodeld in Sources */,
 				5659151D2BE92AA90050795A /* AppIcon.swift in Sources */,
@@ -2731,7 +2743,7 @@
 			baseConfigurationReference = CE9E82E02BA8974C00AAF885 /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
@@ -2751,7 +2763,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_NO_PIE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2788,7 +2800,7 @@
 			baseConfigurationReference = CE9E82E02BA8974C00AAF885 /* Development.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
@@ -2808,7 +2820,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_NO_PIE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2911,7 +2923,7 @@
 			baseConfigurationReference = CE9E82E22BA8975F00AAF885 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
@@ -2931,7 +2943,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_NO_PIE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3027,7 +3039,7 @@
 			baseConfigurationReference = CE9E82E22BA8975F00AAF885 /* Production.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon CatIcon";
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "GreenIcon GradientIcon WhiteIcon";
 				ASSETCATALOG_COMPILER_APPICON_NAME = BlackIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FoundationMobile/FoundationMobile.entitlements;
@@ -3047,7 +3059,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_NO_PIE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (

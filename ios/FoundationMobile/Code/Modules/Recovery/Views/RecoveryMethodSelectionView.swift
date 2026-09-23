@@ -2,6 +2,8 @@ import CloudKit
 import SwiftUI
 
 struct RecoveryMethodSelectionView: View {
+    private static let showsComingSoonMethods = false
+
     @EnvironmentObject private var userManager: UserManager
 
     @StateObject var viewModel = ICloudRecoveryViewModel()
@@ -34,23 +36,27 @@ struct RecoveryMethodSelectionView: View {
                         ))
                     }
                 }
-                RecoveryMethodItem(
-                    icon: .emotionHappyLine,
-                    title: String(localized: "zkFace"),
-                    description: String(localized: "Biometric facial key"),
-                    isRecommended: false,
-                    isDisabled: true
-                ) {
-                    soonBadge
-                }
-                RecoveryMethodItem(
-                    icon: .box3Line,
-                    title: String(localized: "Objects"),
-                    description: String(localized: "Make any object your key"),
-                    isRecommended: false,
-                    isDisabled: true
-                ) {
-                    soonBadge
+                // The "coming soon" methods are hidden in the Foundation
+                // build (upstream feature names, not Foundation features).
+                if Self.showsComingSoonMethods {
+                    RecoveryMethodItem(
+                        icon: .emotionHappyLine,
+                        title: String(localized: "zkFace"),
+                        description: String(localized: "Biometric facial key"),
+                        isRecommended: false,
+                        isDisabled: true
+                    ) {
+                        soonBadge
+                    }
+                    RecoveryMethodItem(
+                        icon: .box3Line,
+                        title: String(localized: "Objects"),
+                        description: String(localized: "Make any object your key"),
+                        isRecommended: false,
+                        isDisabled: true
+                    ) {
+                        soonBadge
+                    }
                 }
             }
         }

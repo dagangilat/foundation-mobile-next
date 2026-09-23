@@ -57,21 +57,13 @@ struct AppView: View {
                         .transition(.backslide)
                 }
             } else {
-                VStack {
-                    Spacer()
-                    Image(.foundationMark)
-                        .square(96)
-                        .foregroundStyle(Gradients.gradientFirst)
-                        .padding(.all, 44)
-                        .background(.baseBlack)
-                        .clipShape(RoundedRectangle(cornerRadius: 48))
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.bgPrimary)
+                // Launch/loading: the Foundation hero, not a logo tile.
+                FoundationLoadingView()
             }
         }
-        .preferredColorScheme(settingsManager.colorScheme.rawScheme)
+        // Foundation is light-only. The theme picker is hidden in Profile and
+        // the stored SettingsManager.colorScheme is no longer applied.
+        .preferredColorScheme(.light)
         .blur(radius: blurRadius)
         .animation(.easeOut(duration: 0.1), value: blurRadius)
         .onChange(of: scenePhase, perform: { value in

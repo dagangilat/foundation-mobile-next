@@ -23,7 +23,7 @@ public enum QueryProofField: Int, CaseIterable {
 
     public var displayName: String {
         switch self {
-        case .nullifier: return "Incognito ID"
+        case .nullifier: return "Anonymous ID"
         case .birthDate: return "Birth date"
         case .expirationDate: return "Expiration date"
         case .name: return "Name"

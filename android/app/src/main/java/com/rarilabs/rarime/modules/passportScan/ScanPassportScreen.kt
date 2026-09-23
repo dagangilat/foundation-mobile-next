@@ -80,8 +80,10 @@ fun ScanPassportScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(
-                bottom = innerPaddings[ScreenInsets.BOTTOM]!!.toInt().dp,
-                top = innerPaddings[ScreenInsets.TOP]!!.toInt().dp
+                // Null-safe: the ScanPassportPoints route passes no insets
+                // (its ScreenInsetsContainer already pads for the bars).
+                bottom = (innerPaddings[ScreenInsets.BOTTOM]?.toInt() ?: 0).dp,
+                top = (innerPaddings[ScreenInsets.TOP]?.toInt() ?: 0).dp
             )
     ) {
         when (state) {

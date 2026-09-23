@@ -315,11 +315,19 @@ fun MainScreenRoutes(
 
         composable(Screen.ScanPassport.ScanPassportPoints.route) {
             ScreenInsetsContainer {
-                ScanPassportScreen(onClose = {
-                    coroutineScope.launch {
-                        navigateWithPopUp(Screen.Main.Identity.route)
-                    }
-                }, setVisibilityOfBottomBar = {})
+                // Closing the scan returns to Home, where the status card
+                // started it (the Identity tab it used to return to is hidden).
+                // ScreenInsetsContainer already pads for the system bars, so
+                // the screen itself gets zero insets.
+                ScanPassportScreen(
+                    onClose = {
+                        coroutineScope.launch {
+                            navigateWithPopUp(Screen.Main.Home.route)
+                        }
+                    },
+                    innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+                    setVisibilityOfBottomBar = {},
+                )
             }
         }
 
@@ -353,6 +361,9 @@ fun MainScreenRoutes(
                 }
             }
 
+            // No longer a tab: Home's status card opens it ("Scan passport").
+            // It runs the passport scan, then the registration the card waits
+            // for, and closes back to Main's start destination, Home.
             composable(Screen.Main.Identity.route) {
                 AuthGuard(navigate = simpleNavigate) {
                     ZkIdentityScreen(navigate = simpleNavigate, onClose = {
@@ -367,7 +378,15 @@ fun MainScreenRoutes(
                 AuthGuard(navigate = navigateWithPopUp) {
                     ScreenInsetsContainer {
                         ProfileScreen(
-                            appIcon = appIcon, navigate = { simpleNavigate(it) })
+                            appIcon = appIcon,
+                            navigate = { simpleNavigate(it) },
+                            // Pushed from Home's header now, not a tab. If it is
+                            // somehow the root, fall back to Home.
+                            onBack = {
+                                if (!navController.popBackStack()) {
+                                    navigateWithPopUp(Screen.Main.Home.route)
+                                }
+                            })
                     }
                 }
             }

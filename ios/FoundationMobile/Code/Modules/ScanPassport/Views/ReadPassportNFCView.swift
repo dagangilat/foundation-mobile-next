@@ -16,24 +16,30 @@ struct ReadPassportNFCView: View {
     var body: some View {
         ScanPassportLayoutView(
             currentStep: 1,
-            title: "NFC Reader",
+            title: "Hold your phone on the passport",
             onPrevious: onBack,
             onClose: onClose
         ) {
-            GeometryReader { geometry in
-                VStack(spacing: 24) {
-                    LoopVideoPlayer(url: passportViewModel.isUSA ? Videos.readNfcUsa : Videos.readNfc)
-                        .aspectRatio(16 / 9, contentMode: .fill)
-                        .frame(width: geometry.size.width)
-                        .clipped()
+            VStack(spacing: 24) {
+                LoopVideoPlayer(url: passportViewModel.isUSA ? Videos.readNfcUsa : Videos.readNfc)
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .padding(.horizontal, FoundationTheme.horizontalPadding)
 
-                    Spacer()
+                (Text("Hold your phone flat").foregroundColor(FoundationTheme.text).bold()
+                    + Text(" on the photo page until it buzzes. Most chips read in a few seconds."))
+                    .font(.system(size: 16))
+                    .foregroundColor(FoundationTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .foundationCard(padding: 18)
+                    .padding(.horizontal, FoundationTheme.horizontalPadding)
 
-                    AppButton(text: "Scan", action: scanPassport)
-                        .controlSize(.large)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 24)
-                }
+                Spacer()
+
+                Button("Scan chip", action: scanPassport)
+                    .buttonStyle(FoundationPrimaryButtonStyle())
+                    .padding(.horizontal, FoundationTheme.horizontalPadding)
+                    .padding(.bottom, 24)
             }
         }
     }

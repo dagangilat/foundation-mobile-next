@@ -11,6 +11,7 @@ import com.google.android.gms.tasks.Task
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.rarilabs.rarime.foundation.DeletionOutcome
 import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
+import com.rarilabs.rarime.foundation.FoundationAuthManager
 import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -38,7 +39,18 @@ class ProfileViewModel @Inject constructor(
     private val driveBackupManager: DriveBackupManager,
     private val notificationsRepository: NotificationsRepository,
     private val accountDeletionManager: FoundationAccountDeletionManager,
+    private val authManager: FoundationAuthManager,
 ) : ViewModel() {
+
+    /** Shown as "Signed in as"; null hides that card. */
+    val signedInEmail: String? = authManager.email
+
+    /**
+     * Signs out of Foundation. MainScreen's sign-in gate observes
+     * `isSignedIn`, so the app drops back to the sign-in screen; the local
+     * identity stays on the device, as it does on iOS.
+     */
+    fun signOut() = authManager.signOut()
 
 
     val evmAddress = identityManager.evmAddress()

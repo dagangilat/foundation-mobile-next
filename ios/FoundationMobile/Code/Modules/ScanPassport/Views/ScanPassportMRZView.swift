@@ -9,7 +9,7 @@ struct ScanPassportMRZView: View {
     var body: some View {
         ScanPassportLayoutView(
             currentStep: 0,
-            title: "Scan MRZ",
+            title: "Scan the photo page",
             onClose: onClose
         ) {
             ZStack {
@@ -23,29 +23,31 @@ struct ScanPassportMRZView: View {
                     .frame(height: 228)
             }
             .frame(maxWidth: .infinity)
-            Text("Scan your passport’s first page inside the border")
-                .body4()
-                .foregroundStyle(.textSecondary)
+            .background(FoundationTheme.scanBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.horizontal, FoundationTheme.horizontalPadding)
+            Text("Lay your passport flat in good light, with no glare. Keep the photo page inside the frame.")
+                .font(.system(size: 16))
+                .foregroundColor(FoundationTheme.muted)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 24)
-                .frame(width: 250)
+                .padding(.horizontal, FoundationTheme.horizontalPadding)
+                .frame(maxWidth: .infinity)
             Spacer()
             VStack(spacing: 8) {
                 PassportScanTutorialButton()
-                AppButton(
-                    variant: .quartenary,
-                    text: "Fill Manually",
-                    action: { isManualMrzSheetPresented = true }
-                )
-                .controlSize(.large)
-                .dynamicSheet(isPresented: $isManualMrzSheetPresented, title: "Fill Manually") {
-                    MrzFormView(onSubmitted: { mrzKey in
-                        LoggerUtil.common.info("MRZ filled manually")
-                        onNext(mrzKey)
-                    })
-                }
+                Button("Enter details manually") { isManualMrzSheetPresented = true }
+                    .buttonStyle(FoundationTextButtonStyle())
+                    .frame(maxWidth: .infinity, minHeight: FoundationTheme.buttonHeight)
+                    .dynamicSheet(isPresented: $isManualMrzSheetPresented, title: "Enter details manually") {
+                        MrzFormView(onSubmitted: { mrzKey in
+                            LoggerUtil.common.info("MRZ filled manually")
+                            onNext(mrzKey)
+                        })
+                    }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, FoundationTheme.horizontalPadding)
         }
     }
 }
