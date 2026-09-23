@@ -122,7 +122,7 @@ fun NotificationScreenContent(
                         scope.launch {
                             addNotification.invoke(
                                 NotificationEntityData(
-                                    header = "RMO listed on Binance",
+                                    header = "Test notification",
                                     description = "It is a long established fact that a reader will be distracted by the readable",
                                     date = "1723466049",
                                     isActive = true,
@@ -310,7 +310,7 @@ private fun NotificationsScreenPreview() {
     val notificationList = listOf(
         NotificationEntityData(
             notificationId = 0,
-            header = "RMO listed on Binance",
+            header = "Test notification",
             description = "It is a long established fact that a reader will be distracted by the readable",
             date = "172147176",
             isActive = true,
@@ -319,7 +319,7 @@ private fun NotificationsScreenPreview() {
 
         ), NotificationEntityData(
             notificationId = 1,
-            header = "RMO listed on Binance",
+            header = "Test notification",
             description = "It is a long established fact that a reader will be distracted by the readable",
             date = "172347176",
             isActive = false,
@@ -328,7 +328,7 @@ private fun NotificationsScreenPreview() {
 
         ), NotificationEntityData(
             notificationId = 2,
-            header = "RMO listed on Binance",
+            header = "Test notification",
             description = "It is a long established fact that a reader will be distracted by the readable",
             date = "172347176",
             isActive = false,
@@ -337,7 +337,7 @@ private fun NotificationsScreenPreview() {
 
         ), NotificationEntityData(
             notificationId = 3,
-            header = "RMO listed on Binance",
+            header = "Test notification",
             description = "It is a long established fact that a reader will be distracted by the readable",
             date = "162347176",
             isActive = false,
