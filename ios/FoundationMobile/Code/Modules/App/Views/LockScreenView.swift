@@ -15,40 +15,41 @@ struct LockScreenView: View {
     @State private var banTimeEnd = AppUserDefaults.shared.banTimeEnd
     
     var body: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                Image(banTimeEnd == nil ? .user : .lock2Line)
-                    .square(32)
-                    .padding(16)
-                    .background(.bgComponentPrimary, in: Circle())
-                    .foregroundStyle(.textPrimary)
-                VStack(spacing: 12) {
-                    Text(banTimeEnd == nil ? "Enter Passcode" : "Account Locked")
-                        .h2()
-                        .foregroundStyle(.textPrimary)
-                    Text(lockedMessage)
-                        .body4()
-                        .foregroundStyle(.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .frame(minHeight: 40)
-                }
-                .padding(.top, 24)
-                PasscodeFieldView(
-                    passcode: $passcode,
-                    errorMessage: $errorMessage,
-                    isFaceIdEnabled: securityManager.faceIdState == .enabled,
-                    onFill: handlePasscode,
-                    onFaceIdClick: authByFaceID
-                )
-                .disabled(banTimeEnd != nil)
+        VStack(spacing: 0) {
+            BrandLockup()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 44)
+                .padding(.horizontal, FoundationTheme.horizontalPadding)
+            VStack(spacing: 12) {
+                Image(systemName: banTimeEnd == nil ? "lock" : "lock.slash")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(FoundationTheme.accent)
+                    .frame(width: 56, height: 56)
+                    .background(FoundationTheme.accentTint, in: Circle())
+                Text(banTimeEnd == nil ? "Enter your passcode" : "Too many tries")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(FoundationTheme.text)
+                Text(lockedMessage)
+                    .font(.system(size: 15))
+                    .foregroundColor(FoundationTheme.muted)
+                    .multilineTextAlignment(.center)
+                    .frame(minHeight: 40)
             }
-            .padding(.top, 148)
-            .padding(.bottom, 48)
+            .padding(.top, 48)
+            PasscodeFieldView(
+                passcode: $passcode,
+                errorMessage: $errorMessage,
+                isFaceIdEnabled: securityManager.faceIdState == .enabled,
+                onFill: handlePasscode,
+                onFaceIdClick: authByFaceID
+            )
+            .disabled(banTimeEnd != nil)
             .padding(.horizontal, 8)
         }
-        .ignoresSafeArea()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.bgPrimary)
+        .padding(.top, 12)
+        .padding(.bottom, 32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(FoundationTheme.bg.ignoresSafeArea())
         .onAppear(perform: authByFaceID)
         .onAppear(perform: handleBanTime)
     }
@@ -141,7 +142,7 @@ struct LockScreenView: View {
     
         Task { @MainActor in
             while banTime > Date() {
-                lockedMessage = String(localized: "You entered wrong passcode.\nLoading time: \(timeRemaining(to: banTime))")
+                lockedMessage = String(localized: "Wrong passcode too many times.\nTry again in \(timeRemaining(to: banTime))")
                 try? await Task.sleep(nanoseconds: NSEC_PER_SEC)
             }
             

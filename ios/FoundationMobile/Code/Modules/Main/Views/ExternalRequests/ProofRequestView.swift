@@ -1,9 +1,9 @@
 import SwiftUI
-import WrappingHStack
 
 struct ProofRequestView: View {
     @EnvironmentObject private var userManager: UserManager
     @EnvironmentObject private var passportManager: PassportManager
+    @EnvironmentObject private var verification: FoundationVerificationManager
 
     let proofParamsUrl: URL
     let onSuccess: () -> Void
@@ -40,104 +40,143 @@ struct ProofRequestView: View {
         }
     }
 
+    /// Passport fields the partner would actually receive (the selector's
+    /// other bits switch on checks, not disclosures).
+    private var revealedFields: [QueryProofField] {
+        let disclosures: [QueryProofField] = [
+            .name, .documentNumber, .birthDate, .sex, .nationality, .citizenship, .expirationDate,
+        ]
+        return selector?.enabledFields.filter { disclosures.contains($0) } ?? []
+    }
+
+    private var requesterHost: String? {
+        guard let callbackURL = proofParamsResponse?.data.attributes.callbackURL else { return nil }
+        return URL(string: callbackURL)?.host()
+    }
+
     var body: some View {
         ZStack {
             if proofParamsResponse == nil {
                 ProgressView()
+                    .tint(FoundationTheme.accent)
                     .padding(.vertical, 200)
             } else {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Verification Criteria")
-                            .overline2()
-                            .foregroundStyle(.textSecondary)
-                        if minAge != nil {
-                            makeItemRow(
-                                title: String(localized: "Age"),
-                                value: "\(minAge!)+"
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(title)
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(FoundationTheme.text)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text("Check what they're asking for before you share.")
+                            .font(.system(size: 16))
+                            .foregroundColor(FoundationTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    // Keeps the title clear of the sheet's close button.
+                    .padding(.trailing, 32)
+
+                    VStack(alignment: .leading, spacing: 14) {
+                        if hasUniqueness {
+                            makeCheckRow(
+                                title: String(localized: "You're a unique person"),
+                                subtitle: String(localized: "Answered yes or no")
+                            )
+                        }
+                        if let minAge {
+                            makeCheckRow(
+                                title: String(localized: "You're \(minAge) or older"),
+                                subtitle: String(localized: "Answered yes or no")
                             )
                         }
                         if !citizenship.isEmpty {
-                            makeItemRow(
-                                title: String(localized: "Nationality"),
-                                value: Country.fromISOCode(citizenship).flag
+                            makeCheckRow(
+                                title: String(localized: "Your nationality is \(Country.fromISOCode(citizenship).flag) \(citizenship)"),
+                                subtitle: String(localized: "Answered yes or no")
                             )
                         }
-                        makeItemRow(
-                            title: String(localized: "Uniqueness"),
-                            value: hasUniqueness ? "Yes" : "No"
-                        )
-                    }
-
-                    HorizontalDivider()
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Requestor")
-                            .overline2()
-                            .foregroundStyle(.textSecondary)
-                        makeItemRow(
-                            title: String(localized: "ID"),
-                            value: StringUtils.cropMiddle(proofParamsResponse!.data.id)
-                        )
-                        makeItemRow(
-                            title: String(localized: "Host"),
-                            value: URL(string: proofParamsResponse!.data.attributes.callbackURL)?.host() ?? "–"
-                        )
-                    }
-
-                    if let selector {
-                        HorizontalDivider()
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Revealed data")
-                                .overline2()
-                                .foregroundStyle(.textSecondary)
-
-                            WrappingHStack(selector.enabledFields, spacing: .constant(4)) { field in
-                                Text(field.displayName)
-                                    .subtitle6()
-                                    .foregroundStyle(.textPrimary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(.bgComponentPrimary, in: Capsule())
-                                    .padding(.vertical, 2)
-                            }
+                        if !revealedFields.isEmpty {
+                            makeCheckRow(
+                                title: revealedFields.map(\.displayName).joined(separator: ", "),
+                                subtitle: String(localized: "Shared with them"),
+                                systemImage: "eye"
+                            )
+                        }
+                        if !hasUniqueness && minAge == nil && citizenship.isEmpty && revealedFields.isEmpty {
+                            makeCheckRow(
+                                title: String(localized: "You're a verified person"),
+                                subtitle: String(localized: "Answered yes or no")
+                            )
                         }
                     }
+                    .foundationCard()
 
-                    VStack(spacing: 4) {
-                        AppButton(
-                            text: isSubmitting ? "Generating..." : "Generate Proof",
-                            action: generateProof
-                        )
+                    Text(privacyNote)
+                        .font(.system(size: 15))
+                        .foregroundColor(FoundationTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    VStack(spacing: 10) {
+                        Button(action: generateProof) {
+                            HStack(spacing: 8) {
+                                if isSubmitting {
+                                    ProgressView()
+                                        .tint(FoundationTheme.onAccent)
+                                }
+                                Text(isSubmitting ? "Sharing…" : "Share proof")
+                            }
+                        }
+                        .buttonStyle(FoundationPrimaryButtonStyle())
                         .disabled(isSubmitting)
-                        .controlSize(.large)
-                        AppButton(
-                            variant: .quartenary,
-                            text: "Cancel",
-                            action: onDismiss
-                        )
-                        .disabled(isSubmitting)
-                        .controlSize(.large)
+                        Button("Decline", action: onDismiss)
+                            .buttonStyle(FoundationSecondaryButtonStyle())
+                            .disabled(isSubmitting)
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 20)
+        .padding(.horizontal, FoundationTheme.horizontalPadding)
         .padding(.top, 24)
         .padding(.bottom, 8)
         .task { await loadProofParams() }
     }
 
-    private func makeItemRow(title: String, value: String) -> some View {
-        HStack(spacing: 4) {
-            Text(title)
-                .body4()
-            Spacer()
-            Text(value)
-                .subtitle6()
-                .multilineTextAlignment(.trailing)
+    private var title: String {
+        // Foundation's own verification (FoundationVerificationManager hands
+        // its proof-params URL to this same view) names Foundation, not the
+        // verifier host.
+        if verification.state == .awaitingProof {
+            return String(localized: "Foundation wants a proof")
         }
-        .foregroundStyle(.textPrimary)
+        if let requesterHost {
+            return String(localized: "\(requesterHost) wants a proof")
+        }
+        return String(localized: "A site wants a proof")
+    }
+
+    private var privacyNote: String {
+        if revealedFields.contains(.name) || revealedFields.contains(.documentNumber) {
+            return String(localized: "They'll see only what's listed above. They won't see your photo or email.")
+        }
+        return String(localized: "They won't see your name, photo, email or passport number.")
+    }
+
+    private func makeCheckRow(title: String, subtitle: String, systemImage: String = "checkmark.circle") -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(FoundationTheme.accent)
+                .frame(width: 24, height: 24)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(FoundationTheme.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(subtitle)
+                    .font(.system(size: 14))
+                    .foregroundColor(FoundationTheme.muted)
+            }
+        }
     }
 
     @MainActor
@@ -200,5 +239,7 @@ struct ProofRequestView: View {
                 onDismiss: {}
             )
             .environmentObject(UserManager())
+            .environmentObject(PassportManager())
+            .environmentObject(FoundationVerificationManager.shared)
         }
 }

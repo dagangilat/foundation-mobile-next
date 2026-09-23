@@ -4,45 +4,18 @@ private enum IntroRoute: Hashable {
     case newIdentity, importIdentity
 }
 
-private struct AuthMethod: Identifiable, Hashable {
-    var id: IntroRoute
-    var name: String
-    var icon: ImageResource
-}
-
 struct IntroView: View {
     @EnvironmentObject private var userManager: UserManager
     @EnvironmentObject private var securityManager: SecurityManager
 
     var onFinish: () -> Void
 
-    private let animationOffset: CGFloat = 64
-    private let animationDelay: CGFloat = 0.4
-
-    @State private var isInitialAnimationActive = true
-    @State private var contentOpacity: Double = 0.0
-
     @State private var isNewIdentitySheetPresented = false
     @State private var isImportIdentitySheetPresented = false
 
-    private var authMethods: [AuthMethod] {
-        [
-            AuthMethod(
-                id: .newIdentity,
-                name: String(localized: "Create new identity"),
-                icon: .addFill
-            ),
-            AuthMethod(
-                id: .importIdentity,
-                name: String(localized: "Re-activate old profile"),
-                icon: .shareForwardLine
-            ),
-        ]
-    }
-
     var body: some View {
         content
-            .background(.bgPrimary, ignoresSafeAreaEdges: .all)
+            .background(FoundationTheme.bg.ignoresSafeArea())
             .dynamicSheet(isPresented: $isNewIdentitySheetPresented, fullScreen: true) {
                 NewIdentityView(
                     onBack: { isNewIdentitySheetPresented = false },
@@ -57,77 +30,38 @@ struct IntroView: View {
             }
     }
 
+    /// "Your private ID" welcome, per the approved Welcome mockup. "Create my
+    /// ID" is the existing new-identity path; "Restore from backup" is the
+    /// existing import-identity sheet.
     var content: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .center) {
-                Spacer()
-                Image(.foundationMark)
-                    .square(96)
-                    .foregroundStyle(Gradients.gradientFirst)
-                    .padding(.all, 44)
-                    .background(.baseBlack)
-                    .clipShape(RoundedRectangle(cornerRadius: 48))
-                    .offset(y: isInitialAnimationActive ? 0 : (geometry.size.height / 2 - geometry.size.height * 0.7))
-                Spacer()
-                VStack(spacing: 8) {
-                    Text("Welcome To")
-                        .subtitle4()
-                        .foregroundStyle(.textSecondary)
-                    Text("Foundation")
-                        .h1()
-                        .foregroundStyle(.textPrimary)
-                }
-                .padding(.top, 28)
-                .opacity(contentOpacity)
-                .offset(y: isInitialAnimationActive ? animationOffset : 0)
-                Spacer()
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Select an authorization method")
-                        .body3()
-                        .foregroundStyle(.textSecondary)
-                    VStack(alignment: .leading, spacing: 16) {
-                        ForEach(authMethods) { authMethod in
-                            Button(action: {
-                                onAuthMethodSelect(authMethod.id)
-                            }) {
-                                HStack(spacing: 16) {
-                                    Image(authMethod.icon)
-                                        .iconMedium()
-                                        .foregroundStyle(.baseBlack)
-                                        .padding(.all, 10)
-                                        .background(Gradients.gradientFirst)
-                                        .clipShape(Circle())
-                                    Text(authMethod.name)
-                                        .buttonLarge()
-                                        .foregroundStyle(.textPrimary)
-                                }
-                            }
-                            if authMethod.id != authMethods.last?.id {
-                                HorizontalDivider()
-                            }
-                        }
-                    }
-                    .padding(.all, 16)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 24)
-                            .stroke(.bgComponentPrimary, lineWidth: 1)
-                    )
-                }
-                .frame(maxHeight: .infinity, alignment: .bottom)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 24)
-                .opacity(contentOpacity)
-                .offset(y: isInitialAnimationActive ? animationOffset : 0)
+        VStack(alignment: .leading, spacing: 24) {
+            BrandLockup()
+                .frame(height: 44)
+            PillarsHero(textSize: 38)
+                .padding(.top, 8)
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Your private ID")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(FoundationTheme.text)
+                Text("Foundation creates a private key that lives only on this phone. It lets you prove you're a real person without showing who you are.")
+                    .font(.system(size: 16))
+                    .foregroundColor(FoundationTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + animationDelay) {
-                    withAnimation(.interpolatingSpring(stiffness: 44, damping: 10)) {
-                        isInitialAnimationActive = false
-                        contentOpacity = 1.0
-                    }
-                }
+            .padding(.top, 12)
+            Spacer(minLength: 0)
+            VStack(spacing: 8) {
+                Button("Create my ID") { onAuthMethodSelect(.newIdentity) }
+                    .buttonStyle(FoundationPrimaryButtonStyle())
+                Button("Restore from backup") { onAuthMethodSelect(.importIdentity) }
+                    .buttonStyle(FoundationTextButtonStyle())
+                    .frame(maxWidth: .infinity, minHeight: FoundationTheme.buttonHeight)
             }
         }
+        .padding(.horizontal, FoundationTheme.horizontalPadding)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private func onAuthMethodSelect(_ route: IntroRoute) {

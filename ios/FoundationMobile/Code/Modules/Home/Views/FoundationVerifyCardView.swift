@@ -1,53 +1,289 @@
 import SwiftUI
 
-/// The Home entry point into Foundation verification. Placed on Home rather
-/// than behind the QR tab because, unlike Rarimo's flow, ours is not initiated
-/// by scanning someone else's code - the app asks our own backend for it.
+/// Home's status card: the single entry point into verification.
+///
+/// It folds together the two halves of becoming verified:
+///   1. the passport scan + on-device registration proof (formerly only
+///      reachable from the Identity tab, whose PassportCard showed progress
+///      and errors), started here with "Scan passport";
+///   2. Foundation's own L2 verification (`FoundationVerificationManager`),
+///      started here once the passport is registered.
+///
+/// No business logic lives here: every action calls the same code the old
+/// Identity tab and verify card called.
 struct FoundationVerifyCardView: View {
     @EnvironmentObject private var verification: FoundationVerificationManager
+    @EnvironmentObject private var passportManager: PassportManager
+    @EnvironmentObject private var userManager: UserManager
+    @EnvironmentObject private var passportViewModel: PassportViewModel
+
+    /// Opens the passport scan flow (ScanPassportView), owned by HomeView.
+    let onScanPassport: () -> Void
+
+    private enum CardState: Equatable {
+        case notScanned
+        case building
+        case registrationFailed
+        case waitlisted
+        case ready
+        case working
+        case verificationFailed(String)
+        case verified
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Verify with Foundation")
-                .subtitle5()
-                .foregroundStyle(.textPrimary)
-            Text(caption)
-                .body4()
-                .foregroundStyle(.textSecondary)
-            AppButton(text: buttonTitle) {
-                Task { await verification.beginVerification() }
+            HStack {
+                FoundationSectionLabel("Status")
+                Spacer()
+                if cardState == .verified {
+                    Text("Verified")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(FoundationTheme.accent)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(FoundationTheme.accentTint, in: Capsule())
+                }
             }
-            .disabled(isBusy)
+            Text(title)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundColor(FoundationTheme.text)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(caption)
+                .font(.system(size: 15))
+                .foregroundColor(FoundationTheme.muted)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+            detail
         }
-        .padding(16)
-        .background(.bgComponentPrimary)
-        .cornerRadius(16)
+        .foundationCard()
+        .animation(.easeInOut(duration: 0.2), value: cardState)
+    }
+
+    // MARK: - State
+
+    private var cardState: CardState {
+        if case .verified = verification.state { return .verified }
+        guard passportManager.passport != nil else { return .notScanned }
+        if passportViewModel.processingStatus == .failure { return .registrationFailed }
+        if userManager.user?.status == .unscanned {
+            return passportViewModel.processingStatus == .processing ? .building : .notScanned
+        }
+        // Scanned, but no registration proof: the country is waitlisted.
+        if userManager.registerZkProof == nil { return .waitlisted }
+        switch verification.state {
+        case .starting, .awaitingProof, .polling: return .working
+        case .failed(let message): return .verificationFailed(message)
+        default: return .ready
+        }
+    }
+
+    private var title: LocalizedStringKey {
+        switch cardState {
+        case .notScanned: "Not verified yet"
+        case .building: "Building your proof"
+        case .registrationFailed: "Something went wrong"
+        case .waitlisted: "Not available yet"
+        case .ready: "Passport checked"
+        case .working: "Verifying…"
+        case .verificationFailed: "Not verified yet"
+        case .verified: "You're a verified person"
+        }
     }
 
     private var caption: String {
-        switch verification.state {
-        case .notRegistered: "Scan your passport first, then come back here."
-        case .verified: "You're a verified Foundation member."
-        case .failed(let message): message
-        default: "Prove you're a unique human, without revealing who you are."
+        switch cardState {
+        case .notScanned:
+            String(localized: "Verify once with your passport's chip to show you're a real, unique person. Your details stay on this phone.")
+        case .building:
+            String(localized: "This happens on your phone. Nothing about you is uploaded.")
+        case .registrationFailed:
+            passportViewModel.isPassportFailedByImpossibleRevocation
+                ? String(localized: "This passport is already linked to another ID. Restore the ID you used before.")
+                : String(localized: "We couldn't finish your proof. Please try again.")
+        case .waitlisted:
+            String(localized: "Passports from your country can't be verified yet.")
+        case .ready:
+            String(localized: "One last step: share a private proof with Foundation to finish verifying.")
+        case .working:
+            String(localized: "Waiting for Foundation to confirm your proof.")
+        case .verificationFailed(let message):
+            message
+        case .verified:
+            String(localized: "When a site asks, you can prove this without sharing your name or passport details.")
         }
     }
 
-    /// `AppButton.text` is a `LocalizedStringResource`, not a `String` - every
-    /// case here is a literal, so the switch types cleanly. `caption` cannot
-    /// do the same because `.failed` carries a runtime `String`.
-    private var buttonTitle: LocalizedStringResource {
-        switch verification.state {
-        case .verified: "Verified"
-        case .starting, .awaitingProof, .polling: "Working…"
-        default: "Verify"
+    // MARK: - Per-state detail
+
+    @ViewBuilder
+    private var detail: some View {
+        switch cardState {
+        case .notScanned:
+            Button(action: onScanPassport) {
+                Label("Scan passport", systemImage: "person.text.rectangle")
+            }
+            .buttonStyle(FoundationPrimaryButtonStyle())
+            .padding(.top, 4)
+        case .building:
+            buildingDetail
+        case .registrationFailed:
+            if !passportViewModel.isPassportFailedByImpossibleRevocation {
+                Button("Try again") {
+                    Task { await retryPassportRegistration() }
+                }
+                .buttonStyle(FoundationPrimaryButtonStyle())
+                .padding(.top, 4)
+            }
+        case .waitlisted:
+            EmptyView()
+        case .ready:
+            Button("Finish verification") {
+                Task { await verification.beginVerification() }
+            }
+            .buttonStyle(FoundationPrimaryButtonStyle())
+            .padding(.top, 4)
+        case .working:
+            Button(action: {}) {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .tint(FoundationTheme.onAccent)
+                    Text("Working…")
+                }
+            }
+            .buttonStyle(FoundationPrimaryButtonStyle())
+            .disabled(true)
+            .padding(.top, 4)
+        case .verificationFailed:
+            Button("Try again") {
+                Task { await verification.beginVerification() }
+            }
+            .buttonStyle(FoundationPrimaryButtonStyle())
+            .padding(.top, 4)
+        case .verified:
+            HStack(spacing: 8) {
+                chip("Passport chip", systemImage: "memorychip")
+                chip("Unique person", systemImage: "person.crop.circle.badge.checkmark")
+            }
         }
     }
 
-    private var isBusy: Bool {
-        switch verification.state {
-        case .starting, .awaitingProof, .polling, .verified: true
-        default: false
+    /// The on-device registration, shown as the "Building your proof" steps.
+    /// Reading the chip already checked the passport signature and the chip,
+    /// so those two rows are done; the last two follow `proofState`.
+    private var buildingDetail: some View {
+        let isRegistering = passportViewModel.proofState == .createProfile
+            || passportViewModel.proofState == .finalizing
+
+        return VStack(alignment: .leading, spacing: 12) {
+            stepRow("Passport signature checked", state: .done)
+            stepRow("Chip is genuine", state: .done)
+            stepRow("Creating your private proof…", state: isRegistering ? .done : .active)
+            stepRow("Registering you as a unique person", state: isRegistering ? .active : .pending)
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(FoundationTheme.border)
+                    Capsule()
+                        .fill(FoundationTheme.accent)
+                        .frame(width: geometry.size.width * min(max(passportViewModel.overallProgress, 0), 1))
+                        .animation(.easeInOut, value: passportViewModel.overallProgress)
+                }
+            }
+            .frame(height: 6)
+            .padding(.top, 4)
+            Text("Keep the app open. This takes a few seconds.")
+                .font(.system(size: 14))
+                .foregroundColor(FoundationTheme.muted)
+        }
+        .padding(.top, 4)
+    }
+
+    private enum StepState { case done, active, pending }
+
+    private func stepRow(_ label: LocalizedStringKey, state: StepState) -> some View {
+        HStack(spacing: 12) {
+            ZStack {
+                switch state {
+                case .done:
+                    Circle()
+                        .fill(FoundationTheme.accent)
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(FoundationTheme.onAccent)
+                case .active:
+                    ProgressView()
+                        .tint(FoundationTheme.accent)
+                        .controlSize(.small)
+                case .pending:
+                    Circle()
+                        .stroke(FoundationTheme.border, lineWidth: 2)
+                        .padding(1)
+                }
+            }
+            .frame(width: 24, height: 24)
+            Text(label)
+                .font(.system(size: 16))
+                .foregroundColor(state == .pending ? FoundationTheme.muted : FoundationTheme.text)
         }
     }
+
+    private func chip(_ label: LocalizedStringKey, systemImage: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: systemImage)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(FoundationTheme.accent)
+            Text(label)
+                .font(.system(size: 14))
+                .foregroundColor(FoundationTheme.text)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(FoundationTheme.bg)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(FoundationTheme.border, lineWidth: 1)
+        )
+    }
+
+    // MARK: - Actions
+
+    /// Same retry the Identity tab's PassportCard offered (moved here with the
+    /// passport flow; PassportCard keeps its own copy).
+    @MainActor
+    private func retryPassportRegistration() async {
+        do {
+            passportViewModel.processingStatus = .processing
+
+            let zkProof = try await passportViewModel.register()
+
+            if passportViewModel.processingStatus != .success { return }
+
+            userManager.registerZkProof = zkProof
+            userManager.user?.status = .passportScanned
+        } catch {
+            LoggerUtil.common.error("error while registering passport: \(error.localizedDescription, privacy: .public)")
+
+            if let error = error as? Errors {
+                passportViewModel.processingStatus = .failure
+
+                AlertManager.shared.emitError(error)
+
+                return
+            }
+        }
+    }
+}
+
+#Preview {
+    FoundationVerifyCardView(onScanPassport: {})
+        .padding(24)
+        .background(FoundationTheme.bg)
+        .environmentObject(FoundationVerificationManager.shared)
+        .environmentObject(PassportManager())
+        .environmentObject(UserManager())
+        .environmentObject(PassportViewModel())
 }

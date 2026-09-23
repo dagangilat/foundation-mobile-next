@@ -11,7 +11,7 @@ struct AuthMethodView: View {
 
     var body: some View {
         ProfileRouteLayout(
-            title: String(localized: "Auth Method"),
+            title: String(localized: "Passcode and Face ID"),
             onBack: onBack
         ) {
             VStack(spacing: 12) {

@@ -8,7 +8,9 @@ struct ExternalRequestsView: View {
 
     private var sheetTitle: LocalizedStringResource? {
         switch externalRequestsManager.request {
-        case .proofRequest: "Proof Request"
+        // The restyled ProofRequestView carries its own "<site> wants a
+        // proof" heading.
+        case .proofRequest: nil
         case .lightVerification: "Light Verification"
         default: nil
         }
@@ -16,7 +18,7 @@ struct ExternalRequestsView: View {
 
     var body: some View {
         ZStack {}
-            .dynamicSheet(isPresented: $isSheetPresented, title: sheetTitle) {
+            .dynamicSheet(isPresented: $isSheetPresented, title: sheetTitle, bgColor: FoundationTheme.bg) {
                 switch externalRequestsManager.request {
                 case let .proofRequest(proofParamsUrl, urlQueryParams):
                     ProofRequestView(
