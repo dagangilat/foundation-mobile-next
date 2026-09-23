@@ -66,8 +66,8 @@
             android:name="com.rarilabs.rarime.MainActivityBlack"
             android:enabled="true"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher_black"
-            android:roundIcon="@mipmap/ic_launcher_black_round"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
             android:label="@string/app_name"
             android:targetActivity="com.rarilabs.rarime.MainActivity">
             <intent-filter>
