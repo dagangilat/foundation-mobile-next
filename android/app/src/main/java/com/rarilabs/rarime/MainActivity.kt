@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
@@ -31,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     private var navController: NavHostController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Foundation is light-only. Pinned before super.onCreate so AppCompat
+        // resolves resources and isSystemInDarkTheme() against a day
+        // configuration from the first frame, whatever the device setting.
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
 
         intent.addFlags(
@@ -39,10 +44,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
+        // Light bars (dark icons) always: the app never paints a dark ground.
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(
+            statusBarStyle = SystemBarStyle.light(
                 android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT
-            ), navigationBarStyle = SystemBarStyle.auto(
+            ), navigationBarStyle = SystemBarStyle.light(
                 android.graphics.Color.TRANSPARENT,
                 android.graphics.Color.TRANSPARENT,
             )

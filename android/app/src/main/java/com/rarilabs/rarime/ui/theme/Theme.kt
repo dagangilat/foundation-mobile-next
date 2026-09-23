@@ -5,14 +5,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import com.rarilabs.rarime.data.enums.AppColorScheme
-import com.rarilabs.rarime.data.enums.isDark
 
 @Composable
 fun AppTheme(
     colorScheme: AppColorScheme = AppColorScheme.SYSTEM,
     content: @Composable () -> Unit,
 ) {
-    val currentColors = if (colorScheme.isDark()) darkColors() else lightColors()
+    // Foundation ships light only, app-wide (MainActivity also pins AppCompat
+    // to MODE_NIGHT_NO). [colorScheme] is still accepted so existing call sites
+    // and the stored preference stay untouched, but it no longer switches the
+    // palette. darkColors() is kept: BrandColorsTest/TextContrastTest lock it.
+    val currentColors = lightColors()
     val rememberedColors =
         remember { currentColors.copy() }.apply { updateColorsFrom(currentColors) }
     CompositionLocalProvider(

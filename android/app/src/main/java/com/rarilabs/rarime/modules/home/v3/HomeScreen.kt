@@ -7,20 +7,24 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,8 +39,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.foundation.ui.BrandLockup
+import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 import com.rarilabs.rarime.foundation.ui.FoundationVerifyCard
+import com.rarilabs.rarime.foundation.ui.PillarsHero
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 import com.rarilabs.rarime.modules.home.v3.model.WidgetType
@@ -46,85 +54,105 @@ import com.rarilabs.rarime.modules.home.v3.ui.components.VerticalPageIndicator
 import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
-import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsBottomSheet
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
-import com.rarilabs.rarime.ui.components.AppBottomSheet
-import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 
+/**
+ * Foundation Home: the lockup with a profile button, the pillars in the mesh
+ * hero, then the status card (verify / verified, which starts the passport
+ * flow) and "Scan QR code" under it.
+ *
+ * The fork's widget pager ([HomeScreenContent]), its "Hi Stranger" header and
+ * notifications bell, the manage-widgets sheet and the welcome sheet are no
+ * longer composed here. Their code is kept, just unhooked.
+ */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreenV3(
     navigate: (String) -> Unit,
     navigateWithPopUp: (String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
+    @Suppress("UNUSED_PARAMETER") sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
-    viewModel: HomeViewModel = hiltViewModel(),
+    @Suppress("UNUSED_PARAMETER") viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val passport by viewModel.passport.collectAsState()
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
-    val notifications by viewModel.notifications.collectAsState()
-    val notificationsCount by remember(notifications) {
-        derivedStateOf { notifications.count { it.isActive } }
-    }
-    val colorScheme by viewModel.colorScheme.collectAsState()
-    val visibleCards by viewModel.visibleWidgets.collectAsState()
-    val isWelcomeVisible by remember {
-        derivedStateOf { !viewModel.getIsShownWelcome() }
+
+    // There is no tab bar in the Foundation shell.
+    LaunchedEffect(Unit) {
+        setVisibilityOfBottomBar(false)
     }
 
-    val welcomeAppSheetState = rememberAppSheetState(isWelcomeVisible)
-
-
-    val sheetManageWidgets = rememberAppSheetState()
-    AppBottomSheet(
-        state = sheetManageWidgets,
-        backgroundColor = FoundationTheme.colors.backgroundPrimary,
-        isHeaderEnabled = false,
-        fullScreen = false,
-    ) {
-        ManageWidgetsBottomSheet(onClose = { sheetManageWidgets.hide() })
-    }
-
-
-
-    HomeScreenContent(
-        visibleWidgets = visibleCards,
-        userPassportName = passport?.personDetails?.name,
-        notificationsCount = notificationsCount,
+    FoundationHomeContent(
         innerPaddings = innerPaddings,
-        modifier = Modifier.fillMaxSize(),
-        navigate = navigate,
-        sharedTransitionScope = sharedTransitionScope,
-        setVisibilityOfBottomBar = setVisibilityOfBottomBar,
-        colorScheme = colorScheme,
-        onClick = { sheetManageWidgets.show() },
-        // Passed as a slot rather than composed inside HomeScreenContent so
-        // HomeScreenPreview stays renderable - FoundationVerifyCard resolves a
+        onProfileClick = { navigate(Screen.Main.Profile.route) },
+        // A slot rather than composed inside FoundationHomeContent so the
+        // preview stays renderable - FoundationVerifyCard resolves a
         // @HiltViewModel, which no @Preview can provide.
-        verifyCard = { FoundationVerifyCard() },
+        statusCard = {
+            FoundationVerifyCard(
+                // The Identity route is the same screen the old Identity tab
+                // opened: the passport scan while no passport is stored, then
+                // the registration that produces the proof this card waits
+                // for. It closes back to Home.
+                onScanPassport = { navigate(Screen.Main.Identity.route) },
+                // Shows the QR scan sheet mounted in MainScreen (the flow the
+                // old QR tab opened); a scanned partner request runs through
+                // ExtIntActionPreview like any deep link.
+                onScanQr = { navigateWithPopUp(Screen.Main.QrScan.route) },
+            )
+        },
     )
-
-    AppBottomSheet(
-        state = welcomeAppSheetState, isHeaderEnabled = false,
-        disablePullClose = true,
-        onClose = {
-            viewModel.saveIsShownWelcome(true)
-            welcomeAppSheetState.hide()
-        }
-    ) {
-        WelcomeBottomSheet {
-            welcomeAppSheetState.hide()
-            viewModel.saveIsShownWelcome(true)
-        }
-    }
-
 }
 
+@Composable
+fun FoundationHomeContent(
+    innerPaddings: Map<ScreenInsets, Number>,
+    onProfileClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    statusCard: @Composable () -> Unit = {},
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(FoundationBrand.Bg)
+            .padding(
+                top = innerPaddings[ScreenInsets.TOP]?.toFloat()?.dp ?: 0.dp,
+                bottom = innerPaddings[ScreenInsets.BOTTOM]?.toFloat()?.dp ?: 0.dp
+            )
+            .verticalScroll(rememberScrollState())
+            .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            BrandLockup()
+            Spacer(modifier = Modifier.weight(1f))
+            FoundationIconButton(
+                icon = R.drawable.ic_fnd_user_circle,
+                contentDescription = "Profile",
+                onClick = onProfileClick,
+            )
+        }
+
+        PillarsHero()
+
+        statusCard()
+    }
+}
+
+/**
+ * The fork's widget-pager Home. No longer composed by [HomeScreenV3]; kept
+ * (with its preview) so the widget code stays buildable.
+ */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreenContent(
@@ -315,4 +343,13 @@ private fun HomeScreenPreview() {
                 onClick = {})
         }
     }
+}
+
+@Preview
+@Composable
+private fun FoundationHomePreview() {
+    FoundationHomeContent(
+        innerPaddings = mapOf(ScreenInsets.TOP to 0, ScreenInsets.BOTTOM to 0),
+        onProfileClick = {},
+    )
 }
