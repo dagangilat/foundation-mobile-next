@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.modules.main
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
@@ -21,7 +20,6 @@ private val navPureBgRoutes = listOf(
 @Composable
 fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
     val view = LocalView.current
-    val isSystemDark = isSystemInDarkTheme()
 
     val navColor =
         if (route in navPureBgRoutes) FoundationTheme.colors.backgroundPure
@@ -32,11 +30,10 @@ fun ScreenBarsColor(colorScheme: AppColorScheme, route: String) {
 //        else FoundationTheme.colors.backgroundPrimary
     val statusColor = FoundationTheme.colors.backgroundPrimary
 
-    val isLightStyle = when (colorScheme) {
-        AppColorScheme.LIGHT -> true
-        AppColorScheme.DARK -> false
-        AppColorScheme.SYSTEM -> !isSystemDark
-    }
+    // Foundation is light-only (the theme picker is hidden and AppTheme always
+    // paints lightColors()), so the bars always take dark icons. The stored
+    // scheme ([colorScheme]) is ignored rather than removed; see AppTheme.
+    val isLightStyle = true
 
     fun changeBarsStyle() {
         val insetsController =

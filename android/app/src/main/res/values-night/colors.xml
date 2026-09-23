@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Matches darkColors().backgroundPrimary (#0E0E0E). -->
-    <color name="background_primary">#FF0E0E0E</color>
-</resources>
