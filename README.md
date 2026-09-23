@@ -19,9 +19,7 @@ This repository is the complete corresponding source.
 This repository is an active fork-and-rebrand in progress. Rarimo's real
 iOS and Android application source has been imported (see `ios/` and
 `android/`); rebranding and integration with Foundation's backend is
-ongoing. The pre-fork native app shell this repo started from is preserved
-at `legacy-ios-shell/` for reference during the port and will be removed
-once that work completes.
+ongoing.
 
 ## Building
 
@@ -41,12 +39,16 @@ See docs/android-local-setup.md — `app/google-services.json` and a
 `GOOGLE_WEB_KEY` Gradle property are required, and the app builds for
 `arm64-v8a` only.
 
-### Before any store upload
+### Store uploads
 
-    ./scripts/brand-sweep.sh
+See docs/ios-deploy.md (simulator, device, TestFlight, App Store) and
+docs/android-local-setup.md (emulator, device, Play). Store listing text and
+privacy answers are drafted in docs/store/.
 
-Both fastlane lanes run this first. A leftover Rarimo string or logo reaching a
-store listing is the failure mode this guards.
+Both fastlane lanes first run `./scripts/brand-sweep-ratchet.sh`, which fails on
+any Rarimo brand token not already in `scripts/brand-sweep-baseline/`. A
+leftover Rarimo string or logo reaching a store build is the failure mode this
+guards. `./scripts/brand-sweep.sh` still lists every remaining hit.
 
 Neither platform has a real Firebase app registered yet as of this writing —
 both `GoogleService-Info.plist` and `google-services.json` are gitignored

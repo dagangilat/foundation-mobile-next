@@ -1,53 +1,88 @@
-# iOS deploy — TestFlight
+# iOS: run, TestFlight and App Store
 
-## TL;DR
+Everything here runs on a Mac with current Xcode. There is no hosted iOS CI
+in this repo; the Mac is the build and release machine.
 
-**Deploy from the M5 Mac. It's free.** The GitHub Actions TestFlight workflow
-costs money and exists only as a no-Mac fallback.
+## One-time setup
 
-## Preferred path — local (free)
+1. **Tools:** Xcode, Go (`brew install go`), gomobile
+   (`go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init`),
+   Ruby with Bundler for fastlane.
+2. **Identity SDK:** `cd ios && ./prebuild.sh` builds `Frameworks/Identity.xcframework`
+   from `dagangilat/rarime-mobile-identity-sdk`. Re-run after SDK changes.
+3. **Firebase:** put `ios/FoundationMobile/GoogleService-Info.plist` in place
+   (gitignored). Generate it with
+   `firebase apps:sdkconfig IOS --project foundation-next-app` once the iOS app
+   (`com.foundationnext.mobile`) is registered there. Without a real one,
+   sign-in cannot complete.
 
-The Mac is the day-to-day release machine. Two equivalent options:
+## Simulator
 
-### A. One command (fastlane)
+    scripts/run-ios-simulator.sh "iPhone 17 Pro"
+
+or open `ios/FoundationMobile.xcodeproj`, pick scheme **FoundationMobile** and a
+simulator, and Run.
+
+The ZK prover libraries in `ios/Frameworks` are device-only and are linked only
+for `iphoneos`, so on the simulator the UI and sign-in work but passport NFC
+reading and proof generation do not. Test those on a phone.
+
+## Physical iPhone
+
+1. Connect the phone, tap **Trust**, and turn on **Settings > Privacy &
+   Security > Developer Mode** (the phone restarts).
+2. In Xcode, select the phone as the run destination and Run the
+   **FoundationMobile** scheme.
+3. Automatic signing (team `F9F26FQW95`) registers the device and creates the
+   App ID capabilities on first run, including App Group
+   `group.com.foundationnext.mobile` and iCloud container
+   `iCloud.com.foundationnext.mobile`. If Xcode reports a capability error,
+   open **Signing & Capabilities** for both targets and let it fix the issue.
+
+## TestFlight upload
+
+First, once: create the app in App Store Connect (**Apps > + > New App**,
+bundle ID `com.foundationnext.mobile`, SKU of your choice).
+
+Ship the **Production** scheme. **FoundationMobile** archives the Development
+configuration (debug badge and options) and must not be uploaded.
+
+### A. Xcode GUI (simplest for the first upload)
+1. Scheme **Production**, destination **Any iOS Device (arm64)**.
+2. **Product > Archive**, then in Organizer **Distribute App > App Store
+   Connect > Upload**.
+3. Bump **Build** (CURRENT_PROJECT_VERSION) before each new upload of the same
+   version.
+
+### B. fastlane (repeatable)
+Create an App Store Connect API key (**Users and Access > Integrations > App
+Store Connect API**, role App Manager) and download the `.p8`. Then:
+
 ```bash
-cd ios
-bundle exec fastlane beta
+export ASC_KEY_ID=XXXXXXXXXX
+export ASC_ISSUER_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+export ASC_KEY_PATH=$HOME/keys/AuthKey_XXXXXXXXXX.p8
+cd ios && bundle install && bundle exec fastlane beta
 ```
-Lane `beta` (`ios/fastlane/Fastfile`) archives, signs with the App Store
-Connect API key, and uploads to TestFlight.
 
-### B. Xcode GUI
-1. Pick the edition: `ios/scripts/select-profile.sh <profile>` (e.g. `hisec-global`).
-2. Scheme **FoundationMobile**, destination **Any iOS Device (arm64)**.
-3. **Product → Archive** → Organizer → **Distribute App → TestFlight → Upload**.
+The `beta` lane runs the brand-sweep ratchet, rebuilds the Identity SDK, sets
+the build number to the latest TestFlight build + 1, archives **Production**
+with automatic signing (xcodebuild creates the distribution certificate and
+profiles through the API key), and uploads to TestFlight. It does not modify
+the project file.
 
-Cost: $0 — runs on your machine + existing Apple Developer membership.
+## TestFlight testers
+- **Internal** (up to 100 App Store Connect users): available as soon as the
+  build finishes processing.
+- **External** (up to 10,000 by email or public link): the first build of each
+  version goes through Beta App Review.
 
-## Fallback path — GitHub Actions (PAID, guarded)
-
-`.github/workflows/ios-testflight.yml` archives on a GitHub-hosted **macOS
-runner, which is billed** (~$0.08/min; macOS minutes count ~10× against any
-included quota — a full archive is several dollars to ~$10+ per run). Use it
-only when no Mac is available.
-
-It is deliberately hard to trigger by accident:
-- **No tag trigger.** The old `push: tags: tf-*` trigger was removed, so a
-  routine tag push can't start a paid run.
-- **Manual dispatch + confirmation.** `workflow_dispatch` requires the
-  `confirm` input to be set to `yes-run-paid-ci`. A free **ubuntu
-  `confirm-gate` job** fails fast otherwise — no billed macOS runner starts
-  unless you explicitly confirm.
-
-To run it intentionally:
-```bash
-gh workflow run ios-testflight.yml --ref main \
-  -f confirm=yes-run-paid-ci \
-  -f profile=hisec-global \
-  -f changelog="…"
-```
-or via the Actions tab → iOS TestFlight → Run workflow (set **confirm** to
-`yes-run-paid-ci`).
-
-> The other workflow, `ios-ci.yml`, is the no-Mac build/test pipeline (PR #1).
-> It does **not** upload to TestFlight.
+## App Store release
+Store text, privacy answers and review notes are drafted in `docs/store/`.
+Before submitting:
+- Set the price to **Free** (Pricing and Availability).
+- Fill in App Privacy, age rating, screenshots, and privacy policy and support URLs.
+- Give review a demo account and notes (reviewers cannot scan a passport; a
+  screen recording of the NFC flow helps).
+- Resolve Open Decision OD-2 (GPL-3.0 and the App Store EULA; see
+  `docs/app-store-review-notes.md`).
