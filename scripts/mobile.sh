@@ -16,7 +16,7 @@
 #   scripts/mobile.sh android-device    install + launch on a USB Android phone
 #   scripts/mobile.sh android-bundle N  signed release .aab with versionCode N
 #   scripts/mobile.sh android-internal  build + upload to Play internal testing
-#   scripts/mobile.sh android-metadata  upload Play store listing text
+#   scripts/mobile.sh android-metadata  upload Play store listing text + icon
 #   scripts/mobile.sh backup-keys DIR   copy the Android upload key somewhere safe
 #
 # Secrets never live in the repo. Put them in ~/.foundation-mobile.env, which

@@ -1,4 +1,5 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="1024"
@@ -9,10 +10,21 @@
             android:pathData="M512,864 c0,0 288,-128 288,-352 V224 L512,128 224,224 V512 c0,224 288,352 288,352 z" />
         <path
             android:fillColor="#00000000"
-            android:strokeColor="#4B9EC4"
             android:strokeWidth="76"
             android:strokeLineCap="round"
             android:strokeLineJoin="round"
-            android:pathData="M368,528 l96,96 192,-208" />
+            android:pathData="M368,528 l96,96 192,-208">
+            <!-- Same indigo -> brandFill diagonal as the background, like the iOS icon. -->
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="0"
+                    android:startY="0"
+                    android:endX="1024"
+                    android:endY="1024"
+                    android:startColor="#6366F1"
+                    android:endColor="#34D399" />
+            </aapt:attr>
+        </path>
     </group>
 </vector>
