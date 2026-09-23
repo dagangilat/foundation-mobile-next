@@ -16,7 +16,8 @@ empty). You do not need to obtain anything from Rarimo.
 
       export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
 
-- **Android SDK** — platform 35 and build-tools 35.0.0. Point Gradle at it with
+- **Android SDK** — platform 36 and build-tools 36.0.0 (Play requires
+  targetSdk 36 for new releases). Point Gradle at it with
   `ANDROID_HOME`, or write `sdk.dir=<path>` into `android/local.properties`
   (gitignored).
 
@@ -24,7 +25,8 @@ empty). You do not need to obtain anything from Rarimo.
   `app/src/main/cpp/CMakeLists.txt`, linking the GPL-3.0 witnesscalc and
   LGPL-3.0 rapidsnark shared objects. It also needs cmake 3.22.1. The ABI
   filter is `arm64-v8a` only, so an x86_64 emulator will not run it — use a
-  physical arm64 device or an arm64 emulator image.
+  physical arm64 device or an arm64 emulator image. On an Apple Silicon Mac,
+  Android Studio's default emulator images are arm64 and work.
 
 ## What you also need locally
 
@@ -59,7 +61,7 @@ Six build types exist. Four are the real product variants and set
 
 | Build type        | `isTestnet` | Assemble task             |
 | ----------------- | ----------- | ------------------------- |
-| `debug`           | `true`      | `assembleDebug`           |
+| `debug`           | `false`     | `assembleDebug`           |
 | `release`         | `false`     | `assembleRelease`         |
 | `debug_testnet`   | `true`      | `assembleDebug_testnet`   |
 | `debug_mainnet`   | `false`     | `assembleDebug_mainnet`   |
@@ -69,9 +71,9 @@ Six build types exist. Four are the real product variants and set
 Upstream declares `isTestnet` only on the four `*_testnet` / `*_mainnet` types,
 which means the base `debug` and `release` variants have no such field and
 cannot compile at all — eight source files read `BuildConfig.isTestnet`. This
-fork adds defaults to the two base types (`debug` → testnet, `release` →
-mainnet) so the conventional `assembleDebug` works; the four explicit types
-still override them.
+fork adds defaults to the two base types (both mainnet) so the conventional
+`assembleDebug` works; the four explicit types still override them. Use
+`debug_testnet` for a testnet build.
 
 ## Build
 
@@ -81,3 +83,43 @@ still override them.
 
 Output: `android/app/build/outputs/apk/debug/app-debug.apk` (~340 MB — it
 carries the ZK proving assets).
+
+## Android Studio
+
+Open the `android/` folder (not the repo root). Then set **Settings > Build,
+Execution, Deployment > Build Tools > Gradle > Gradle JDK** to the bundled
+**jbr-21**, since the pinned Gradle 8.4 cannot run on JDK 22+. In **SDK Manager**
+install Android 16 (API 36), Build-Tools 36.0.0, NDK (Side by side), and
+CMake 3.22.1. Pick the `debug` build variant and run on an arm64 emulator or a
+phone with USB debugging on.
+
+## Release signing
+
+`bundleRelease` / `assembleRelease` sign with the upload key described by
+`android/keystore.properties` (gitignored):
+
+    storeFile=upload-keystore.jks
+    storePassword=...
+    keyAlias=...
+    keyPassword=...
+
+`storeFile` is resolved relative to `android/`. Without this file the release
+build types have no signing config and fail. Back up the keystore and its
+passwords outside the repo; losing them means asking Play support to reset
+the upload key.
+
+## Play Console upload
+
+The first bundle for a new app has to be uploaded in Play Console by hand
+(already done for Internal testing). After that:
+
+    export PLAY_STORE_JSON_KEY=$HOME/keys/play-service-account.json
+    cd android && bundle install && bundle exec fastlane internal
+
+The service account needs **Release** permissions on the app (Play Console >
+Users and permissions). The lane runs the brand-sweep ratchet, sets versionCode
+to the highest code on any track + 1, builds the signed release bundle, and
+uploads it to Internal testing as a draft release. Roll it out from Play Console,
+or set `PLAY_RELEASE_STATUS=completed` once the app has been published.
+
+For a local bundle with a specific code: `./gradlew :app:bundleRelease -PVERSION_CODE=5`.

@@ -1,0 +1,108 @@
+name: android-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-ci.yml"
+  pull_request:
+    paths:
+      - "android/**"
+      - ".github/workflows/android-ci.yml"
+  # Manual runs on any branch (Actions tab > android-ci > Run workflow).
+  workflow_dispatch:
+
+# Cancel a stale run when the same branch/PR pushes again, rather than
+# letting queued duplicate runs pile up.
+concurrency:
+  group: android-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # JDK 21: the Gradle wrapper pins Gradle 8.4, which cannot run on
+      # JDK 22+ (see docs/android-local-setup.md). setup-java also exports
+      # JAVA_HOME for the gradlew step below.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # AGP is pinned to 8.3.0 (android/gradle/libs.versions.toml) and
+      # compileSdk/targetSdk are 36, so build-tools/platform must be 36.0.0/36.
+      # No ndkVersion is set in app/build.gradle.kts, so Gradle resolves AGP
+      # 8.3.0's own default NDK (25.1.8937393) - installing that exact side-
+      # by-side version avoids a second, redundant NDK auto-download mid-build.
+      # cmake 3.22.1 matches externalNativeBuild.cmake.version in
+      # app/build.gradle.kts, which builds librarime.so from
+      # app/src/main/cpp/CMakeLists.txt.
+      - name: Install Android SDK components
+        uses: android-actions/setup-android@v3
+        with:
+          packages: >-
+            platform-tools
+            platforms;android-36
+            build-tools;36.0.0
+            ndk;25.1.8937393
+            cmake;3.22.1
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # app/google-services.json is gitignored (never committed - see
+      # docs/android-local-setup.md) but required by the google-services
+      # Gradle plugin applied in app/build.gradle.kts. This is a placeholder
+      # with no real Firebase credentials, sufficient for the plugin to run
+      # and for BuildConfig.GOOGLE_WEB_KEY to stay the empty string it
+      # already defaults to. Every build type shares the same applicationId
+      # (com.foundationnext.mobile; no applicationIdSuffix is set anywhere
+      # in app/build.gradle.kts), so a single client entry covers all of them.
+      - name: Write dummy google-services.json
+        run: |
+          cat > android/app/google-services.json <<'EOF'
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "foundation-next-app",
+              "storage_bucket": "foundation-next-app.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                  "android_client_info": {
+                    "package_name": "com.foundationnext.mobile"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  { "current_key": "AIzaSyDUMMYDUMMYDUMMYDUMMYDUMMYDUMMYQ00" }
+                ],
+                "services": {
+                  "appinvite_service": { "other_platform_oauth_client": [] }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+
+      # The same command docs/android-local-setup.md uses on a Mac.
+      - name: Build debug APK and run unit tests
+        working-directory: android
+        run: ./gradlew :app:assembleDebug :app:testDebugUnitTest --no-daemon
+
+      # The debug APK is ~340MB (it carries the ZK proving assets) - not
+      # worth uploading as a build artifact. Only the test reports, and only
+      # when something failed.
+      - name: Upload unit test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-unit-test-reports
+          path: android/app/build/reports/tests/testDebugUnitTest/
+          retention-days: 7

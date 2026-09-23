@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.rarilabs.rarime</string>
+		<string>group.com.foundationnext.mobile</string>
 	</array>
 </dict>
 </plist>

@@ -47,7 +47,7 @@ new required-reason API or a new data collection surface.
 
 ## Google Play specifics
 
-- **Target API level:** 35 (`targetSdk`), meeting Play's current requirement.
+- **Target API level:** 36 (`targetSdk`), meeting Play's current requirement.
 - **ABI:** `arm64-v8a` only. Declared deliberately — the proving libraries are
   shipped for that ABI alone. Play will restrict device availability
   accordingly; this is expected, not a packaging error.

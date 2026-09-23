@@ -5,11 +5,12 @@ import Foundation
 import SwiftUI
 import UserNotifications
 
-// Rarimo's app group identifier. Retained deliberately: re-pointing it
-// requires a new App Group entitlement under our own Apple developer
-// account, which is out of scope here. See Open Decision OD-5.
+// This fork's own App Group, shared with NotificationBackgroundProcessor. Must
+// match com.apple.security.application-groups in both targets' entitlements.
+// Rarimo's group could not be kept: App Group ids belong to one team, so
+// device and archive signing under ours failed with it.
 class NotificationManager: ObservableObject {
-    static let userDefaults = UserDefaults(suiteName: "group.rarilabs.rarime")!
+    static let userDefaults = UserDefaults(suiteName: "group.com.foundationnext.mobile")!
     
     static let shared = NotificationManager()
     
@@ -26,7 +27,7 @@ class NotificationManager: ObservableObject {
     
     init() {
         let url = FileManager.default
-            .containerURL(forSecurityApplicationGroupIdentifier: "group.rarilabs.rarime")!
+            .containerURL(forSecurityApplicationGroupIdentifier: "group.com.foundationnext.mobile")!
             .appendingPathComponent("PushNotification.sqlite")
         
         pushNotificationContainer.persistentStoreDescriptions = [

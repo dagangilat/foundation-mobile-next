@@ -34,6 +34,13 @@ jobs:
       - name: No residual Rarimo branding
         continue-on-error: true
         run: ./scripts/brand-sweep.sh ios android
+      # The enforced half of the gate: fails on any brand hit that is not in
+      # scripts/brand-sweep-baseline/, so new leaks turn CI red even though
+      # the raw sweep above is permanently red on android.
+      - name: No new Rarimo branding (ratchet)
+        run: |
+          ./scripts/brand-sweep-ratchet.sh ios
+          ./scripts/brand-sweep-ratchet.sh android
       - name: Licensing files present
         run: |
           test -f LICENSE

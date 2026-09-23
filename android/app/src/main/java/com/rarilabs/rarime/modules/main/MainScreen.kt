@@ -111,7 +111,7 @@ fun AppLoadingScreen() {
             modifier = Modifier
                 .size(140.dp)
                 .scale(scale),
-            contentDescription = "Rarime app icon pulsing",
+            contentDescription = "Foundation app icon pulsing",
             painter = painterResource(R.drawable.ic_foundation_mark),
             colorFilter = ColorFilter.tint(FoundationTheme.colors.primaryMain)
         )

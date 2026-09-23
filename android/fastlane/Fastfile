@@ -1,16 +1,45 @@
 default_platform(:android)
 
 platform :android do
-  desc "Fail if any Rarimo branding survives"
+  # The ratchet, not the raw sweep: `brand-sweep.sh android` can never pass
+  # while OD-3 keeps the upstream Kotlin namespace, so it would stop every
+  # upload. The ratchet fails on any hit missing from
+  # scripts/brand-sweep-baseline/android.txt.
+  desc "Fail if any new pre-fork brand token appears"
   lane :brand_sweep do
-    sh("cd ../.. && ./scripts/brand-sweep.sh android")
+    sh("cd ../.. && ./scripts/brand-sweep-ratchet.sh android")
   end
 
+  # Needs PLAY_STORE_JSON_KEY (path to a Play Console service-account JSON
+  # key, see Appfile) and android/keystore.properties for release signing.
+  #
+  # PLAY_RELEASE_STATUS defaults to "draft": Play rejects any other status
+  # while the app has never been published ("Only releases with status draft
+  # may be created on draft app"). Roll the draft out from Play Console, or
+  # set PLAY_RELEASE_STATUS=completed once the app is live.
   desc "Build and upload an internal-testing release"
   lane :internal do
     brand_sweep
+
+    # Every code Play has ever seen is burned, rejected uploads included, so
+    # take the highest code on any track and add one.
+    codes = %w[internal alpha beta production].flat_map do |track|
+      google_play_track_version_codes(track: track)
+    rescue StandardError
+      []
+    end
+    version_code = (codes.map(&:to_i).max || 2) + 1
+
     gradle(task: "clean")
-    gradle(task: "bundle", build_type: "Release")
-    upload_to_play_store(track: "internal")
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      properties: { "VERSION_CODE" => version_code.to_s }
+    )
+    upload_to_play_store(
+      track: "internal",
+      release_status: ENV.fetch("PLAY_RELEASE_STATUS", "draft"),
+      skip_upload_apk: true
+    )
   end
 end

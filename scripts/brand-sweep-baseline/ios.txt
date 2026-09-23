@@ -1,0 +1,22 @@
+ios/FoundationMobile/Code/Foundation/AuthService.swift:/// Foundation's member identity, distinct from Rarimo's local identity secret.
+ios/FoundationMobile/Code/Foundation/FoundationVerificationManager.swift:            // AD-2: hand the params URL straight to Rarimo's proof flow.
+ios/FoundationMobile/Code/Foundation/FoundationVerificationManager.swift:    /// The passport is not registered on L2 yet - Rarimo's own scan flow must
+ios/FoundationMobile/Code/Foundation/FoundationVerificationManager.swift:    /// The proof sheet is up; Rarimo's ProofRequestView owns the UI from here.
+ios/FoundationMobile/Code/Foundation/FoundationVerificationManager.swift:///      Rarimo's existing `ProofRequestView` - the same code path an external
+ios/FoundationMobile/Code/Foundation/FoundationVerificationManager.swift:/// Bridges Foundation's backend to Rarimo's proving flow, entirely in-process.
+ios/FoundationMobile/Code/Foundation/FoundationVerificationManager.swift:/// See AD-2 in docs/superpowers/plans/2026-08-31-foundation-mobile-next-rarimo-fork-rebrand.md
+ios/FoundationMobile/Code/Foundation/FunctionsService.swift:    /// The universal link Foundation's backend builds for RariMe. The fork
+ios/FoundationMobile/Code/Managers/ExternalRequestsManager.swift:        url.path.hasPrefix("/r/") ? handleRefferalCode(url) : handleRarimeUrl(url)
+ios/FoundationMobile/Code/Managers/ExternalRequestsManager.swift:    /// Only this fork's own scheme. Rarimo's `rarime://` scheme and their
+ios/FoundationMobile/Code/Managers/ExternalRequestsManager.swift:    /// RariMe deep link; we use the URL and ignore the link.
+ios/FoundationMobile/Code/Managers/ExternalRequestsManager.swift:    /// `app.rarime.com` universal-link hosts are deliberately NOT honoured:
+ios/FoundationMobile/Code/Managers/ExternalRequestsManager.swift:    /// opens RariMe (if installed) rather than this app.
+ios/FoundationMobile/Code/Managers/ExternalRequestsManager.swift:    func handleRarimeUrl(_ url: URL) {
+ios/FoundationMobile/Code/Managers/SecurityManager.swift:    /// them straight into `MainView` holding A's local Rarimo passport identity
+ios/FoundationMobile/Code/Modules/Home/Views/FoundationVerifyCardView.swift:/// than behind the QR tab because, unlike Rarimo's flow, ours is not initiated
+ios/FoundationMobile/Code/Modules/Main/Views/ExternalRequests/LightVerificationView.swift:                verificationParamsUrl: URL(string: "https://api.orgs.app.stage.rarime.com/integrations/verificator-svc/light/public/proof-params/0x01aca1d0b12a7518606202543cef19c5ecad88f9187bc9365eca51e76f465388")!,
+ios/FoundationMobile/Code/Modules/Main/Views/ExternalRequests/ProofRequestView.swift:                proofParamsUrl: URL(string: "https://api.orgs.app.stage.rarime.com/integrations/verificator-svc/public/proof-params/0x69d9c5f9dd91dbaff7815947e58dade0db8c8d89e1223259399de86bfc9abd")!,
+ios/FoundationMobile/Code/Modules/Main/Views/MainView.swift:        externalRequestsManager.handleRarimeUrl(qrCodeUrl)
+ios/FoundationMobile/Code/Modules/Profile/Views/ProfileView.swift:        // Every reset below only touches Rarimo's local identity; before Task
+ios/FoundationMobile/Code/Modules/Profile/Views/ProfileView.swift:    /// the local Rarimo identity that is still on disk. Sign-out has to leave
+ios/FoundationTests/Tests/FoundationTests/SecurityManagerTests.swift:    /// local Rarimo identity.
