@@ -3,6 +3,11 @@
 Everything here runs on a Mac with current Xcode. There is no hosted iOS CI
 in this repo; the Mac is the build and release machine.
 
+**Shortcut:** `scripts/mobile.sh` automates the steps below: `setup`,
+`firebase`, `ios-sim`, `ios-device`, `ios-create-app`, `ios-testflight`,
+`ios-metadata`, and `doctor` to see what is missing. The manual steps are
+documented here for when you need them.
+
 ## One-time setup
 
 1. **Tools:** Xcode, Go (`brew install go`), gomobile

@@ -7,6 +7,11 @@ cloned**: upstream gitignores
 own reconstruction of that file (Foundation's values, several deliberately
 empty). You do not need to obtain anything from Rarimo.
 
+**Shortcut:** `scripts/mobile.sh` automates this page: `setup` (JDK, SDK,
+NDK, CMake, emulator), `firebase` (config file, `GOOGLE_WEB_KEY`, SHA
+fingerprints), `android-emulator`, `android-device`, `android-bundle`,
+`android-internal`, `android-metadata`, and `doctor`.
+
 ## Toolchain
 
 - **JDK 21** (what this fork's builds have been verified with; the Kotlin/Java

@@ -21,6 +21,18 @@ iOS and Android application source has been imported (see `ios/` and
 `android/`); rebranding and integration with Foundation's backend is
 ongoing.
 
+## Quick start (macOS)
+
+`scripts/mobile.sh` does every scriptable step. Each command is safe to re-run.
+
+    scripts/mobile.sh setup              # toolchains, Android SDK + emulator, fastlane
+    scripts/mobile.sh firebase           # register apps, fetch config files, keys
+    scripts/mobile.sh doctor             # what is still missing
+    scripts/mobile.sh ios-sim            # or: ios-device, android-emulator, android-device
+    scripts/mobile.sh ios-testflight     # or: android-internal
+
+Run it with no arguments for the full command list.
+
 ## Building
 
 ### iOS

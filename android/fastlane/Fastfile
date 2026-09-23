@@ -39,7 +39,25 @@ platform :android do
     upload_to_play_store(
       track: "internal",
       release_status: ENV.fetch("PLAY_RELEASE_STATUS", "draft"),
-      skip_upload_apk: true
+      skip_upload_apk: true,
+      # Listing text goes up only through the metadata lane.
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  # Pushes the store listing text in fastlane/metadata/android (title, short
+  # and full description). Text only: no bundle, images or screenshots.
+  desc "Upload Play store listing text"
+  lane :metadata do
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
     )
   end
 end

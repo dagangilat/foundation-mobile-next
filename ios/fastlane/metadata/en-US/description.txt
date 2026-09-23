@@ -1,0 +1,25 @@
+Foundation lets you prove you are a unique human — without revealing who you are.
+
+Using your passport's chip and a zero-knowledge proof generated entirely on your phone, Foundation issues you a private, unforgeable proof of unique personhood for Foundation's governance platform. Your name, photo, and passport number never leave your device — only the cryptographic proof does.
+
+HOW IT WORKS
+• Scan the machine-readable zone on your passport's photo page with your camera.
+• Tap your phone to your passport's NFC chip to read its signed data.
+• Foundation generates a zero-knowledge proof on your device confirming you hold a valid, unique passport — without transmitting the passport's contents.
+• Sign in to your Foundation account with an emailed one-time code.
+• Unlock the app locally with Face ID / biometrics — your biometric data never leaves your device or reaches Foundation.
+
+WHY THIS MATTERS
+Foundation's governance platform needs to know that each voice is one real, unique person — without collecting a registry of who everyone is. Zero-knowledge proofs make that possible: the proof convinces the server you're a unique passport holder without disclosing your identity.
+
+PRIVACY BY DESIGN
+• Passport data (photo, MRZ, chip contents) is processed only on your device and is never uploaded.
+• Only the zero-knowledge proof is sent to Foundation's servers.
+• Sign-in uses your email address and a one-time code — no password to leak.
+• You can permanently delete your account and its server-side data from within the app at any time.
+• Optional encrypted backup of your recovery key to iCloud, so you can restore access if you lose your device.
+
+OPEN SOURCE
+Foundation Mobile is free, open-source software (GPL-3.0) built on an open-source passport identity protocol. The complete source code is public.
+
+Foundation is free to use.
