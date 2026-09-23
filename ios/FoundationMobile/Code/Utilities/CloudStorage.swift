@@ -1,13 +1,15 @@
 import Foundation
 import CloudKit
 
-// Rarimo's iCloud container identifier. Retained deliberately: re-pointing it
-// requires a new CloudKit container + entitlement under our own Apple
-// developer account, which is out of scope here. See Open Decision OD-5.
+// This fork's own iCloud container. Must match
+// com.apple.developer.icloud-container-identifiers in FoundationMobile.entitlements;
+// Xcode's automatic signing registers it under team F9F26FQW95 on first
+// device build. Rarimo's container could not be kept: container ids belong to
+// one team, so signing under ours failed with it.
 class CloudStorage {
     static let shared = CloudStorage()
 
-    let db = CKContainer(identifier: "iCloud.Rarilabs.Rarime").privateCloudDatabase
+    let db = CKContainer(identifier: "iCloud.com.foundationnext.mobile").privateCloudDatabase
 
     func saveRecord(_ record: CKRecord) async throws {
         let _ = try await db.save(record)
@@ -36,7 +38,7 @@ class CloudStorage {
     }
 
     func isICloudAvailable() async throws -> Bool {
-        let accountStatus = try await CKContainer(identifier: "iCloud.Rarilabs.Rarime").accountStatus()
+        let accountStatus = try await CKContainer(identifier: "iCloud.com.foundationnext.mobile").accountStatus()
 
         return accountStatus == .available
     }

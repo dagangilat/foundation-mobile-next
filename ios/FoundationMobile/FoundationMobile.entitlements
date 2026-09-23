@@ -6,14 +6,9 @@
 	<string>development</string>
 	<key>com.apple.developer.devicecheck.appattest-environment</key>
 	<string>production</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:app.rarime.com</string>
-		<string>applinks:app.stage.rarime.com</string>
-	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.Rarilabs.Rarime</string>
+		<string>iCloud.com.foundationnext.mobile</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
@@ -29,7 +24,7 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.rarilabs.rarime</string>
+		<string>group.com.foundationnext.mobile</string>
 	</array>
 </dict>
 </plist>

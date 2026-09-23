@@ -71,11 +71,12 @@ PATTERN='rarime|rarimo|rarilabs|freedomtool|appsflyer|(^|[^A-Za-z])RMO([^A-Za-z]
 #    landing in that directory needs its own line here. Check this list
 #    against any new test file using this pattern before assuming it's covered.
 #
-# NOT exempt (deliberately still red until a later task fixes it): entitlements
-# files (iCloud.Rarilabs.Rarime / group.rarilabs.rarime / applinks:app.rarime.com)
-# — Task B2's review found these block device/archive code signing under the
-# new DEVELOPMENT_TEAM; a future task must actually rebrand these values, not
-# just silence the sweep on them.
+# Entitlements: no longer a source of hits. The Rarimo-owned iCloud container,
+# App Group and applinks values (which blocked device/archive signing under our
+# DEVELOPMENT_TEAM) were replaced with iCloud.com.foundationnext.mobile /
+# group.com.foundationnext.mobile and the unused applinks entries removed.
+#
+# NOT exempt (deliberately still red until a later task fixes it):
 #  - BaseConfig.kt / Constants.kt (Task C4 / Open Decision OD-5): the Android
 #    analog of Development.xcconfig / Production.xcconfig above — reference
 #    Rarimo INFRASTRUCTURE retained deliberately (registration relayer, RPC,
