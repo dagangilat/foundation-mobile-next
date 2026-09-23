@@ -55,7 +55,10 @@ android {
         applicationId = "com.foundationnext.mobile"
         minSdk = 27
         targetSdk = 36
-        versionCode = 2
+        // Play Console burns every uploaded code, even rejected ones. The
+        // fastlane `internal` lane passes -PVERSION_CODE=<highest on Play + 1>;
+        // local builds fall back to the last code committed here.
+        versionCode = (project.findProperty("VERSION_CODE") as String?)?.toInt() ?: 2
         versionName = "1.0.0"
 
         externalNativeBuild {
