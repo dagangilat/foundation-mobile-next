@@ -242,22 +242,25 @@ android/app/src/main/java/com/rarilabs/rarime/foundation/FoundationVerificationM
 android/app/src/main/java/com/rarilabs/rarime/foundation/FoundationVerificationManager.kt:package com.rarilabs.rarime.foundation
 android/app/src/main/java/com/rarilabs/rarime/foundation/PlayIntegrityService.kt: * Android's counterpart to iOS App Attest. Rarimo's apps ship no platform
 android/app/src/main/java/com/rarilabs/rarime/foundation/PlayIntegrityService.kt:package com.rarilabs.rarime.foundation
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/BrandComponents.kt:import com.rarilabs.rarime.R
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/BrandComponents.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/BrandComponents.kt:import com.rarilabs.rarime.ui.theme.FoundationType
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/BrandComponents.kt:package com.rarilabs.rarime.foundation.ui
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:    // AD-2: the params URL goes straight into Rarimo's own proof flow, with no
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt: * than behind the QR tab because, unlike Rarimo's flow, ours is not started by
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.foundation.FoundationAuthManager
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.foundation.FoundationVerificationManager
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.foundation.VerificationState
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.ui.base.ButtonSize
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.ui.components.PrimaryButton
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.manager.IdentityManager
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.ui.theme.FoundationType
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:import com.rarilabs.rarime.util.data.UniversalProof
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/FoundationVerifyCard.kt:package com.rarilabs.rarime.foundation.ui
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.base.ButtonSize
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.components.AppTextField
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.components.PrimaryButton
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.components.TransparentButton
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
-android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.R
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationType
+android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:import com.rarilabs.rarime.util.Constants
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInScreen.kt:package com.rarilabs.rarime.foundation.ui
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInViewModel.kt:import com.rarilabs.rarime.foundation.FoundationAuthManager
 android/app/src/main/java/com/rarilabs/rarime/foundation/ui/SignInViewModel.kt:import com.rarilabs.rarime.util.ErrorHandler
@@ -391,8 +394,12 @@ android/app/src/main/java/com/rarilabs/rarime/modules/home/components/RarimeInfo
 android/app/src/main/java/com/rarilabs/rarime/modules/home/components/RarimeInfoScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/modules/home/components/RarimeInfoScreen.kt:package com.rarilabs.rarime.modules.home.components
 android/app/src/main/java/com/rarilabs/rarime/modules/home/components/RarimeInfoScreen.kt:private fun RarimeInfoScreenPreview() {
+android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.data.enums.AppColorScheme
+android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.foundation.ui.BrandLockup
+android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.foundation.ui.FoundationVerifyCard
+android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.foundation.ui.PillarsHero
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.home.v3.model.WidgetType
@@ -402,10 +409,8 @@ android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:impo
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.home.v3.ui.expanded.RecoveryMethodExpandedWidget
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.main.LocalMainViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.main.ScreenInsets
-android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsBottomSheet
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
-android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.ui.components.AppBottomSheet
-android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.ui.components.rememberAppSheetState
+android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 android/app/src/main/java/com/rarilabs/rarime/modules/home/v3/HomeScreen.kt:import com.rarilabs.rarime.util.Screen
@@ -525,9 +530,12 @@ android/app/src/main/java/com/rarilabs/rarime/modules/intro/AuthorizationMethods
 android/app/src/main/java/com/rarilabs/rarime/modules/intro/AuthorizationMethodsList.kt:import com.rarilabs.rarime.ui.components.HorizontalDivider
 android/app/src/main/java/com/rarilabs/rarime/modules/intro/AuthorizationMethodsList.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/modules/intro/AuthorizationMethodsList.kt:package com.rarilabs.rarime.modules.intro
-android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.R
-android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.ui.components.AppLogo
-android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.foundation.ui.BrandLockup
+android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.foundation.ui.FoundationButton
+android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.foundation.ui.FoundationButtonStyle
+android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.foundation.ui.PillarsHero
+android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationType
 android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:import com.rarilabs.rarime.util.Screen
 android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroScreen.kt:package com.rarilabs.rarime.modules.intro
 android/app/src/main/java/com/rarilabs/rarime/modules/intro/IntroViewModel.kt:import com.rarilabs.rarime.manager.IdentityManager
@@ -539,6 +547,9 @@ android/app/src/main/java/com/rarilabs/rarime/modules/main/BottomTabBar.kt:impor
 android/app/src/main/java/com/rarilabs/rarime/modules/main/BottomTabBar.kt:import com.rarilabs.rarime.util.Screen
 android/app/src/main/java/com/rarilabs/rarime/modules/main/BottomTabBar.kt:package com.rarilabs.rarime.modules.main
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.R
+android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.foundation.ui.BrandLockup
+android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.foundation.ui.FoundationIndeterminateBar
+android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.foundation.ui.PillarsHero
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.foundation.ui.SignInScreen
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.foundation.ui.SignInViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.modules.qr.ScanQrScreen
@@ -547,7 +558,9 @@ android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import 
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.ui.components.UiSnackbarDefault
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.ui.components.rememberAppSheetState
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.ui.theme.AppTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationType
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:import com.rarilabs.rarime.util.Screen
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreen.kt:package com.rarilabs.rarime.modules.main
 android/app/src/main/java/com/rarilabs/rarime/modules/main/MainScreenRoutes.kt:import com.rarilabs.rarime.R
@@ -686,8 +699,10 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/PassportDataS
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/PassportDataStep.kt:import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/PassportDataStep.kt:package com.rarilabs.rarime.modules.passportScan
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.R
-android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.components.PrimaryTextButton
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationType
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:package com.rarilabs.rarime.modules.passportScan
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.BuildConfig
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.main.LocalMainViewModel
@@ -890,17 +905,17 @@ android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:i
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.data.enums.AppColorScheme
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.data.enums.AppIcon
-android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.data.enums.toLocalizedString
-android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.ui.components.AppIcon
+android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.ui.components.ConfirmationDialog
-android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.ui.components.PassportImage
-android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationType
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.util.Screen
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.util.SendEmailUtil
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:import com.rarilabs.rarime.util.WalletUtil
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileScreen.kt:package com.rarilabs.rarime.modules.profile
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.DeletionOutcome
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
+android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.FoundationAuthManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.manager.DriveBackupManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.manager.IdentityManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.manager.PassportManager
@@ -1113,6 +1128,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.data.enums.PassportCardLook
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.data.enums.PassportIdentifier
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.data.enums.PassportStatus
+android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.main.LocalMainViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.main.ScreenInsets
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.passportScan.models.EDocument
@@ -1230,8 +1246,7 @@ android/app/src/main/java/com/rarilabs/rarime/ui/components/AppCircularProgressI
 android/app/src/main/java/com/rarilabs/rarime/ui/components/AppIcon.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/ui/components/AppIcon.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/ui/components/AppIcon.kt:package com.rarilabs.rarime.ui.components
-android/app/src/main/java/com/rarilabs/rarime/ui/components/AppLogo.kt:import com.rarilabs.rarime.R
-android/app/src/main/java/com/rarilabs/rarime/ui/components/AppLogo.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/ui/components/AppLogo.kt:import com.rarilabs.rarime.foundation.ui.BrandLockup
 android/app/src/main/java/com/rarilabs/rarime/ui/components/AppLogo.kt:package com.rarilabs.rarime.ui.components
 android/app/src/main/java/com/rarilabs/rarime/ui/components/AppRadioButton.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/ui/components/AppRadioButton.kt:package com.rarilabs.rarime.ui.components
@@ -1347,6 +1362,7 @@ android/app/src/main/java/com/rarilabs/rarime/ui/components/UiSnackbarDefault.kt
 android/app/src/main/java/com/rarilabs/rarime/ui/components/VerticalDivider.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/ui/components/VerticalDivider.kt:package com.rarilabs.rarime.ui.components
 android/app/src/main/java/com/rarilabs/rarime/ui/components/VerticalPageIndicator.kt:package com.rarilabs.rarime.ui.components
+android/app/src/main/java/com/rarilabs/rarime/ui/theme/FoundationBrand.kt:package com.rarilabs.rarime.ui.theme
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/FoundationColors.kt:    // Rarimo's mauve; it becomes brandGreen, whose luminance (0.139) is
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/FoundationColors.kt:    // Rarimo's near-white value.
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/FoundationColors.kt:    // The alphas below are NOT Rarimo's originals (0.56 / 0.44 / 0.28). Those
@@ -1376,7 +1392,6 @@ android/app/src/main/java/com/rarilabs/rarime/ui/theme/FoundationTypography.kt:i
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/FoundationTypography.kt:package com.rarilabs.rarime.ui.theme
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/Modifiers.kt:package com.rarilabs.rarime.ui.theme
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/Theme.kt:import com.rarilabs.rarime.data.enums.AppColorScheme
-android/app/src/main/java/com/rarilabs/rarime/ui/theme/Theme.kt:import com.rarilabs.rarime.data.enums.isDark
 android/app/src/main/java/com/rarilabs/rarime/ui/theme/Theme.kt:package com.rarilabs.rarime.ui.theme
 android/app/src/main/java/com/rarilabs/rarime/util/AppIconUtil.kt:import com.rarilabs.rarime.data.enums.AppIcon
 android/app/src/main/java/com/rarilabs/rarime/util/AppIconUtil.kt:package com.rarilabs.rarime.util

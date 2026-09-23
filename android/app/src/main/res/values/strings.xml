@@ -14,7 +14,7 @@
     <string name="wait_btn">Wait...</string>
     <string name="enable_btn">Enable</string>
     <string name="maybe_later_btn">Maybe Later</string>
-    <string name="step_indicator">Step %1$s/%2$s</string>
+    <string name="step_indicator">Step %1$s of %2$s</string>
     <string name="enable_passcode_title">Enable\nPasscode</string>
     <string name="enable_passcode_text">Enable Passcode Login</string>
     <string name="enter_passcode_title">Enter Passcode</string>
@@ -27,12 +27,12 @@
     <string name="status_processing">PROCESSING</string>
     <string name="status_done">DONE</string>
     <string name="status_failed">FAILED</string>
-    <string name="scan_your_passport_title">Scan your Passport</string>
-    <string name="scan_your_passport_text">Data never leaves this device</string>
-    <string name="scan_your_passport_hint">Move your passport page inside the border</string>
+    <string name="scan_your_passport_title">Scan the photo page</string>
+    <string name="scan_your_passport_text">Lay your passport flat in good light, with no glare.</string>
+    <string name="scan_your_passport_hint">Fit the photo page inside the frame and hold steady.</string>
     <string name="nfc_reader_hint">Place your passport cover to the back of your phone</string>
-    <string name="passport_data_title">Document data</string>
-    <string name="passport_data_text">Data generates an incognito profile</string>
+    <string name="passport_data_title">Check your details</string>
+    <string name="passport_data_text">These stay on this phone.</string>
     <string name="must_data">Identifiers</string>
     <string name="document_class_mode">Document class mode</string>
     <string name="issuing_state_code">Issuing state code</string>
@@ -42,7 +42,7 @@
     <string name="processing_status_title">Please Wait…</string>
     <string name="success_status_title">All Done!</string>
     <string name="failure_status_title">Error</string>
-    <string name="processing_status_text">Creating an incognito profile</string>
+    <string name="processing_status_text">Building your proof</string>
     <string name="success_status_text">Your passport proof is ready</string>
     <string name="failure_status_text">Please try again later</string>
     <string name="camera_permission_title">Camera permission</string>
@@ -51,8 +51,8 @@
     <string name="dismiss">Dismiss</string>
 
     <!--SCAN PASSPORT : NFC-->
-    <string name="nfc_reader_title">NFC Reader</string>
-    <string name="nfc_reader_text">Reading personal data</string>
+    <string name="nfc_reader_title">Hold your phone on the passport</string>
+    <string name="nfc_reader_text">Hold your phone flat on the photo page until it buzzes. Most chips read in a few seconds.</string>
     <string name="nfc_reader_hint_1">Press Scan and place your passport cover to the back of your phone</string>
     <string name="nfc_reader_scanning">Scanning…</string>
     <string name="nfc_error_interrupt">Scan interrupted, try again</string>
@@ -97,8 +97,8 @@
     <string name="creating_confidential_profile_step">Creating a confidential profile</string>
     <string name="finalizing_step">Finalizing</string>
 
-    <string name="scan_qr_title">Scan QR</string>
-    <string name="scan_qr_description">Place QR code within the frame to scan</string>
+    <string name="scan_qr_title">Scan a QR code</string>
+    <string name="scan_qr_description">Point your camera at the code on the partner\'s site.</string>
 
 
     <string name="leaderboard_title">Leaderboard</string>
@@ -146,8 +146,8 @@
     <string name="join_program">Join the program</string>
     <string name="waitlist_info">Information shared includes the data groups of the passport and the government signature</string>
     <string name="unsupported_country_title">Unsupported country</string>
-    <string name="unsupported_country_description">Unfortunately, these passports are not eligible for rewards. However, you can use your incognito ID for other upcoming mini apps.</string>
-    <string name="unsupported_country_btn">Create Incognito ID</string>
+    <string name="unsupported_country_description">Passports from this country can\'t be verified yet. Your ID still works for everything else in Foundation.</string>
+    <string name="unsupported_country_btn">Continue</string>
     <string name="waitlist_card_subtitle">You will be notified once added</string>
     <string name="unsupported_card_title">Unsupported for rewards</string>
     <string name="learn_more_about_the_app">Learn more about the App</string>
@@ -284,12 +284,12 @@
     <string name="error">Error</string>
     <string name="please_don_t_close_application">Please don’t close application</string>
     <string name="downloading">Downloading</string>
-    <string name="applying_zk">Applying ZK</string>
+    <string name="applying_zk">Creating your private proof…</string>
     <string name="creating">Creating</string>
     <string name="finishing">Finishing</string>
     <string name="select_icon_description">Select icon</string>
     <string name="from_json_test_only">FROM JSON (TEST ONLY)</string>
-    <string name="you">You</string>
+    <string name="you">Your passport</string>
     <string name="hi">Hi</string>
     <string name="stranger">Stranger</string>
     <string name="no_passport_error">First, scan your passport.</string>
@@ -356,14 +356,14 @@
     <string name="ligth_profe_revealed_data_section_title">REVEALED DATA</string>
     <string name="light_proof_generate_proof_btn_label">Generate Proof</string>
     <string name="light_proof_cancel_btn_label">Cancel</string>
-    <string name="querry_proof_header">Proof Request</string>
+    <string name="querry_proof_header">Share a proof</string>
     <string name="querry_proof_verification_criteria_section_title">VERIFICATION CRITERIA</string>
     <string name="querry_proof_requestor_section_title">REQUESTOR</string>
     <string name="querry_proof_id">ID</string>
     <string name="querry_proof_host">Host</string>
     <string name="querry_proof_revealed_data_section_title">REVEALED DATA</string>
-    <string name="querry_prooof_generate_proof_btn_label">Generate Proof</string>
-    <string name="querry_proof_cancel_btn_label">Cancel</string>
+    <string name="querry_prooof_generate_proof_btn_label">Share proof</string>
+    <string name="querry_proof_cancel_btn_label">Decline</string>
     <string name="label_expiration_criteria">Document valid until</string>
     <string name="bad_internet_connection">There was an issue with your internet connection. Please check your network settings.</string>
     <string name="error_get_params_no_internet_connection">Failed to get proof params. Please check your internet connection.</string>

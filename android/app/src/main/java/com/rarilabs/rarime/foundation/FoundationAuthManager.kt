@@ -64,6 +64,14 @@ class FoundationAuthManager internal constructor(
 
     private var pendingEmail: String? = null
 
+    /**
+     * The signed-in member's email, for Profile's "Signed in as" line. Null
+     * when signed out, when Firebase is unavailable, or when the account
+     * record carries no email; callers hide the line then.
+     */
+    val email: String?
+        get() = auth?.currentUser?.email
+
     init {
         auth?.addAuthStateListener { a ->
             _uid.value = a.currentUser?.uid

@@ -1,30 +1,40 @@
 package com.rarilabs.rarime.foundation.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
 import com.rarilabs.rarime.foundation.FoundationAuthManager
 import com.rarilabs.rarime.foundation.FoundationVerificationManager
 import com.rarilabs.rarime.foundation.VerificationState
-import com.rarilabs.rarime.ui.base.ButtonSize
-import com.rarilabs.rarime.ui.components.PrimaryButton
-import com.rarilabs.rarime.ui.theme.FoundationTheme
+import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.ui.theme.FoundationBrand
+import com.rarilabs.rarime.ui.theme.FoundationType
+import com.rarilabs.rarime.util.data.UniversalProof
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,8 +44,16 @@ import javax.inject.Inject
 class FoundationVerifyCardViewModel @Inject constructor(
     private val verificationManager: FoundationVerificationManager,
     authManager: FoundationAuthManager,
+    identityManager: IdentityManager,
 ) : ViewModel() {
     val state: StateFlow<VerificationState> = verificationManager.state
+
+    /**
+     * Non-null once the passport is registered (the passport flow has run to
+     * completion). Until then the card's action is "Scan passport", because
+     * `beginVerification()` could only answer `NotRegistered`.
+     */
+    val registrationProof: StateFlow<UniversalProof?> = identityManager.registrationProof
 
     init {
         // A `Verified` state describes one Foundation member identity. Signing
@@ -88,22 +106,36 @@ class FoundationVerifyCardViewModel @Inject constructor(
 }
 
 /**
- * The Home entry point into Foundation verification. It lives on Home rather
- * than behind the QR tab because, unlike Rarimo's flow, ours is not started by
- * scanning someone else's code - the app asks our own backend for it.
+ * Home's status card: whether this person is verified, and the one next step.
+ *
+ * - Passport not registered yet: "Not verified yet" + "Scan passport", which
+ *   opens the existing passport flow through [onScanPassport].
+ * - Registered but not yet verified with Foundation: "Finish verification",
+ *   which runs the existing `beginVerification()` -> proof -> poll flow.
+ * - Verified: the "Verified" pill and what that lets you prove.
+ *
+ * Under the card sits "Scan QR code" ([onScanQr]): the app's existing QR scan
+ * sheet, so a partner site can request a proof. It becomes the primary action
+ * once the person is verified.
  *
  * Mirrors iOS's `FoundationVerifyCardView`.
  */
 @Composable
 fun FoundationVerifyCard(
+    onScanPassport: () -> Unit,
+    onScanQr: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FoundationVerifyCardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val registrationProof by viewModel.registrationProof.collectAsState()
 
     FoundationVerifyCardContent(
         state = state,
+        isPassportRegistered = registrationProof != null,
         onVerify = viewModel::beginVerification,
+        onScanPassport = onScanPassport,
+        onScanQr = onScanQr,
         modifier = modifier,
     )
 
@@ -125,43 +157,104 @@ fun FoundationVerifyCard(
 @Composable
 private fun FoundationVerifyCardContent(
     state: VerificationState,
+    isPassportRegistered: Boolean,
     onVerify: () -> Unit,
+    onScanPassport: () -> Unit,
+    onScanQr: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isVerified = state is VerificationState.Verified
+    // NotRegistered is the manager's own "no registration proof (or signed
+    // out)" answer, so it routes back to the passport scan as well.
+    val needsPassport = !isVerified &&
+        (!isPassportRegistered || state is VerificationState.NotRegistered)
+
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .background(
-                color = FoundationTheme.colors.componentPrimary,
-                shape = RoundedCornerShape(16.dp),
-            )
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = "Verify with Foundation",
-            style = FoundationTheme.typography.subtitle5,
-            color = FoundationTheme.colors.textPrimary,
-        )
-        Text(
-            text = captionFor(state),
-            style = FoundationTheme.typography.body4,
-            color = FoundationTheme.colors.textSecondary,
-        )
-        if (state.isBusy) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = FoundationTheme.colors.primaryMain,
+        FoundationCard {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "STATUS",
+                    style = FoundationType.overline,
+                    color = FoundationBrand.Muted,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                if (isVerified) VerifiedPill()
+            }
+            Text(
+                text = titleFor(state, needsPassport),
+                style = FoundationType.headline,
+                color = FoundationBrand.Text,
             )
+            Text(
+                text = captionFor(state, needsPassport),
+                style = FoundationType.callout,
+                color = FoundationBrand.Muted,
+            )
+            when {
+                isVerified -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    CheckChip("Passport chip")
+                    CheckChip("Unique person")
+                }
+
+                needsPassport -> FoundationButton(
+                    text = "Scan passport",
+                    leadingIcon = R.drawable.ic_fnd_passport,
+                    onClick = onScanPassport,
+                )
+
+                else -> FoundationButton(
+                    text = buttonTitleFor(state),
+                    isLoading = state.isBusy,
+                    enabled = !state.isBusy,
+                    onClick = onVerify,
+                )
+            }
         }
-        PrimaryButton(
-            modifier = Modifier.fillMaxWidth(),
-            text = buttonTitleFor(state),
-            size = ButtonSize.Large,
-            enabled = !state.isBusy && state !is VerificationState.Verified,
-            onClick = onVerify,
+
+        FoundationButton(
+            text = "Scan QR code",
+            style = if (isVerified) FoundationButtonStyle.Primary else FoundationButtonStyle.Secondary,
+            leadingIcon = R.drawable.ic_fnd_qr_code,
+            onClick = onScanQr,
         )
+    }
+}
+
+@Composable
+private fun VerifiedPill() {
+    Text(
+        text = "Verified",
+        style = FoundationType.footnote.copy(fontWeight = FontWeight.Bold),
+        color = FoundationBrand.Accent,
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(FoundationBrand.AccentTint)
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+    )
+}
+
+@Composable
+private fun CheckChip(label: String, @DrawableRes icon: Int = R.drawable.ic_fnd_check) {
+    val shape = RoundedCornerShape(8.dp)
+    Row(
+        modifier = Modifier
+            .clip(shape)
+            .background(FoundationBrand.Bg, shape)
+            .border(1.dp, FoundationBrand.Border, shape)
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            tint = FoundationBrand.Accent,
+            modifier = Modifier.size(14.dp),
+        )
+        Text(text = label, style = FoundationType.callout, color = FoundationBrand.Text)
     }
 }
 
@@ -170,37 +263,70 @@ private val VerificationState.isBusy: Boolean
         this is VerificationState.AwaitingProof ||
         this is VerificationState.Polling
 
-private fun captionFor(state: VerificationState): String = when (state) {
-    is VerificationState.NotRegistered ->
-        "Scan your passport first, then come back here."
+private fun titleFor(state: VerificationState, needsPassport: Boolean): String = when {
+    state is VerificationState.Verified -> "You're a verified person"
+    needsPassport -> "Not verified yet"
+    state is VerificationState.Failed -> "Verification didn't finish"
+    else -> "Passport added"
+}
 
-    is VerificationState.Verified -> "You're a verified Foundation member."
-    is VerificationState.Failed -> state.message
-    else -> "Prove you're a unique human, without revealing who you are."
+private fun captionFor(state: VerificationState, needsPassport: Boolean): String = when {
+    state is VerificationState.Verified ->
+        "When a site asks, you can prove this without sharing your name or passport details."
+
+    needsPassport ->
+        "Verify once with your passport's chip to show you're a real, unique person. " +
+            "Your details stay on this phone."
+
+    state is VerificationState.Failed -> state.message
+    else -> "One last step: confirm you're a unique person. Your details stay on this phone."
 }
 
 private fun buttonTitleFor(state: VerificationState): String = when (state) {
-    is VerificationState.Verified -> "Verified"
     is VerificationState.Starting,
     is VerificationState.AwaitingProof,
     is VerificationState.Polling,
     -> "Working…"
 
     is VerificationState.Failed -> "Try again"
-    else -> "Verify"
+    else -> "Finish verification"
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFF6F9FC)
 @Composable
-private fun FoundationVerifyCardIdlePreview() {
-    FoundationVerifyCardContent(state = VerificationState.Idle, onVerify = {})
+private fun FoundationVerifyCardNotVerifiedPreview() {
+    FoundationVerifyCardContent(
+        state = VerificationState.Idle,
+        isPassportRegistered = false,
+        onVerify = {},
+        onScanPassport = {},
+        onScanQr = {},
+        modifier = Modifier.padding(24.dp),
+    )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFFF6F9FC)
+@Composable
+private fun FoundationVerifyCardRegisteredPreview() {
+    FoundationVerifyCardContent(
+        state = VerificationState.Idle,
+        isPassportRegistered = true,
+        onVerify = {},
+        onScanPassport = {},
+        onScanQr = {},
+        modifier = Modifier.padding(24.dp),
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF6F9FC)
 @Composable
 private fun FoundationVerifyCardVerifiedPreview() {
     FoundationVerifyCardContent(
         state = VerificationState.Verified(memberNumber = 42),
+        isPassportRegistered = true,
         onVerify = {},
+        onScanPassport = {},
+        onScanQr = {},
+        modifier = Modifier.padding(24.dp),
     )
 }

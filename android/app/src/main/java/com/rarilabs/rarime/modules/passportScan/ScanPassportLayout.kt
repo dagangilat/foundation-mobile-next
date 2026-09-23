@@ -4,10 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,11 +17,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
-import com.rarilabs.rarime.ui.components.PrimaryTextButton
+import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
+import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationTheme
+import com.rarilabs.rarime.ui.theme.FoundationType
 
 const val totalSteps = 3
 
+/**
+ * Frame for each passport-scan step, in the Foundation look (approved
+ * mockups ScanPhotoPage / TapChip): a back chevron with "Verify", the step's
+ * title, "Step N of 3", then its one-line instruction. [onClose] is what the
+ * old close button did; the chevron now triggers it.
+ */
 @Composable
 fun ScanPassportLayout(
     modifier: Modifier = Modifier,
@@ -33,39 +41,38 @@ fun ScanPassportLayout(
 ) {
     Column(
         modifier = modifier
-            .background(FoundationTheme.colors.backgroundPrimary)
+            .background(FoundationBrand.Bg)
             .fillMaxSize()
-            .padding(top = 24.dp)
+            .padding(top = 12.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 24.dp)
                 .padding(bottom = 20.dp)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(R.string.step_indicator, step, totalSteps),
-                    style = FoundationTheme.typography.body4,
-                    color = FoundationTheme.colors.textSecondary
-                )
-                PrimaryTextButton(leftIcon = R.drawable.ic_close, onClick = onClose)
-            }
+            FoundationNavHeader(
+                title = "Verify",
+                onBack = onClose,
+                modifier = Modifier.offset(x = (-12).dp),
+            )
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = title,
-                    style = FoundationTheme.typography.subtitle4,
-                    color = FoundationTheme.colors.textPrimary
+                    style = FoundationType.title,
+                    color = FoundationBrand.Text
                 )
                 Text(
-                    text = text,
-                    style = FoundationTheme.typography.body4,
-                    color = FoundationTheme.colors.textSecondary
+                    text = stringResource(R.string.step_indicator, step, totalSteps),
+                    style = FoundationType.body,
+                    color = FoundationBrand.Muted
                 )
             }
+            Text(
+                text = text,
+                style = FoundationType.body,
+                color = FoundationBrand.Muted
+            )
         }
         content()
     }
@@ -76,8 +83,8 @@ fun ScanPassportLayout(
 fun PreviewScanPassportLayout() {
     ScanPassportLayout(
         step = 1,
-        title = "Scan Passport",
-        text = "Scan your passport to continue",
+        title = "Scan the photo page",
+        text = "Lay your passport flat in good light, with no glare.",
         onClose = {}
     ) {
         Box(
