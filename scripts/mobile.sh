@@ -179,10 +179,7 @@ firebase_failure() { # IOS|ANDROID
     echo
     echo "$1 apps already in $FIREBASE_PROJECT:"
     firebase apps:list "$1" --project "$FIREBASE_PROJECT" 2>&1 | sed 's/^/    /' || true
-    if [ -f firebase-debug.log ]; then
-      echo "Firebase's reason (from firebase-debug.log):"
-      grep -Eo '"message": *"[^"]*"|HTTP Error: [0-9]+[^"]*' firebase-debug.log | tail -3 | sed 's/^/    /' || true
-    fi
+    firebase_reason
     echo "Common causes:"
     echo "  - PERMISSION_DENIED / 403: your Google account needs the Owner, Editor or Firebase Admin role on $FIREBASE_PROJECT."
     echo "  - ALREADY_EXISTS / 409: $APP_ID is registered in another Firebase project, or was deleted here in the last 30 days"
@@ -194,13 +191,30 @@ firebase_failure() { # IOS|ANDROID
 # Write a platform's Firebase config file. apps:sdkconfig --out will not
 # overwrite without an interactive prompt, so any previous file is moved to
 # ~/.foundation-mobile-backup (outside the repo, where it cannot be committed).
+# The download goes to a temporary file first, so a failed download leaves the
+# current file in place. Returns 1 (after printing Firebase's reason) on failure.
 fetch_sdkconfig() { # IOS|ANDROID appId outfile
+  local tmp; tmp="$(mktemp -d)"
+  if ! firebase apps:sdkconfig "$1" "$2" --project "$FIREBASE_PROJECT" --out "$tmp/$(basename "$3")" >/dev/null \
+      || [ ! -s "$tmp/$(basename "$3")" ]; then
+    rm -rf "$tmp"
+    warn "could not download the $1 config for app $2"
+    firebase_reason
+    return 1
+  fi
   if [ -f "$3" ]; then
     mkdir -p "$HOME/.foundation-mobile-backup"
     mv "$3" "$HOME/.foundation-mobile-backup/$(basename "$3").$(date +%Y%m%d%H%M%S)"
   fi
-  firebase apps:sdkconfig "$1" "$2" --project "$FIREBASE_PROJECT" --out "$3" >/dev/null
-  [ -s "$3" ] || die "firebase apps:sdkconfig wrote nothing to $3"
+  mv "$tmp/$(basename "$3")" "$3"
+  rm -rf "$tmp"
+}
+
+# Firebase's own error message from the CLI's debug log, if there is one.
+firebase_reason() {
+  [ -f firebase-debug.log ] || return 0
+  echo "  Firebase's reason (from firebase-debug.log):" >&2
+  grep -Eo '"message": *"[^"]*"|HTTP Error: [0-9]+[^"]*' firebase-debug.log | tail -3 | sed 's/^/    /' >&2 || true
 }
 
 # ---------------------------------------------------------------- doctor
@@ -296,7 +310,9 @@ cmd_setup() {
   local sdkm; sdkm="$(sdkmanager_bin)" || die "sdkmanager not found after install"
   mkdir -p "$ANDROID_HOME"
   yes | "$sdkm" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
-  "$sdkm" --sdk_root="$ANDROID_HOME" --install "${ANDROID_PACKAGES[@]}" "$AVD_IMAGE"
+  # cmdline-tools goes into the SDK too: Homebrew's avdmanager only looks for
+  # system images under its own directory, not in $ANDROID_HOME.
+  "$sdkm" --sdk_root="$ANDROID_HOME" --install "${ANDROID_PACKAGES[@]}" "$AVD_IMAGE" "cmdline-tools;latest"
   if ! grep -qs '^sdk.dir=' android/local.properties; then
     echo "sdk.dir=$ANDROID_HOME" >> android/local.properties
   fi
@@ -304,7 +320,8 @@ cmd_setup() {
 
   step "Emulator $AVD_NAME"
   if [ ! -d "$HOME/.android/avd/$AVD_NAME.avd" ]; then
-    local avdm; avdm="$(avdmanager_bin)"
+    local avdm="$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager"
+    [ -x "$avdm" ] || avdm="$(avdmanager_bin)"
     # Newer device profiles first; older cmdline-tools lack pixel_8.
     echo no | ANDROID_SDK_ROOT="$ANDROID_HOME" "$avdm" create avd -n "$AVD_NAME" -k "$AVD_IMAGE" -d pixel_8 --force 2>/dev/null \
       || echo no | ANDROID_SDK_ROOT="$ANDROID_HOME" "$avdm" create avd -n "$AVD_NAME" -k "$AVD_IMAGE" -d pixel_6 --force
@@ -333,8 +350,13 @@ cmd_firebase() {
   step "iOS app"
   local ios_id
   ios_id="$(ensure_firebase_app IOS)"
-  fetch_sdkconfig IOS "$ios_id" "$IOS_PLIST"
-  ok "$IOS_PLIST ($ios_id)"
+  if fetch_sdkconfig IOS "$ios_id" "$IOS_PLIST"; then
+    ok "$IOS_PLIST ($ios_id)"
+  elif grep -qs "$APP_ID" "$IOS_PLIST"; then
+    warn "kept the existing $IOS_PLIST"
+  else
+    die "no $IOS_PLIST; paste the lines above into the thread"
+  fi
 
   step "Android app"
   local and_id
@@ -370,8 +392,13 @@ cmd_firebase() {
   [ -z "${PLAY_APP_SIGNING_SHA256:-}" ] && warn "Play app signing key not added: copy its SHA-256 from Play Console > App integrity, set PLAY_APP_SIGNING_SHA256 in $ENV_FILE and re-run"
 
   # Re-fetch after the fingerprints so the OAuth clients they create are included.
-  fetch_sdkconfig ANDROID "$and_id" "$ANDROID_JSON"
-  ok "$ANDROID_JSON ($and_id)"
+  if fetch_sdkconfig ANDROID "$and_id" "$ANDROID_JSON"; then
+    ok "$ANDROID_JSON ($and_id)"
+  elif grep -qs "$APP_ID" "$ANDROID_JSON"; then
+    warn "kept the existing $ANDROID_JSON (new fingerprints reach it on the next successful run)"
+  else
+    die "no $ANDROID_JSON; paste the lines above into the thread"
+  fi
 
   step "GOOGLE_WEB_KEY (Drive backup)"
   local web
