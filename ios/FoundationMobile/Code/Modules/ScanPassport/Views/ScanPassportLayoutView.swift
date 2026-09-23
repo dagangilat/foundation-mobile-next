@@ -26,7 +26,7 @@ struct ScanPassportLayoutView<Content: View>: View {
 
     /// The passport flow as the user sees it: photo page, chip, then the
     /// proof being built (shown on Home's status card).
-    private static let displayedStepCount = 3
+    private static var displayedStepCount: Int { 3 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
