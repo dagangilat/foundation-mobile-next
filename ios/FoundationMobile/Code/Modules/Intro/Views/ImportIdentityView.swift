@@ -57,58 +57,47 @@ struct ImportIdentityView: View {
     }
     
     var backupView: some View {
-        ZStack(alignment: .topLeading) {
-            Button(action: onBack) {
-                Image(.arrowLeft)
-                    .iconMedium()
-                    .foregroundStyle(.textPrimary)
+        VStack(alignment: .leading, spacing: 24) {
+            FoundationBackHeader(onBack: onBack)
+            VStack(alignment: .leading, spacing: 10) {
+                Image(systemName: "icloud")
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundColor(FoundationTheme.accent)
+                    .frame(width: 64, height: 64)
+                    .background(FoundationTheme.accentTint, in: Circle())
+                    .padding(.bottom, 8)
+                Text("Restore your ID")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(FoundationTheme.text)
+                Text("Restore from your iCloud backup, or paste your private key.")
+                    .font(.system(size: 16))
+                    .foregroundColor(FoundationTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(.top, 20)
-            .padding(.leading, 20)
-            VStack(spacing: 32) {
-                VStack {
-                    Image(.cloud)
-                        .square(72)
-                        .foregroundStyle(.primaryDarker)
-                }
-                .padding(40)
-                .background(.primaryLighter)
-                .clipShape(Circle())
-                VStack(spacing: 12) {
-                    Text("Restore your account")
-                        .h2()
-                        .foregroundStyle(.textPrimary)
-                    Text("You can restore your account using your iCloud backup or private key")
-                        .body3()
-                        .foregroundStyle(.textSecondary)
-                }
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 20)
-                Spacer()
-                VStack(spacing: 16) {
-                    VStack(spacing: 8) {
-                        AppButton(
-                            text: "Restore with iCloud",
-                            action: restoreFromICloud
-                        )
-                        .controlSize(.large)
-                        .disabled(isImporting)
-                        AppButton(
-                            variant: .quartenary,
-                            text: "Restore manually",
-                            action: { isManualBackup = true }
-                        )
-                        .controlSize(.large)
-                        .disabled(isImporting)
+            Spacer(minLength: 0)
+            VStack(spacing: 8) {
+                Button(action: restoreFromICloud) {
+                    HStack(spacing: 8) {
+                        if isImporting {
+                            ProgressView()
+                                .tint(FoundationTheme.onAccent)
+                        }
+                        Text("Restore with iCloud")
                     }
-                    .padding(.horizontal, 20)
                 }
+                .buttonStyle(FoundationPrimaryButtonStyle())
+                .disabled(isImporting)
+                Button("Use my private key") { isManualBackup = true }
+                    .buttonStyle(FoundationTextButtonStyle())
+                    .frame(maxWidth: .infinity, minHeight: FoundationTheme.buttonHeight)
+                    .disabled(isImporting)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.top, 80)
-            .padding(.bottom, 16)
         }
-        .background(.bgPure)
+        .padding(.horizontal, FoundationTheme.horizontalPadding)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(FoundationTheme.bg.ignoresSafeArea())
     }
     
     func restoreFromICloud() {

@@ -10,12 +10,19 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
+            // No tab bar: Home is the root, Profile is opened from Home's
+            // header and returns to it. The Identity tab is hidden (nothing
+            // selects .identity any more); its passport flow is launched from
+            // Home's status card instead. .scanQr never was a screen - it
+            // opens the QR sheet below.
             switch viewModel.selectedTab {
                 case .home: HomeView()
                 case .identity: IdentityView()
                 case .scanQr: EmptyView()
                 case .profile: ProfileView()
             }
+            // Stays mounted on every screen so deep-link and QR proof
+            // requests (and Foundation's own verification) keep working.
             ExternalRequestsView()
         }
         .environmentObject(viewModel)
@@ -26,6 +33,15 @@ struct MainView: View {
                 onBack: { viewModel.isQrCodeScanSheetShown = false },
                 onScan: processQrCode
             )
+        }
+        // Passport registration runs in the background after the scan sheet
+        // closes and can stop to ask for a re-scan that revokes an earlier
+        // registration. This sheet used to live on IdentityView; it is
+        // mounted here so it can appear whichever screen is showing.
+        .dynamicSheet(isPresented: $passportViewModel.isUserRevoking, fullScreen: true) {
+            PassportRevocationView()
+                .environmentObject(passportViewModel)
+                .interactiveDismissDisabled()
         }
     }
 

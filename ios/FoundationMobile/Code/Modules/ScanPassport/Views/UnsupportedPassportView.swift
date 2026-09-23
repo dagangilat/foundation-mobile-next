@@ -28,7 +28,7 @@ struct UnsupportedPassportView: View {
                         .foregroundStyle(.textSecondary)
                 }
                 HorizontalDivider()
-                Text("Unfortunately, these passports are not eligible for rewards. However, you can use your incognito ID for other upcoming mini apps.")
+                Text("Passports from this country aren't eligible for rewards. You can still use your private ID with partner sites.")
                     .body4()
                     .foregroundStyle(.textSecondary)
                 Spacer()

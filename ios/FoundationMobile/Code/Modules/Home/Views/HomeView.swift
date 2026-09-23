@@ -1,111 +1,70 @@
 import SwiftUI
 
-private enum HomeRoute: String, Hashable {
-    case notifications
-}
-
+/// Foundation's Home, the app's single root screen:
+///   header (lockup + profile button) → pillars hero → status card → QR scan.
+///
+/// Unhooked from here (code kept): the "Hi Stranger" greeting, the
+/// notifications bell, the widget carousel (HomeWidgetsView), the home
+/// onboarding overlay (HomeOnboardingView) and its welcome sheet.
 struct HomeView: View {
-    @EnvironmentObject private var notificationManager: NotificationManager
+    @Environment(\.scenePhase) private var scenePhase
+
     @EnvironmentObject private var mainViewModel: MainView.ViewModel
-    @EnvironmentObject private var passportManager: PassportManager
+    @EnvironmentObject private var passportViewModel: PassportViewModel
+    @EnvironmentObject private var userManager: UserManager
+    @EnvironmentObject private var verification: FoundationVerificationManager
 
-    @StateObject var viewModel = ViewModel()
+    @State private var isScanPassportPresented = false
 
-    @State private var path: [HomeRoute] = []
-    @State private var selectedWidget: HomeWidget? = nil
-    @State private var isOnboardingPresented = false
-
-    @Namespace private var recoveryNamespace
+    private var isVerified: Bool {
+        if case .verified = verification.state { return true }
+        return false
+    }
 
     var body: some View {
-        NavigationStack(path: $path) {
-            content
-                .navigationDestination(for: HomeRoute.self) { route in
-                    switch route {
-                    case .notifications:
-                        NotificationsView(onBack: { path.removeLast() })
-                            .environment(\.managedObjectContext,
-                                         notificationManager.pushNotificationContainer.viewContext)
-                            .navigationBarBackButtonHidden()
-                    }
-                }
-        }
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        ZStack {
-            switch selectedWidget {
-            case .recovery:
-                RecoveryMethodView(
-                    animation: namespace(for: .recovery),
-                    onClose: { selectedWidget = nil }
-                )
-
-            default:
-                mainLayoutContent
-            }
-
-            HomeOnboardingView(
-                isPresented: isOnboardingPresented,
-                onComplete: {
-                    isOnboardingPresented = false
-                    AppUserDefaults.shared.isHomeOnboardingCompleted = true
-                }
-            )
-            .transition(.identity)
-            .zIndex(1)
-        }
-        .animation(
-            .interpolatingSpring(stiffness: 100, damping: 15),
-            value: selectedWidget
-        )
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                isOnboardingPresented = !AppUserDefaults.shared.isHomeOnboardingCompleted
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var mainLayoutContent: some View {
         MainViewLayout {
-            VStack(spacing: 0) {
-                header
-                FoundationVerifyCardView()
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 16)
-                HomeWidgetsView(
-                    selectedWidget: $selectedWidget,
-                    namespaceProvider: namespace
-                )
-                .environmentObject(viewModel)
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
+                    header
+                    PillarsHero()
+                    FoundationVerifyCardView(onScanPassport: { isScanPassportPresented = true })
+                    scanQrButton
+                }
+                .padding(.horizontal, FoundationTheme.horizontalPadding)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
             }
-            .background(.bgPrimary)
+            .background(FoundationTheme.bg.ignoresSafeArea())
+        }
+        // The passport scan, presented exactly as IdentityView presents it.
+        // Closing it (or finishing it) lands back here on Home.
+        .dynamicSheet(isPresented: $isScanPassportPresented, fullScreen: true) {
+            ScanPassportView(onClose: { isScanPassportPresented = false })
+                .environmentObject(passportViewModel)
+        }
+        // Same interrupted-registration bookkeeping IdentityView does, since
+        // the registration progress now shows on Home.
+        .onChange(of: scenePhase) { newPhase in
+            if userManager.user?.status == .unscanned
+                && passportViewModel.processingStatus == .processing
+                && newPhase == .background
+            {
+                AppUserDefaults.shared.isRegistrationInterrupted = true
+            }
+        }
+        .onAppear {
+            if AppUserDefaults.shared.isRegistrationInterrupted {
+                passportViewModel.processingStatus = .failure
+            }
         }
     }
 
-    @ViewBuilder
     private var header: some View {
         HStack(alignment: .center, spacing: 8) {
-            HStack(alignment: .center, spacing: 8) {
-                Text("Hi")
-                    .h3()
-                    .foregroundStyle(.textPrimary)
-
-                if let passport = passportManager.passport {
-                    Text(passport.displayedFirstName.capitalized.components(separatedBy: " ").first ?? "")
-                        .additional3()
-                        .foregroundStyle(.textSecondary)
-                } else {
-                    Text("Stranger")
-                        .additional3()
-                        .foregroundStyle(.textSecondary)
-                }
-            }
+            BrandLockup()
 
             #if DEVELOPMENT
-            Text("Development")
+            Text(verbatim: "Development")
                 .caption2()
                 .padding(.horizontal, 12)
                 .padding(.vertical, 4)
@@ -115,35 +74,35 @@ struct HomeView: View {
 
             Spacer()
 
-            ZStack {
-                Button {
-                    path.append(.notifications)
-                } label: {
-                    Image(.notification2Line)
-                        .iconMedium()
-                        .foregroundStyle(.textPrimary)
-                }
-
-                if notificationManager.unreadNotificationsCounter > 0 {
-                    Text(verbatim: "\(notificationManager.unreadNotificationsCounter)")
-                        .overline3()
-                        .foregroundStyle(.baseWhite)
-                        .frame(width: 16, height: 16)
-                        .background(Color.errorMain, in: Circle())
-                        .overlay { Circle().stroke(Color.invertedLight, lineWidth: 2) }
-                        .offset(x: 7, y: -8)
-                }
+            Button {
+                mainViewModel.selectedTab = .profile
+            } label: {
+                Image(systemName: "person.crop.circle")
+                    .font(.system(size: 26, weight: .regular))
+                    .foregroundColor(FoundationTheme.text)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
+            .accessibilityLabel(Text("Profile"))
         }
-        .zIndex(1)
-        .padding([.top, .horizontal], 20)
-        .padding(.bottom, 16)
-        .background(Color.bgPrimary)
+        .frame(height: 44)
     }
 
-    private func namespace(for key: HomeWidget) -> Namespace.ID {
-        switch key {
-        case .recovery: return recoveryNamespace
+    /// Opens the existing QR scan sheet (MainView's ScanQRView), the same one
+    /// the old scan-QR tab opened, so partner sites can request a proof.
+    /// Secondary until verified, then the primary action on Home.
+    @ViewBuilder
+    private var scanQrButton: some View {
+        let button = Button {
+            mainViewModel.isQrCodeScanSheetShown = true
+        } label: {
+            Label("Scan QR code", systemImage: "qrcode.viewfinder")
+        }
+
+        if isVerified {
+            button.buttonStyle(FoundationPrimaryButtonStyle())
+        } else {
+            button.buttonStyle(FoundationSecondaryButtonStyle())
         }
     }
 }
@@ -151,8 +110,8 @@ struct HomeView: View {
 #Preview {
     HomeView()
         .environmentObject(MainView.ViewModel())
+        .environmentObject(PassportViewModel())
         .environmentObject(PassportManager())
-        .environmentObject(NotificationManager())
-        .environmentObject(ConfigManager())
+        .environmentObject(UserManager())
         .environmentObject(FoundationVerificationManager.shared)
 }

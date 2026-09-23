@@ -25,11 +25,8 @@ struct IdentityView: View {
                 })
                 .environmentObject(passportViewModel)
             }
-            .dynamicSheet(isPresented: $passportViewModel.isUserRevoking, fullScreen: true) {
-                PassportRevocationView()
-                    .environmentObject(passportViewModel)
-                    .interactiveDismissDisabled()
-            }
+            // The PassportRevocationView sheet moved to MainView so it can
+            // show from Home, where the passport flow now starts.
             .dynamicSheet(isPresented: $isWaitlistedCountrySheetPresented, fullScreen: true) {
                 WaitlistPassportView(
                     onNext: {

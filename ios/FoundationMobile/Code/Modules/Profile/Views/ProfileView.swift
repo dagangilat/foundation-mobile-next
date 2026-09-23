@@ -6,6 +6,8 @@ private enum ProfileRoute: Hashable {
 }
 
 struct ProfileView: View {
+    @EnvironmentObject private var mainViewModel: MainView.ViewModel
+    @EnvironmentObject private var authService: AuthService
     @EnvironmentObject private var appViewModel: AppView.ViewModel
     @EnvironmentObject private var configManager: ConfigManager
     @EnvironmentObject private var settingsManager: SettingsManager
@@ -40,7 +42,7 @@ struct ProfileView: View {
                         .navigationBarBackButtonHidden()
                 case .recovery:
                     ProfileRouteLayout(
-                        title: String(localized: "Recovery Method"),
+                        title: String(localized: "Backup and recovery"),
                         onBack: { path.removeLast() }
                     ) {
                         RecoveryMethodSelectionView()
@@ -65,147 +67,101 @@ struct ProfileView: View {
 #endif
     }
 
+    /// Foundation profile: signed-in email, then grouped rows. Hidden here
+    /// (routes and views kept): Theme, App Icon and the Ethereum address line.
     var content: some View {
         MainViewLayout {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Profile")
-                    .subtitle4()
-                    .padding(.horizontal, 8)
-                VStack(spacing: 12) {
-                    ScrollView(showsIndicators: false) {
-                        CardContainer {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Account")
-                                        .buttonLarge()
-                                        .foregroundStyle(.textPrimary)
-                                    Text("Address: \(Ethereum.formatAddress(userManager.ethereumAddress ?? ""))")
-                                        .body4()
-                                        .foregroundStyle(.textSecondary)
-                                }
-                                Spacer()
-                                PassportImageView(image: passportManager.passport?.passportImage, size: 40)
-                            }
-                        }
-                        CardContainer {
-                            VStack(spacing: 20) {
-                                ProfileRow(
-                                    icon: .userShared2Line,
-                                    title: String(localized: "Recovery Method"),
-                                    action: { path.append(.recovery) }
-                                )
-                                ProfileRow(
-                                    icon: .shieldKeyholeLine,
-                                    title: String(localized: "Auth Method"),
-                                    action: { path.append(.authMethod) }
-                                )
-                            }
-                        }
-                        CardContainer {
-                            VStack(spacing: 20) {
-                                ProfileRow(
-                                    icon: .sunLine,
-                                    title: String(localized: "Theme"),
-                                    value: settingsManager.colorScheme.title,
-                                    action: { path.append(.theme) }
-                                )
-                                if appIconManager.isAppIconsSupported {
-                                    ProfileRow(
-                                        icon: .foundationMark,
-                                        title: String(localized: "App Icon"),
-                                        value: appIconManager.appIcon.title,
-                                        action: { path.append(.appIcon) }
-                                    )
-                                }
-                            }
-                        }
-                        CardContainer {
-                            VStack(spacing: 20) {
-                                ProfileRow(
-                                    icon: .questionLine,
-                                    title: String(localized: "Privacy Policy"),
-                                    action: { isPrivacySheetPresented = true }
-                                )
-                                .fullScreenCover(isPresented: $isPrivacySheetPresented) {
-                                    SafariWebView(url: configManager.general.privacyPolicyURL)
-                                        .ignoresSafeArea()
-                                }
-                                ProfileRow(
-                                    icon: .flagLine,
-                                    title: String(localized: "Terms of Use"),
-                                    action: { isTermsSheetPresented = true }
-                                )
-                                .fullScreenCover(isPresented: $isTermsSheetPresented) {
-                                    SafariWebView(url: configManager.general.termsOfUseURL)
-                                        .ignoresSafeArea()
-                                }
-                                if MFMailComposeViewController.canSendMail() {
-                                    ProfileRow(
-                                        icon: .chat2Line,
-                                        title: "Give us Feedback",
-                                        action: { isShareWithDeveloper = true }
-                                    )
-                                    .fullScreenCover(isPresented: $isShareWithDeveloper) {
-                                        FeedbackMailView(isShowing: $isShareWithDeveloper)
-                                    }
-                                }
-                            }
-                        }
-#if DEVELOPMENT
-                        CardContainer {
-                            VStack(spacing: 20) {
-                                ProfileRow(
-                                    icon: .dotsThreeOutline,
-                                    title: String(localized: "Debug Options"),
-                                    action: {
-                                        isDebugOptionsShown = true
-                                    }
-                                )
-                            }
-                        }
-#endif
-                        CardContainer {
-                            Button(action: signOutOfFoundation) {
-                                HStack {
-                                    Image(.arrowRightUpLine)
-                                        .iconMedium()
-                                        .padding(6)
-                                        .background(.bgComponentPrimary, in: Circle())
-                                    Text("Sign Out")
-                                        .buttonMedium()
-                                    Spacer()
-                                }
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(.textPrimary)
-                            .disabled(isAccountDeletionInFlight)
-                        }
-                        CardContainer {
-                            Button(action: { isAccountDeleting = true }) {
-                                HStack {
-                                    Image(.deleteBin6Line)
-                                        .iconMedium()
-                                        .padding(6)
-                                        .background(.errorLighter, in: Circle())
-                                    Text("Delete Account")
-                                        .buttonMedium()
-                                    Spacer()
-                                }
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(.errorMain)
-                            .disabled(isAccountDeletionInFlight)
-                        }
-                        Text("App version: \(configManager.general.version)")
-                            .body5()
-                            .foregroundStyle(.textPlaceholder)
-                            .padding(.bottom, 20)
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 24) {
+                    FoundationBackHeader("Profile") {
+                        mainViewModel.selectedTab = .home
                     }
+                    if let email = authService.email {
+                        VStack(alignment: .leading, spacing: 12) {
+                            FoundationSectionLabel("Signed in as")
+                            Text(verbatim: email)
+                                .font(.system(size: 17))
+                                .foregroundColor(FoundationTheme.text)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        }
+                        .foundationCard(padding: 16)
+                    }
+                    ProfileGroup {
+                        ProfileRow(
+                            title: String(localized: "Backup and recovery"),
+                            action: { path.append(.recovery) }
+                        )
+                        ProfileRowDivider()
+                        ProfileRow(
+                            title: String(localized: "Passcode and Face ID"),
+                            action: { path.append(.authMethod) }
+                        )
+                    }
+                    ProfileGroup {
+                        ProfileRow(
+                            title: String(localized: "Privacy policy"),
+                            action: { isPrivacySheetPresented = true }
+                        )
+                        .fullScreenCover(isPresented: $isPrivacySheetPresented) {
+                            SafariWebView(url: configManager.general.privacyPolicyURL)
+                                .ignoresSafeArea()
+                        }
+                        ProfileRowDivider()
+                        ProfileRow(
+                            title: String(localized: "Terms of use"),
+                            action: { isTermsSheetPresented = true }
+                        )
+                        .fullScreenCover(isPresented: $isTermsSheetPresented) {
+                            SafariWebView(url: configManager.general.termsOfUseURL)
+                                .ignoresSafeArea()
+                        }
+                        if MFMailComposeViewController.canSendMail() {
+                            ProfileRowDivider()
+                            ProfileRow(
+                                title: String(localized: "Help and feedback"),
+                                action: { isShareWithDeveloper = true }
+                            )
+                            .fullScreenCover(isPresented: $isShareWithDeveloper) {
+                                FeedbackMailView(isShowing: $isShareWithDeveloper)
+                            }
+                        }
+                    }
+#if DEVELOPMENT
+                    ProfileGroup {
+                        ProfileRow(
+                            title: String(localized: "Debug Options"),
+                            action: { isDebugOptionsShown = true }
+                        )
+                    }
+#endif
+                    ProfileGroup {
+                        ProfileRow(
+                            title: String(localized: "Sign out"),
+                            isDestructive: true,
+                            action: { signOutOfFoundation() }
+                        )
+                        .disabled(isAccountDeletionInFlight)
+                        ProfileRowDivider()
+                        ProfileRow(
+                            title: String(localized: "Delete account"),
+                            isDestructive: true,
+                            action: { isAccountDeleting = true }
+                        )
+                        .disabled(isAccountDeletionInFlight)
+                    }
+                    Text("Foundation \(configManager.general.version)")
+                        .font(.system(size: 13))
+                        .foregroundColor(FoundationTheme.muted)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 8)
                 }
+                .padding(.horizontal, FoundationTheme.horizontalPadding)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
             }
-            .padding(.top, 20)
-            .padding(.horizontal, 12)
-            .background(.bgPrimary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(FoundationTheme.bg.ignoresSafeArea())
             .alert(
                 "Delete your account?",
                 isPresented: $isAccountDeleting,
@@ -349,34 +305,57 @@ private struct AccountDeletionOverlay: View {
     }
 }
 
+/// White grouped container with hairline dividers, as in the Profile mockup.
+private struct ProfileGroup<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            content
+        }
+        .background(
+            RoundedRectangle(cornerRadius: FoundationTheme.cornerRadius, style: .continuous)
+                .fill(FoundationTheme.surface)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: FoundationTheme.cornerRadius, style: .continuous)
+                .stroke(FoundationTheme.border, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: FoundationTheme.cornerRadius, style: .continuous))
+    }
+}
+
+private struct ProfileRowDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(FoundationTheme.border)
+            .frame(height: 1)
+    }
+}
+
 private struct ProfileRow: View {
-    let icon: ImageResource
     let title: String
-    var value: String? = nil
+    var isDestructive: Bool = false
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             HStack {
-                Image(icon)
-                    .iconMedium()
-                    .padding(6)
-                    .background(.bgComponentPrimary, in: Circle())
-                    .foregroundStyle(.textPrimary)
                 Text(title)
-                    .buttonMedium()
-                    .foregroundStyle(.textPrimary)
+                    .font(.system(size: 17))
+                    .foregroundColor(isDestructive ? FoundationTheme.danger : FoundationTheme.text)
                 Spacer()
-                if let value {
-                    Text(value)
-                        .body4()
-                        .foregroundStyle(.textSecondary)
+                if !isDestructive {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(FoundationTheme.muted)
                 }
-                Image(.caretRight)
-                    .iconMedium()
-                    .foregroundStyle(.textSecondary)
             }
+            .padding(.horizontal, 16)
+            .frame(height: 52)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
 }
 
@@ -386,6 +365,7 @@ private struct ProfileRow: View {
     return ProfileView()
         .environmentObject(AppView.ViewModel())
         .environmentObject(MainView.ViewModel())
+        .environmentObject(AuthService.shared)
         .environmentObject(ConfigManager())
         .environmentObject(SettingsManager())
         .environmentObject(PassportManager())
