@@ -38,7 +38,7 @@ struct ScanPassportMRZView: View {
             Spacer()
             VStack(spacing: 12) {
                 if mrzViewModel.captureFailed {
-                    Text("Couldn't read the two lines at the bottom of the photo page. Hold the passport steady, avoid glare and try again.")
+                    Text("Couldn't find the two lines of letters and <<< at the bottom of the photo page. Open the passport at the photo page, fit those lines in the frame without glare, and tap Capture again.")
                         .font(.system(size: 14))
                         .foregroundColor(FoundationTheme.danger)
                         .multilineTextAlignment(.center)
