@@ -114,7 +114,11 @@ fun MainScreenRoutes(
                 mainViewModel.setExtIntDataURI(null)
                 navigateWithPopUp(Screen.Main.Home.route)
             }, onSuccess = { extDestination, localDestination ->
-                if (!extDestination.isNullOrEmpty()) {
+                // Only follow a partner's redirect to a web page, never to an
+                // arbitrary app scheme.
+                if (!extDestination.isNullOrEmpty() &&
+                    extDestination.toUri().scheme.equals("https", ignoreCase = true)
+                ) {
                     val intent = Intent(Intent.ACTION_VIEW, extDestination.toUri())
 
                     try {

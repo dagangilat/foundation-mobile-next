@@ -99,7 +99,9 @@ struct ExternalRequestsView: View {
             return
         }
 
-        guard let url = URL(string: redirectUri) else {
+        // Only follow a partner's redirect to a web page, never to an
+        // arbitrary app scheme.
+        guard let url = URL(string: redirectUri), url.scheme?.lowercased() == "https" else {
             return
         }
 

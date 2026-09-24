@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Analytics collection is off; drop the ad ID permission the SDK merges in. -->
     <uses-permission
         android:name="com.google.android.gms.permission.AD_ID"
