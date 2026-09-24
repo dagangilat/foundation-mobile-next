@@ -267,6 +267,19 @@ struct ProfileView: View {
         // their own.
         signOutOfFoundation()
 
+        // Best effort: remove this identity's iCloud key backup. The server
+        // account is already gone, so a failure is only logged.
+        if let secretKey = userManager.user?.secretKey {
+            Task {
+                do {
+                    guard try await CloudStorage.shared.isICloudAvailable() else { return }
+                    try await User.deleteUserPrivateKeyFromCloud(secretKey)
+                } catch {
+                    LoggerUtil.common.error("Failed to delete iCloud backup: \(error, privacy: .public)")
+                }
+            }
+        }
+
         passportManager.reset()
         // Lands after `signOutOfFoundation()`'s `rearmPasscodeLock()` and
         // overwrites it, which is correct on this path and not a conflict:

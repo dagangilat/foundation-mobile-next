@@ -86,6 +86,16 @@ class User {
         
         return record
     }
+    
+    /// Deletes the iCloud backup record(s) holding this secret key, if any.
+    static func deleteUserPrivateKeyFromCloud(_ secretKey: Data) async throws {
+        let query = CKQuery(recordType: User.userCloudRecordType, predicate: NSPredicate(value: true))
+        
+        let records = try await CloudStorage.shared.fetchRecords(query)
+        for record in records where (record.value(forKey: User.userCloudPrivateKeyKey) as? Data) == secretKey {
+            try await CloudStorage.shared.deleteRecord(record.recordID)
+        }
+    }
 }
 
 extension User {
