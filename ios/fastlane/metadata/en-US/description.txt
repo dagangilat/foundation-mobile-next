@@ -1,6 +1,6 @@
 Foundation lets you prove you are a unique human — without revealing who you are.
 
-Using your passport's chip and a zero-knowledge proof generated entirely on your phone, Foundation issues you a private, unforgeable proof of unique personhood for Foundation's governance platform. Your name, photo, and passport number never leave your device — only the cryptographic proof does.
+Using your passport's chip and a zero-knowledge proof generated entirely on your phone, Foundation issues you a private, unforgeable proof of unique personhood for Foundation's governance platform. Your name, photo and passport number never leave your device.
 
 HOW IT WORKS
 • Scan the machine-readable zone on your passport's photo page with your camera.
@@ -13,8 +13,8 @@ WHY THIS MATTERS
 Foundation's governance platform needs to know that each voice is one real, unique person — without collecting a registry of who everyone is. Zero-knowledge proofs make that possible: the proof convinces the server you're a unique passport holder without disclosing your identity.
 
 PRIVACY BY DESIGN
-• Passport data (photo, MRZ, chip contents) is processed only on your device and is never uploaded.
-• Only the zero-knowledge proof is sent to Foundation's servers.
+• Your passport is read and checked on your phone. Your name, photo and passport number are never uploaded.
+• The proof is registered anonymously in an open identity registry, at no cost to you.
 • Sign-in uses your email address and a one-time code — no password to leak.
 • You can permanently delete your account and its server-side data from within the app at any time.
 • Optional encrypted backup of your recovery key to iCloud, so you can restore access if you lose your device.
