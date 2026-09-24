@@ -59,7 +59,13 @@ class PassportViewModel: ObservableObject {
     @Published var isUserRegistered = false
 
     /// Why the last registration attempt failed, shown on Home's status card.
-    @Published var lastErrorMessage: String?
+    /// Kept across launches, like `processingStatus`, so the card can still
+    /// say why after the app restarts.
+    @Published var lastErrorMessage: String? = UserDefaults.standard.string(forKey: "foundation.lastRegistrationError") {
+        didSet {
+            UserDefaults.standard.set(lastErrorMessage, forKey: "foundation.lastRegistrationError")
+        }
+    }
     
     @Published var isUSA = false
     
