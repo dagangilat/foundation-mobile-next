@@ -5,6 +5,7 @@ struct ScanPassportMRZView: View {
     let onClose: () -> Void
 
     @State private var isManualMrzSheetPresented = false
+    @StateObject private var mrzViewModel = MRZScanView.ViewModel()
 
     var body: some View {
         ScanPassportLayoutView(
@@ -14,7 +15,7 @@ struct ScanPassportMRZView: View {
         ) {
             ZStack {
                 CameraPermissionView(delay: 0.5, onCancel: onClose) {
-                    MRZScanView(onMrzKey: onNext)
+                    MRZScanView(viewModel: mrzViewModel, onMrzKey: onNext)
                 }
                 .frame(maxWidth: .infinity, maxHeight: 305)
                 Image(.passportFrame)
@@ -26,7 +27,7 @@ struct ScanPassportMRZView: View {
             .background(FoundationTheme.scanBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, FoundationTheme.horizontalPadding)
-            Text("Lay your passport flat in good light, with no glare. Keep the photo page inside the frame.")
+            Text("Lay your passport flat in good light, with no glare. It scans by itself once the photo page is in the frame, or tap Capture.")
                 .font(.system(size: 16))
                 .foregroundColor(FoundationTheme.muted)
                 .multilineTextAlignment(.center)
@@ -35,8 +36,28 @@ struct ScanPassportMRZView: View {
                 .padding(.horizontal, FoundationTheme.horizontalPadding)
                 .frame(maxWidth: .infinity)
             Spacer()
-            VStack(spacing: 8) {
-                PassportScanTutorialButton()
+            VStack(spacing: 12) {
+                if mrzViewModel.captureFailed {
+                    Text("Couldn't read the two lines at the bottom of the photo page. Hold the passport steady, avoid glare and try again.")
+                        .font(.system(size: 14))
+                        .foregroundColor(FoundationTheme.danger)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                }
+                Button {
+                    Task { await mrzViewModel.capture() }
+                } label: {
+                    if mrzViewModel.isCapturing {
+                        ProgressView()
+                            .tint(FoundationTheme.onAccent)
+                    } else {
+                        Label("Capture", systemImage: "camera.viewfinder")
+                    }
+                }
+                .buttonStyle(FoundationPrimaryButtonStyle())
+                .disabled(mrzViewModel.currentFrame == nil || mrzViewModel.isCapturing)
+                FoundationScanTutorialCard()
                 Button("Enter details manually") { isManualMrzSheetPresented = true }
                     .buttonStyle(FoundationTextButtonStyle())
                     .frame(maxWidth: .infinity, minHeight: FoundationTheme.buttonHeight)
@@ -48,6 +69,7 @@ struct ScanPassportMRZView: View {
                     }
             }
             .padding(.horizontal, FoundationTheme.horizontalPadding)
+            .animation(.easeInOut(duration: 0.2), value: mrzViewModel.captureFailed)
         }
     }
 }

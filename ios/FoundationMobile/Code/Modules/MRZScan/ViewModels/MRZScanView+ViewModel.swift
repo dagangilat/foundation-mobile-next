@@ -6,6 +6,11 @@ import Vision
 extension MRZScanView {
     class ViewModel: ObservableObject {
         @Published var currentFrame: CGImage?
+
+        /// A Capture tap is reading the frame on screen.
+        @Published var isCapturing = false
+        /// The last Capture tap found no readable MRZ in its frame.
+        @Published var captureFailed = false
         
         private let cameraManager = MRZCameraManager()
         
@@ -44,12 +49,36 @@ extension MRZScanView {
             }
         }
         
-        func detectMRZ(_ image: CGImage) async throws {
+        /// Capture: reads the frame on screen right away instead of waiting
+        /// for the live scan to lock on. Uses a stricter reading pass (no
+        /// language correction, spaces removed), which suits the MRZ lines.
+        @MainActor
+        func capture() async {
+            guard let image = currentFrame, !isCapturing else { return }
+
+            isCapturing = true
+            captureFailed = false
+            defer { isCapturing = false }
+
+            let found: Bool
+            do {
+                found = try await detectMRZ(image, isManualCapture: true)
+            } catch {
+                LoggerUtil.common.error("Error reading MRZ on capture: \(error, privacy: .public)")
+                found = false
+            }
+
+            if !found { captureFailed = true }
+        }
+
+        /// Returns true once a valid MRZ key was read and passed on.
+        @discardableResult
+        func detectMRZ(_ image: CGImage, isManualCapture: Bool = false) async throws -> Bool {
             await semaphore.wait()
             defer { semaphore.signal() }
             
-            if lastMRZAttemptDate > Date().addingTimeInterval(-0.5) {
-                return
+            if !isManualCapture && lastMRZAttemptDate > Date().addingTimeInterval(-0.5) {
+                return false
             }
             
             defer {
@@ -74,8 +103,15 @@ extension MRZScanView {
             }
             
             request.recognitionLevel = .accurate
+            if isManualCapture {
+                request.usesLanguageCorrection = false
+            }
             
             try requestHandler.perform([request])
+            
+            if isManualCapture {
+                recognizedTexts = recognizedTexts.map { $0.replacingOccurrences(of: " ", with: "").uppercased() }
+            }
             
             if !recognizedTexts.isEmpty {
                 var nationality = ""
@@ -89,12 +125,10 @@ extension MRZScanView {
                     if let documentType {
                         switch documentType {
                         case .idCard:
-                            readMRZFromIDCard(text, documentNumber, nationality)
+                            return readMRZFromIDCard(text, documentNumber, nationality)
                         case .passport:
-                            readMRZFromPassport(text, nationality)
+                            return readMRZFromPassport(text, nationality)
                         }
-                        
-                        return
                     } else {
                         if text.starts(with: "P<") {
                             documentType = .passport
@@ -117,9 +151,12 @@ extension MRZScanView {
                     }
                 }
             }
+            
+            return false
         }
         
-        func readMRZFromPassport(_ text: String, _ nationality: String) {
+        @discardableResult
+        func readMRZFromPassport(_ text: String, _ nationality: String) -> Bool {
             let documentNumberStartIndex = text.index(text.startIndex, offsetBy: 0)
             let documentNumberEndIndex = text.index(text.startIndex, offsetBy: 9)
             
@@ -133,10 +170,11 @@ extension MRZScanView {
             let birthday = String(text[birthdayStartIndex...birthdayEndIndex])
             let expiration = String(text[expirationStartIndex...expirationEndIndex])
                 
-            readMrzFromDocument(documentNumber, birthday, expiration, nationality)
+            return readMrzFromDocument(documentNumber, birthday, expiration, nationality)
         }
         
-        func readMRZFromIDCard(_ text: String, _ documentNumber: String, _ nationality: String) {
+        @discardableResult
+        func readMRZFromIDCard(_ text: String, _ documentNumber: String, _ nationality: String) -> Bool {
             let birthdayStartIndex = text.index(text.startIndex, offsetBy: 0)
             let birthdayEndIndex = text.index(text.startIndex, offsetBy: 6)
             
@@ -146,15 +184,16 @@ extension MRZScanView {
             let birthday = String(text[birthdayStartIndex...birthdayEndIndex])
             let expiration = String(text[expirationStartIndex...expirationEndIndex])
             
-            readMrzFromDocument(documentNumber, birthday, expiration, nationality)
+            return readMrzFromDocument(documentNumber, birthday, expiration, nationality)
         }
         
+        @discardableResult
         func readMrzFromDocument(
             _ documentNumber: String,
             _ birthday: String,
             _ expiration: String,
             _ nationality: String
-        ) {
+        ) -> Bool {
             let mrzKey = "\(documentNumber+birthday+expiration)"
             
             let checkMrzKey = PassportUtils.getMRZKey(
@@ -171,7 +210,11 @@ extension MRZScanView {
                 onMRZKey(mrzKey)
                 
                 stopScanning()
+                
+                return true
             }
+            
+            return false
         }
         
         func getNationality(_ text: String) -> String {

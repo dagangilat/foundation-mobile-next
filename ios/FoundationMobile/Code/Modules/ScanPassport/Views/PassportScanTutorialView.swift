@@ -1,36 +1,50 @@
 import SwiftUI
 
-struct PassportScanTutorialButton: View {
+/// The scan tutorial entry on the photo-page step, in Foundation's style:
+/// a white card with a brand-gradient play tile (the hero's mesh colours).
+struct FoundationScanTutorialCard: View {
     @State private var isTutorialPresented = false
-    
+
     var body: some View {
         Button(action: { isTutorialPresented = true }) {
-            HStack(spacing: 20) {
+            HStack(spacing: 14) {
                 ZStack {
-                    Image(.passportTutorialThumbnail)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 56)
-                    Image(.play)
-                        .iconSmall()
-                        .foregroundStyle(.baseWhite)
-                        .padding(8)
-                        .background(.baseBlack, in: Circle())
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [FoundationTheme.brandFill, FoundationTheme.brandCyan, FoundationTheme.meshBlobs[2]],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(FoundationTheme.accent)
+                        .offset(x: 1)
+                        .frame(width: 34, height: 34)
+                        .background(FoundationTheme.surface, in: Circle())
                 }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Play video tutorial")
-                        .subtitle6()
-                        .foregroundStyle(.textPrimary)
-                    Text("Learn how to scan passport correctly")
-                        .body5()
+                .frame(width: 56, height: 56)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Watch how to scan")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(FoundationTheme.text)
+                    Text("A short video: the photo page, then the chip.")
+                        .font(.system(size: 14))
+                        .foregroundColor(FoundationTheme.muted)
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                Spacer()
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(FoundationTheme.muted)
             }
-            .padding(12)
-            .background(.bgComponentPrimary, in: RoundedRectangle(cornerRadius: 16))
+            .foundationCard(padding: 12)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("Watch how to scan your passport"))
         .dynamicSheet(isPresented: $isTutorialPresented, fullScreen: true) {
             PassportScanTutorialView(onStart: { isTutorialPresented = false })
         }
@@ -133,6 +147,6 @@ private struct PassportScanTutorialStep: View {
 }
 
 #Preview {
-    PassportScanTutorialButton()
+    FoundationScanTutorialCard()
         .environmentObject(PassportViewModel())
 }

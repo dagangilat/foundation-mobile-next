@@ -2,6 +2,7 @@ import Alamofire
 import SwiftUI
 
 private enum ScanPassportState {
+    /// Development-only JSON import; no button leads here any more.
     case importJson
     case scanMRZ
     case readNFC
@@ -37,15 +38,6 @@ struct ScanPassportView: View {
                     },
                     onClose: onClose
                 )
-#if DEVELOPMENT
-                AppButton(
-                    text: "Import JSON",
-                    leftIcon: .shareForwardLine,
-                    action: { withAnimation { state = .importJson } }
-                )
-                .controlSize(.large)
-                .padding(.horizontal, 20)
-#endif
             }
             .padding(.bottom, 16)
             .environmentObject(passportViewModel)
