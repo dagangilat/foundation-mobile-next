@@ -78,7 +78,9 @@ struct ScanPassportView: View {
 
             LoggerUtil.common.info("Passport read successfully")
         } catch {
-            LoggerUtil.common.error("error while registering passport: \(error.localizedDescription, privacy: .public)")
+            LoggerUtil.common.error("error while registering passport: \(error, privacy: .public)")
+
+            passportViewModel.lastErrorMessage = PassportViewModel.describe(error)
 
             if passportViewModel.isUserRegistered {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -107,6 +109,12 @@ struct ScanPassportView: View {
 
                 return
             }
+
+            // Any other error (contract, circuit, proving): register() has
+            // already marked the attempt failed; say so instead of failing
+            // silently.
+            AlertManager.shared.emitError(.unknown(PassportViewModel.describe(error)))
+            passportViewModel.processingStatus = .failure
         }
     }
 }

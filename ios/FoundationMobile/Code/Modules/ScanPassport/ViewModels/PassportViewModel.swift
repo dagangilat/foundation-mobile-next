@@ -57,6 +57,9 @@ class PassportViewModel: ObservableObject {
     }
     
     @Published var isUserRegistered = false
+
+    /// Why the last registration attempt failed, shown on Home's status card.
+    @Published var lastErrorMessage: String?
     
     @Published var isUSA = false
     
@@ -73,6 +76,30 @@ class PassportViewModel: ObservableObject {
     
     var revocationPassportPublisher = PassthroughSubject<Passport, Error>()
     
+    /// Clears what an earlier failed attempt left behind, so a new attempt
+    /// shows as in progress from its first step and a finished revocation
+    /// publisher can't fail it straight away.
+    @MainActor
+    func resetForNewAttempt() {
+        progressTimer?.cancel()
+        proofState = .downloadingData
+        overallProgress = 0
+        lastErrorMessage = nil
+        isUserRevoking = false
+        isPassportFailedByImpossibleRevocation = false
+        revocationPassportPublisher = PassthroughSubject<Passport, Error>()
+        processingStatus = .processing
+    }
+
+    /// A readable reason for a registration error. `Errors` and
+    /// `PassportViewModelError` carry their own text; `localizedDescription`
+    /// on a plain `Error` would only give "The operation couldn't be completed".
+    static func describe(_ error: Error) -> String {
+        if let error = error as? Errors { return error.localizedDescription }
+        if let error = error as? PassportViewModelError { return error.localizedDescription }
+        return String(describing: error)
+    }
+
     func setMrzKey(_ value: String) {
         mrzKey = value
         
@@ -83,6 +110,7 @@ class PassportViewModel: ObservableObject {
     func register() async throws -> ZkProof {
         var isCriticalRegistrationProcessInProgress = true
         
+        resetForNewAttempt()
         AppUserDefaults.shared.isRegistrationInterrupted = false
         
         do {

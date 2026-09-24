@@ -100,7 +100,7 @@ struct FoundationVerifyCardView: View {
         case .registrationFailed:
             passportViewModel.isPassportFailedByImpossibleRevocation
                 ? String(localized: "This passport is already linked to another ID. Restore the ID you used before.")
-                : String(localized: "We couldn't finish your proof. Please try again.")
+                : String(localized: "We couldn't finish your proof. Scan your passport again to retry.")
         case .waitlisted:
             String(localized: "Passports from your country can't be verified yet.")
         case .ready:
@@ -128,12 +128,19 @@ struct FoundationVerifyCardView: View {
         case .building:
             buildingDetail
         case .registrationFailed:
+            if let reason = passportViewModel.lastErrorMessage, !reason.isEmpty {
+                Text(verbatim: reason)
+                    .font(.system(size: 13))
+                    .foregroundColor(FoundationTheme.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .textSelection(.enabled)
+            }
             if !passportViewModel.isPassportFailedByImpossibleRevocation {
-                Button("Try again") {
-                    Task { await retryPassportRegistration() }
-                }
-                .buttonStyle(FoundationPrimaryButtonStyle())
-                .padding(.top, 4)
+                // Starts over from the passport scan (MRZ, then chip), so a
+                // bad chip read is redone rather than re-proving the same data.
+                Button("Try again", action: onScanPassport)
+                    .buttonStyle(FoundationPrimaryButtonStyle())
+                    .padding(.top, 4)
             }
         case .waitlisted:
             EmptyView()
@@ -247,34 +254,6 @@ struct FoundationVerifyCardView: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(FoundationTheme.border, lineWidth: 1)
         )
-    }
-
-    // MARK: - Actions
-
-    /// Same retry the Identity tab's PassportCard offered (moved here with the
-    /// passport flow; PassportCard keeps its own copy).
-    @MainActor
-    private func retryPassportRegistration() async {
-        do {
-            passportViewModel.processingStatus = .processing
-
-            let zkProof = try await passportViewModel.register()
-
-            if passportViewModel.processingStatus != .success { return }
-
-            userManager.registerZkProof = zkProof
-            userManager.user?.status = .passportScanned
-        } catch {
-            LoggerUtil.common.error("error while registering passport: \(error.localizedDescription, privacy: .public)")
-
-            if let error = error as? Errors {
-                passportViewModel.processingStatus = .failure
-
-                AlertManager.shared.emitError(error)
-
-                return
-            }
-        }
     }
 }
 
