@@ -1,3 +1,4 @@
+import Alamofire
 import Combine
 import Identity
 import SwiftUI
@@ -101,6 +102,10 @@ class PassportViewModel: ObservableObject {
     /// `PassportViewModelError` carry their own text; `localizedDescription`
     /// on a plain `Error` would only give "The operation couldn't be completed".
     static func describe(_ error: Error) -> String {
+        // Alamofire wraps our validator's error; report the inner one.
+        if let error = error as? AFError, let underlying = error.underlyingError {
+            return describe(underlying)
+        }
         if let error = error as? Errors { return error.localizedDescription }
         if let error = error as? PassportViewModelError { return error.localizedDescription }
         return String(describing: error)
@@ -311,12 +316,16 @@ class PassportViewModel: ObservableObject {
             
             LoggerUtil.common.error("Trying light registration because of: \(error, privacy: .public)")
             
+            let registrationError = error
             do {
                 return try await lightRegister()
             } catch {
                 processingStatus = .failure
                 
-                throw error
+                // Report both failures: the first one is usually the cause.
+                throw Errors.unknown(
+                    "Registration: \(Self.describe(registrationError)) | Light registration: \(Self.describe(error))"
+                )
             }
         }
     }

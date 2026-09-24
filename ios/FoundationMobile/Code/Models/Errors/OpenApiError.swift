@@ -43,7 +43,13 @@ extension OpenApiError {
         case 200...299:
             return .success(())
         case 500...599:
-            return .failure(Errors.serviceDown(request?.url))
+            // Keep what the server said (e.g. the relayer's revert reason),
+            // trimmed; an empty body is still reported as "service down".
+            let body = data.flatMap { String(data: $0, encoding: .utf8) }?
+                .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            if body.isEmpty { return .failure(Errors.serviceDown(request?.url)) }
+
+            return .failure(Errors.serviceError(request?.url, response.statusCode, String(body.prefix(500))))
         case 400...499:
             guard let data else { return .failure(Errors.unknownServiceError) }
 

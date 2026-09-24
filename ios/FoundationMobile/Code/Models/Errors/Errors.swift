@@ -6,6 +6,8 @@ enum Errors: Error {
     case unknownServiceError
     case invalidHTTPStatusCode(Int)
     case serviceDown(URL?)
+    /// A 5xx that came with a body: keeps the server's own words.
+    case serviceError(URL?, Int, String)
     case userCreationFailed
     case unknown(String?)
     case connectionUnstable
@@ -23,6 +25,9 @@ enum Errors: Error {
         case .serviceDown(let requestURL):
             let url = requestURL?.absoluteString ?? "nil"
             return String(localized: "One of our services is down, try again later. RequestURL=\(url)")
+        case .serviceError(let requestURL, let statusCode, let body):
+            let path = requestURL?.path() ?? "nil"
+            return String(localized: "Service error \(statusCode) from \(path): \(body)")
         case .userCreationFailed:
             return String(localized: "User creation failed")
         case .unknown(let message):
