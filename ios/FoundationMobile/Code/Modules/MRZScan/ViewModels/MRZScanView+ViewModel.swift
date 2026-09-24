@@ -161,8 +161,8 @@ extension MRZScanView {
             // few "<" or reads a 0 as O, so also look for the second line's
             // fields anywhere in what was read. The three check digits guard
             // against a wrong read.
-            if let (documentNumber, birthday, expiration, nationality) = MRZLineReader.passportFields(in: recognizedTexts) {
-                return readMrzFromDocument(documentNumber, birthday, expiration, nationality)
+            if let fields = MRZLineReader.passportFields(in: recognizedTexts) {
+                return readMrzFromDocument(fields.0, fields.1, fields.2, fields.3)
             }
             
             return false
