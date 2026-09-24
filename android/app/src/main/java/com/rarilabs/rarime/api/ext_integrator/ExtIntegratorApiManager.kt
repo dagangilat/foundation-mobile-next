@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import org.web3j.utils.Numeric
 import javax.inject.Inject
 
 class ExtIntegratorApiManager @Inject constructor(
@@ -209,28 +208,6 @@ class ExtIntegratorApiManager @Inject constructor(
         val BirthDateLowerbound = queryProofParametersRequest.data.attributes.birth_date_lower_bound
         val BirthDateUpperbound = queryProofParametersRequest.data.attributes.birth_date_upper_bound
         val CitizenshipMask = queryProofParametersRequest.data.attributes.citizenship_mask
-
-        Log.i(
-            "generateQueryProof", """
-            dg1: ${Numeric.toHexString(dg1)}
-            smtProofJSON: ${smtProofJSON.decodeToString()}
-            selector: $selector
-            pkPassportHash: $pkPassportHash
-            issueTimestamp: $issueTimestamp
-            identityCounter: $identityCounter
-            eventID: $eventID
-            eventData: $eventData
-            TimestampLowerbound: $TimestampLowerbound
-            TimestampUpperbound: $TimestampUpperbound
-            IdentityCounterLowerbound: $IdentityCounterLowerbound
-            IdentityCounterUpperbound: $IdentityCounterUpperbound
-            ExpirationDateLowerbound: $ExpirationDateLowerbound
-            ExpirationDateUpperbound: $ExpirationDateUpperbound
-            BirthDateLowerbound: $BirthDateLowerbound
-            BirthDateUpperbound: $BirthDateUpperbound
-            CitizenshipMask: $CitizenshipMask
-        """.trimIndent()
-        )
 
         val queryProofInputs = profiler.buildQueryIdentityInputs(
             dg1,

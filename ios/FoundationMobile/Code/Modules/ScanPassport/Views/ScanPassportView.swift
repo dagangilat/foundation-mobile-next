@@ -76,7 +76,7 @@ struct ScanPassportView: View {
             userManager.registerZkProof = zkProof
             userManager.user?.status = .passportScanned
 
-            LoggerUtil.common.info("Passport read successfully: \(passport.fullName, privacy: .public)")
+            LoggerUtil.common.info("Passport read successfully")
         } catch {
             LoggerUtil.common.error("error while registering passport: \(error.localizedDescription, privacy: .public)")
 
