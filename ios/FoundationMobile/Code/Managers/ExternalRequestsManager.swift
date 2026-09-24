@@ -56,11 +56,11 @@ class ExternalRequestsManager: ObservableObject {
             return
         }
 
+        // `light-verification` is deliberately not accepted: that flow needs a
+        // signing key this app does not ship, so it falls through to unknown.
         switch type {
         case ExternalRequestTypes.proofRequest.rawValue:
             handleProofRequest(params: params)
-        case ExternalRequestTypes.lightVerification.rawValue:
-            handleLightVerificationRequest(params: params)
         default:
             LoggerUtil.common.error("Invalid external request type: \(type, privacy: .public)")
         }

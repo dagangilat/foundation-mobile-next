@@ -149,7 +149,7 @@
     <string name="unsupported_country_description">Passports from this country can\'t be verified yet. Your ID still works for everything else in Foundation.</string>
     <string name="unsupported_country_btn">Continue</string>
     <string name="waitlist_card_subtitle">You will be notified once added</string>
-    <string name="unsupported_card_title">Unsupported for rewards</string>
+    <string name="unsupported_card_title">Not supported yet</string>
     <string name="learn_more_about_the_app">Learn more about the App</string>
     <string name="checking_eligibility">Checking eligibility happens via a scan of your biometric passport.\n\nYour data never leaves the device or is shared with any third party. Proof of citizenship is generated locally using Zero-Knowledge technology.</string>
 

@@ -1,8 +1,13 @@
 package com.rarilabs.rarime.modules.main
 
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -150,6 +156,22 @@ fun MainScreenContent(
     // the app can do before this.
     val signInViewModel: SignInViewModel = hiltViewModel()
     val isSignedIn by signInViewModel.isSignedIn.collectAsState()
+
+    // Android 13+ shows no notifications until the user allows them. Ask once
+    // signed in, like iOS does on its first Home appearance.
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
+    LaunchedEffect(isSignedIn) {
+        if (isSignedIn &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     val qrCodeState = rememberAppSheetState()
     val isBottomBarShown by mainViewModel.isBottomBarShown.collectAsState()

@@ -5,10 +5,13 @@ import android.content.Intent
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.foundation.DeletionOutcome
 import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
 import com.rarilabs.rarime.foundation.FoundationAuthManager
@@ -116,6 +119,8 @@ class ProfileViewModel @Inject constructor(
      * [FoundationAccountDeletionManager]'s `NonCancellable` block.
      */
     private suspend fun eraseLocalState(context: Context) {
+        deleteDriveBackupBestEffort(context)
+
         dataStoreManager.clearAllData()
 
         notificationsRepository.deleteAllNotifications()
@@ -129,6 +134,24 @@ class ProfileViewModel @Inject constructor(
         val mainIntent = Intent.makeRestartActivityTask(componentName)
         context.startActivity(mainIntent)
         Runtime.getRuntime().exit(0)
+    }
+
+    /**
+     * Best effort: remove the key backup from Google Drive, but only when a
+     * Google account with Drive access is signed in. A failure is logged and
+     * never blocks the local wipe; the server account is already gone.
+     */
+    private suspend fun deleteDriveBackupBestEffort(context: Context) {
+        val account = driveBackupManager.signedInAccount.value
+            ?: GoogleSignIn.getLastSignedInAccount(context)
+            ?: return
+        if (!GoogleSignIn.hasPermissions(account, Scope(DriveScopes.DRIVE_APPDATA))) return
+
+        try {
+            driveBackupManager.deleteBackup(account)
+        } catch (e: Exception) {
+            ErrorHandler.logError("deleteAccount", "Cannot delete Drive backup", e)
+        }
     }
 
     fun getDecryptedFeedbackFile(): File {

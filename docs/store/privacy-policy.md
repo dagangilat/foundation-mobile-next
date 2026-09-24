@@ -43,34 +43,60 @@ Foundation's governance platform — without revealing your identity to
 Foundation or to the platform. It does this by reading your passport's chip
 (via NFC) and photo page (via your camera), generating a cryptographic
 zero-knowledge proof of your passport's validity and uniqueness entirely on
-your device, and sending only that proof — not your passport data — to
-Foundation's servers.
+your device, and registering that proof. Your name, photo and passport
+number are not uploaded. The sections below list exactly what does leave
+your device, and where it goes.
 
 ## Information we collect, and why
 
-### Passport data — processed on your device, not collected by us
+### Passport data — read and processed on your device
 
 When you scan your passport, the app reads the printed machine-readable zone
-(via your camera) and the chip's signed data (via NFC). This data —
-including your name, passport number, date of birth, nationality, and photo
-as printed in your passport — is processed entirely on your device to
-generate a zero-knowledge proof. **We do not receive, transmit, or store
-your passport's contents.** Only the resulting proof — a piece of
-cryptographic data that confirms you hold a valid, unique passport without
-revealing what is on it — is sent to our servers.
+(via your camera) and the chip's signed data (via NFC). Your name, passport
+number, date of birth, nationality and photo are processed on your device
+to generate a zero-knowledge proof. **Your name, photo and passport number
+are not uploaded.** They stay on your phone, stored in the app's private
+storage, until you delete your account or the app.
 
-Camera and NFC access exist solely to perform this on-device scan; see the
-in-app permission prompts ("Foundation reads your passport chip to prove you
-are a unique person. Your passport data stays on this phone." /
-"Foundation uses the camera to scan the machine-readable zone on your
-passport photo page.").
+Camera and NFC access exist only to perform this scan and to scan QR codes
+you choose to scan; see the in-app permission prompts ("Foundation reads
+your passport's chip to create a private proof that you're a unique person.
+Your name, photo and passport number are not uploaded." / the camera prompt
+for the passport photo page and QR codes).
 
-### The zero-knowledge proof
+### The zero-knowledge proof and the identity registry
 
-We do receive the zero-knowledge proof your device generates, and use it to
-verify your unique-personhood status with Foundation's governance platform.
-This proof is designed not to reveal your passport's contents or your
-identity.
+The proof your device generates is registered in an open, public identity
+registry (the Rarimo identity registry, operated by a third party), through
+that registry's relayer service. Registration is anonymous: the registry
+records that a valid, unique passport was used, without your name, photo or
+passport number. We use your registration to confirm your unique-personhood
+status with Foundation's governance platform.
+
+### Passport security data (fallback registration only)
+
+Some passports cannot be proven fully on the phone (for example, because of
+the signature algorithm the issuing country uses). For those passports only,
+the app falls back to a registration service operated by the identity
+registry's provider. In that case the app sends the chip's signed security
+data: the document security object (a signed list of fingerprints of the
+chip's data groups, not the data itself), the chip's public key (DG15), the
+chip's active-authentication signature, and the issuing country's
+document-signer certificate. The service checks these and returns a
+signature that lets the proof be registered. Your name, photo and passport
+number are not part of this data.
+
+`TODO(legal)`: confirm with the registry provider what it retains from the
+fallback request and for how long, and link its privacy policy here.
+
+### Information shared with partners, with your consent
+
+When you scan a partner's QR code, the partner may ask you to prove
+something about yourself (for example, that you are over 18, or a specific
+field such as your name or nationality). The app shows you exactly what the
+partner is asking for before anything is sent, and nothing is shared unless
+you accept. What you accept is sent to that partner, and that partner's own
+privacy policy applies to it.
 
 ### Email address and sign-in code
 
@@ -104,27 +130,19 @@ announcements topic) so we can send you app and account-related
 notifications. Firebase, operated by Google, acts as our infrastructure
 provider for this.
 
-### Diagnostic and usage data
+### No analytics or usage tracking
 
-The app uses Firebase, operated by Google, for backend infrastructure. As
-part of that, some diagnostic data (such as crash and error logs) may be
-collected to help us keep the app working correctly.
-
-`TODO(Dagan/legal)`: **This section needs a decision before publishing.**
-The app links Google's Firebase Analytics SDK on both platforms
-(confirmed present as a linked framework on iOS and a Gradle dependency on
-Android), but no code in the app explicitly logs analytics events. Firebase
-Analytics may still auto-collect basic usage data (app opens, device model,
-OS version) by default unless explicitly turned off. Decide whether
-Foundation wants to (a) disable this collection and state plainly that no
-analytics/usage tracking is performed, or (b) keep it and describe here,
-specifically, what usage data is collected and why. This policy currently
-describes the collection generically and must be tightened once that
-decision is made — do not publish this section unchanged.
+The app does not collect analytics or usage data. The Firebase Analytics
+library is part of Google's Firebase SDK that the app is built with, but its
+collection is switched off in the app's configuration on both platforms
+(`FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED` on iOS,
+`firebase_analytics_collection_deactivated` on Android), and the Android
+advertising-ID permission is removed. The app does not track you across
+other companies' apps or websites.
 
 ### Recovery key backup (optional)
 
-If you choose to enable backup, the app can store an encrypted copy of your
+If you choose to enable backup, the app can store a copy of your
 local recovery key — the credential used to recover access to your identity
 if you lose your device — in your own personal cloud storage:
 
@@ -135,7 +153,13 @@ if you lose your device — in your own personal cloud storage:
 
 This backup is optional and under your control. We (Foundation) do not have
 access to this data — it is stored in your own iCloud/Google Drive account,
-not on Foundation's servers.
+not on Foundation's servers. When you delete your account in the app, the
+app also deletes this backup from your iCloud or Google Drive.
+
+`TODO(Dagan)`: on Android the backed-up key is stored as plain text inside
+the app's private Drive folder (only this app can read that folder). Decide
+whether to encrypt it in a future version; changing it needs a migration so
+existing backups still restore.
 
 ## Information we do not collect
 
@@ -143,34 +167,36 @@ Based on a direct review of the app's code, Foundation does not collect:
 your passport photo or MRZ contents in raw form, your biometric data (Face
 ID/fingerprint unlock happens entirely on-device and is never transmitted to
 us or seen by us), your contacts, your precise location, your browsing or
-search history, or your financial/payment information. The app contains no
-advertising SDK and no install-attribution SDK (a prior attribution SDK was
-removed from the app; see below).
-
-`TODO(Dagan/legal)`: adjust the analytics language above once the Firebase
-Analytics question is resolved; until then, do not represent this section
-as a complete "we collect nothing else" statement, since Firebase Analytics'
-default behavior is not yet settled.
+search history, your financial/payment information, or analytics/usage
+data. The app contains no advertising SDK and no install-attribution SDK.
 
 ## Who we share information with
 
 - **Firebase / Google Cloud**: Foundation's backend runs on Firebase
   (Authentication, Cloud Functions, App Check, Cloud Messaging), operated by
   Google, which processes the data described above (email, account ID,
-  device attestation token, push token, and any diagnostic data) as our
-  service provider.
+  device attestation token and push token) as our service provider.
+- **The identity registry and its provider**: receive the anonymous proof,
+  and, for passports that need the fallback, the passport security data
+  described above.
+- **Partners you choose**: receive only what you accept on the consent
+  screen after scanning their QR code.
 - We do not sell your data, and we do not share it with advertisers. No
   advertising or install-attribution SDK is present in the app (a prior
   attribution/referral SDK was fully removed from the codebase).
-- We do not share your passport data with anyone, because we never receive
-  it.
+- We do not share your name, photo or passport number with anyone except a
+  partner you explicitly approve on the consent screen.
 
 ## Your choices and rights
 
 - **Account deletion**: you can permanently delete your Foundation account
   and its associated server-side data from within the app, at any time, in
   Profile settings. This performs an irreversible server-side deletion —
-  there is no undo. `TODO(legal)`: confirm and state here the exact
+  there is no undo. It also deletes the app's data on your device and your
+  recovery key backup in iCloud or Google Drive. The anonymous proof already
+  registered in the public identity registry stays there; it contains
+  nothing that identifies you.
+  `TODO(legal)`: confirm and state here the exact
   categories of data this deletes vs. anonymizes vs. retains for legal/
   compliance reasons (the underlying deletion function returns a breakdown
   of deleted vs. anonymized vs. retained records, which this policy should
@@ -181,9 +207,10 @@ default behavior is not yet settled.
 - **Notifications**: you can disable push notifications at any time in your
   device settings.
 - **Recovery key backup**: you can decline to enable iCloud/Google Drive
-  backup, and can delete the backed-up file from your own iCloud/Google
-  Drive account at any time using Apple's or Google's own account tools —
-  Foundation does not control or have access to that storage.
+  backup. Deleting your account removes it, and you can also delete it
+  from your own iCloud/Google Drive account at any time using Apple's or
+  Google's own account tools — Foundation does not have access to that
+  storage.
 
 `TODO(legal)`: add jurisdiction-specific rights language (e.g. GDPR Articles
 15-21 access/rectification/erasure/portability rights for EEA/UK users,
@@ -208,8 +235,8 @@ policy).
 
 ## Security
 
-Passport data is processed only on your device and is never transmitted to
-us. Data we do collect is transmitted over encrypted connections (HTTPS/TLS)
+Your name, photo and passport number are processed only on your device and
+are not uploaded (except to a partner you explicitly approve). Data we do collect is transmitted over encrypted connections (HTTPS/TLS)
 to our servers. The app's zero-knowledge proof system is designed so that
 the proof itself does not reveal your passport's contents or your identity.
 `TODO(legal)`: add any additional security-practice language your counsel

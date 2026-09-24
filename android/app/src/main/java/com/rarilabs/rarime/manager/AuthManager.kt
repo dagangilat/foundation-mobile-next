@@ -1,7 +1,6 @@
 package com.rarilabs.rarime.manager
 
 import android.content.Context
-import android.util.Log
 import com.auth0.android.jwt.JWT
 import com.google.gson.Gson
 import com.rarilabs.rarime.BaseConfig
@@ -72,7 +71,6 @@ class AuthManager @Inject constructor(
         )
 
         val queryProof = withContext(Dispatchers.Default) {
-            Log.i("PK AUTH", Gson().toJson(authProofInputs))
             zkp.generateZKP(
                 "circuit_auth_final.zkey",
                 R.raw.auth,

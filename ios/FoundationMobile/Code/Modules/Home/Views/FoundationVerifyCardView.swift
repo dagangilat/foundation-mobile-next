@@ -94,9 +94,9 @@ struct FoundationVerifyCardView: View {
     private var caption: String {
         switch cardState {
         case .notScanned:
-            String(localized: "Verify once with your passport's chip to show you're a real, unique person. Your details stay on this phone.")
+            String(localized: "Verify once with your passport's chip to show you're a real, unique person. Your name, photo and passport number stay on this phone.")
         case .building:
-            String(localized: "This happens on your phone. Nothing about you is uploaded.")
+            String(localized: "This happens on your phone. Your name, photo and passport number are not uploaded.")
         case .registrationFailed:
             passportViewModel.isPassportFailedByImpossibleRevocation
                 ? String(localized: "This passport is already linked to another ID. Restore the ID you used before.")

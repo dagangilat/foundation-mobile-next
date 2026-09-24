@@ -4,10 +4,6 @@
 <dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	</array>
 	<key>CERTIFICATES_SMT_CONTRACT_ADDRESS</key>
 	<string>${CERTIFICATES_SMT_CONTRACT_ADDRESS}</string>
 	<key>CFBundleIcons</key>
@@ -73,6 +69,8 @@
 	<string>${FOUNDATION_APP_SCHEME}</string>
 	<key>FEEDBACK_EMAIL</key>
 	<string>${FEEDBACK_EMAIL}</string>
+	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
+	<true/>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>GENERAL_NOTIFICATION_TOPIC</key>
@@ -109,8 +107,6 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>fetch</string>
-		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>

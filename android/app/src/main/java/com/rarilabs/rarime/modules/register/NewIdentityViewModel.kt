@@ -92,7 +92,6 @@ class NewIdentityViewModel @Inject constructor(
                 file?.let {
                     val inputStream = driveService.files().get(it.id).executeMediaAsInputStream()
                     val privateKey = InputStreamReader(inputStream).use { it.readText() }
-                    Log.d("DriveService", "Restored Private Key: $privateKey")
                     privateKey
                 }
             } catch (e: GoogleJsonResponseException) {

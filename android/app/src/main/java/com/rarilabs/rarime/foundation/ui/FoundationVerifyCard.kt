@@ -276,10 +276,10 @@ private fun captionFor(state: VerificationState, needsPassport: Boolean): String
 
     needsPassport ->
         "Verify once with your passport's chip to show you're a real, unique person. " +
-            "Your details stay on this phone."
+            "Your name, photo and passport number stay on this phone."
 
     state is VerificationState.Failed -> state.message
-    else -> "One last step: confirm you're a unique person. Your details stay on this phone."
+    else -> "One last step: confirm you're a unique person. Your name, photo and passport number stay on this phone."
 }
 
 private fun buttonTitleFor(state: VerificationState): String = when (state) {
