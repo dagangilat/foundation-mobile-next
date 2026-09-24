@@ -450,12 +450,46 @@ ensure_ios_config() {
   [ -f "$IOS_PLIST" ] || die "$IOS_PLIST missing - run: scripts/mobile.sh firebase"
 }
 
-# Connected physical iPhones as "udid<TAB>name" lines.
+# Connected physical iPhones as "udid<TAB>name" lines. Asks CoreDevice
+# (devicectl, what Xcode itself uses) first; xctrace only lists a phone once
+# its developer tunnel is up, so it misses phones Xcode can see.
 ios_devices() {
-  xcrun xctrace list devices 2>/dev/null \
-    | awk '/^== Devices ==/{on=1; next} /^==/{on=0} on' \
-    | grep -E '\([0-9]+(\.[0-9]+)*\) \([0-9A-Fa-f-]+\)$' \
-    | sed -E 's/^(.*) \(([0-9.]+)\) \(([0-9A-Fa-f-]+)\)$/\3	\1/' || true
+  local json
+  json="$(mktemp -t foundation-devices)"
+  if has jq && xcrun devicectl list devices --json-output "$json" >/dev/null 2>&1; then
+    # USB-connected phones first; "unavailable" means not reachable now.
+    jq -r '[.result.devices[]?
+      | select(.hardwareProperties.platform == "iOS" and .hardwareProperties.reality == "physical")
+      | select((.connectionProperties.pairingState // "paired") == "paired")
+      | select((.connectionProperties.tunnelState // "") != "unavailable")]
+      | sort_by(.connectionProperties.transportType != "wired") | .[]
+      | [.hardwareProperties.udid, .deviceProperties.name] | @tsv' "$json" 2>/dev/null || true
+  else
+    xcrun xctrace list devices 2>/dev/null \
+      | awk '/^== Devices ==/{on=1; next} /^==/{on=0} on' \
+      | grep -E '\([0-9]+(\.[0-9]+)*\) \([0-9A-Fa-f-]+\)$' \
+      | sed -E 's/^(.*) \(([0-9.]+)\) \(([0-9A-Fa-f-]+)\)$/\3	\1/' || true
+  fi
+  rm -f "$json"
+}
+
+# Why no iPhone was found, then exit.
+ios_no_device() {
+  local dev
+  dev="$(xcode-select -p 2>/dev/null || true)"
+  case "$dev" in
+    *CommandLineTools*|"")
+      die "no iPhone found: the command line is using ${dev:-no developer tools}, not Xcode. Run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer" ;;
+  esac
+  printf '%serror:%s no iPhone found. What CoreDevice sees:\n' "$R" "$N" >&2
+  xcrun devicectl list devices >&2 || true
+  cat >&2 <<'MSG'
+Connect the iPhone by USB, unlock it, tap Trust, and turn on Settings > Privacy & Security > Developer Mode.
+If Xcode can see it, copy its Identifier from Xcode > Window > Devices and Simulators
+and rerun with it, for example:
+  IOS_DEVICE_ID=00008110-XXXXXXXXXXXXXXXX scripts/mobile.sh ios-device
+MSG
+  exit 1
 }
 
 cmd_ios_sim() {
@@ -472,7 +506,7 @@ cmd_ios_device() {
   if [ -z "$udid" ]; then
     udid="$(ios_devices | head -1 | cut -f1)"
     name="$(ios_devices | head -1 | cut -f2)"
-    [ -n "$udid" ] || die "no iPhone found. Connect it by USB, unlock it, tap Trust, and turn on Settings > Privacy & Security > Developer Mode."
+    [ -n "$udid" ] || ios_no_device
   fi
   step "Building for ${name:-$udid} (automatic signing, team $TEAM_ID)"
   xcodebuild build \
