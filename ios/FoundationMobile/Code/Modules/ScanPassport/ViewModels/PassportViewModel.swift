@@ -111,6 +111,18 @@ class PassportViewModel: ObservableObject {
         return String(describing: error)
     }
 
+    /// Runs one registration step and names it in any error, so a failure
+    /// says which server call failed (several share the relayer endpoint).
+    @MainActor
+    private func step<T>(_ name: String, _ work: () async throws -> T) async throws -> T {
+        do {
+            return try await work()
+        } catch {
+            LoggerUtil.common.error("\(name, privacy: .public) failed: \(error, privacy: .public)")
+            throw Errors.unknown("\(name): \(Self.describe(error))")
+        }
+    }
+
     func setMrzKey(_ value: String) {
         mrzKey = value
         
@@ -134,7 +146,9 @@ class PassportViewModel: ObservableObject {
             guard var passport = PassportManager.shared.passport else { throw PassportManagerError.passportNotFound }
             guard let user = UserManager.shared.user else { throw UserManagerError.userNotInitialized }
             
-            try await UserManager.shared.registerCertificate(passport)
+            try await step("Certificate registration") {
+                try await UserManager.shared.registerCertificate(passport)
+            }
             
             guard let registerIdentityCircuitType = try passport.getRegisterIdentityCircuitType() else {
                 throw PassportViewModelError.invalidCircuit
@@ -281,7 +295,9 @@ class PassportViewModel: ObservableObject {
             
             if isUserRevoking { isUserRevoked = true }
             
-            try await UserManager.shared.register(proof, passport, isUserRevoking, registerIdentityCircuitName)
+            try await step("Identity registration (\(registerIdentityCircuitName))") {
+                try await UserManager.shared.register(proof, passport, isUserRevoking, registerIdentityCircuitName)
+            }
             
             PassportManager.shared.setPassport(passport)
             try UserManager.shared.saveRegisterZkProof(proof)
@@ -443,7 +459,9 @@ class PassportViewModel: ObservableObject {
             )
             
             let lightRegistrationService = LightRegistrationService(ConfigManager.shared.general.appApiURL)
-            let registerResponse = try await lightRegistrationService.register(passport, zkProof)
+            let registerResponse = try await step("Light passport check") {
+                try await lightRegistrationService.register(passport, zkProof)
+            }
             
             LoggerUtil.common.info("Passport light registration signature received")
             
@@ -477,7 +495,9 @@ class PassportViewModel: ObservableObject {
                 return zkProof
             }
             
-            try await UserManager.shared.lightRegister(zkProof, registerResponse)
+            try await step("Light registration (\(registerIdentityLightCircuitName))") {
+                try await UserManager.shared.lightRegister(zkProof, registerResponse)
+            }
             
             PassportManager.shared.setPassport(passport)
             try UserManager.shared.saveRegisterZkProof(zkProof)
