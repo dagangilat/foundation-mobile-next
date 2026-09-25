@@ -167,7 +167,7 @@ class PassportViewModel: ObservableObject {
                 throw PassportViewModelError.invalidCircuitName
             }
             
-            LoggerUtil.common.info("Registering passport with circuit: \(registerIdentityCircuitName)")
+            LoggerUtil.common.info("Registering passport with circuit: \(registerIdentityCircuitName, privacy: .public)")
             
             var proof: ZkProof
             if let registeredCircuitData = RegisteredCircuitData(rawValue: registerIdentityCircuitName) {
