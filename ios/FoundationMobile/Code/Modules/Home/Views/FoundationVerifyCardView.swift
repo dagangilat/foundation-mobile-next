@@ -11,11 +11,16 @@ import SwiftUI
 ///
 /// No business logic lives here: every action calls the same code the old
 /// Identity tab and verify card called.
+///
+/// After a failed try the card stays calm: "Your last try didn't finish. The
+/// bell has the details." plus Try again. The reason and "Share app log" live
+/// in the bell's entry (`AppNotificationStore`, `AppNotificationsSheet`).
 struct FoundationVerifyCardView: View {
     @EnvironmentObject private var verification: FoundationVerificationManager
     @EnvironmentObject private var passportManager: PassportManager
     @EnvironmentObject private var userManager: UserManager
     @EnvironmentObject private var passportViewModel: PassportViewModel
+    @ObservedObject private var notifications = AppNotificationStore.shared
 
     /// Opens the passport scan flow (ScanPassportView), owned by HomeView.
     let onScanPassport: () -> Void
@@ -78,11 +83,24 @@ struct FoundationVerifyCardView: View {
         }
     }
 
+    /// A failed try that left no failure state of its own (an expired
+    /// passport, a proof the sheet couldn't send): while its bell entry is
+    /// unread, the not-started and ready states read as a failed try too.
+    private var isUnreadFailure: Bool {
+        (cardState == .notScanned || cardState == .ready) && notifications.hasUnreadVerificationFailure
+    }
+
+    private static let failedTryCaption = String(localized: "Your last try didn't finish. The bell has the details.")
+
     private var title: LocalizedStringKey {
+        isUnreadFailure ? "Not verified yet" : stateTitle
+    }
+
+    private var stateTitle: LocalizedStringKey {
         switch cardState {
         case .notScanned: "Not verified yet"
         case .building: "Building your proof"
-        case .registrationFailed: "Something went wrong"
+        case .registrationFailed: "Not verified yet"
         case .waitlisted: "Not available yet"
         case .ready: "Passport checked"
         case .working: "Verifying…"
@@ -92,23 +110,28 @@ struct FoundationVerifyCardView: View {
     }
 
     private var caption: String {
+        isUnreadFailure ? Self.failedTryCaption : stateCaption
+    }
+
+    private var stateCaption: String {
         switch cardState {
         case .notScanned:
             String(localized: "Verify once with your passport's chip to show you're a real, unique person. Your name, photo and passport number stay on this phone.")
         case .building:
             String(localized: "This happens on your phone. Your name, photo and passport number are not uploaded.")
         case .registrationFailed:
+            // The one failure a retry can't fix keeps its instruction.
             passportViewModel.isPassportFailedByImpossibleRevocation
                 ? String(localized: "This passport is already linked to another ID. Restore the ID you used before.")
-                : String(localized: "We couldn't finish your proof. Scan your passport again to retry.")
+                : Self.failedTryCaption
         case .waitlisted:
             String(localized: "Passports from your country can't be verified yet.")
         case .ready:
             String(localized: "One last step: share a private proof with Foundation to finish verifying.")
         case .working:
             String(localized: "Waiting for Foundation to confirm your proof.")
-        case .verificationFailed(let message):
-            message
+        case .verificationFailed:
+            Self.failedTryCaption
         case .verified:
             String(localized: "When a site asks, you can prove this without sharing your name or passport details.")
         }
@@ -118,6 +141,26 @@ struct FoundationVerifyCardView: View {
 
     @ViewBuilder
     private var detail: some View {
+        if isUnreadFailure {
+            // Same action as the state's own button, worded as a retry.
+            Button {
+                if cardState == .ready { finishVerification() } else { onScanPassport() }
+            } label: {
+                Label("Try again", systemImage: "person.text.rectangle")
+            }
+            .buttonStyle(FoundationPrimaryButtonStyle())
+            .padding(.top, 4)
+        } else {
+            stateDetail
+        }
+    }
+
+    private func finishVerification() {
+        Task { await verification.beginVerification() }
+    }
+
+    @ViewBuilder
+    private var stateDetail: some View {
         switch cardState {
         case .notScanned:
             Button(action: onScanPassport) {
@@ -129,35 +172,22 @@ struct FoundationVerifyCardView: View {
         case .building:
             buildingDetail
         case .registrationFailed:
-            if let reason = passportViewModel.lastErrorMessage, !reason.isEmpty {
-                Text(verbatim: reason)
-                    .font(.system(size: 13))
-                    .foregroundColor(FoundationTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .textSelection(.enabled)
-            }
+            // The reason and "Share app log" are in the bell's entry.
             if !passportViewModel.isPassportFailedByImpossibleRevocation {
                 // Starts over from the task guide (photo page, then chip), so
                 // a bad chip read is redone rather than re-proving the same data.
-                Button("Try again", action: onScanPassport)
-                    .buttonStyle(FoundationPrimaryButtonStyle())
-                    .padding(.top, 4)
+                Button(action: onScanPassport) {
+                    Label("Try again", systemImage: "person.text.rectangle")
+                }
+                .buttonStyle(FoundationPrimaryButtonStyle())
+                .padding(.top, 4)
             }
-            // The app's own log file: send it by any app (Mail, Messages,
-            // AirDrop, Files) without a mail account set up on the phone.
-            ShareLink(item: AppLogExport(), preview: SharePreview("Foundation app log")) {
-                Label("Share app log", systemImage: "square.and.arrow.up")
-            }
-            .buttonStyle(FoundationTextButtonStyle())
-            .frame(maxWidth: .infinity)
         case .waitlisted:
             EmptyView()
         case .ready:
-            Button("Finish verification") {
-                Task { await verification.beginVerification() }
-            }
-            .buttonStyle(FoundationPrimaryButtonStyle())
-            .padding(.top, 4)
+            Button("Finish verification", action: finishVerification)
+                .buttonStyle(FoundationPrimaryButtonStyle())
+                .padding(.top, 4)
         case .working:
             Button(action: {}) {
                 HStack(spacing: 8) {
@@ -170,8 +200,9 @@ struct FoundationVerifyCardView: View {
             .disabled(true)
             .padding(.top, 4)
         case .verificationFailed:
-            Button("Try again") {
-                Task { await verification.beginVerification() }
+            // Same retry as before; the reason is in the bell's entry.
+            Button(action: finishVerification) {
+                Label("Try again", systemImage: "person.text.rectangle")
             }
             .buttonStyle(FoundationPrimaryButtonStyle())
             .padding(.top, 4)

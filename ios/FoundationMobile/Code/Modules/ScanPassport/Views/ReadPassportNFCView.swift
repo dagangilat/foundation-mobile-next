@@ -69,21 +69,21 @@ struct ReadPassportNFCView: View {
                 case .success(let passport):
                     if passport.isExpired {
                         LoggerUtil.common.info("Passport is expired")
-                        AlertManager.shared.emitError(.unknown("Passport is expired"))
+                        AppNotificationStore.shared.postVerificationFailure(reason: "Passport is expired", retry: .scanPassport)
                         onClose()
                         return
                     }
 
                     if !passport.isOver18 {
                         LoggerUtil.common.info("User is underage")
-                        AlertManager.shared.emitError(.unknown("You are under 18"))
+                        AppNotificationStore.shared.postVerificationFailure(reason: "You are under 18", retry: .scanPassport)
                         onClose()
                         return
                     }
 
                     if passport.documentType != DocumentType.passport.rawValue {
                         LoggerUtil.common.info("Document is not ePassport")
-                        AlertManager.shared.emitError(.unknown("Document is not ePassport"))
+                        AppNotificationStore.shared.postVerificationFailure(reason: "Document is not ePassport", retry: .scanPassport)
                         onClose()
                         return
                     }
@@ -99,7 +99,8 @@ struct ReadPassportNFCView: View {
                         }
 
                         useExtendedMode = true
-                        AlertManager.shared.emitError(.unknown("A scanning error occurred. Attempting to use extended mode. Please try again."))
+                        // Still inside the chip read: tell the person now, not via the bell.
+                        AlertManager.shared.emitScanFlowError(.unknown("A scanning error occurred. Attempting to use extended mode. Please try again."))
                         scanPassport()
                     case NFCPassportReaderError.ResponseError(let reason, _, _)
                         where reason == "Referenced data not found":

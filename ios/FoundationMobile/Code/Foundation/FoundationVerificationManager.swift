@@ -61,10 +61,11 @@ final class FoundationVerificationManager: ObservableObject {
 
             if result.status == "already_verified_l2" {
                 state = .verified(memberNumber: result.memberNumber)
+                notifyVerified()
                 return
             }
             guard let raw = result.getProofParamsUrl, let url = URL(string: raw) else {
-                state = .failed("The server didn't return proof parameters.")
+                fail("The server didn't return proof parameters.")
                 return
             }
 
@@ -73,7 +74,7 @@ final class FoundationVerificationManager: ObservableObject {
             state = .awaitingProof
         } catch {
             LoggerUtil.common.error("startL2Verification failed: \(error.localizedDescription, privacy: .public)")
-            state = .failed("We couldn't start the passport check. Please try again.")
+            fail("We couldn't start the passport check. Please try again.")
         }
     }
 
@@ -169,6 +170,7 @@ final class FoundationVerificationManager: ObservableObject {
                 if FoundationVerificationManager.isTerminalSuccess(status.status) {
                     guard state == .polling else { return }
                     state = .verified(memberNumber: status.memberNumber)
+                    notifyVerified()
                     return
                 }
                 // Any other status ("pending", "request_created", or an
@@ -179,7 +181,7 @@ final class FoundationVerificationManager: ObservableObject {
                 // keeps retrying, matching the original behavior.
                 if let message = FoundationVerificationManager.terminalRejectionMessage(for: error) {
                     guard state == .polling else { return }
-                    state = .failed(message)
+                    fail(message)
                     return
                 }
                 LoggerUtil.common.error("getL2VerificationStatus failed: \(error.localizedDescription, privacy: .public)")
@@ -187,7 +189,21 @@ final class FoundationVerificationManager: ObservableObject {
             try? await Task.sleep(for: pollInterval)
         }
         guard state == .polling else { return }
-        state = .failed("The check is taking longer than expected. Please try again.")
+        fail("The check is taking longer than expected. Please try again.")
+    }
+
+    /// A terminal failure: the Home card says the last try didn't finish,
+    /// and the reason goes behind Home's bell with Try again.
+    private func fail(_ message: String) {
+        state = .failed(message)
+        AppNotificationStore.shared.postVerificationFailure(reason: message, retry: .finishVerification)
+    }
+
+    private func notifyVerified() {
+        AppNotificationStore.shared.postSuccess(
+            title: String(localized: "You're verified"),
+            message: String(localized: "Foundation confirmed you're a real, unique person.")
+        )
     }
 
     /// Maps a `getL2VerificationStatus` failure to a terminal, user-facing

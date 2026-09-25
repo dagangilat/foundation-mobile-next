@@ -18,8 +18,12 @@ enum FoundationTheme {
     static let onAccent = rgb(0xFFFFFF)
     /// Soft green behind the "Verified" pill and success hints.
     static let accentTint = rgb(0xD1FAE5)
-    /// Destructive rows (Sign out, Delete account).
+    /// Destructive rows (Sign out, Delete account) and inline error text.
     static let danger = rgb(0xB42318)
+    /// Unread dots (bell, error entries) and the error icon's tint behind it.
+    static let alertDot = rgb(0xDC2626)
+    static let dangerIcon = rgb(0xB91C1C)
+    static let dangerTint = rgb(0xFEE2E2)
 
     static let voice = rgb(0x6366F1)
     static let share = rgb(0x0D9488)
@@ -146,6 +150,26 @@ struct FoundationSectionLabel: View {
             .tracking(0.6)
             .textCase(.uppercase)
             .foregroundColor(FoundationTheme.muted)
+    }
+}
+
+/// A red error line shown on the screen it belongs to (sign-in, first run,
+/// Backup and recovery), for errors that must be seen where they happened
+/// rather than behind Home's bell.
+struct FoundationInlineError: View {
+    let message: String
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "exclamationmark.circle")
+                .font(.system(size: 15, weight: .semibold))
+            Text(verbatim: message)
+                .font(.system(size: 15))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .foregroundColor(FoundationTheme.danger)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
     }
 }
 

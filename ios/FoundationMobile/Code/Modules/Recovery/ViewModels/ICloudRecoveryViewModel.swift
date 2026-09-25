@@ -7,6 +7,10 @@ class ICloudRecoveryViewModel: ObservableObject {
     @Published var isICloudAvailable = false
     @Published var cloudRecord: CKRecord? = nil
 
+    /// Shown on the Backup and recovery screen itself: a failed backup has to
+    /// be seen where the switch is, not only behind Home's bell.
+    @Published var errorMessage: String?
+
     var cloudKey: Data? {
         guard let cloudRecord = cloudRecord else { return nil }
         return cloudRecord.value(forKey: User.userCloudPrivateKeyKey) as? Data
@@ -30,11 +34,12 @@ class ICloudRecoveryViewModel: ObservableObject {
             cloudRecord = records.last
         } catch {
             LoggerUtil.common.error("Failed to load backup status: \(error, privacy: .public)")
-            AlertManager.shared.emitError(String(localized: "Failed to load backup status"))
+            showError(String(localized: "Failed to load backup status"))
         }
     }
 
     func backUpUserSecretKey() async {
+        showError(nil)
         isProcessing = true
         defer { isProcessing = false }
 
@@ -47,11 +52,12 @@ class ICloudRecoveryViewModel: ObservableObject {
             cloudRecord = record
         } catch {
             LoggerUtil.common.error("back up error: \(error, privacy: .public)")
-            AlertManager.shared.emitError(String(localized: "Failed to back up, try again later"))
+            showError(String(localized: "Failed to back up, try again later"))
         }
     }
 
     func deleteBackup() async {
+        showError(nil)
         isProcessing = true
         defer { isProcessing = false }
 
@@ -60,7 +66,11 @@ class ICloudRecoveryViewModel: ObservableObject {
             await loadBackupStatus()
         } catch {
             LoggerUtil.common.error("Failed to delete backup: \(error, privacy: .public)")
-            AlertManager.shared.emitError(String(localized: "Failed to delete backup"))
+            showError(String(localized: "Failed to delete backup"))
         }
+    }
+
+    private func showError(_ message: String?) {
+        DispatchQueue.main.async { self.errorMessage = message }
     }
 }

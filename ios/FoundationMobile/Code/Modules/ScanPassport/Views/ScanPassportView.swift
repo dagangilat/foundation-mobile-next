@@ -152,11 +152,22 @@ struct ScanPassportView: View {
             userManager.registerZkProof = zkProof
             userManager.user?.status = .passportScanned
 
+            AppNotificationStore.shared.postSuccess(
+                title: String(localized: "Passport checked"),
+                message: String(localized: "Your passport's chip was read and checked.")
+            )
+
             LoggerUtil.common.info("Passport read successfully")
         } catch {
             LoggerUtil.common.error("error while registering passport: \(error, privacy: .public)")
 
-            passportViewModel.lastErrorMessage = PassportViewModel.describe(error)
+            let reason = PassportViewModel.describe(error)
+            passportViewModel.lastErrorMessage = reason
+
+            // The reason goes behind Home's bell ("Verification didn't
+            // finish", with Try again and Share app log); the card itself
+            // only says the last try didn't finish.
+            AppNotificationStore.shared.postVerificationFailure(reason: reason, retry: .scanPassport)
 
             if passportViewModel.isUserRegistered {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -168,17 +179,13 @@ struct ScanPassportView: View {
                 if case .sessionTaskFailed = afError {
                     LoggerUtil.common.error("Network connection lost")
 
-                    AlertManager.shared.emitError(.connectionUnstable)
-
                     onClose()
 
                     passportViewModel.processingStatus = .failure
 
                     return
                 }
-            } else if let error = error as? Errors {
-                AlertManager.shared.emitError(error)
-
+            } else if error is Errors {
                 onClose()
 
                 passportViewModel.processingStatus = .failure
@@ -187,9 +194,8 @@ struct ScanPassportView: View {
             }
 
             // Any other error (contract, circuit, proving): register() has
-            // already marked the attempt failed; say so instead of failing
-            // silently.
-            AlertManager.shared.emitError(.unknown(PassportViewModel.describe(error)))
+            // already marked the attempt failed, and the bell entry above
+            // says why instead of failing silently.
             passportViewModel.processingStatus = .failure
         }
     }
