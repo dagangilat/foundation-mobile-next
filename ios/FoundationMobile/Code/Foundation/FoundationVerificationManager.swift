@@ -105,9 +105,9 @@ final class FoundationVerificationManager: ObservableObject {
 
     /// The proof sheet closed. Every non-success close lands here with the
     /// state still `.awaitingProof` - Cancel, the sheet's X, swipe-to-dismiss,
-    /// a proof-params load failure, a failed uniqueness check, any
-    /// `generateProof` error - and without this reset `.awaitingProof` is
-    /// terminal: `FoundationVerifyCardView.isBusy` would keep the Home verify
+    /// a proof-params load failure, any `generateProof` error - and without
+    /// this reset `.awaitingProof` is terminal:
+    /// `FoundationVerifyCardView.isBusy` would keep the Home verify
     /// card disabled and showing "Working…" for the rest of the process.
     ///
     /// A real success has already moved to `.polling` in
@@ -219,8 +219,11 @@ final class FoundationVerificationManager: ObservableObject {
     ///
     /// Two distinct codes are terminal, both thrown by passport.js's
     /// `getL2VerificationStatus` / `upsertMemberWithLaneTx`:
-    ///   - `.failedPrecondition`: `failed_verification` / `uniqueness_check_failed`
-    ///     (the svc-side check).
+    ///   - `.failedPrecondition`: `failed_verification`, and the svc's
+    ///     `uniqueness_check_failed` when the backend confirms it (reasons
+    ///     `identity_reissued` / `uniqueness_unconfirmed`, each with its own
+    ///     message). ProofRequestView no longer stops on that svc status
+    ///     itself; it hands off here so the backend makes the call.
     ///   - `.alreadyExists`: the lane-doc uniqueness guard rejecting a
     ///     duplicate passport - found 2026-09-03 (whole-plan review finding
     ///     I-2) to be the ONE that actually fires in practice, because the

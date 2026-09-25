@@ -74,9 +74,9 @@ struct ExternalRequestsView: View {
 
                     // AD-2: this is the one hook every sheet close runs
                     // through - Cancel, the sheet's X, swipe-to-dismiss, a
-                    // proof-params load failure, a failed uniqueness check,
-                    // any generateProof error. Without it, .awaitingProof is
-                    // terminal and the Home verify card is stuck on "Working…"
+                    // proof-params load failure, any generateProof error.
+                    // Without it, .awaitingProof is terminal and the Home
+                    // verify card is stuck on "Working…"
                     // for the rest of the process. This fires on EVERY close,
                     // success included - proofSheetDismissed()'s own guard is
                     // what makes it a no-op there, since a success has already

@@ -221,9 +221,17 @@ struct ProofRequestView: View {
                     proof: proof
                 )
 
+                // Not the final word, so don't stop here. The verificator uses
+                // this one status for two rules, and one of them (another of
+                // its own records already holds this passport) goes stale:
+                // deleted accounts, test-data resets, a recreated account.
+                // Foundation's getL2VerificationStatus reads the proof,
+                // tells the two apart, and checks the passport against its
+                // own member records. Its answer - success, or its own
+                // message behind the bell - is what the member sees.
                 if response.data.attributes.status == .uniquenessCheckFailed {
-                    reportFailure("Uniqueness check failed")
-                    onDismiss()
+                    LoggerUtil.common.warning("Verificator status \(response.data.attributes.status.rawValue, privacy: .public); deferring to the backend's check")
+                    onSuccess()
                     return
                 }
 
