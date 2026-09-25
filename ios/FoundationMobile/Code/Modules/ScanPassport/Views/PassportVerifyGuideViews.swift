@@ -694,13 +694,13 @@ struct PassportChipConfirmView: View {
             PassportSuccessMark()
             PassportVerifyHeading(
                 title: "Chip read",
-                subtitle: "Your passport checks out.",
+                subtitle: "Next, your phone builds your proof.",
                 centered: true
             )
             VStack(alignment: .leading, spacing: 14) {
-                checkRow("Signed by your passport office")
-                checkRow("The chip is genuine, not a copy")
-                checkRow("Matches the photo page")
+                checkRow("The chip opened with your photo page details")
+                checkRow("Your passport data and its signature were read")
+                checkRow("The signature is checked as your proof is built")
             }
             .foundationCard(padding: 18)
         } buttons: {

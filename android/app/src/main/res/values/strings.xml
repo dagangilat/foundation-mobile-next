@@ -110,10 +110,10 @@
     <string name="verify_chip_tip3_body">Keep still until it buzzes, a few seconds.</string>
     <string name="verify_chip_start">Start chip scan</string>
     <string name="verify_chip_confirm_title">Chip read</string>
-    <string name="verify_chip_confirm_lead">Your passport checks out.</string>
-    <string name="verify_chip_confirm_check1">Signed by your passport office</string>
-    <string name="verify_chip_confirm_check2">The chip is genuine, not a copy</string>
-    <string name="verify_chip_confirm_check3">Matches the photo page</string>
+    <string name="verify_chip_confirm_lead">Next, your phone builds your proof.</string>
+    <string name="verify_chip_confirm_check1">The chip opened with your photo page details</string>
+    <string name="verify_chip_confirm_check2">Your passport data and its signature were read</string>
+    <string name="verify_chip_confirm_check3">The signature is checked as your proof is built</string>
 
     <string name="what_is_foundation_title">What is Foundation?</string>
     <string name="settings_title">Settings</string>
