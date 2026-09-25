@@ -1,5 +1,6 @@
 import MessageUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct FeedbackMailView: View {
     @Binding var isShowing: Bool
@@ -47,4 +48,16 @@ struct FeedbackMailView: View {
 
 #Preview {
     FeedbackMailView(isShowing: .constant(true))
+}
+
+/// The app log as a file for the share sheet. Sharing the log's URL handed
+/// other apps a link into this app's private storage they can't open, so
+/// they got an empty file (Notes showed just the name). This writes a fresh
+/// copy they can read.
+struct AppLogExport: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(exportedContentType: .plainText) { _ in
+            SentTransferredFile(try AppLogFile.shared.exportCopy())
+        }
+    }
 }

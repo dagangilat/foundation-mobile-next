@@ -146,8 +146,17 @@ class PassportViewModel: ObservableObject {
             guard var passport = PassportManager.shared.passport else { throw PassportManagerError.passportNotFound }
             guard let user = UserManager.shared.user else { throw UserManagerError.userNotInitialized }
             
-            try await step("Certificate registration") {
-                try await UserManager.shared.registerCertificate(passport)
+            // Same as the Android app: a failed certificate registration is
+            // not fatal. The chain rejects it ("SparseMerkleTree: the key
+            // already exists") when the certificate is already registered,
+            // even when the lookup before it said it wasn't. If the certificate
+            // really is missing, identity registration below fails and says so.
+            do {
+                try await step("Certificate registration") {
+                    try await UserManager.shared.registerCertificate(passport)
+                }
+            } catch {
+                LoggerUtil.common.error("Continuing without certificate registration: \(Self.describe(error), privacy: .public)")
             }
             
             guard let registerIdentityCircuitType = try passport.getRegisterIdentityCircuitType() else {
@@ -260,13 +269,16 @@ class PassportViewModel: ObservableObject {
                 if passport.dg15.isEmpty {
                     isPassportFailedByImpossibleRevocation = true
                     
-                    throw Errors.unknown("You can't register with already used passport")
+                    LoggerUtil.common.error("Passport is registered to another identity and has no DG15, so it can't be moved to this one")
+                    throw Errors.unknown("This passport is already registered from another app or device, and its chip can't sign the request needed to move it to this phone.")
                 }
                 
                 isCriticalRegistrationProcessInProgress = true
                 
                 // takes last 8 bytes of activeIdentity as revocation challenge
                 revocationChallenge = passportInfo.activeIdentity[24 ..< 32]
+                
+                LoggerUtil.common.info("Passport is registered to another identity; asking for a chip scan to move it here")
                 
                 // This will trigger a sheet with a NFC scanning
                 self.isUserRevoking = isUserRevoking

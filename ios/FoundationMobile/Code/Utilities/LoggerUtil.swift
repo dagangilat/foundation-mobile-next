@@ -5,10 +5,10 @@ class LoggerUtil {
     static let subsystem = Bundle.main.bundleIdentifier ?? "Undefined"
     static let common = AppLogger(subsystem: subsystem, category: "Common")
 
-    /// The app's own log, kept across launches. The system log store only
-    /// returns the current run and drops info-level entries, so it came back
-    /// empty whenever someone sent a log after reopening the app.
-    static var logFileURL: URL { AppLogFile.shared.url }
+    // Entries also go to the app's own log file (AppLogFile), kept across
+    // launches. The system log store only returns the current run and drops
+    // info-level entries, so it came back empty whenever someone sent a log
+    // after reopening the app.
 
     static func export() throws -> [String] {
         AppLogFile.shared.contents()
@@ -146,6 +146,15 @@ final class AppLogFile {
             try? handle?.synchronize()
             return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
         }
+    }
+
+    /// A copy of the log in the temporary folder, for sharing.
+    func exportCopy() throws -> URL {
+        let copy = FileManager.default.temporaryDirectory.appending(path: "foundation-app-log.txt")
+        var text = contents()
+        if text.isEmpty { text = "The app log is empty." }
+        try Data(text.utf8).write(to: copy, options: .atomic)
+        return copy
     }
 
     private func write(_ line: String) {

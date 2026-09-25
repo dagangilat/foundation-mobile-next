@@ -129,7 +129,7 @@ struct ProfileView: View {
                         // Works without a mail account on the phone, and when
                         // Mail keeps a message in its Outbox.
                         ProfileRowDivider()
-                        ShareLink(item: LoggerUtil.logFileURL, preview: SharePreview("Foundation app log")) {
+                        ShareLink(item: AppLogExport(), preview: SharePreview("Foundation app log")) {
                             HStack {
                                 Text("Share app log")
                                     .font(.system(size: 17))
