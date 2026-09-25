@@ -101,15 +101,19 @@ struct HomeView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 8) {
+            // Never truncated: the badge and buttons give way first.
             BrandLockup()
+                .fixedSize()
 
             #if DEVELOPMENT
-            Text(verbatim: "Development")
+            Text(verbatim: "Dev")
                 .caption2()
                 .padding(.horizontal, 12)
                 .padding(.vertical, 4)
                 .background(Color.warningLighter, in: Capsule())
                 .foregroundStyle(Color.warningDark)
+                .lineLimit(1)
+                .fixedSize()
             #endif
 
             Spacer()
