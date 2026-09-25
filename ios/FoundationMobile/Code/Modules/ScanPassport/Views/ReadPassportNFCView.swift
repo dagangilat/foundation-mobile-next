@@ -10,14 +10,21 @@ struct ReadPassportNFCView: View {
     let onBack: () -> Void
     let onResponseError: () -> Void
     let onClose: () -> Void
+    /// Header Back (to the chip explainer). Without it, Back does what a
+    /// failed read does (`onBack`).
+    var onPrevious: (() -> Void)? = nil
+    /// Start the NFC scan as soon as the screen shows, as "Start chip scan"
+    /// on the chip explainer asks. "Scan chip" stays for another try.
+    var startsScanOnAppear = false
 
     @State private var useExtendedMode = false
+    @State private var hasAutoStarted = false
 
     var body: some View {
         ScanPassportLayoutView(
             currentStep: 1,
             title: "Hold your phone on the passport",
-            onPrevious: onBack,
+            onPrevious: onPrevious ?? onBack,
             onClose: onClose
         ) {
             VStack(spacing: 24) {
@@ -40,6 +47,14 @@ struct ReadPassportNFCView: View {
                     .buttonStyle(FoundationPrimaryButtonStyle())
                     .padding(.horizontal, FoundationTheme.horizontalPadding)
                     .padding(.bottom, 24)
+            }
+        }
+        .onAppear {
+            guard startsScanOnAppear, !hasAutoStarted else { return }
+            hasAutoStarted = true
+            // Let the screen slide in before the system NFC sheet covers it.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                scanPassport()
             }
         }
     }

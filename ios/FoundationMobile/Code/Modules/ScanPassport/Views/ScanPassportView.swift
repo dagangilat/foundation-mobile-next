@@ -1,11 +1,22 @@
 import Alamofire
 import SwiftUI
 
+/// The guided passport flow, in order: task guide → photo-page explainer →
+/// camera (MRZ) → "Photo page read" → guide → chip explainer → chip (NFC) →
+/// "Chip read" → guide → "Build my proof", which closes the flow and starts
+/// registration exactly as a finished chip scan used to (progress and
+/// failures show on Home's status card).
 private enum ScanPassportState {
     /// Development-only JSON import; no button leads here any more.
     case importJson
+    /// The task guide; the stage is the step that is next.
+    case guide(PassportVerifyStage)
+    case photoExplainer
     case scanMRZ
+    case photoConfirm
+    case chipExplainer
     case readNFC
+    case chipConfirm
     case chipError
 }
 
@@ -16,7 +27,12 @@ struct ScanPassportView: View {
 
     let onClose: () -> Void
 
-    @State private var state: ScanPassportState = .scanMRZ
+    @State private var state: ScanPassportState = .guide(.photoPage)
+    /// The chip read, held until "Build my proof" hands it to registration.
+    @State private var scannedPassport: Passport?
+    /// Whether the chip screen starts the NFC scan by itself (coming from the
+    /// chip explainer) or waits for "Scan chip" (coming back to it).
+    @State private var startsChipScan = false
 
     var body: some View {
         switch state {
@@ -28,33 +44,101 @@ struct ScanPassportView: View {
                 },
                 onClose: onClose
             )
+        case .guide(let stage):
+            PassportVerifyGuideView(
+                stage: stage,
+                onBack: onClose,
+                onContinue: { continueFromGuide(stage) }
+            )
+        case .photoExplainer:
+            PassportPhotoExplainerView(
+                onBack: { go(to: .guide(.photoPage)) },
+                onContinue: { go(to: .scanMRZ) }
+            )
         case .scanMRZ:
             VStack(spacing: 8) {
                 ScanPassportMRZView(
                     onNext: { mrzKey in
                         passportViewModel.setMrzKey(mrzKey)
 
-                        withAnimation { state = .readNFC }
+                        go(to: .photoConfirm)
                     },
-                    onClose: onClose
+                    onClose: onClose,
+                    onBack: { go(to: .photoExplainer) }
                 )
             }
             .padding(.bottom, 16)
             .environmentObject(passportViewModel)
+        case .photoConfirm:
+            PassportPhotoConfirmView(
+                mrzKey: passportViewModel.mrzKey,
+                onBack: { go(to: .scanMRZ) },
+                onContinue: { go(to: .guide(.chip)) },
+                onScanAgain: { go(to: .scanMRZ) }
+            )
+        case .chipExplainer:
+            PassportChipExplainerView(
+                onBack: { go(to: .guide(.chip)) },
+                onContinue: {
+                    startsChipScan = true
+                    go(to: .readNFC)
+                }
+            )
         case .readNFC:
             ReadPassportNFCView(
                 onNext: { passport in
-                    onClose()
-                    Task { await register(passport) }
+                    scannedPassport = passport
+                    startsChipScan = false
+                    go(to: .chipConfirm)
                 },
-                onBack: { withAnimation { state = .scanMRZ } },
-                onResponseError: { withAnimation { state = .chipError } },
-                onClose: onClose
+                // A failed read goes back to the photo page, as before: a
+                // wrong MRZ is the usual reason the chip won't open.
+                onBack: { go(to: .scanMRZ) },
+                onResponseError: { go(to: .chipError) },
+                onClose: onClose,
+                onPrevious: { go(to: .chipExplainer) },
+                startsScanOnAppear: startsChipScan
             )
             .environmentObject(passportViewModel)
+        case .chipConfirm:
+            PassportChipConfirmView(
+                onBack: {
+                    startsChipScan = false
+                    go(to: .readNFC)
+                },
+                onContinue: { go(to: .guide(.proof)) }
+            )
         case .chipError:
             PassportChipErrorView(onClose: onClose)
         }
+    }
+
+    private func go(to newState: ScanPassportState) {
+        withAnimation { state = newState }
+    }
+
+    private func continueFromGuide(_ stage: PassportVerifyStage) {
+        switch stage {
+        case .photoPage:
+            go(to: .photoExplainer)
+        case .chip:
+            go(to: .chipExplainer)
+        case .proof:
+            buildProof()
+        }
+    }
+
+    /// "Build my proof": what a successful chip scan used to do straight
+    /// away - close the flow and register in the background.
+    private func buildProof() {
+        guard let passport = scannedPassport else {
+            // No chip read to prove (should not happen): read it again.
+            go(to: .chipExplainer)
+            return
+        }
+
+        onClose()
+        Task { await register(passport) }
     }
 
     private func register(_ passport: Passport) async {

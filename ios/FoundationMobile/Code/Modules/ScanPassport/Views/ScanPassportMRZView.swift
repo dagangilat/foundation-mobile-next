@@ -3,6 +3,8 @@ import SwiftUI
 struct ScanPassportMRZView: View {
     let onNext: (String) -> Void
     let onClose: () -> Void
+    /// Back to the photo-page explainer; without it, Back closes the flow.
+    var onBack: (() -> Void)? = nil
 
     @State private var isManualMrzSheetPresented = false
     @StateObject private var mrzViewModel = MRZScanView.ViewModel()
@@ -11,6 +13,7 @@ struct ScanPassportMRZView: View {
         ScanPassportLayoutView(
             currentStep: 0,
             title: "Scan the photo page",
+            onPrevious: onBack,
             onClose: onClose
         ) {
             ZStack {

@@ -5,7 +5,7 @@ import SwiftUI
 /// It folds together the two halves of becoming verified:
 ///   1. the passport scan + on-device registration proof (formerly only
 ///      reachable from the Identity tab, whose PassportCard showed progress
-///      and errors), started here with "Scan passport";
+///      and errors), started here with "Verify with passport";
 ///   2. Foundation's own L2 verification (`FoundationVerificationManager`),
 ///      started here once the passport is registered.
 ///
@@ -121,7 +121,8 @@ struct FoundationVerifyCardView: View {
         switch cardState {
         case .notScanned:
             Button(action: onScanPassport) {
-                Label("Scan passport", systemImage: "person.text.rectangle")
+                // Opens the "Verify with your passport" task guide.
+                Label("Verify with passport", systemImage: "person.text.rectangle")
             }
             .buttonStyle(FoundationPrimaryButtonStyle())
             .padding(.top, 4)
@@ -136,8 +137,8 @@ struct FoundationVerifyCardView: View {
                     .textSelection(.enabled)
             }
             if !passportViewModel.isPassportFailedByImpossibleRevocation {
-                // Starts over from the passport scan (MRZ, then chip), so a
-                // bad chip read is redone rather than re-proving the same data.
+                // Starts over from the task guide (photo page, then chip), so
+                // a bad chip read is redone rather than re-proving the same data.
                 Button("Try again", action: onScanPassport)
                     .buttonStyle(FoundationPrimaryButtonStyle())
                     .padding(.top, 4)
