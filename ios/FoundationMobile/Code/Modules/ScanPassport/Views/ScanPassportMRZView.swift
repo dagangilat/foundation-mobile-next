@@ -27,7 +27,7 @@ struct ScanPassportMRZView: View {
             .background(FoundationTheme.scanBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .padding(.horizontal, FoundationTheme.horizontalPadding)
-            Text("Lay your passport flat in good light, with no glare. It scans by itself once the photo page is in the frame, or tap Capture.")
+            Text("Lay your passport open at the photo page, flat in good light with no glare. Hold your phone about 30 cm (a foot) above it so the picture is sharp. It scans by itself, or tap Capture.")
                 .font(.system(size: 16))
                 .foregroundColor(FoundationTheme.muted)
                 .multilineTextAlignment(.center)
@@ -38,7 +38,7 @@ struct ScanPassportMRZView: View {
             Spacer()
             VStack(spacing: 12) {
                 if mrzViewModel.captureFailed {
-                    Text("Couldn't find the two lines of letters and <<< at the bottom of the photo page. Open the passport at the photo page, fit those lines in the frame without glare, and tap Capture again.")
+                    Text("Couldn't read the two lines of letters and <<< at the bottom of the photo page. Hold the phone a little further away until those lines look sharp on screen, keep them in the frame without glare, and tap Capture again.")
                         .font(.system(size: 14))
                         .foregroundColor(FoundationTheme.danger)
                         .multilineTextAlignment(.center)

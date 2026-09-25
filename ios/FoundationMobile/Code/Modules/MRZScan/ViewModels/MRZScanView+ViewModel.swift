@@ -11,6 +11,8 @@ extension MRZScanView {
         @Published var isCapturing = false
         /// The last Capture tap found no readable MRZ in its frame.
         @Published var captureFailed = false
+        /// A valid MRZ was read, by the live scan or by Capture.
+        private var didReadMRZ = false
         
         private let cameraManager = MRZCameraManager()
         
@@ -49,26 +51,38 @@ extension MRZScanView {
             }
         }
         
-        /// Capture: reads the frame on screen right away instead of waiting
-        /// for the live scan to lock on. Uses a stricter reading pass (no
-        /// language correction, spaces removed), which suits the MRZ lines.
+        /// Capture: refocuses on the middle of the frame, then reads the
+        /// frames that follow for a few seconds instead of waiting for the
+        /// live scan to lock on. Uses a stricter reading pass (no language
+        /// correction, spaces removed), which suits the MRZ lines.
         @MainActor
         func capture() async {
-            guard let image = currentFrame, !isCapturing else { return }
+            guard currentFrame != nil, !isCapturing else { return }
 
             isCapturing = true
             captureFailed = false
             defer { isCapturing = false }
 
-            let found: Bool
-            do {
-                found = try await detectMRZ(image, isManualCapture: true)
-            } catch {
-                LoggerUtil.common.error("Error reading MRZ on capture: \(error, privacy: .public)")
-                found = false
-            }
+            cameraManager.focusOnce()
 
-            if !found { captureFailed = true }
+            let deadline = Date().addingTimeInterval(3)
+            var lastImage: CGImage?
+            repeat {
+                if let image = currentFrame, image !== lastImage {
+                    lastImage = image
+                    do {
+                        if try await detectMRZ(image, isManualCapture: true) { return }
+                    } catch {
+                        LoggerUtil.common.error("Error reading MRZ on capture: \(error, privacy: .public)")
+                    }
+                }
+                try? await Task.sleep(nanoseconds: 200_000_000)
+            } while Date() < deadline && !didReadMRZ && !Task.isCancelled
+
+            if didReadMRZ { return }
+
+            cameraManager.resumeContinuousFocus()
+            captureFailed = true
         }
 
         /// Returns true once a valid MRZ key was read and passed on.
@@ -220,6 +234,7 @@ extension MRZScanView {
                     onUSA()
                 }
                 
+                didReadMRZ = true
                 onMRZKey(mrzKey)
                 
                 stopScanning()
