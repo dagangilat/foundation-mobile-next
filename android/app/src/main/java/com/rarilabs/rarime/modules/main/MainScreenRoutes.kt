@@ -365,7 +365,7 @@ fun MainScreenRoutes(
                 }
             }
 
-            // No longer a tab: Home's status card opens it ("Scan passport").
+            // No longer a tab: Home's status card opens it ("Verify with passport").
             // It runs the passport scan, then the registration the card waits
             // for, and closes back to Main's start destination, Home.
             composable(Screen.Main.Identity.route) {

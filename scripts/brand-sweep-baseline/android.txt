@@ -700,6 +700,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/PassportDataS
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/PassportDataStep.kt:package com.rarilabs.rarime.modules.passportScan
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.modules.passportScan.guide.VerifyStepper
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationType
@@ -708,6 +709,11 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportS
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.main.LocalMainViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.main.ScreenInsets
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.guide.ChipConfirmScreen
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.guide.ChipExplainerScreen
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.guide.PhotoConfirmScreen
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.guide.PhotoExplainerScreen
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.guide.VerifyGuideScreen
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.models.EDocument
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
@@ -749,6 +755,18 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/components/Sc
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/components/ScanGuides.kt:import com.rarilabs.rarime.ui.components.rememberAppSheetState
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/components/ScanGuides.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/components/ScanGuides.kt:package com.rarilabs.rarime.modules.passportScan.components
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideComponents.kt:import com.rarilabs.rarime.R
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideComponents.kt:import com.rarilabs.rarime.foundation.ui.FoundationButton
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideComponents.kt:import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideComponents.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideComponents.kt:import com.rarilabs.rarime.ui.theme.FoundationType
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideComponents.kt:package com.rarilabs.rarime.modules.passportScan.guide
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyGuideIcons.kt:package com.rarilabs.rarime.modules.passportScan.guide
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyStepScreens.kt:import com.rarilabs.rarime.R
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyStepScreens.kt:import com.rarilabs.rarime.foundation.ui.FoundationButton
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyStepScreens.kt:import com.rarilabs.rarime.foundation.ui.FoundationButtonStyle
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyStepScreens.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/guide/VerifyStepScreens.kt:package com.rarilabs.rarime.modules.passportScan.guide
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/AdditionalPersonDetails.kt:package com.rarilabs.rarime.modules.passportScan.models
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/DocType.kt:package com.rarilabs.rarime.modules.passportScan.models
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/EDocument.kt:import com.rarilabs.rarime.modules.passportScan.nfc.SODFileOwn
@@ -1131,6 +1149,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.main.LocalMainViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.main.ScreenInsets
+android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.passportScan.guide.VerifyStepper
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.passportScan.models.EDocument
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 android/app/src/main/java/com/rarilabs/rarime/modules/you/ZkIdentityPassport.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme

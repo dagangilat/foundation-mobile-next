@@ -33,10 +33,14 @@ fun ZkIdentityScreen(
         })
         if (passport != null) {
 
-            ZkIdentityPassport(navigate = navigate, onBack = {
-                setBottomBarVisibility(true)
-                onClose()
-            })
+            ZkIdentityPassport(
+                navigate = navigate,
+                onBack = {
+                    setBottomBarVisibility(true)
+                    onClose()
+                },
+                showVerifyStepper = true,
+            )
         } else {
 
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.foundation.ui.FoundationNavHeader
+import com.rarilabs.rarime.modules.passportScan.guide.VerifyStepper
 import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.ui.theme.FoundationType
@@ -27,8 +28,12 @@ const val totalSteps = 3
 /**
  * Frame for each passport-scan step, in the Foundation look (approved
  * mockups ScanPhotoPage / TapChip): a back chevron with "Verify", the step's
- * title, "Step N of 3", then its one-line instruction. [onClose] is what the
- * old close button did; the chevron now triggers it.
+ * title, the three-segment verify stepper with [step] current, then its
+ * one-line instruction. [onClose] is what the old close button did; the
+ * chevron now triggers it.
+ *
+ * [showStepper] false brings back the older "Step N of 3" line instead of
+ * the stepper; nothing passes it today.
  */
 @Composable
 fun ScanPassportLayout(
@@ -37,6 +42,7 @@ fun ScanPassportLayout(
     title: String,
     text: String,
     onClose: () -> Unit,
+    showStepper: Boolean = true,
     content: @Composable () -> Unit = {}
 ) {
     Column(
@@ -52,7 +58,7 @@ fun ScanPassportLayout(
                 .padding(bottom = 20.dp)
         ) {
             FoundationNavHeader(
-                title = "Verify",
+                title = stringResource(R.string.verify_nav_title),
                 onBack = onClose,
                 modifier = Modifier.offset(x = (-12).dp),
             )
@@ -62,11 +68,16 @@ fun ScanPassportLayout(
                     style = FoundationType.title,
                     color = FoundationBrand.Text
                 )
-                Text(
-                    text = stringResource(R.string.step_indicator, step, totalSteps),
-                    style = FoundationType.body,
-                    color = FoundationBrand.Muted
-                )
+                if (!showStepper) {
+                    Text(
+                        text = stringResource(R.string.step_indicator, step, totalSteps),
+                        style = FoundationType.body,
+                        color = FoundationBrand.Muted
+                    )
+                }
+            }
+            if (showStepper) {
+                VerifyStepper(currentStep = step)
             }
             Text(
                 text = text,
