@@ -514,9 +514,9 @@ class PassportViewModel: ObservableObject {
                 LoggerUtil.common.error("Light registration: passport is bound to another identity (revoked: \(passportInfo.activeIdentity == PoseidonSMT.revokedValue, privacy: .public))")
                 
                 throw Errors.unknown(
-                    "This passport is already verified in another app, such as RariMe, with a different key. "
-                        + "For this passport type the chain can't move it to a new key. To use it here, copy your key from that app "
-                        + "(RariMe: Profile, Export keys) and restore it in this app, or verify with a passport you haven't used before."
+                    "This passport is already verified in another app, with a different key. "
+                        + "For this passport type the chain can't move it to a new key. To use it here, copy your private key from that app "
+                        + "(look for Export keys in its profile) and restore it in this app, or verify with a passport you haven't used before."
                 )
             }
             
