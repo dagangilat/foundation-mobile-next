@@ -3,7 +3,6 @@ package com.rarilabs.rarime.modules.main
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
@@ -124,9 +123,8 @@ fun MainScreenRoutes(
                     try {
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(
-                            context, "No app available to open this link.", Toast.LENGTH_SHORT
-                        ).show()
+                        // Behind Home's bell, where this lands, not a toast.
+                        mainViewModel.reportError(context.getString(R.string.error_no_app_to_open_link))
                     }
                 }
 
@@ -365,7 +363,7 @@ fun MainScreenRoutes(
                 }
             }
 
-            // No longer a tab: Home's status card opens it ("Scan passport").
+            // No longer a tab: Home's status card opens it ("Verify with passport").
             // It runs the passport scan, then the registration the card waits
             // for, and closes back to Main's start destination, Home.
             composable(Screen.Main.Identity.route) {

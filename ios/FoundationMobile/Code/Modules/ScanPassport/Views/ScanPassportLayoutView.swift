@@ -28,12 +28,23 @@ struct ScanPassportLayoutView<Content: View>: View {
     /// proof being built (shown on Home's status card).
     private static var displayedStepCount: Int { 3 }
 
+    /// The "Step n of 3" line, replaced by the 3-part stepper. Kept, hidden.
+    private static var showsStepCountLine: Bool { false }
+
+    /// The close (X) button beside Back. The guided flow's screens only go
+    /// back (to the step's explainer), so it is hidden; kept for reuse.
+    private static var showsCloseButton: Bool { false }
+
+    private var stage: PassportVerifyStage {
+        PassportVerifyStage(rawValue: currentStep) ?? .photoPage
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 0) {
                     FoundationBackHeader("Verify", onBack: onPrevious ?? onClose)
-                    if onPrevious != nil {
+                    if Self.showsCloseButton && onPrevious != nil {
                         Button(action: onClose) {
                             Image(systemName: "xmark")
                                 .font(.system(size: 18, weight: .medium))
@@ -50,13 +61,16 @@ struct ScanPassportLayoutView<Content: View>: View {
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(FoundationTheme.text)
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("Step \(currentStep + 1) of \(Self.displayedStepCount)")
-                        .font(.system(size: 16))
-                        .foregroundColor(FoundationTheme.muted)
+                    if Self.showsStepCountLine {
+                        Text("Step \(currentStep + 1) of \(Self.displayedStepCount)")
+                            .font(.system(size: 16))
+                            .foregroundColor(FoundationTheme.muted)
+                    }
                 }
+                PassportVerifyStepper(current: stage)
             }
             .padding(.horizontal, FoundationTheme.horizontalPadding)
-            .padding(.bottom, 24)
+            .padding(.bottom, 18)
             content
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

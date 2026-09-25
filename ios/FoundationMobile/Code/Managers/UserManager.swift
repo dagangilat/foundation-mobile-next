@@ -300,6 +300,8 @@ class UserManager: ObservableObject {
         
         let proof = try await certificatesSMTContract.getProof(slaveCertificateIndex)
         
+        LoggerUtil.common.info("Certificate: SMT index 0x\(slaveCertificateIndex.hex, privacy: .public), already on-chain: \(proof.existence, privacy: .public)")
+        
         if proof.existence {
             LoggerUtil.common.info("Passport certificate is already registered")
             
@@ -313,6 +315,8 @@ class UserManager: ObservableObject {
         guard let calldata = buildCalldataResponse.calldata else {
             throw UserManagerError.calldataBuildFailed
         }
+        
+        LoggerUtil.common.info("Certificate: dispatcher \(buildCalldataResponse.dispatcherName, privacy: .public)")
         
         let relayer = Relayer(ConfigManager.shared.general.appApiURL)
         let response = try await relayer.register(

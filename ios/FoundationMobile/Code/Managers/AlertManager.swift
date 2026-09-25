@@ -10,12 +10,24 @@ struct AppAlertSubject: Equatable {
 class AlertManager: ObservableObject {
     static let shared = AlertManager()
 
+    /// Errors no longer pop up over the screen: they go behind Home's bell
+    /// (`AppNotificationStore`), which shows a red dot until they are read.
+    /// A screen that can't be used without seeing its error shows it inline
+    /// instead of calling this.
     func emitError(_ error: Errors) {
-        AlertPresenter().show(AppAlertSubject(type: .error, message: error.localizedDescription))
+        AppNotificationStore.shared.postError(error.localizedDescription)
     }
 
     func emitError(_ message: String) {
-        AlertPresenter().show(AppAlertSubject(type: .error, message: message))
+        AppNotificationStore.shared.postError(message)
+    }
+
+    /// The old error pop-up, kept only for a scan flow that stays open on
+    /// screen (the QR camera, the chip read) and has no inline slot, so the
+    /// person sees why the scan didn't take while still holding the phone
+    /// to it.
+    func emitScanFlowError(_ error: Errors) {
+        AlertPresenter().show(AppAlertSubject(type: .error, message: error.localizedDescription))
     }
 
     func emitSuccess(_ message: String) {

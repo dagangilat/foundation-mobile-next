@@ -14,6 +14,8 @@ struct ImportIdentityView: View {
     
     @State private var isManualBackup = false
     @State private var isImporting = false
+    /// Restore comes before Home and its bell, so its errors stay here.
+    @State private var restoreError: String?
     
     var body: some View {
         if isManualBackup {
@@ -75,6 +77,9 @@ struct ImportIdentityView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
+            if let restoreError {
+                FoundationInlineError(message: restoreError)
+            }
             VStack(spacing: 8) {
                 Button(action: restoreFromICloud) {
                     HStack(spacing: 8) {
@@ -102,6 +107,7 @@ struct ImportIdentityView: View {
     
     func restoreFromICloud() {
         isImporting = true
+        restoreError = nil
         
         Task { @MainActor in
             defer {
@@ -111,16 +117,14 @@ struct ImportIdentityView: View {
             do {
                 let isICloudAvailable = try await CloudStorage.shared.isICloudAvailable()
                 if !isICloudAvailable {
-                    AlertManager.shared.emitError(.unknown(String(localized: "iCloud is not available")))
-                    onBack()
+                    restoreError = String(localized: "iCloud is not available")
                     return
                 }
                 
                 userManager.user = try await User.loadFromCloud()
                 
                 if userManager.user == nil {
-                    AlertManager.shared.emitError(.unknown(String(localized: "No backup found in iCloud")))
-                    onBack()
+                    restoreError = String(localized: "No backup found in iCloud")
                     return
                 }
                 
@@ -133,6 +137,7 @@ struct ImportIdentityView: View {
                 onNext()
             } catch {
                 LoggerUtil.common.error("Failed to restore from iCloud: \(error, privacy: .public)")
+                restoreError = String(localized: "Couldn't restore from iCloud. Try again.")
             }
         }
     }
@@ -146,12 +151,17 @@ struct ImportIdentityView: View {
             }
             
             do {
-                if try !isValidPrivateKey(privateKeyHex) {
+                // Keys copied from other apps often carry a "0x" prefix,
+                // spaces or a line break.
+                var keyHex = privateKeyHex.filter { !$0.isWhitespace }
+                if keyHex.lowercased().hasPrefix("0x") { keyHex = String(keyHex.dropFirst(2)) }
+                
+                if try !isValidPrivateKey(keyHex) {
                     privateKeyHexError = String(localized: "Invalid private key")
                     return
                 }
                 
-                guard let privateKey = Data(hex: privateKeyHex) else {
+                guard let privateKey = Data(hex: keyHex) else {
                     privateKeyHexError = String(localized: "Invalid private key")
                     return
                 }

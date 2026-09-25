@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
 import com.rarilabs.rarime.data.enums.AppIcon
 import com.rarilabs.rarime.data.enums.SecurityCheckState
+import com.rarilabs.rarime.foundation.AppNotificationStore
 import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
 import com.rarilabs.rarime.manager.SecurityManager
 import com.rarilabs.rarime.manager.SettingsManager
+import com.rarilabs.rarime.ui.components.SnackbarSeverity
 import com.rarilabs.rarime.ui.components.SnackbarShowOptions
 import com.rarilabs.rarime.util.AppIconUtil
 import com.rarilabs.rarime.util.ErrorHandler
@@ -43,8 +45,8 @@ class MainViewModel @Inject constructor(
     private val authManager: AuthManager,
     private val identityManager: IdentityManager,
     private val passportManager: PassportManager,
-
-    ) : AndroidViewModel(app) {
+    private val notificationStore: AppNotificationStore,
+) : AndroidViewModel(app) {
 
     val isScreenLocked = securityManager.isScreenLocked
 
@@ -199,7 +201,18 @@ class MainViewModel @Inject constructor(
         _isBottomBarShown.value = isVisible
     }
 
+    /**
+     * Success and warning snackbars show as before. An error no longer pops
+     * up over the screen: it goes behind Home's bell ([AppNotificationStore]),
+     * which shows a red dot until it is read. A screen that can't be used
+     * without seeing its error shows it inline instead of calling this.
+     */
     suspend fun showSnackbar(options: SnackbarShowOptions) {
+        if (options.severity == SnackbarSeverity.Error) {
+            notificationStore.postError(options.message.orEmpty())
+            return
+        }
+
         _snackbarContent.value = options
 
         kotlinx.coroutines.delay(
@@ -212,6 +225,9 @@ class MainViewModel @Inject constructor(
 
         clearSnackbarOptions()
     }
+
+    /** An error with no screen of its own to show it: goes behind Home's bell. */
+    fun reportError(message: String) = notificationStore.postError(message)
 
     fun clearSnackbarOptions() {
         _snackbarContent.value = null

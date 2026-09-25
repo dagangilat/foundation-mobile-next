@@ -6,13 +6,15 @@ import UIKit
 /// error handling are unchanged.
 struct SignInView: View {
     @EnvironmentObject private var authService: AuthService
-    @EnvironmentObject private var alertManager: AlertManager
     @EnvironmentObject private var configManager: ConfigManager
 
     @State private var email = ""
     @State private var code = ""
     @State private var codeSent = false
     @State private var isBusy = false
+    /// Shown under the fields. Sign-in comes before Home and its bell, so its
+    /// errors stay on this screen.
+    @State private var errorMessage: String?
 
     @State private var isTermsPresented = false
     @State private var isPrivacyPresented = false
@@ -39,6 +41,9 @@ struct SignInView: View {
                 emailField
                 if codeSent {
                     codeField
+                }
+                if let errorMessage {
+                    FoundationInlineError(message: errorMessage)
                 }
                 primaryButton
                 if codeSent {
@@ -228,6 +233,7 @@ struct SignInView: View {
     // MARK: - Actions
 
     private func editEmail() {
+        errorMessage = nil
         codeSent = false
         code = ""
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
@@ -245,6 +251,7 @@ struct SignInView: View {
 
     private func sendCode() {
         isBusy = true
+        errorMessage = nil
         Task {
             defer { isBusy = false }
             do {
@@ -256,15 +263,14 @@ struct SignInView: View {
                 }
             } catch {
                 LoggerUtil.common.error("sendCode failed: \(error.localizedDescription, privacy: .public)")
-                alertManager.emitError(.unknown(
-                    AuthService.signInErrorMessage(for: error, fallback: "Couldn't send the code. Try again.")
-                ))
+                errorMessage = AuthService.signInErrorMessage(for: error, fallback: "Couldn't send the code. Try again.")
             }
         }
     }
 
     private func verify() {
         isBusy = true
+        errorMessage = nil
         Task {
             defer { isBusy = false }
             do {
@@ -273,7 +279,7 @@ struct SignInView: View {
                 try await authService.submitCode(code)
             } catch {
                 LoggerUtil.common.error("submitCode failed: \(error.localizedDescription, privacy: .public)")
-                alertManager.emitError(.unknown("That code didn't work. Try again."))
+                errorMessage = String(localized: "That code didn't work. Try again.")
             }
         }
     }

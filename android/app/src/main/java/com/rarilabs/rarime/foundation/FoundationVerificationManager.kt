@@ -77,12 +77,21 @@ class FoundationVerificationManager internal constructor(
     private val logError: (String, Throwable?) -> Unit = { _, _ -> },
     private val pollIntervalMs: Long = POLL_INTERVAL_MS,
     private val pollLimit: Int = POLL_LIMIT,
+    /**
+     * Told about every terminal `Failed`, with its message. Production posts
+     * it behind Home's bell ("Verification didn't finish", with Try again);
+     * the card itself only says the last try didn't finish.
+     */
+    private val onFailed: (String) -> Unit = {},
+    /** Told when the flow reaches `Verified`. */
+    private val onVerified: () -> Unit = {},
 ) {
     @Inject
     constructor(
         functionsService: FoundationFunctionsService,
         authManager: FoundationAuthManager,
         identityManager: IdentityManager,
+        notificationStore: AppNotificationStore,
     ) : this(
         startL2Verification = { functionsService.startL2Verification() },
         fetchL2VerificationStatus = { functionsService.getL2VerificationStatus() },
@@ -90,10 +99,27 @@ class FoundationVerificationManager internal constructor(
         registrationProofProvider = { identityManager.registrationProof.value },
         terminalFailureMessage = ::firebaseRejectionMessage,
         logError = { message, throwable -> ErrorHandler.logError(TAG, message, throwable) },
+        onFailed = { message ->
+            notificationStore.postVerificationFailure(
+                reason = message,
+                retry = AppNotification.Retry.FINISH_VERIFICATION,
+            )
+        },
+        onVerified = { notificationStore.postVerified() },
     )
 
     private val _state = MutableStateFlow<VerificationState>(VerificationState.Idle)
     val state: StateFlow<VerificationState> = _state.asStateFlow()
+
+    private fun fail(message: String) {
+        _state.value = VerificationState.Failed(message)
+        onFailed(message)
+    }
+
+    private fun verified(memberNumber: Int?) {
+        _state.value = VerificationState.Verified(memberNumber)
+        onVerified()
+    }
 
     /**
      * Ask the backend for proof parameters and hand them to Rarimo's flow.
@@ -116,21 +142,19 @@ class FoundationVerificationManager internal constructor(
                 // finding M-6) - StartL2VerificationResult previously left
                 // it null unconditionally even though the backend sends it
                 // for exactly this status.
-                _state.value = VerificationState.Verified(memberNumber = result.memberNumber)
+                verified(memberNumber = result.memberNumber)
                 return
             }
 
             val url = result.getProofParamsUrl
             if (url.isNullOrBlank()) {
-                _state.value = VerificationState.Failed(MESSAGE_NO_PROOF_PARAMS)
+                fail(MESSAGE_NO_PROOF_PARAMS)
                 return
             }
             _state.value = VerificationState.AwaitingProof(url)
         } catch (e: Exception) {
             logError("startL2Verification failed", e)
-            _state.value = VerificationState.Failed(
-                terminalFailureMessage(e) ?: MESSAGE_START_FAILED,
-            )
+            fail(terminalFailureMessage(e) ?: MESSAGE_START_FAILED)
         }
     }
 
@@ -163,7 +187,7 @@ class FoundationVerificationManager internal constructor(
     /** The proof sheet reported a hard failure. */
     fun proofFlowFailed(message: String = MESSAGE_PROOF_FAILED) {
         if (_state.value !is VerificationState.AwaitingProof) return
-        _state.value = VerificationState.Failed(message)
+        fail(message)
     }
 
     /**
@@ -196,7 +220,7 @@ class FoundationVerificationManager internal constructor(
                 val result = fetchL2VerificationStatus()
                 if (result.status in TERMINAL_SUCCESS_STATUSES) {
                     if (_state.value !is VerificationState.Polling) return
-                    _state.value = VerificationState.Verified(result.memberNumber)
+                    verified(result.memberNumber)
                     return
                 }
             } catch (e: CancellationException) {
@@ -216,7 +240,7 @@ class FoundationVerificationManager internal constructor(
                 if (rejection != null) {
                     logError("getL2VerificationStatus rejected", e)
                     if (_state.value !is VerificationState.Polling) return
-                    _state.value = VerificationState.Failed(rejection)
+                    fail(rejection)
                     return
                 }
                 logError("getL2VerificationStatus failed", e)
@@ -225,7 +249,7 @@ class FoundationVerificationManager internal constructor(
         }
 
         if (_state.value !is VerificationState.Polling) return
-        _state.value = VerificationState.Failed(MESSAGE_TIMED_OUT)
+        fail(MESSAGE_TIMED_OUT)
     }
 
     companion object {

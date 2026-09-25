@@ -18,7 +18,16 @@ class CloudStorage {
     func fetchRecords(_ query: CKQuery) async throws -> [CKRecord] {
         query.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
 
-        let (results, _) = try await db.records(matching: query)
+        let results: [(CKRecord.ID, Result<CKRecord, Error>)]
+        do {
+            results = try await db.records(matching: query).matchResults
+        } catch let error as CKError where error.code == .unknownItem {
+            // "Did not find record type": nothing of this type was ever
+            // saved in this container, which just means there are no
+            // records yet. Without this, the first backup failed too,
+            // since saving starts with this same query.
+            return []
+        }
         
         var records: [CKRecord] = []
         for (_, recordSearchResult) in results {

@@ -30,6 +30,9 @@ struct ProfileView: View {
     /// Drives the blocking overlay and disables both destructive rows, because
     /// `.alert` dismisses itself on any button tap and cannot host a spinner.
     @State private var isAccountDeletionInFlight = false
+    /// Shown under the Delete account row: the person is on Backup and
+    /// recovery, not Home, when deletion fails.
+    @State private var accountDeletionError: String?
 
     @State private var isDebugOptionsShown = false
 
@@ -45,7 +48,22 @@ struct ProfileView: View {
                         title: String(localized: "Backup and recovery"),
                         onBack: { path.removeLast() }
                     ) {
-                        RecoveryMethodSelectionView()
+                        ScrollView(showsIndicators: false) {
+                            VStack(alignment: .leading, spacing: 32) {
+                                RecoveryMethodSelectionView()
+                                // Last, and set apart: Delete account lives
+                                // here, a level down and away from Sign out.
+                                DeleteAccountSection(
+                                    errorMessage: accountDeletionError,
+                                    isDisabled: isAccountDeletionInFlight,
+                                    action: {
+                                        accountDeletionError = nil
+                                        isAccountDeleting = true
+                                    }
+                                )
+                            }
+                            .padding(.bottom, 24)
+                        }
                     }
                     .navigationBarBackButtonHidden()
                 case .theme:
@@ -62,6 +80,21 @@ struct ProfileView: View {
                 AccountDeletionOverlay()
             }
         }
+        // On the stack, not the root screen, so it can show over Backup and
+        // recovery where the Delete account row now is.
+        .alert(
+            "Delete your account?",
+            isPresented: $isAccountDeleting,
+            actions: {
+                Button("No", role: .cancel) {
+                    self.isAccountDeleting = false
+                }
+                Button("Yes", role: .destructive, action: deleteAccount)
+            },
+            message: {
+                Text("This action is irreversible and will delete all your data.")
+            }
+        )
 #if DEVELOPMENT
         .sheet(isPresented: $isDebugOptionsShown, content: DebugOptionsView.init)
 #endif
@@ -126,6 +159,24 @@ struct ProfileView: View {
                                 FeedbackMailView(isShowing: $isShareWithDeveloper)
                             }
                         }
+                        // Works without a mail account on the phone, and when
+                        // Mail keeps a message in its Outbox.
+                        ProfileRowDivider()
+                        ShareLink(item: AppLogExport(), preview: SharePreview("Foundation app log")) {
+                            HStack {
+                                Text("Share app log")
+                                    .font(.system(size: 17))
+                                    .foregroundColor(FoundationTheme.text)
+                                Spacer()
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(FoundationTheme.muted)
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(height: 52)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
 #if DEVELOPMENT
                     ProfileGroup {
@@ -135,18 +186,13 @@ struct ProfileView: View {
                         )
                     }
 #endif
+                    // Delete account is in Backup and recovery, not next to
+                    // Sign out.
                     ProfileGroup {
                         ProfileRow(
                             title: String(localized: "Sign out"),
                             isDestructive: true,
                             action: { signOutOfFoundation() }
-                        )
-                        .disabled(isAccountDeletionInFlight)
-                        ProfileRowDivider()
-                        ProfileRow(
-                            title: String(localized: "Delete account"),
-                            isDestructive: true,
-                            action: { isAccountDeleting = true }
                         )
                         .disabled(isAccountDeletionInFlight)
                     }
@@ -162,19 +208,6 @@ struct ProfileView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(FoundationTheme.bg.ignoresSafeArea())
-            .alert(
-                "Delete your account?",
-                isPresented: $isAccountDeleting,
-                actions: {
-                    Button("No", role: .cancel) {
-                        self.isAccountDeleting = false
-                    }
-                    Button("Yes", role: .destructive, action: deleteAccount)
-                },
-                message: {
-                    Text("This action is irreversible and will delete all your data.")
-                }
-            )
         }
     }
 
@@ -201,6 +234,8 @@ struct ProfileView: View {
         AuthService.shared.signOut()
         FoundationVerificationManager.shared.reset()
         securityManager.rearmPasscodeLock()
+        // The bell's list describes the departing member too.
+        AppNotificationStore.shared.clear()
     }
 
     /// Delete Account, in the only order that can be correct.
@@ -237,9 +272,9 @@ struct ProfileView: View {
                 // partially deleted account server-side. Retrying is the right
                 // advice - every one of those helpers tolerates already-missing
                 // data - but promising an untouched server would be a lie.
-                AlertManager.shared.emitError(
-                    .unknown(String(localized: "Couldn't delete your account. Please try again."))
-                )
+                // Inline under the row, not behind Home's bell: the person is
+                // on this screen waiting for the answer.
+                accountDeletionError = String(localized: "Couldn't delete your account. Please try again.")
                 return
             }
 
@@ -315,6 +350,36 @@ private struct AccountDeletionOverlay: View {
             }
         }
         .transition(.opacity)
+    }
+}
+
+/// The danger zone at the bottom of Backup and recovery: its own caption, a
+/// line on what goes, and a red Delete account row. Tapping it opens the same
+/// "Delete your account?" confirmation as before.
+private struct DeleteAccountSection: View {
+    let errorMessage: String?
+    let isDisabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FoundationSectionLabel("Danger zone")
+            Text("Deletes your Foundation account and its data, the ID on this phone and its iCloud key backup. This can't be undone.")
+                .font(.system(size: 15))
+                .foregroundColor(FoundationTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+            ProfileGroup {
+                ProfileRow(
+                    title: String(localized: "Delete account"),
+                    isDestructive: true,
+                    action: action
+                )
+                .disabled(isDisabled)
+            }
+            if let errorMessage {
+                FoundationInlineError(message: errorMessage)
+            }
+        }
     }
 }
 

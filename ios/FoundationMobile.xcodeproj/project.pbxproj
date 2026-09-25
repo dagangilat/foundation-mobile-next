@@ -78,6 +78,7 @@
 		569258952D709B30009E2F9E /* VisionUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569258932D709B30009E2F9E /* VisionUtils.swift */; };
 		56933DEF2BBABD100068C894 /* ScanPassportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56933DEE2BBABD100068C894 /* ScanPassportView.swift */; };
 		56933DF12BBAC1B10068C894 /* ScanPassportLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56933DF02BBAC1B10068C894 /* ScanPassportLayoutView.swift */; };
+		A7C3E9202E8B4D1200F1A0C1 /* PassportVerifyGuideViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C3E91F2E8B4D1200F1A0C1 /* PassportVerifyGuideViews.swift */; };
 		56933DF32BBAC2940068C894 /* ScanPassportMRZView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56933DF22BBAC2940068C894 /* ScanPassportMRZView.swift */; };
 		56933DF52BBAC42E0068C894 /* ReadPassportNFCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56933DF42BBAC42E0068C894 /* ReadPassportNFCView.swift */; };
 		56933DFB2BBAFBD90068C894 /* AppToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56933DFA2BBAFBD90068C894 /* AppToggle.swift */; };
@@ -166,6 +167,7 @@
 		DEFE3DCB4E2AC7BE42DD6E70 /* AppCheckFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3216985F025DA9AD553BE06C /* AppCheckFactory.swift */; };
 		B8A1F0001A2B3C4D5E6F7002 /* FoundationVerificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */; };
 		B8A1F0001A2B3C4D5E6F7004 /* FoundationVerifyCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */; };
+		F0A1B2C3D4E5F60718293A04 /* AppNotificationsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60718293A03 /* AppNotificationsSheet.swift */; };
 		CD7DA7FF37ED5CACA22BEF8A /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705B896C98AA4E0666FDE02F /* SignInView.swift */; };
 		CE00DF4B2D9AC1F700614151 /* ZkProof.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE68BE3C2BD9B23D00D92EBB /* ZkProof.swift */; };
 		CE00DF4D2D9ACD5E00614151 /* NoirRegisterIdentityInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE00DF4C2D9ACD5C00614151 /* NoirRegisterIdentityInputs.swift */; };
@@ -180,6 +182,7 @@
 		CE06BF322D083CCB00F6C721 /* PubSignals.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE06BF302D083CC900F6C721 /* PubSignals.swift */; };
 		CE06BF342D08567500F6C721 /* LightRegistrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE06BF332D08566400F6C721 /* LightRegistrationService.swift */; };
 		CE0881A12BF773CC00B31735 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0881A02BF773CC00B31735 /* AlertManager.swift */; };
+		F0A1B2C3D4E5F60718293A02 /* AppNotificationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60718293A01 /* AppNotificationStore.swift */; };
 		CE0DA0D72BDA6F1900696503 /* EvmTxResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0DA0D62BDA6F1800696503 /* EvmTxResponse.swift */; };
 		CE0DC57B2C0DB33A00EFC0D7 /* UpdateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0DC57A2C0DB33A00EFC0D7 /* UpdateManager.swift */; };
 		CE0DC57D2C0DB9B200EFC0D7 /* VersionUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0DC57C2C0DB9B200EFC0D7 /* VersionUpdateView.swift */; };
@@ -429,6 +432,7 @@
 		569258932D709B30009E2F9E /* VisionUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionUtils.swift; sourceTree = "<group>"; };
 		56933DEE2BBABD100068C894 /* ScanPassportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPassportView.swift; sourceTree = "<group>"; };
 		56933DF02BBAC1B10068C894 /* ScanPassportLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPassportLayoutView.swift; sourceTree = "<group>"; };
+		A7C3E91F2E8B4D1200F1A0C1 /* PassportVerifyGuideViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassportVerifyGuideViews.swift; sourceTree = "<group>"; };
 		56933DF22BBAC2940068C894 /* ScanPassportMRZView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanPassportMRZView.swift; sourceTree = "<group>"; };
 		56933DF42BBAC42E0068C894 /* ReadPassportNFCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadPassportNFCView.swift; sourceTree = "<group>"; };
 		56933DFA2BBAFBD90068C894 /* AppToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppToggle.swift; sourceTree = "<group>"; };
@@ -516,6 +520,7 @@
 		CE06BF302D083CC900F6C721 /* PubSignals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubSignals.swift; sourceTree = "<group>"; };
 		CE06BF332D08566400F6C721 /* LightRegistrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightRegistrationService.swift; sourceTree = "<group>"; };
 		CE0881A02BF773CC00B31735 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F60718293A01 /* AppNotificationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotificationStore.swift; sourceTree = "<group>"; };
 		CE0DA0D62BDA6F1800696503 /* EvmTxResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTxResponse.swift; sourceTree = "<group>"; };
 		CE0DC57A2C0DB33A00EFC0D7 /* UpdateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateManager.swift; sourceTree = "<group>"; };
 		CE0DC57C2C0DB9B200EFC0D7 /* VersionUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionUpdateView.swift; sourceTree = "<group>"; };
@@ -637,6 +642,7 @@
 		FC3A86E50FD85AD86F0C7CAB /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		B8A1F0001A2B3C4D5E6F7001 /* FoundationVerificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationVerificationManager.swift; sourceTree = "<group>"; };
 		B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationVerifyCardView.swift; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F60718293A03 /* AppNotificationsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNotificationsSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -861,6 +867,7 @@
 				5655E4222BD2C3AC00B86C5C /* SettingsManager.swift */,
 				CEF251372BD6E17800050507 /* UserManager.swift */,
 				CE0881A02BF773CC00B31735 /* AlertManager.swift */,
+				F0A1B2C3D4E5F60718293A01 /* AppNotificationStore.swift */,
 				CE0DC57A2C0DB33A00EFC0D7 /* UpdateManager.swift */,
 				CE8FEB592C1AF1BE0008381A /* DecentralizeAuthManager.swift */,
 				CE51E2E42C21790700043D9A /* DownloadableDataManager.swift */,
@@ -948,6 +955,7 @@
 				568D45C72C29AC200065D467 /* PassportChipErrorView.swift */,
 				56062B9F2C120B3400C9BF9B /* WaitlistPassportView.swift */,
 				56933DF02BBAC1B10068C894 /* ScanPassportLayoutView.swift */,
+				A7C3E91F2E8B4D1200F1A0C1 /* PassportVerifyGuideViews.swift */,
 				CE3CD3AD2C6CCD0E008313B8 /* ImportFileView.swift */,
 				C75512822C85F9D0000258AD /* PassportScanTutorialView.swift */,
 			);
@@ -1085,6 +1093,7 @@
 				C726E8D12D647FE9000C9CA6 /* SnapCarouselView.swift */,
 				C7DF8BDE2D5F686200C8E2D2 /* HomeCardView.swift */,
 				B8A1F0001A2B3C4D5E6F7003 /* FoundationVerifyCardView.swift */,
+				F0A1B2C3D4E5F60718293A03 /* AppNotificationsSheet.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1923,9 +1932,11 @@
 				CEDC4D7F2BE9267300459D4E /* PoseidonSMTContract.swift in Sources */,
 				CEF2513A2BD6E22700050507 /* User.swift in Sources */,
 				CE0881A12BF773CC00B31735 /* AlertManager.swift in Sources */,
+				F0A1B2C3D4E5F60718293A02 /* AppNotificationStore.swift in Sources */,
 				CE2FF4B92DCCB85D00E4151D /* FaceRegistryNoInclusionInputs.swift in Sources */,
 				CE7D8AAC2BFB52EE009AF212 /* OpenApiError.swift in Sources */,
 				56933DF12BBAC1B10068C894 /* ScanPassportLayoutView.swift in Sources */,
+				A7C3E9202E8B4D1200F1A0C1 /* PassportVerifyGuideViews.swift in Sources */,
 				5659151B2BE927A20050795A /* AppIconView.swift in Sources */,
 				56F22B2D2E04611200456A7B /* CircuitData.swift in Sources */,
 				560F0C272BD1146C00067054 /* ScanQRView.swift in Sources */,
@@ -1984,6 +1995,7 @@
 				DEFE3DCB4E2AC7BE42DD6E70 /* AppCheckFactory.swift in Sources */,
 				B8A1F0001A2B3C4D5E6F7002 /* FoundationVerificationManager.swift in Sources */,
 				B8A1F0001A2B3C4D5E6F7004 /* FoundationVerifyCardView.swift in Sources */,
+				F0A1B2C3D4E5F60718293A04 /* AppNotificationsSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,3 +1,4 @@
+import Alamofire
 import Combine
 import Identity
 import SwiftUI
@@ -57,6 +58,15 @@ class PassportViewModel: ObservableObject {
     }
     
     @Published var isUserRegistered = false
+
+    /// Why the last registration attempt failed, shown on Home's status card.
+    /// Kept across launches, like `processingStatus`, so the card can still
+    /// say why after the app restarts.
+    @Published var lastErrorMessage: String? = UserDefaults.standard.string(forKey: "foundation.lastRegistrationError") {
+        didSet {
+            UserDefaults.standard.set(lastErrorMessage, forKey: "foundation.lastRegistrationError")
+        }
+    }
     
     @Published var isUSA = false
     
@@ -73,6 +83,46 @@ class PassportViewModel: ObservableObject {
     
     var revocationPassportPublisher = PassthroughSubject<Passport, Error>()
     
+    /// Clears what an earlier failed attempt left behind, so a new attempt
+    /// shows as in progress from its first step and a finished revocation
+    /// publisher can't fail it straight away.
+    @MainActor
+    func resetForNewAttempt() {
+        progressTimer?.cancel()
+        proofState = .downloadingData
+        overallProgress = 0
+        lastErrorMessage = nil
+        isUserRevoking = false
+        isPassportFailedByImpossibleRevocation = false
+        revocationPassportPublisher = PassthroughSubject<Passport, Error>()
+        processingStatus = .processing
+    }
+
+    /// A readable reason for a registration error. `Errors` and
+    /// `PassportViewModelError` carry their own text; `localizedDescription`
+    /// on a plain `Error` would only give "The operation couldn't be completed".
+    static func describe(_ error: Error) -> String {
+        // Alamofire wraps our validator's error; report the inner one.
+        if let error = error as? AFError, let underlying = error.underlyingError {
+            return describe(underlying)
+        }
+        if let error = error as? Errors { return error.localizedDescription }
+        if let error = error as? PassportViewModelError { return error.localizedDescription }
+        return String(describing: error)
+    }
+
+    /// Runs one registration step and names it in any error, so a failure
+    /// says which server call failed (several share the relayer endpoint).
+    @MainActor
+    private func step<T>(_ name: String, _ work: () async throws -> T) async throws -> T {
+        do {
+            return try await work()
+        } catch {
+            LoggerUtil.common.error("\(name, privacy: .public) failed: \(error, privacy: .public)")
+            throw Errors.unknown("\(name): \(Self.describe(error))")
+        }
+    }
+
     func setMrzKey(_ value: String) {
         mrzKey = value
         
@@ -83,6 +133,7 @@ class PassportViewModel: ObservableObject {
     func register() async throws -> ZkProof {
         var isCriticalRegistrationProcessInProgress = true
         
+        resetForNewAttempt()
         AppUserDefaults.shared.isRegistrationInterrupted = false
         
         do {
@@ -95,7 +146,18 @@ class PassportViewModel: ObservableObject {
             guard var passport = PassportManager.shared.passport else { throw PassportManagerError.passportNotFound }
             guard let user = UserManager.shared.user else { throw UserManagerError.userNotInitialized }
             
-            try await UserManager.shared.registerCertificate(passport)
+            // Same as the Android app: a failed certificate registration is
+            // not fatal. The chain rejects it ("SparseMerkleTree: the key
+            // already exists") when the certificate is already registered,
+            // even when the lookup before it said it wasn't. If the certificate
+            // really is missing, identity registration below fails and says so.
+            do {
+                try await step("Certificate registration") {
+                    try await UserManager.shared.registerCertificate(passport)
+                }
+            } catch {
+                LoggerUtil.common.error("Continuing without certificate registration: \(Self.describe(error), privacy: .public)")
+            }
             
             guard let registerIdentityCircuitType = try passport.getRegisterIdentityCircuitType() else {
                 throw PassportViewModelError.invalidCircuit
@@ -105,7 +167,7 @@ class PassportViewModel: ObservableObject {
                 throw PassportViewModelError.invalidCircuitName
             }
             
-            LoggerUtil.common.info("Registering passport with circuit: \(registerIdentityCircuitName)")
+            LoggerUtil.common.info("Registering passport with circuit: \(registerIdentityCircuitName, privacy: .public)")
             
             var proof: ZkProof
             if let registeredCircuitData = RegisteredCircuitData(rawValue: registerIdentityCircuitName) {
@@ -207,13 +269,16 @@ class PassportViewModel: ObservableObject {
                 if passport.dg15.isEmpty {
                     isPassportFailedByImpossibleRevocation = true
                     
-                    throw Errors.unknown("You can't register with already used passport")
+                    LoggerUtil.common.error("Passport is registered to another identity and has no DG15, so it can't be moved to this one")
+                    throw Errors.unknown("This passport is already registered from another app or device, and its chip can't sign the request needed to move it to this phone.")
                 }
                 
                 isCriticalRegistrationProcessInProgress = true
                 
                 // takes last 8 bytes of activeIdentity as revocation challenge
                 revocationChallenge = passportInfo.activeIdentity[24 ..< 32]
+                
+                LoggerUtil.common.info("Passport is registered to another identity; asking for a chip scan to move it here")
                 
                 // This will trigger a sheet with a NFC scanning
                 self.isUserRevoking = isUserRevoking
@@ -242,7 +307,9 @@ class PassportViewModel: ObservableObject {
             
             if isUserRevoking { isUserRevoked = true }
             
-            try await UserManager.shared.register(proof, passport, isUserRevoking, registerIdentityCircuitName)
+            try await step("Identity registration (\(registerIdentityCircuitName))") {
+                try await UserManager.shared.register(proof, passport, isUserRevoking, registerIdentityCircuitName)
+            }
             
             PassportManager.shared.setPassport(passport)
             try UserManager.shared.saveRegisterZkProof(proof)
@@ -277,12 +344,16 @@ class PassportViewModel: ObservableObject {
             
             LoggerUtil.common.error("Trying light registration because of: \(error, privacy: .public)")
             
+            let registrationError = error
             do {
                 return try await lightRegister()
             } catch {
                 processingStatus = .failure
                 
-                throw error
+                // Report both failures: the first one is usually the cause.
+                throw Errors.unknown(
+                    "Registration: \(Self.describe(registrationError)) | Light registration: \(Self.describe(error))"
+                )
             }
         }
     }
@@ -400,7 +471,9 @@ class PassportViewModel: ObservableObject {
             )
             
             let lightRegistrationService = LightRegistrationService(ConfigManager.shared.general.appApiURL)
-            let registerResponse = try await lightRegistrationService.register(passport, zkProof)
+            let registerResponse = try await step("Light passport check") {
+                try await lightRegistrationService.register(passport, zkProof)
+            }
             
             LoggerUtil.common.info("Passport light registration signature received")
             
@@ -434,7 +507,22 @@ class PassportViewModel: ObservableObject {
                 return zkProof
             }
             
-            try await UserManager.shared.lightRegister(zkProof, registerResponse)
+            // Light registration can't take over a passport bound to another
+            // identity: the chain's StateKeeper only adds a new bond, and moving
+            // one (revoke + reissue) exists only on the full-circuit path.
+            if passportInfo.activeIdentity != Ethereum.ZERO_BYTES32 {
+                LoggerUtil.common.error("Light registration: passport is bound to another identity (revoked: \(passportInfo.activeIdentity == PoseidonSMT.revokedValue, privacy: .public))")
+                
+                throw Errors.unknown(
+                    "This passport is already verified in another app, with a different key. "
+                        + "For this passport type the chain can't move it to a new key. To use it here, copy your private key from that app "
+                        + "(look for Export keys in its profile) and restore it in this app, or verify with a passport you haven't used before."
+                )
+            }
+            
+            try await step("Light registration (\(registerIdentityLightCircuitName))") {
+                try await UserManager.shared.lightRegister(zkProof, registerResponse)
+            }
             
             PassportManager.shared.setPassport(passport)
             try UserManager.shared.saveRegisterZkProof(zkProof)

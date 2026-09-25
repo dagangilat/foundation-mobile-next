@@ -2,7 +2,8 @@ import SwiftUI
 
 struct MRZScanView: View {
     @EnvironmentObject private var passportViewModel: PassportViewModel
-    @StateObject var viewModel = ViewModel()
+    /// Owned by the scan page, which also drives its Capture button.
+    @ObservedObject var viewModel: ViewModel
 
     var onMrzKey: (String) -> Void
 
@@ -31,7 +32,7 @@ struct MRZScanView: View {
 }
 
 #Preview {
-    MRZScanView { _ in }
+    MRZScanView(viewModel: .init()) { _ in }
         .frame(height: 300)
         .environmentObject(PassportViewModel())
 }

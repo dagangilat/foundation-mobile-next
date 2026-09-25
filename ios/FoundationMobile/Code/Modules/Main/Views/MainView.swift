@@ -56,7 +56,8 @@ struct MainView: View {
     func processQrCode(_ code: String) {
         guard let qrCodeUrl = URL(string: code) else {
             LoggerUtil.common.error("Invalid QR code: \(code, privacy: .public)")
-            AlertManager.shared.emitError(.unknown("Invalid QR code"))
+            // The QR camera stays open: say so on screen, not via the bell.
+            AlertManager.shared.emitScanFlowError(.unknown("Invalid QR code"))
             return
         }
 

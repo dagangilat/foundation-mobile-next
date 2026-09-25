@@ -36,6 +36,9 @@ struct RecoveryMethodSelectionView: View {
                         ))
                     }
                 }
+                if let errorMessage = viewModel.errorMessage {
+                    FoundationInlineError(message: errorMessage)
+                }
                 // The "coming soon" methods are hidden in the Foundation
                 // build (upstream feature names, not Foundation features).
                 if Self.showsComingSoonMethods {

@@ -12,6 +12,9 @@ struct IntroView: View {
 
     @State private var isNewIdentitySheetPresented = false
     @State private var isImportIdentitySheetPresented = false
+    /// First run comes before Home and its bell, so this screen shows its
+    /// own error.
+    @State private var errorMessage: String?
 
     var body: some View {
         content
@@ -50,6 +53,9 @@ struct IntroView: View {
             }
             .padding(.top, 12)
             Spacer(minLength: 0)
+            if let errorMessage {
+                FoundationInlineError(message: errorMessage)
+            }
             VStack(spacing: 8) {
                 Button("Create my ID") { onAuthMethodSelect(.newIdentity) }
                     .buttonStyle(FoundationPrimaryButtonStyle())
@@ -74,6 +80,7 @@ struct IntroView: View {
     }
 
     private func createNewUser() {
+        errorMessage = nil
         do {
             try userManager.createNewUser()
             guard let user = userManager.user else {
@@ -89,7 +96,7 @@ struct IntroView: View {
         } catch {
             userManager.user = nil
             LoggerUtil.common.error("failed to create new user: \(error.localizedDescription, privacy: .public)")
-            AlertManager.shared.emitError(.userCreationFailed)
+            errorMessage = Errors.userCreationFailed.localizedDescription
         }
     }
 }

@@ -48,7 +48,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
     }
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        LoggerUtil.common.info("User's FCM Token: \(fcmToken ?? "", privacy: .public)")
+        // The token itself stays out of the log: people share the log file.
+        LoggerUtil.common.info("Push token received: \(fcmToken == nil ? "no" : "yes", privacy: .public)")
         
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
         

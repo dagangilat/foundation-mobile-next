@@ -61,10 +61,11 @@ final class FoundationVerificationManager: ObservableObject {
 
             if result.status == "already_verified_l2" {
                 state = .verified(memberNumber: result.memberNumber)
+                notifyVerified()
                 return
             }
             guard let raw = result.getProofParamsUrl, let url = URL(string: raw) else {
-                state = .failed("The server didn't return proof parameters.")
+                fail("The server didn't return proof parameters.")
                 return
             }
 
@@ -73,7 +74,7 @@ final class FoundationVerificationManager: ObservableObject {
             state = .awaitingProof
         } catch {
             LoggerUtil.common.error("startL2Verification failed: \(error.localizedDescription, privacy: .public)")
-            state = .failed("We couldn't start the passport check. Please try again.")
+            fail("We couldn't start the passport check. Please try again.")
         }
     }
 
@@ -104,9 +105,9 @@ final class FoundationVerificationManager: ObservableObject {
 
     /// The proof sheet closed. Every non-success close lands here with the
     /// state still `.awaitingProof` - Cancel, the sheet's X, swipe-to-dismiss,
-    /// a proof-params load failure, a failed uniqueness check, any
-    /// `generateProof` error - and without this reset `.awaitingProof` is
-    /// terminal: `FoundationVerifyCardView.isBusy` would keep the Home verify
+    /// a proof-params load failure, any `generateProof` error - and without
+    /// this reset `.awaitingProof` is terminal:
+    /// `FoundationVerifyCardView.isBusy` would keep the Home verify
     /// card disabled and showing "Working…" for the rest of the process.
     ///
     /// A real success has already moved to `.polling` in
@@ -169,6 +170,7 @@ final class FoundationVerificationManager: ObservableObject {
                 if FoundationVerificationManager.isTerminalSuccess(status.status) {
                     guard state == .polling else { return }
                     state = .verified(memberNumber: status.memberNumber)
+                    notifyVerified()
                     return
                 }
                 // Any other status ("pending", "request_created", or an
@@ -179,7 +181,7 @@ final class FoundationVerificationManager: ObservableObject {
                 // keeps retrying, matching the original behavior.
                 if let message = FoundationVerificationManager.terminalRejectionMessage(for: error) {
                     guard state == .polling else { return }
-                    state = .failed(message)
+                    fail(message)
                     return
                 }
                 LoggerUtil.common.error("getL2VerificationStatus failed: \(error.localizedDescription, privacy: .public)")
@@ -187,7 +189,21 @@ final class FoundationVerificationManager: ObservableObject {
             try? await Task.sleep(for: pollInterval)
         }
         guard state == .polling else { return }
-        state = .failed("The check is taking longer than expected. Please try again.")
+        fail("The check is taking longer than expected. Please try again.")
+    }
+
+    /// A terminal failure: the Home card says the last try didn't finish,
+    /// and the reason goes behind Home's bell with Try again.
+    private func fail(_ message: String) {
+        state = .failed(message)
+        AppNotificationStore.shared.postVerificationFailure(reason: message, retry: .finishVerification)
+    }
+
+    private func notifyVerified() {
+        AppNotificationStore.shared.postSuccess(
+            title: String(localized: "You're verified"),
+            message: String(localized: "Foundation confirmed you're a real, unique person.")
+        )
     }
 
     /// Maps a `getL2VerificationStatus` failure to a terminal, user-facing
@@ -203,8 +219,11 @@ final class FoundationVerificationManager: ObservableObject {
     ///
     /// Two distinct codes are terminal, both thrown by passport.js's
     /// `getL2VerificationStatus` / `upsertMemberWithLaneTx`:
-    ///   - `.failedPrecondition`: `failed_verification` / `uniqueness_check_failed`
-    ///     (the svc-side check).
+    ///   - `.failedPrecondition`: `failed_verification`, and the svc's
+    ///     `uniqueness_check_failed` when the backend confirms it (reasons
+    ///     `identity_reissued` / `uniqueness_unconfirmed`, each with its own
+    ///     message). ProofRequestView no longer stops on that svc status
+    ///     itself; it hands off here so the backend makes the call.
     ///   - `.alreadyExists`: the lane-doc uniqueness guard rejecting a
     ///     duplicate passport - found 2026-09-03 (whole-plan review finding
     ///     I-2) to be the ONE that actually fires in practice, because the

@@ -28,15 +28,22 @@ import com.rarilabs.rarime.data.enums.PassportStatus
 import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
+import com.rarilabs.rarime.modules.passportScan.guide.VerifyStepper
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.PersonDetails
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
 
+/**
+ * The passport card and its registration (the proof). [showVerifyStepper]
+ * puts the verify flow's stepper over it: step 3 (Proof) current while the
+ * proof is being built, all done once it is.
+ */
 @Composable
 fun ZkIdentityPassport(
     navigate: (String) -> Unit,
     onBack: (() -> Unit)? = null,
+    showVerifyStepper: Boolean = false,
 ) {
 
     val homeViewModel = LocalZkIdentityScreenViewModel.current
@@ -80,6 +87,7 @@ fun ZkIdentityPassport(
         retryRegistration = retryRegistration,
         innerPaddings = innerPaddings,
         onBack = onBack,
+        showVerifyStepper = showVerifyStepper,
     )
 }
 
@@ -97,6 +105,7 @@ fun ZkIdentityPassportContent(
     retryRegistration: () -> Unit,
     innerPaddings: Map<ScreenInsets, Number>,
     onBack: (() -> Unit)? = null,
+    showVerifyStepper: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -128,6 +137,20 @@ fun ZkIdentityPassportContent(
 //            ) {
 //                AppIcon(modifier = Modifier.padding(10.dp), id = R.drawable.ic_plus)
 //            }
+        }
+
+        if (showVerifyStepper) {
+            // Registration finishing is what moves the status off
+            // UNREGISTERED: ALLOWED, or UNSUPPORTED_FOR_REWARDS for a
+            // not-allowed country (ProofGenerationManager.performRegistration).
+            val proofDone = passportStatus == PassportStatus.ALLOWED ||
+                passportStatus == PassportStatus.UNSUPPORTED_FOR_REWARDS
+            VerifyStepper(
+                currentStep = if (proofDone) 4 else 3,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 12.dp),
+            )
         }
 
         Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 20.dp)) {

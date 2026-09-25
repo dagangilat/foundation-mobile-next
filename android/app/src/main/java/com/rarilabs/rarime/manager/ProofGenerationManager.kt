@@ -12,8 +12,11 @@ import com.google.gson.GsonBuilder
 import com.noirandroid.lib.Circuit
 import com.rarilabs.rarime.BaseConfig
 import com.rarilabs.rarime.BuildConfig
+import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.registration.PassportAlreadyRegisteredByOtherPK
 import com.rarilabs.rarime.data.enums.PassportStatus
+import com.rarilabs.rarime.foundation.AppNotification
+import com.rarilabs.rarime.foundation.AppNotificationStore
 import com.rarilabs.rarime.modules.passportScan.CircuitDownloader
 import com.rarilabs.rarime.modules.passportScan.CircuitNoirDownloader
 import com.rarilabs.rarime.modules.passportScan.DownloadCircuitError
@@ -69,6 +72,7 @@ class ProofGenerationManager @Inject constructor(
     private val registrationManager: RegistrationManager,
     private val passportManager: PassportManager,
     private val rarimoContractManager: RarimoContractManager,
+    private val notificationStore: AppNotificationStore,
 ) {
 
     private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -89,6 +93,30 @@ class ProofGenerationManager @Inject constructor(
     private val TAG = ProofGenerationManager::class.java.simpleName
     private val second = 1000L
     private val privateKeyBytes = identityManager.privateKeyBytes
+
+    /**
+     * A registration failure: shown on the passport screen as before, and
+     * posted behind Home's bell ("Verification didn't finish", with Try
+     * again, which reopens that screen, and Share app log).
+     */
+    private fun setProofError(e: Exception) {
+        _proofError.value = e
+        notificationStore.postVerificationFailure(
+            reason = registrationFailureReason(e),
+            retry = AppNotification.Retry.SCAN_PASSPORT,
+        )
+    }
+
+    private fun registrationFailureReason(e: Exception): String = when (e) {
+        is PassportAlreadyRegisteredByOtherPK ->
+            application.getString(R.string.notification_reason_already_registered)
+
+        is DownloadCircuitError ->
+            application.getString(R.string.notification_reason_download_failed)
+
+        else -> e.message?.takeIf { it.isNotBlank() }
+            ?: application.getString(R.string.notification_reason_registration_failed)
+    }
 
     private fun resetState() {
         _state.value = PassportProofState.READING_DATA
@@ -313,6 +341,7 @@ class ProofGenerationManager @Inject constructor(
 
                     val proof = registerByDocument(eDocument)
                     identityManager.setRegistrationProof(proof)
+                    notificationStore.postPassportChecked()
 
                     if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                         passportManager.updatePassportStatus(PassportStatus.ALLOWED)
@@ -325,7 +354,7 @@ class ProofGenerationManager @Inject constructor(
                     when (e) {
                         is PassportAlreadyRegisteredByOtherPK -> {
                             ErrorHandler.logError(TAG, "Passport already registered", e)
-                            _proofError.value = e
+                            setProofError(e)
                             passportManager.updatePassportStatus(PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
                             throw e
                         }
@@ -335,7 +364,7 @@ class ProofGenerationManager @Inject constructor(
                             ErrorHandler.logError(
                                 TAG, "Error during default registration: ${e::class.simpleName}", e
                             )
-                            _proofError.value = e
+                            setProofError(e)
                             throw e
                         }
 
@@ -346,6 +375,7 @@ class ProofGenerationManager @Inject constructor(
                             try {
                                 val lightProof = lightRegistration(eDocument)
                                 identityManager.setRegistrationProof(lightProof)
+                                notificationStore.postPassportChecked()
 
                                 if (!NOT_ALLOWED_COUNTRIES.contains(eDocument.personDetails?.nationality)) {
                                     passportManager.updatePassportStatus(PassportStatus.ALLOWED)
@@ -363,7 +393,7 @@ class ProofGenerationManager @Inject constructor(
                                             e2
                                         )
                                         passportManager.updatePassportStatus(PassportStatus.ALREADY_REGISTERED_BY_OTHER_PK)
-                                        _proofError.value = e2
+                                        setProofError(e2)
                                         throw e2
                                     }
 
@@ -374,7 +404,7 @@ class ProofGenerationManager @Inject constructor(
                                             "Connection/Unpacking error during light registration",
                                             e2
                                         )
-                                        _proofError.value = e2
+                                        setProofError(e2)
                                         throw e2
                                     }
 
@@ -385,7 +415,7 @@ class ProofGenerationManager @Inject constructor(
                                             passportManager.updatePassportStatus(PassportStatus.WAITLIST_UNSUPPORTED_FOR_REWARDS)
                                         }
                                         ErrorHandler.logError(TAG, "Light registration failed", e2)
-                                        _proofError.value = e2
+                                        setProofError(e2)
                                         throw e2
                                     }
                                 }

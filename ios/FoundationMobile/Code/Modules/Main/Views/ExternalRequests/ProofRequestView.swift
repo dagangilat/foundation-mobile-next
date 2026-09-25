@@ -184,9 +184,21 @@ struct ProofRequestView: View {
         do {
             proofParamsResponse = try await VerificatorApi.getExternalRequestParams(url: proofParamsUrl)
         } catch {
-            AlertManager.shared.emitError("Failed to load proof params")
+            reportFailure("Failed to load proof params")
             LoggerUtil.common.error("Failed to load proof params: \(error, privacy: .public)")
             onDismiss()
+        }
+    }
+
+    /// Behind Home's bell. When this sheet is Foundation's own verification
+    /// (started from Home's card), it is a failed verification with Try
+    /// again; for a partner site's request it is a plain error entry.
+    @MainActor
+    private func reportFailure(_ message: String) {
+        if FoundationVerificationManager.shared.state == .awaitingProof {
+            AppNotificationStore.shared.postVerificationFailure(reason: message, retry: .finishVerification)
+        } else {
+            AlertManager.shared.emitError(message)
         }
     }
 
@@ -209,9 +221,17 @@ struct ProofRequestView: View {
                     proof: proof
                 )
 
+                // Not the final word, so don't stop here. The verificator uses
+                // this one status for two rules, and one of them (another of
+                // its own records already holds this passport) goes stale:
+                // deleted accounts, test-data resets, a recreated account.
+                // Foundation's getL2VerificationStatus reads the proof,
+                // tells the two apart, and checks the passport against its
+                // own member records. Its answer - success, or its own
+                // message behind the bell - is what the member sees.
                 if response.data.attributes.status == .uniquenessCheckFailed {
-                    AlertManager.shared.emitError("Uniqueness check failed")
-                    onDismiss()
+                    LoggerUtil.common.warning("Verificator status \(response.data.attributes.status.rawValue, privacy: .public); deferring to the backend's check")
+                    onSuccess()
                     return
                 }
 
@@ -222,7 +242,7 @@ struct ProofRequestView: View {
                 AlertManager.shared.emitSuccess("Proof generated successfully")
                 onSuccess()
             } catch {
-                AlertManager.shared.emitError("Failed to generate proof")
+                reportFailure("Failed to generate proof")
                 LoggerUtil.common.error("Failed to generate query proof: \(error, privacy: .public)")
                 onDismiss()
             }

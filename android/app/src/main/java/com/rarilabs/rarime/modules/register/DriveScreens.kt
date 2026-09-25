@@ -28,7 +28,9 @@ import com.rarilabs.rarime.ui.components.AppIcon
 import com.rarilabs.rarime.ui.components.CircledBadge
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.TertiaryButton
+import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationTheme
+import com.rarilabs.rarime.ui.theme.FoundationType
 
 @Composable
 fun RestoreScreen(
@@ -38,6 +40,8 @@ fun RestoreScreen(
     signIn: () -> Unit,
     onBack: () -> Unit,
     onDriveRestore: () -> Unit,
+    /** Shown above the buttons: first run has no bell to hold it. */
+    errorMessage: String? = null,
     onManualRestore: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -103,6 +107,16 @@ fun RestoreScreen(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.weight(1f))
+        if (!errorMessage.isNullOrBlank()) {
+            Text(
+                text = errorMessage,
+                style = FoundationType.callout,
+                color = FoundationBrand.Danger,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+            )
+        }
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -235,5 +249,13 @@ private fun BackUpScreenPreview() {
 @Preview
 @Composable
 private fun RestoreScreenPreview() {
-    RestoreScreen(Modifier, isDriveButtonEnabled = false, null, {}, {}, {}, {})
+    RestoreScreen(
+        modifier = Modifier,
+        isDriveButtonEnabled = false,
+        signInAccount = null,
+        signIn = {},
+        onBack = {},
+        onDriveRestore = {},
+        onManualRestore = {},
+    )
 }

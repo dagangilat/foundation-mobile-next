@@ -9,6 +9,7 @@ import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorAPI
 import com.rarilabs.rarime.api.ext_integrator.ExtIntegratorApiManager
 import com.rarilabs.rarime.api.registration.RegistrationAPI
 import com.rarilabs.rarime.api.registration.RegistrationAPIManager
+import com.rarilabs.rarime.foundation.AppNotificationStore
 import com.rarilabs.rarime.manager.AuthManager
 import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.IdentityManager
@@ -183,13 +184,15 @@ class APIModule {
         identityManager: IdentityManager,
         registrationManager: RegistrationManager,
         rarimoContractManager: RarimoContractManager,
-        passportManager: PassportManager
+        passportManager: PassportManager,
+        notificationStore: AppNotificationStore,
     ): ProofGenerationManager = ProofGenerationManager(
         context,
         identityManager,
         registrationManager,
         passportManager,
-        rarimoContractManager
+        rarimoContractManager,
+        notificationStore,
     )
 
     @Provides
