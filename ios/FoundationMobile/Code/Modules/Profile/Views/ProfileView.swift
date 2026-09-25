@@ -126,6 +126,24 @@ struct ProfileView: View {
                                 FeedbackMailView(isShowing: $isShareWithDeveloper)
                             }
                         }
+                        // Works without a mail account on the phone, and when
+                        // Mail keeps a message in its Outbox.
+                        ProfileRowDivider()
+                        ShareLink(item: LoggerUtil.logFileURL, preview: SharePreview("Foundation app log")) {
+                            HStack {
+                                Text("Share app log")
+                                    .font(.system(size: 17))
+                                    .foregroundColor(FoundationTheme.text)
+                                Spacer()
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(FoundationTheme.muted)
+                            }
+                            .padding(.horizontal, 16)
+                            .frame(height: 52)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
 #if DEVELOPMENT
                     ProfileGroup {

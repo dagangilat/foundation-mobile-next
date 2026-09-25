@@ -142,6 +142,13 @@ struct FoundationVerifyCardView: View {
                     .buttonStyle(FoundationPrimaryButtonStyle())
                     .padding(.top, 4)
             }
+            // The app's own log file: send it by any app (Mail, Messages,
+            // AirDrop, Files) without a mail account set up on the phone.
+            ShareLink(item: LoggerUtil.logFileURL, preview: SharePreview("Foundation app log")) {
+                Label("Share app log", systemImage: "square.and.arrow.up")
+            }
+            .buttonStyle(FoundationTextButtonStyle())
+            .frame(maxWidth: .infinity)
         case .waitlisted:
             EmptyView()
         case .ready:
