@@ -77,9 +77,6 @@ fun ProfileScreen(
 
     val colorScheme by viewModel.colorScheme.collectAsState()
 
-    val isDeletingAccount by viewModel.isDeletingAccount.collectAsState()
-    val deleteAccountError by viewModel.deleteAccountError.collectAsState()
-
     ProfileScreenContent(
         evmAddress = WalletUtil.formatAddress(viewModel.evmAddress),
         passportImage = image,
@@ -89,21 +86,19 @@ fun ProfileScreen(
         email = viewModel.signedInEmail,
         onBack = onBack,
         onSignOut = viewModel::signOut,
-        isDeletingAccount = isDeletingAccount,
-        deleteAccountError = deleteAccountError,
         onFeedbackConfirm = {
             val decryptedFile = viewModel.getDecryptedFeedbackFile()
             launcher.launch(SendEmailUtil.sendEmail(decryptedFile, context))
-        },
-        onClearConfirm = {
-            viewModel.clearAllData(context)
         })
 }
 
 /**
  * Foundation Profile (approved mockup "Profile"): who is signed in, then
  * grouped rows - backup and recovery, passcode and biometrics; privacy,
- * terms, help and feedback; sign out and delete account.
+ * terms, help and feedback; sign out.
+ *
+ * Delete account is not here: it is the last item of Backup and recovery
+ * ([ExportKeysScreen]), in its own danger section, away from Sign out.
  *
  * Hidden, not deleted: the theme and app-icon rows (Foundation is light-only
  * with one icon), the Ethereum address line and passport thumbnail. Their
@@ -121,14 +116,9 @@ fun ProfileScreenContent(
     email: String? = null,
     onBack: () -> Unit = {},
     onSignOut: () -> Unit = {},
-    isDeletingAccount: Boolean = false,
-    /** Non-empty only when the server refused the delete - see below. */
-    deleteAccountError: String = "",
     onFeedbackConfirm: suspend () -> Unit = {},
-    onClearConfirm: suspend () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-    var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -189,55 +179,13 @@ fun ProfileScreenContent(
             )
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ProfileGroup {
-                ProfileRow(
-                    title = "Sign out",
-                    titleColor = FoundationBrand.Danger,
-                    showChevron = false,
-                    enabled = !isDeletingAccount,
-                    onClick = onSignOut,
-                )
-                ProfileRow(
-                    title = if (isDeletingAccount) "Deleting account…" else "Delete account",
-                    titleColor = FoundationBrand.Danger,
-                    showChevron = false,
-                    showDivider = false,
-                    onClick = { if (!isDeletingAccount) isDeleteAccountDialogShown = true },
-                )
-            }
-
-            // Only ever reached when the server refused: on success the
-            // process restarts before this can recompose.
-            if (deleteAccountError.isNotEmpty()) {
-                Text(
-                    text = deleteAccountError,
-                    style = FoundationType.callout,
-                    color = FoundationBrand.Danger,
-                )
-            }
-        }
-
-        if (isDeleteAccountDialogShown) {
-            ConfirmationDialog(
-                title = stringResource(R.string.delete_profile_title),
-                subtitle = stringResource(R.string.delete_profile_desc),
-                onConfirm = {
-                    // Dismiss FIRST. Deletion used to be unfailable from
-                    // this screen's point of view - it always ended in a
-                    // process restart - so leaving the dialog up cost
-                    // nothing. Now that a server refusal is a real
-                    // outcome, an undismissed AlertDialog would sit on
-                    // top of the error below and the user would see
-                    // nothing happen at all.
-                    isDeleteAccountDialogShown = false
-                    scope.launch {
-                        onClearConfirm.invoke()
-                    }
-                },
-                onCancel = { isDeleteAccountDialogShown = false },
-                cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
-                confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
+        ProfileGroup {
+            ProfileRow(
+                title = "Sign out",
+                titleColor = FoundationBrand.Danger,
+                showChevron = false,
+                showDivider = false,
+                onClick = onSignOut,
             )
         }
 
@@ -248,6 +196,83 @@ fun ProfileScreenContent(
             color = FoundationBrand.Muted,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+/**
+ * The danger section at the bottom of Backup and recovery: its own caption,
+ * a line on what goes, and a red Delete account row. Tapping the row opens
+ * the same "Delete your account?" confirmation as before; [onConfirmDelete]
+ * runs `ProfileViewModel.clearAllData`.
+ */
+@Composable
+fun DeleteAccountSection(
+    isDeletingAccount: Boolean,
+    /** Non-empty only when the server refused the delete - see below. */
+    deleteAccountError: String,
+    onConfirmDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var isDeleteAccountDialogShown by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.delete_account_section_title),
+            style = FoundationType.overline,
+            color = FoundationBrand.Muted,
+        )
+        Text(
+            text = stringResource(R.string.delete_account_section_desc),
+            style = FoundationType.callout,
+            color = FoundationBrand.Muted,
+        )
+        ProfileGroup {
+            ProfileRow(
+                title = if (isDeletingAccount) {
+                    stringResource(R.string.delete_account_in_progress)
+                } else {
+                    stringResource(R.string.delete_account)
+                },
+                titleColor = FoundationBrand.Danger,
+                showChevron = false,
+                showDivider = false,
+                onClick = { if (!isDeletingAccount) isDeleteAccountDialogShown = true },
+            )
+        }
+
+        // Only ever reached when the server refused: on success the process
+        // restarts before this can recompose. Inline, not behind Home's bell:
+        // the person is on this screen waiting for the answer.
+        if (deleteAccountError.isNotEmpty()) {
+            Text(
+                text = deleteAccountError,
+                style = FoundationType.callout,
+                color = FoundationBrand.Danger,
+            )
+        }
+    }
+
+    if (isDeleteAccountDialogShown) {
+        ConfirmationDialog(
+            title = stringResource(R.string.delete_profile_title),
+            subtitle = stringResource(R.string.delete_profile_desc),
+            onConfirm = {
+                // Dismiss FIRST. Deletion used to be unfailable from this
+                // screen's point of view - it always ended in a process
+                // restart - so leaving the dialog up cost nothing. Now that a
+                // server refusal is a real outcome, an undismissed AlertDialog
+                // would sit on top of the error above and the user would see
+                // nothing happen at all.
+                isDeleteAccountDialogShown = false
+                onConfirmDelete()
+            },
+            onCancel = { isDeleteAccountDialogShown = false },
+            cancelButtonText = stringResource(id = R.string.delete_profile_cancel_btn),
+            confirmButtonText = stringResource(id = R.string.delete_profile_confirm_btn),
         )
     }
 }

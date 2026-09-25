@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,9 +29,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
+import com.rarilabs.rarime.foundation.AppNotification
+import com.rarilabs.rarime.foundation.AppNotificationStore
 import com.rarilabs.rarime.foundation.FoundationAuthManager
 import com.rarilabs.rarime.foundation.FoundationVerificationManager
 import com.rarilabs.rarime.foundation.VerificationState
+import com.rarilabs.rarime.foundation.hasUnreadVerificationFailure
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationType
@@ -45,8 +49,12 @@ class FoundationVerifyCardViewModel @Inject constructor(
     private val verificationManager: FoundationVerificationManager,
     authManager: FoundationAuthManager,
     identityManager: IdentityManager,
+    notificationStore: AppNotificationStore,
 ) : ViewModel() {
     val state: StateFlow<VerificationState> = verificationManager.state
+
+    /** Home's bell list: an unread failed try turns the card's copy calm. */
+    val notifications: StateFlow<List<AppNotification>> = notificationStore.entries
 
     /**
      * Non-null once the passport is registered (the passport flow has run to
@@ -102,11 +110,15 @@ class FoundationVerifyCardViewModel @Inject constructor(
 
     fun onProofDismissed() = verificationManager.proofFlowDismissed()
 
-    fun onProofFailed() = verificationManager.proofFlowFailed()
+    fun onProofFailed(message: String) = verificationManager.proofFlowFailed(message)
 }
 
 /**
  * Home's status card: whether this person is verified, and the one next step.
+ *
+ * After a failed try the card stays calm: "Not verified yet", "Your last try
+ * didn't finish. The bell has the details." and Try again. The reason and
+ * "Share app log" are in the bell's entry (Home's notifications sheet).
  *
  * - Passport not registered yet: "Not verified yet" + "Verify with passport",
  *   which opens the passport flow (its task guide first) through
@@ -130,10 +142,12 @@ fun FoundationVerifyCard(
 ) {
     val state by viewModel.state.collectAsState()
     val registrationProof by viewModel.registrationProof.collectAsState()
+    val notifications by viewModel.notifications.collectAsState()
 
     FoundationVerifyCardContent(
         state = state,
         isPassportRegistered = registrationProof != null,
+        hasUnreadFailure = notifications.hasUnreadVerificationFailure,
         onVerify = viewModel::beginVerification,
         onScanPassport = onScanPassport,
         onScanQr = onScanQr,
@@ -149,8 +163,10 @@ fun FoundationVerifyCard(
             queryParams = null,
             proofParamsUrl = awaitingProof.proofParamsUrl,
             onSuccess = { viewModel.onProofSucceeded() },
-            onFail = { viewModel.onProofFailed() },
             onCancel = { viewModel.onProofDismissed() },
+            // One report per failure: the manager's Failed state, which the
+            // bell shows as "Verification didn't finish" with this reason.
+            onFailMessage = { message -> viewModel.onProofFailed(message) },
         )
     }
 }
@@ -159,6 +175,7 @@ fun FoundationVerifyCard(
 private fun FoundationVerifyCardContent(
     state: VerificationState,
     isPassportRegistered: Boolean,
+    hasUnreadFailure: Boolean = false,
     onVerify: () -> Unit,
     onScanPassport: () -> Unit,
     onScanQr: () -> Unit,
@@ -169,6 +186,11 @@ private fun FoundationVerifyCardContent(
     // out)" answer, so it routes back to the passport scan as well.
     val needsPassport = !isVerified &&
         (!isPassportRegistered || state is VerificationState.NotRegistered)
+    // A failed try: Foundation's check failed (state), or a passport/proof
+    // try failed and its bell entry is still unread. Either way the card
+    // only says so calmly; the reason is behind the bell.
+    val showsFailedTry = !isVerified && !state.isBusy &&
+        (state is VerificationState.Failed || hasUnreadFailure)
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -185,12 +207,20 @@ private fun FoundationVerifyCardContent(
                 if (isVerified) VerifiedPill()
             }
             Text(
-                text = titleFor(state, needsPassport),
+                text = if (showsFailedTry) {
+                    stringResource(R.string.home_card_not_verified_title)
+                } else {
+                    titleFor(state, needsPassport)
+                },
                 style = FoundationType.headline,
                 color = FoundationBrand.Text,
             )
             Text(
-                text = captionFor(state, needsPassport),
+                text = if (showsFailedTry) {
+                    stringResource(R.string.home_card_failed_try_caption)
+                } else {
+                    captionFor(state, needsPassport)
+                },
                 style = FoundationType.callout,
                 color = FoundationBrand.Muted,
             )
@@ -199,6 +229,15 @@ private fun FoundationVerifyCardContent(
                     CheckChip("Passport chip")
                     CheckChip("Unique person")
                 }
+
+                // Same action as the state's own button, worded as a retry:
+                // the passport flow while no proof exists, else Foundation's
+                // check again.
+                showsFailedTry -> FoundationButton(
+                    text = stringResource(R.string.home_card_try_again),
+                    leadingIcon = R.drawable.ic_fnd_passport,
+                    onClick = if (needsPassport) onScanPassport else onVerify,
+                )
 
                 // Opens the verify task guide (ScanPassportScreen starts on
                 // it), so the label names the whole job, not the camera step.
@@ -269,7 +308,6 @@ private val VerificationState.isBusy: Boolean
 private fun titleFor(state: VerificationState, needsPassport: Boolean): String = when {
     state is VerificationState.Verified -> "You're a verified person"
     needsPassport -> "Not verified yet"
-    state is VerificationState.Failed -> "Verification didn't finish"
     else -> "Passport added"
 }
 
@@ -281,7 +319,6 @@ private fun captionFor(state: VerificationState, needsPassport: Boolean): String
         "Verify once with your passport's chip to show you're a real, unique person. " +
             "Your name, photo and passport number stay on this phone."
 
-    state is VerificationState.Failed -> state.message
     else -> "One last step: confirm you're a unique person. Your name, photo and passport number stay on this phone."
 }
 

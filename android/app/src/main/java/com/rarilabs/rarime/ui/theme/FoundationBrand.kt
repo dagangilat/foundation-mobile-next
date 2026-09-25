@@ -37,6 +37,11 @@ object FoundationBrand {
     /** Destructive rows (sign out, delete account) and inline errors. */
     val Danger = Color(0xFFB42318)
 
+    /** Unread dots (the bell, error entries) and the error icon behind them. */
+    val AlertDot = Color(0xFFDC2626)
+    val DangerIcon = Color(0xFFB91C1C)
+    val DangerTint = Color(0xFFFEE2E2)
+
     // Pillars
     val Voice = Color(0xFF6366F1)
     val Share = Color(0xFF0D9488)

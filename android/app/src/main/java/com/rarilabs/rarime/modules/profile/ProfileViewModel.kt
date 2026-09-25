@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.services.drive.DriveScopes
+import com.rarilabs.rarime.foundation.AppNotificationStore
 import com.rarilabs.rarime.foundation.DeletionOutcome
 import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
 import com.rarilabs.rarime.foundation.FoundationAuthManager
@@ -43,6 +44,7 @@ class ProfileViewModel @Inject constructor(
     private val notificationsRepository: NotificationsRepository,
     private val accountDeletionManager: FoundationAccountDeletionManager,
     private val authManager: FoundationAuthManager,
+    private val notificationStore: AppNotificationStore,
 ) : ViewModel() {
 
     /** Shown as "Signed in as"; null hides that card. */
@@ -53,7 +55,11 @@ class ProfileViewModel @Inject constructor(
      * `isSignedIn`, so the app drops back to the sign-in screen; the local
      * identity stays on the device, as it does on iOS.
      */
-    fun signOut() = authManager.signOut()
+    fun signOut() {
+        authManager.signOut()
+        // The bell's list describes the departing member too.
+        notificationStore.clear()
+    }
 
 
     val evmAddress = identityManager.evmAddress()
@@ -124,6 +130,9 @@ class ProfileViewModel @Inject constructor(
         dataStoreManager.clearAllData()
 
         notificationsRepository.deleteAllNotifications()
+
+        // Home's bell list lives in its own preferences file.
+        notificationStore.clear()
 
         delay(1000L)
 

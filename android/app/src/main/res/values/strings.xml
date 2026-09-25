@@ -424,5 +424,37 @@
     <string name="nfc_is_not_available_on_this_device">NFC is not available on this device.</string>
     <string name="disablet_nfc_error">NFC is disabled. Please enable it in your device settings.</string>
 
+    <!-- Home's bell: the app's own notifications (errors no longer pop up over the screen). -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_unread_state">Unread</string>
+    <string name="notifications_done">Done</string>
+    <string name="notifications_empty_title">Nothing here yet</string>
+    <string name="notifications_empty_message">Updates about your verification show up here.</string>
+    <string name="notification_title_error">Something went wrong</string>
+    <string name="notification_title_verification_failed">Verification didn\'t finish</string>
+    <string name="notification_title_passport_checked">Passport checked</string>
+    <string name="notification_message_passport_checked">Your passport\'s chip was read and checked.</string>
+    <string name="notification_title_verified">You\'re verified</string>
+    <string name="notification_message_verified">Foundation confirmed you\'re a real, unique person.</string>
+    <string name="notification_error_fallback">An error occurred. Please try again.</string>
+    <string name="notification_try_again">Try again</string>
+    <string name="notification_share_app_log">Share app log</string>
+    <string name="notification_reason_already_registered">This passport is already registered with a different key.</string>
+    <string name="notification_reason_download_failed">Couldn\'t download the files needed to build your proof. Check your connection and try again.</string>
+    <string name="notification_reason_registration_failed">We couldn\'t finish your proof.</string>
+    <string name="error_no_app_to_open_link">No app available to open this link.</string>
+
+    <!-- Home's verify card after a failed try: calm copy; the details are behind the bell. -->
+    <string name="home_card_not_verified_title">Not verified yet</string>
+    <string name="home_card_failed_try_caption">Your last try didn\'t finish. The bell has the details.</string>
+    <string name="home_card_try_again">Try again</string>
+
+    <!-- Backup and recovery: Delete account, in its own danger section. -->
+    <string name="delete_account_section_title">DANGER ZONE</string>
+    <string name="delete_account_section_desc">Deletes your Foundation account and its data, the ID on this phone and its Google Drive key backup. This can\'t be undone.</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_in_progress">Deleting account…</string>
+    <string name="drive_error_cant_delete_backup">Couldn\'t delete the backup. Try again later.</string>
+
 
 </resources>

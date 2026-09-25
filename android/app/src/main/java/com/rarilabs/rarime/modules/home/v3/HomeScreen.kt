@@ -1,6 +1,8 @@
 package com.rarilabs.rarime.modules.home.v3
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -28,12 +30,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -41,9 +45,14 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.data.enums.AppColorScheme
+import com.rarilabs.rarime.foundation.AppNotification
+import com.rarilabs.rarime.foundation.hasUnreadErrors
+import com.rarilabs.rarime.foundation.ui.AppNotificationsSheet
+import com.rarilabs.rarime.foundation.ui.AppNotificationsViewModel
 import com.rarilabs.rarime.foundation.ui.BrandLockup
 import com.rarilabs.rarime.foundation.ui.FoundationIconButton
 import com.rarilabs.rarime.foundation.ui.FoundationVerifyCard
+import com.rarilabs.rarime.foundation.ui.NotificationBellButton
 import com.rarilabs.rarime.foundation.ui.PillarsHero
 import com.rarilabs.rarime.modules.home.v3.model.ANIMATION_DURATION_MS
 import com.rarilabs.rarime.modules.home.v3.model.BaseWidgetProps
@@ -57,19 +66,24 @@ import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.manageWidgets.ManageWidgetsButton
 import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationTheme
+import com.rarilabs.rarime.util.ErrorHandler
 import com.rarilabs.rarime.util.PrevireSharedAnimationProvider
 import com.rarilabs.rarime.util.Screen
+import com.rarilabs.rarime.util.SendEmailUtil
 import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 /**
- * Foundation Home: the lockup with a profile button, the pillars in the mesh
- * hero, then the status card (verify / verified, which starts the passport
- * flow) and "Scan QR code" under it.
+ * Foundation Home: the lockup with the bell and a profile button, the pillars
+ * in the mesh hero, then the status card (verify / verified, which starts the
+ * passport flow) and "Scan QR code" under it.
+ *
+ * The bell opens the app's own notifications ([AppNotificationsSheet]):
+ * errors land there instead of popping up over the screen.
  *
  * The fork's widget pager ([HomeScreenContent]), its "Hi Stranger" header and
- * notifications bell, the manage-widgets sheet and the welcome sheet are no
- * longer composed here. Their code is kept, just unhooked.
+ * old push-notifications bell, the manage-widgets sheet and the welcome sheet
+ * are no longer composed here. Their code is kept, just unhooked.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -79,16 +93,46 @@ fun HomeScreenV3(
     @Suppress("UNUSED_PARAMETER") sharedTransitionScope: SharedTransitionScope,
     setVisibilityOfBottomBar: (Boolean) -> Unit,
     @Suppress("UNUSED_PARAMETER") viewModel: HomeViewModel = hiltViewModel(),
+    notificationsViewModel: AppNotificationsViewModel = hiltViewModel(),
 ) {
     val innerPaddings by LocalMainViewModel.current.screenInsets.collectAsState()
+    val notifications by notificationsViewModel.entries.collectAsState()
+    var isNotificationsOpen by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val shareLogLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {},
+    )
 
     // There is no tab bar in the Foundation shell.
     LaunchedEffect(Unit) {
         setVisibilityOfBottomBar(false)
     }
 
+    if (isNotificationsOpen) {
+        AppNotificationsSheet(
+            entries = notifications,
+            onMarkAllRead = notificationsViewModel::markAllRead,
+            onDismiss = { isNotificationsOpen = false },
+            onRetry = { retry ->
+                when (retry) {
+                    // The card's own retries: the passport flow, or
+                    // Foundation's check again.
+                    AppNotification.Retry.SCAN_PASSPORT -> navigate(Screen.Main.Identity.route)
+                    AppNotification.Retry.FINISH_VERIFICATION -> notificationsViewModel.retryVerification()
+                }
+            },
+            // The same log file and sender as Profile's Help and feedback.
+            onShareLog = {
+                shareLogLauncher.launch(SendEmailUtil.sendEmail(ErrorHandler.getLogFile(), context))
+            },
+        )
+    }
+
     FoundationHomeContent(
         innerPaddings = innerPaddings,
+        hasUnreadNotifications = notifications.hasUnreadErrors,
+        onNotificationsClick = { isNotificationsOpen = true },
         onProfileClick = { navigate(Screen.Main.Profile.route) },
         // A slot rather than composed inside FoundationHomeContent so the
         // preview stays renderable - FoundationVerifyCard resolves a
@@ -115,6 +159,8 @@ fun FoundationHomeContent(
     innerPaddings: Map<ScreenInsets, Number>,
     onProfileClick: () -> Unit,
     modifier: Modifier = Modifier,
+    hasUnreadNotifications: Boolean = false,
+    onNotificationsClick: () -> Unit = {},
     statusCard: @Composable () -> Unit = {},
 ) {
     Column(
@@ -137,6 +183,10 @@ fun FoundationHomeContent(
         ) {
             BrandLockup()
             Spacer(modifier = Modifier.weight(1f))
+            NotificationBellButton(
+                hasUnread = hasUnreadNotifications,
+                onClick = onNotificationsClick,
+            )
             FoundationIconButton(
                 icon = R.drawable.ic_fnd_user_circle,
                 contentDescription = "Profile",

@@ -46,8 +46,6 @@ import com.rarilabs.rarime.ui.components.HorizontalDivider
 import com.rarilabs.rarime.ui.components.InfoAlert
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.PrimaryTextButton
-import com.rarilabs.rarime.ui.components.SnackbarSeverity
-import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
 import com.rarilabs.rarime.ui.components.rememberAppTextFieldState
 import com.rarilabs.rarime.ui.theme.FoundationTheme
 import com.rarilabs.rarime.util.ErrorHandler
@@ -78,21 +76,12 @@ fun NewIdentityScreen(
     var isDriveState by remember { mutableStateOf(isImporting) }
     var isDriveButtonEnabled by remember { mutableStateOf(true) }
 
-    val signInErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = stringResource(
-            R.string.drive_error_cant_sign_in_google_identity_account
-        )
-    )
-    val restoreErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = stringResource(
-            R.string.drive_error_you_dont_have_restored_private_key
-        )
-    )
-    val backUpErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = stringResource(
-            R.string.drive_error_cant_back_up_your_private_key
-        )
-    )
+    // First run comes before Home and its bell, so these errors show on the
+    // restore screen itself rather than as a snackbar.
+    val signInErrorText = stringResource(R.string.drive_error_cant_sign_in_google_identity_account)
+    val restoreErrorText = stringResource(R.string.drive_error_you_dont_have_restored_private_key)
+    val backUpErrorText = stringResource(R.string.drive_error_cant_back_up_your_private_key)
+    var driveError by remember { mutableStateOf<String?>(null) }
 
 
     val googleSignInClient = remember {
@@ -109,7 +98,7 @@ fun NewIdentityScreen(
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             scope.launch {
                 handleSignInResult(task, newIdentityViewModel) {
-                    mainViewModel.showSnackbar(signInErrorOptions)
+                    driveError = signInErrorText
                 }
             }
 
@@ -133,6 +122,7 @@ fun NewIdentityScreen(
         scope.launch {
             try {
                 isDriveButtonEnabled = false
+                driveError = null
                 val driveService = newIdentityViewModel.getDriveService(signedInAccount!!, context)
                 val pk = newIdentityViewModel.restorePrivateKey(driveService)
                     ?: throw IllegalStateException("No private key found")
@@ -149,7 +139,7 @@ fun NewIdentityScreen(
             } catch (e: Exception) {
                 isDriveButtonEnabled = true
                 ErrorHandler.logError("restorePrivateKey", "Cant restore private key", e)
-                mainViewModel.showSnackbar(restoreErrorOptions)
+                driveError = restoreErrorText
             }
         }
 
@@ -159,6 +149,7 @@ fun NewIdentityScreen(
         scope.launch {
             try {
                 isDriveButtonEnabled = false
+                driveError = null
                 val pk = if (savedPrivateKey == null) {
                     val pk = newIdentityViewModel.genPrivateKey()
                     savePrivateKey(pk)
@@ -181,7 +172,7 @@ fun NewIdentityScreen(
             } catch (e: Exception) {
                 isDriveButtonEnabled = true
                 ErrorHandler.logError("backUpPrivateKey", "Cant back up private key", e)
-                mainViewModel.showSnackbar(backUpErrorOptions)
+                driveError = backUpErrorText
             }
 
         }
@@ -213,7 +204,8 @@ fun NewIdentityScreen(
                 )
             },
             isDriveButtonEnabled = isDriveButtonEnabled,
-            onBack = onBack
+            onBack = onBack,
+            errorMessage = driveError,
         ) {
             isDriveState = false
         }

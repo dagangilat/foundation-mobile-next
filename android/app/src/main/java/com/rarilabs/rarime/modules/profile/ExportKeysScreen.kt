@@ -1,14 +1,20 @@
 package com.rarilabs.rarime.modules.profile
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,37 +26,43 @@ import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.manager.DriveState
-import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.recoveryMethod.RecoveryMethodDetailScreen
-import com.rarilabs.rarime.ui.components.SnackbarSeverity
-import com.rarilabs.rarime.ui.components.getSnackbarDefaultShowOptions
+import com.rarilabs.rarime.ui.theme.FoundationBrand
+import com.rarilabs.rarime.ui.theme.FoundationType
 import kotlinx.coroutines.launch
 
+/**
+ * Backup and recovery (Profile's second level): the private key and its
+ * Google Drive backup, then Delete account as the last item in its own
+ * danger section, away from Profile's Sign out.
+ */
 @Composable
 fun ExportKeysScreen(
-    onBack: () -> Unit, viewModel: ExportKeysViewModel = hiltViewModel()
+    onBack: () -> Unit,
+    viewModel: ExportKeysViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val mainViewModel = LocalMainViewModel.current
     val privateKey by viewModel.privateKey.collectAsState()
     val driveState by viewModel.driveState.collectAsState()
     val isDriveButtonEnabled by viewModel.isDriveButtonEnabled.collectAsState()
     val isInit by viewModel.isInit.collectAsState()
+    val isDeletingAccount by profileViewModel.isDeletingAccount.collectAsState()
+    val deleteAccountError by profileViewModel.deleteAccountError.collectAsState()
 
 
     val scope = rememberCoroutineScope()
 
-    val signInErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error,
-        message = stringResource(R.string.drive_error_cant_sign_in_google_identity_account)
-    )
-    val backupErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error,
-        message = stringResource(R.string.drive_error_cant_back_up_your_private_key)
-    )
-    val deleteErrorOptions = getSnackbarDefaultShowOptions(
-        severity = SnackbarSeverity.Error, message = "Cannot delete backup"
-    )
+    // A failed backup has to be seen where the switch is, so these errors
+    // show on this screen rather than behind Home's bell.
+    val signInErrorText = stringResource(R.string.drive_error_cant_sign_in_google_identity_account)
+    val backupErrorText = stringResource(R.string.drive_error_cant_back_up_your_private_key)
+    val deleteErrorText = stringResource(R.string.drive_error_cant_delete_backup)
+    var backupError by remember { mutableStateOf<String?>(null) }
+
+    // Leaving mid-deletion would cancel it half way (the ViewModel's scope
+    // goes with this screen), so back waits for the server's answer.
+    BackHandler(enabled = isDeletingAccount) {}
 
     val googleSignInClient = remember(context) {
         GoogleSignIn.getClient(
@@ -64,7 +76,7 @@ fun ExportKeysScreen(
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             viewModel.handleSignInResult(task) { error ->
-                scope.launch { mainViewModel.showSnackbar(signInErrorOptions) }
+                backupError = signInErrorText
             }
         }
 
@@ -82,10 +94,11 @@ fun ExportKeysScreen(
     val backUp: () -> Unit = remember {
         {
             scope.launch {
+                backupError = null
                 try {
                     viewModel.backupPrivateKey()
                 } catch (e: Exception) {
-                    mainViewModel.showSnackbar(backupErrorOptions)
+                    backupError = backupErrorText
                 }
             }
         }
@@ -94,24 +107,29 @@ fun ExportKeysScreen(
     val delete: () -> Unit = remember {
         {
             scope.launch {
+                backupError = null
                 try {
                     viewModel.deleteBackup()
                 } catch (e: Exception) {
-                    mainViewModel.showSnackbar(deleteErrorOptions)
+                    backupError = deleteErrorText
                 }
             }
         }
     }
 
     ExportKeysContent(
-        onBack = onBack,
+        onBack = { if (!isDeletingAccount) onBack() },
         privateKey = privateKey!!,
         driveState = driveState,
         isDriveButtonEnabled = isDriveButtonEnabled,
         isInit = isInit,
         signIn = signIn,
         backUp = backUp,
-        delete = delete
+        delete = delete,
+        backupError = backupError,
+        isDeletingAccount = isDeletingAccount,
+        deleteAccountError = deleteAccountError,
+        onConfirmDeleteAccount = { profileViewModel.clearAllData(context) },
     )
 }
 
@@ -125,7 +143,11 @@ fun ExportKeysContent(
     isInit: Boolean,
     signIn: () -> Unit,
     backUp: () -> Unit,
-    delete: () -> Unit
+    delete: () -> Unit,
+    backupError: String? = null,
+    isDeletingAccount: Boolean = false,
+    deleteAccountError: String = "",
+    onConfirmDeleteAccount: () -> Unit = {},
 ) {
 
     ProfileRouteLayout(
@@ -146,6 +168,23 @@ fun ExportKeysContent(
             },
             isInit = isInit,
             isHeaderEnabled = false
+        )
+
+        if (!backupError.isNullOrBlank()) {
+            Text(
+                text = backupError,
+                style = FoundationType.callout,
+                color = FoundationBrand.Danger,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
+            )
+        }
+
+        // Last, and set apart from the backup options above.
+        DeleteAccountSection(
+            isDeletingAccount = isDeletingAccount,
+            deleteAccountError = deleteAccountError,
+            onConfirmDelete = onConfirmDeleteAccount,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 40.dp, bottom = 24.dp),
         )
     }
 }

@@ -82,7 +82,14 @@ fun ExtIntQueryProofHandler(
     proofParamsUrl: String? = null,
     onSuccess: (destination: String?) -> Unit = {},
     onFail: () -> Unit = {},
-    onCancel: () -> Unit = {}
+    onCancel: () -> Unit = {},
+    /**
+     * When set, a failure's message goes here instead of to an error
+     * snackbar, so the caller can report it once, its own way. Home's verify
+     * card uses it: its failure becomes the bell's "Verification didn't
+     * finish" entry rather than a second, generic one.
+     */
+    onFailMessage: ((String) -> Unit)? = null,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -136,8 +143,26 @@ fun ExtIntQueryProofHandler(
         }
     }
 
-    fun onFailHandler(e: Exception) {
+    fun reportFailure(message: String) {
+        val report = onFailMessage
+        if (report != null) {
+            report(message)
+            return
+        }
         scope.launch {
+            mainViewModel.showSnackbar(
+                options = getSnackbarDefaultShowOptions(
+                    severity = SnackbarSeverity.Error,
+                    duration = SnackbarDuration.Long,
+                    title = context.getString(R.string.light_verification_error_title),
+                    message = message,
+                )
+            )
+        }
+    }
+
+    fun onFailHandler(e: Exception) {
+        run {
             val message = when (e) {
                 is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
                 is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
@@ -152,20 +177,13 @@ fun ExtIntQueryProofHandler(
 
             ErrorHandler.logError("Ext", "error", e)
 
-            mainViewModel.showSnackbar(
-                options = getSnackbarDefaultShowOptions(
-                    severity = SnackbarSeverity.Error,
-                    duration = SnackbarDuration.Long,
-                    title = context.getString(R.string.light_verification_error_title),
-                    message = message,
-                )
-            )
+            reportFailure(message)
         }
         onFail.invoke()
     }
 
     fun onFailGetHandler(e: Exception) {
-        scope.launch {
+        run {
             val message = when (e) {
                 is YourAgeDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_age)
                 is YourCitizenshipDoesNotMeetTheRequirements -> context.getString(R.string.light_verification_error_citizenship)
@@ -180,14 +198,7 @@ fun ExtIntQueryProofHandler(
 
             ErrorHandler.logError("Ext", "error", e)
 
-            mainViewModel.showSnackbar(
-                options = getSnackbarDefaultShowOptions(
-                    severity = SnackbarSeverity.Error,
-                    duration = SnackbarDuration.Long,
-                    title = context.getString(R.string.light_verification_error_title),
-                    message = message,
-                )
-            )
+            reportFailure(message)
         }
         onFail.invoke()
     }
