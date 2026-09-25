@@ -99,6 +99,10 @@ final class AppLogFile {
     private let queue = DispatchQueue(label: "foundation.app-log-file")
     private let dateFormatter = ISO8601DateFormatter()
     private var handle: FileHandle?
+    private var fileError: String?
+    /// This run's newest lines, in case the file can't be written.
+    private var recentLines: [String] = []
+    private static let maxRecentLines = 2000
 
     private static let maxSize = 2 * 1024 * 1024
 
@@ -112,16 +116,7 @@ final class AppLogFile {
         queue.async { [self] in
             try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             trimIfNeeded()
-            if !FileManager.default.fileExists(atPath: url.path()) {
-                FileManager.default.createFile(atPath: url.path(), contents: nil)
-            }
-            var values = URLResourceValues()
-            values.isExcludedFromBackup = true
-            var mutableURL = url
-            try? mutableURL.setResourceValues(values)
-
-            handle = try? FileHandle(forWritingTo: url)
-            _ = try? handle?.seekToEnd()
+            openFile()
 
             let info = Bundle.main.infoDictionary
             let version = info?["CFBundleShortVersionString"] as? String ?? "?"
@@ -144,7 +139,12 @@ final class AppLogFile {
     func contents() -> String {
         queue.sync {
             try? handle?.synchronize()
-            return (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+            let text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+            if !text.isEmpty { return text }
+
+            // The file couldn't be written: fall back to this run's lines.
+            let note = "[The log file couldn't be written: \(fileError ?? "unknown error"). Showing this run only.]"
+            return ([note] + recentLines).joined(separator: "\n")
         }
     }
 
@@ -157,8 +157,43 @@ final class AppLogFile {
         return copy
     }
 
+    // `url.path()` percent-encodes, which turns "Application Support" into
+    // "Application%20Support": the file was never created and every entry
+    // was dropped. File-path APIs need the plain path.
+    private var filePath: String { url.path(percentEncoded: false) }
+
+    private func openFile() {
+        if !FileManager.default.fileExists(atPath: filePath) {
+            FileManager.default.createFile(atPath: filePath, contents: nil)
+        }
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        var mutableURL = url
+        try? mutableURL.setResourceValues(values)
+
+        do {
+            let handle = try FileHandle(forWritingTo: url)
+            try handle.seekToEnd()
+            self.handle = handle
+            fileError = nil
+        } catch {
+            fileError = "\(error)"
+        }
+    }
+
     private func write(_ line: String) {
-        try? handle?.write(contentsOf: Data((line + "\n").utf8))
+        recentLines.append(line)
+        if recentLines.count > Self.maxRecentLines {
+            recentLines.removeFirst(recentLines.count - Self.maxRecentLines)
+        }
+
+        if handle == nil { openFile() }
+        do {
+            try handle?.write(contentsOf: Data((line + "\n").utf8))
+        } catch {
+            fileError = "\(error)"
+            handle = nil
+        }
     }
 
     private func trimIfNeeded() {
