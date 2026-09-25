@@ -146,12 +146,17 @@ struct ImportIdentityView: View {
             }
             
             do {
-                if try !isValidPrivateKey(privateKeyHex) {
+                // Keys copied from other apps often carry a "0x" prefix,
+                // spaces or a line break.
+                var keyHex = privateKeyHex.filter { !$0.isWhitespace }
+                if keyHex.lowercased().hasPrefix("0x") { keyHex = String(keyHex.dropFirst(2)) }
+                
+                if try !isValidPrivateKey(keyHex) {
                     privateKeyHexError = String(localized: "Invalid private key")
                     return
                 }
                 
-                guard let privateKey = Data(hex: privateKeyHex) else {
+                guard let privateKey = Data(hex: keyHex) else {
                     privateKeyHexError = String(localized: "Invalid private key")
                     return
                 }
