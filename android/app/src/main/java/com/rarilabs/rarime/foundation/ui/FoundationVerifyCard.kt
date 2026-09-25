@@ -50,7 +50,7 @@ class FoundationVerifyCardViewModel @Inject constructor(
 
     /**
      * Non-null once the passport is registered (the passport flow has run to
-     * completion). Until then the card's action is "Scan passport", because
+     * completion). Until then the card's action is "Verify with passport", because
      * `beginVerification()` could only answer `NotRegistered`.
      */
     val registrationProof: StateFlow<UniversalProof?> = identityManager.registrationProof
@@ -108,8 +108,9 @@ class FoundationVerifyCardViewModel @Inject constructor(
 /**
  * Home's status card: whether this person is verified, and the one next step.
  *
- * - Passport not registered yet: "Not verified yet" + "Scan passport", which
- *   opens the existing passport flow through [onScanPassport].
+ * - Passport not registered yet: "Not verified yet" + "Verify with passport",
+ *   which opens the passport flow (its task guide first) through
+ *   [onScanPassport].
  * - Registered but not yet verified with Foundation: "Finish verification",
  *   which runs the existing `beginVerification()` -> proof -> poll flow.
  * - Verified: the "Verified" pill and what that lets you prove.
@@ -199,8 +200,10 @@ private fun FoundationVerifyCardContent(
                     CheckChip("Unique person")
                 }
 
+                // Opens the verify task guide (ScanPassportScreen starts on
+                // it), so the label names the whole job, not the camera step.
                 needsPassport -> FoundationButton(
-                    text = "Scan passport",
+                    text = "Verify with passport",
                     leadingIcon = R.drawable.ic_fnd_passport,
                     onClick = onScanPassport,
                 )

@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -321,6 +322,7 @@ enum class FoundationButtonStyle { Primary, Secondary, Text }
  * Full-width Foundation button: green fill (primary), white with a hairline
  * border and green label (secondary), or a bare green label (text). Radius 8,
  * drawn at 0.7 opacity when disabled, as in the iOS sign-in button.
+ * [leadingImage] is for code-built icons; [leadingIcon] wins if both are set.
  */
 @Composable
 fun FoundationButton(
@@ -331,6 +333,7 @@ fun FoundationButton(
     enabled: Boolean = true,
     isLoading: Boolean = false,
     @DrawableRes leadingIcon: Int? = null,
+    leadingImage: ImageVector? = null,
 ) {
     val shape = RoundedCornerShape(8.dp)
     val background = when (style) {
@@ -367,6 +370,13 @@ fun FoundationButton(
         } else if (leadingIcon != null) {
             Icon(
                 painter = painterResource(leadingIcon),
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier.size(20.dp),
+            )
+        } else if (leadingImage != null) {
+            Icon(
+                imageVector = leadingImage,
                 contentDescription = null,
                 tint = contentColor,
                 modifier = Modifier.size(20.dp),
@@ -448,7 +458,7 @@ private fun PillarsHeroPreview() {
     ) {
         BrandLockup()
         PillarsHero()
-        FoundationButton(text = "Scan passport", onClick = {}, leadingIcon = R.drawable.ic_fnd_passport)
+        FoundationButton(text = "Verify with passport", onClick = {}, leadingIcon = R.drawable.ic_fnd_passport)
         FoundationButton(
             text = "Scan QR code",
             onClick = {},

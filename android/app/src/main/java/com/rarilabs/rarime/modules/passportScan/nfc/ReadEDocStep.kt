@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,6 +42,11 @@ import okio.IOException
 import org.jmrtd.lds.icao.MRZInfo
 
 
+/**
+ * The chip read. [autoStartScan] opens the scan sheet (which starts the NFC
+ * read) as soon as the screen appears, for callers whose previous screen
+ * already had a "Start chip scan" button; the Scan button stays for retries.
+ */
 @Composable
 fun ReadEDocStep(
     mrzInfo: MRZInfo,
@@ -48,6 +54,7 @@ fun ReadEDocStep(
     onClose: () -> Unit,
     onError: (e: Exception) -> Unit,
     readEDocStepViewModel: ReadEDocStepViewModel = hiltViewModel(),
+    autoStartScan: Boolean = false,
 ) {
     val state by readEDocStepViewModel.state.collectAsState()
     val scanExceptionInstance = readEDocStepViewModel.scanExceptionInstance.collectAsState()
@@ -106,7 +113,8 @@ fun ReadEDocStep(
         stopScanning = { readEDocStepViewModel.resetState() },
         currentNfcScanStep = currentStep,
         resetNFCScanState = { readEDocStepViewModel.resetNfcScanStep() },
-        hintType = hintType
+        hintType = hintType,
+        autoStartScan = autoStartScan
     )
 }
 
@@ -120,9 +128,16 @@ private fun ReadEDocStepContent(
     stopScanning: () -> Unit,
     state: ScanNFCState,
     resetNFCScanState: () -> Unit,
-    hintType: SpecificPassportGuide
+    hintType: SpecificPassportGuide,
+    autoStartScan: Boolean = false
 ) {
     val scanSheetState = rememberAppSheetState(showSheet = false)
+
+    LaunchedEffect(Unit) {
+        if (autoStartScan) {
+            scanSheetState.show()
+        }
+    }
 
 
     AppBottomSheet(state = scanSheetState) {

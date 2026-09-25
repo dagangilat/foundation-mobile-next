@@ -96,9 +96,10 @@ fun HomeScreenV3(
         statusCard = {
             FoundationVerifyCard(
                 // The Identity route is the same screen the old Identity tab
-                // opened: the passport scan while no passport is stored, then
-                // the registration that produces the proof this card waits
-                // for. It closes back to Home.
+                // opened: the passport scan (starting on the verify task
+                // guide) while no passport is stored, then the registration
+                // that produces the proof this card waits for. It closes back
+                // to Home.
                 onScanPassport = { navigate(Screen.Main.Identity.route) },
                 // Shows the QR scan sheet mounted in MainScreen (the flow the
                 // old QR tab opened); a scanned partner request runs through
