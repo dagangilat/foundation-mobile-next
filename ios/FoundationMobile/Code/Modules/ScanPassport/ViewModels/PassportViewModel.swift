@@ -507,6 +507,19 @@ class PassportViewModel: ObservableObject {
                 return zkProof
             }
             
+            // Light registration can't take over a passport bound to another
+            // identity: the chain's StateKeeper only adds a new bond, and moving
+            // one (revoke + reissue) exists only on the full-circuit path.
+            if passportInfo.activeIdentity != Ethereum.ZERO_BYTES32 {
+                LoggerUtil.common.error("Light registration: passport is bound to another identity (revoked: \(passportInfo.activeIdentity == PoseidonSMT.revokedValue, privacy: .public))")
+                
+                throw Errors.unknown(
+                    "This passport is already verified in another app, such as RariMe, with a different key. "
+                        + "For this passport type the chain can't move it to a new key. To use it here, copy your key from that app "
+                        + "(RariMe: Profile, Export keys) and restore it in this app, or verify with a passport you haven't used before."
+                )
+            }
+            
             try await step("Light registration (\(registerIdentityLightCircuitName))") {
                 try await UserManager.shared.lightRegister(zkProof, registerResponse)
             }
