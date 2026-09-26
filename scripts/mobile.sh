@@ -27,6 +27,7 @@
 #   export PLAY_STORE_JSON_KEY=$HOME/keys/play-service-account.json
 #   export FASTLANE_APPLE_ID=you@example.com   # only for ios-create-app
 #   export PLAY_APP_SIGNING_SHA256=AB:CD:...   # Play Console > App integrity
+#   export PLAY_APP_SIGNING_SHA1=AB:CD:...     # same page, the SHA-1 line
 #
 # Written for macOS on Apple Silicon with the system bash (3.2).
 set -euo pipefail
@@ -123,9 +124,13 @@ keystore_path() {
   case "$f" in /*) echo "$f" ;; "") echo "" ;; *) echo "android/$f" ;; esac
 }
 
-sha256_of() { # keystore alias storepass
+# Both digests of a keystore entry, "SHA1 SHA256" on one line. Google sign-in
+# (the Android Drive backup) matches the app by SHA-1 only; Play Integrity and
+# App Links use SHA-256. Registering only SHA-256 left sign-in failing with
+# "Can't sign in to Google identity account" (Google's DEVELOPER_ERROR, 10).
+fingerprints_of() { # keystore alias storepass
   keytool -list -v -keystore "$1" -alias "$2" -storepass "$3" 2>/dev/null \
-    | awk '/SHA256:/ {print $2; exit}' || true
+    | awk '/SHA1:/ && !a {a=$2} /SHA256:/ && !b {b=$2} END {if (a || b) print a, b}' || true
 }
 
 # Firebase CLI JSON: the appId of the app registered for APP_ID on a platform.
@@ -374,7 +379,7 @@ cmd_firebase() {
   local and_id
   and_id="$(ensure_firebase_app ANDROID)"
 
-  step "Android SHA-256 fingerprints (Google sign-in for Drive backup, Play Integrity)"
+  step "Android SHA-1 + SHA-256 fingerprints (Google sign-in for Drive backup, Play Integrity)"
   use_java
   local shas="" s
   if [ ! -f "$HOME/.android/debug.keystore" ]; then
@@ -384,11 +389,11 @@ cmd_firebase() {
       -dname "CN=Android Debug,O=Android,C=US" >/dev/null 2>&1
   fi
   PATH="$JAVA_HOME/bin:$PATH"
-  s="$(sha256_of "$HOME/.android/debug.keystore" androiddebugkey android)"; [ -n "$s" ] && shas="$shas $s"
+  shas="$shas $(fingerprints_of "$HOME/.android/debug.keystore" androiddebugkey android)"
   if [ -f android/keystore.properties ]; then
-    s="$(sha256_of "$(keystore_path)" "$(keystore_prop keyAlias)" "$(keystore_prop storePassword)")"
-    [ -n "$s" ] && shas="$shas $s"
+    shas="$shas $(fingerprints_of "$(keystore_path)" "$(keystore_prop keyAlias)" "$(keystore_prop storePassword)")"
   fi
+  [ -n "${PLAY_APP_SIGNING_SHA1:-}" ] && shas="$shas $PLAY_APP_SIGNING_SHA1"
   [ -n "${PLAY_APP_SIGNING_SHA256:-}" ] && shas="$shas $PLAY_APP_SIGNING_SHA256"
   local existing
   existing="$(firebase apps:android:sha:list "$and_id" --project "$FIREBASE_PROJECT" 2>/dev/null | tr 'a-f' 'A-F' || true)"
@@ -406,6 +411,7 @@ cmd_firebase() {
     fi
   done
   [ -z "${PLAY_APP_SIGNING_SHA256:-}" ] && warn "Play app signing key not added: copy its SHA-256 from Play Console > App integrity, set PLAY_APP_SIGNING_SHA256 in $ENV_FILE and re-run"
+  [ -z "${PLAY_APP_SIGNING_SHA1:-}" ] && warn "Play app signing SHA-1 not added (Drive backup sign-in in Play builds needs it): copy the SHA-1 from Play Console > App integrity, set PLAY_APP_SIGNING_SHA1 in $ENV_FILE and re-run"
 
   # Re-fetch after the fingerprints so the OAuth clients they create are included.
   if fetch_sdkconfig ANDROID "$and_id" "$ANDROID_JSON"; then
@@ -435,6 +441,8 @@ cmd_firebase() {
   echo "  - Cloud Messaging: upload your APNs .p8 key (team $TEAM_ID):"
   echo "    https://console.firebase.google.com/project/$FIREBASE_PROJECT/settings/cloudmessaging"
   echo "  - After the first simulator/emulator launch, add the App Check debug token it logs."
+  echo "  - Android Drive backup: the Google Drive API must be enabled for the project:"
+  echo "    https://console.cloud.google.com/apis/library/drive.googleapis.com?project=$FIREBASE_PROJECT"
 }
 
 # ---------------------------------------------------------------- iOS
