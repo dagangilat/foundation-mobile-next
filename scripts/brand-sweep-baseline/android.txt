@@ -992,6 +992,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMet
 android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodDetailScreen.kt:import com.rarilabs.rarime.ui.components.PrimaryButton
 android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodDetailScreen.kt:import com.rarilabs.rarime.ui.components.PrimaryTextButton
 android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodDetailScreen.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodDetailScreen.kt:import com.rarilabs.rarime.util.BiometricUtil
 android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodDetailScreen.kt:package com.rarilabs.rarime.modules.recoveryMethod
 android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodViewModel.kt:import com.rarilabs.rarime.manager.DriveBackupManager
 android/app/src/main/java/com/rarilabs/rarime/modules/recoveryMethod/RecoveryMethodViewModel.kt:import com.rarilabs.rarime.manager.IdentityManager
