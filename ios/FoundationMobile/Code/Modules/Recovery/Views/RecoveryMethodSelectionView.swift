@@ -1,15 +1,25 @@
 import CloudKit
+import LocalAuthentication
 import SwiftUI
 
 struct RecoveryMethodSelectionView: View {
     private static let showsComingSoonMethods = false
 
     @EnvironmentObject private var userManager: UserManager
+    @Environment(\.scenePhase) private var scenePhase
 
     @StateObject var viewModel = ICloudRecoveryViewModel()
 
     @State private var isCopied = false
     @State private var isRewriteAlertPresented = false
+
+    /// The key starts hidden and shows only after the phone's own unlock.
+    @State private var isKeyRevealed = false
+    @State private var isNoPasscodeAlertPresented = false
+    /// The unlock prompt in flight. Leaving the screen invalidates it and
+    /// bumps the attempt, so a late success cannot reveal the key.
+    @State private var unlockContext: LAContext?
+    @State private var unlockAttempt = 0
 
     var body: some View {
         VStack(spacing: 12) {
@@ -66,6 +76,21 @@ struct RecoveryMethodSelectionView: View {
         .onAppear {
             Task { await viewModel.loadBackupStatus() }
         }
+        .onDisappear {
+            unlockAttempt += 1
+            unlockContext?.invalidate()
+            unlockContext = nil
+            isKeyRevealed = false
+        }
+        // Hidden again as soon as the app stops being active, before the
+        // app switcher snapshot. The unlock prompt itself makes the scene
+        // inactive too, but its success arrives after that and still shows
+        // the key.
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase != .active {
+                isKeyRevealed = false
+            }
+        }
         .alert(
             "iCloud backup already exists",
             isPresented: $isRewriteAlertPresented,
@@ -100,13 +125,28 @@ struct RecoveryMethodSelectionView: View {
                 .foregroundStyle(.textPrimary)
                 VStack(alignment: .leading, spacing: 20) {
                     if let user = userManager.user {
-                        Text(user.secretKey.hex)
-                            .body4()
-                            .foregroundStyle(.textPrimary)
-                            .fixedSize(horizontal: false, vertical: true)
+                        if isKeyRevealed {
+                            Text(user.secretKey.hex)
+                                .body4()
+                                .foregroundStyle(.textPrimary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } else {
+                            maskedKey(user.secretKey.hex)
+                        }
                     }
                     HorizontalDivider()
-                    copyButton
+                    // Copy appears only once the key is shown, so copying
+                    // needs the same unlock as seeing it.
+                    if isKeyRevealed {
+                        HStack(spacing: 0) {
+                            copyButton
+                            keyActionButton(icon: .eyeOffLine, title: "Hide") {
+                                isKeyRevealed = false
+                            }
+                        }
+                    } else {
+                        keyActionButton(icon: .eyeLine, title: "Show", action: revealKey)
+                    }
                 }
                 .padding(20)
                 .background(.bgSurface1, in: RoundedRectangle(cornerRadius: 12))
@@ -122,11 +162,82 @@ struct RecoveryMethodSelectionView: View {
                     .foregroundStyle(.textSecondary)
             }
         }
+        .alert(
+            "No screen lock",
+            isPresented: $isNoPasscodeAlertPresented,
+            actions: {
+                Button("Cancel", role: .cancel) {
+                    isNoPasscodeAlertPresented = false
+                }
+                Button("Show") {
+                    isNoPasscodeAlertPresented = false
+                    isKeyRevealed = true
+                }
+            },
+            message: {
+                Text("Your phone has no screen lock. Show the private key anyway?")
+            }
+        )
+    }
+
+    /// A row of dots in the space the key takes, so the card keeps its height
+    /// when the key is shown. The key under it is laid out for that height
+    /// only: a hidden view is neither drawn nor read out.
+    private func maskedKey(_ key: String) -> some View {
+        ZStack(alignment: .leading) {
+            Text(key)
+                .body4()
+                .fixedSize(horizontal: false, vertical: true)
+                .hidden()
+            Text(String(repeating: "\u{2022}", count: 16))
+                .kerning(2)
+                .body4()
+                .foregroundStyle(.textSecondary)
+                .lineLimit(1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("Private key, hidden"))
+    }
+
+    private func keyActionButton(
+        icon: ImageResource,
+        title: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Spacer()
+                Image(icon)
+                    .iconMedium()
+                Text(title)
+                    .buttonMedium()
+                Spacer()
+            }
+            .foregroundStyle(.textPrimary)
+        }
+    }
+
+    private func revealKey() {
+        let attempt = unlockAttempt + 1
+        unlockAttempt = attempt
+        unlockContext?.invalidate()
+        // A cancel or failed unlock just leaves the key hidden.
+        unlockContext = FaceIdAuth.shared.authenticateDeviceOwner(
+            reason: String(localized: "Show your private key")
+        ) { result in
+            guard attempt == unlockAttempt else { return }
+            unlockContext = nil
+            switch result {
+            case .success: isKeyRevealed = true
+            case .failure: break
+            case .noPasscode: isNoPasscodeAlertPresented = true
+            }
+        }
     }
 
     private var copyButton: some View {
         Button(action: {
-            if isCopied { return }
+            if isCopied || !isKeyRevealed { return }
             guard let user = userManager.user else { return }
 
             UIPasteboard.general.string = user.secretKey.hex
