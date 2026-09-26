@@ -428,8 +428,13 @@
     <string name="label_expiration_criteria">Document valid until</string>
     <string name="bad_internet_connection">There was an issue with your internet connection. Please check your network settings.</string>
     <string name="error_get_params_no_internet_connection">Failed to get proof params. Please check your internet connection.</string>
-    <string name="nfc_is_not_available_on_this_device">NFC is not available on this device.</string>
-    <string name="disablet_nfc_error">NFC is disabled. Please enable it in your device settings.</string>
+
+    <!-- Shown instead of a chip scan when this phone can't read the chip right now (NfcUnavailableNotice). -->
+    <string name="nfc_unavailable_not_supported_title">This phone can\'t read passport chips</string>
+    <string name="nfc_unavailable_not_supported_body">Passport verification needs NFC, and this phone doesn\'t have it. Use a phone with NFC to verify.</string>
+    <string name="nfc_unavailable_disabled_title">Turn on NFC</string>
+    <string name="nfc_unavailable_disabled_body">NFC is off. Turn it on to read your passport chip.</string>
+    <string name="nfc_open_settings">Open NFC settings</string>
 
     <!-- Home's bell: the app's own notifications (errors no longer pop up over the screen). -->
     <string name="notifications_title">Notifications</string>

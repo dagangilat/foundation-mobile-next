@@ -4,6 +4,7 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.NfcAvailability
 import com.rarilabs.rarime.manager.NfcManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcScanStep
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
@@ -29,6 +30,12 @@ class ReadEDocStepViewModel @Inject constructor(
     val state = nfcManager.state
 
     val resetState = nfcManager::resetState
+
+    /** Whether this phone can read the chip; the screen shows why not instead of scanning. */
+    val nfcAvailability: StateFlow<NfcAvailability> = nfcManager.availabilityState
+
+    fun refreshNfcAvailability(): NfcAvailability = nfcManager.refreshAvailability()
+
     private val _currentNfcScanStep = MutableStateFlow(NfcScanStep.PREPARING)
 
     val currentNfcScanStep: StateFlow<NfcScanStep>
@@ -75,6 +82,9 @@ class ReadEDocStepViewModel @Inject constructor(
 
     fun startScanning(mrzInfo: MRZInfo) {
         this.mrzInfo = mrzInfo
+        // Drop the last attempt's exception, so an ERROR from this one is
+        // never handled as the previous one's.
+        _scanExceptionInstance.value = null
         nfcManager.startScanning(::handleScan, onError = { onError(it) })
     }
 

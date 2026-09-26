@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BuildConfig
+import com.rarilabs.rarime.manager.NfcAvailability
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
@@ -27,8 +28,10 @@ import com.rarilabs.rarime.modules.passportScan.guide.PhotoExplainerScreen
 import com.rarilabs.rarime.modules.passportScan.guide.VerifyGuideScreen
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
+import com.rarilabs.rarime.modules.passportScan.nfc.OnResumeEffect
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
+import com.rarilabs.rarime.modules.passportScan.nfc.openNfcSettings
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
@@ -174,9 +177,20 @@ fun ScanPassportScreen(
             }
 
             ScanPassportState.CHIP_EXPLAINER -> {
+                // Say "no NFC" / "NFC is off" here, before the scan step,
+                // and re-check when the person comes back from settings.
+                val nfcAvailability by scanPassportScreenViewModel.nfcAvailability.collectAsState()
+                OnResumeEffect { scanPassportScreenViewModel.refreshNfcAvailability() }
+
                 ChipExplainerScreen(
                     onBack = { state = ScanPassportState.GUIDE_CHIP },
-                    onStartChipScan = { state = ScanPassportState.READ_NFC }
+                    onStartChipScan = {
+                        if (scanPassportScreenViewModel.refreshNfcAvailability() == NfcAvailability.READY) {
+                            state = ScanPassportState.READ_NFC
+                        }
+                    },
+                    nfcAvailability = nfcAvailability,
+                    onOpenNfcSettings = { openNfcSettings(context) },
                 )
             }
 

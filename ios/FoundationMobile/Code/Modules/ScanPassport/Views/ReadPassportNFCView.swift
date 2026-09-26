@@ -19,6 +19,10 @@ struct ReadPassportNFCView: View {
 
     @State private var useExtendedMode = false
     @State private var hasAutoStarted = false
+    /// False on a device that can't read NFC chips: the screen then says so
+    /// instead of offering a scan that could only fail. It can't change while
+    /// the app runs (iOS has no NFC switch), so it is read once.
+    @State private var isNFCAvailable = NFCScanner.isReadingAvailable
 
     var body: some View {
         ScanPassportLayoutView(
@@ -28,29 +32,37 @@ struct ReadPassportNFCView: View {
             onClose: onClose
         ) {
             VStack(spacing: 24) {
-                LoopVideoPlayer(url: passportViewModel.isUSA ? Videos.readNfcUsa : Videos.readNfc)
-                    .aspectRatio(16 / 9, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .padding(.horizontal, FoundationTheme.horizontalPadding)
+                if isNFCAvailable {
+                    LoopVideoPlayer(url: passportViewModel.isUSA ? Videos.readNfcUsa : Videos.readNfc)
+                        .aspectRatio(16 / 9, contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .padding(.horizontal, FoundationTheme.horizontalPadding)
 
-                (Text("Hold your phone flat").foregroundColor(FoundationTheme.text).bold()
-                    + Text(" on the photo page until it buzzes. Most chips read in a few seconds."))
-                    .font(.system(size: 16))
-                    .foregroundColor(FoundationTheme.muted)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foundationCard(padding: 18)
-                    .padding(.horizontal, FoundationTheme.horizontalPadding)
+                    (Text("Hold your phone flat").foregroundColor(FoundationTheme.text).bold()
+                        + Text(" on the photo page until it buzzes. Most chips read in a few seconds."))
+                        .font(.system(size: 16))
+                        .foregroundColor(FoundationTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foundationCard(padding: 18)
+                        .padding(.horizontal, FoundationTheme.horizontalPadding)
 
-                Spacer()
+                    Spacer()
 
-                Button("Scan chip", action: scanPassport)
-                    .buttonStyle(FoundationPrimaryButtonStyle())
-                    .padding(.horizontal, FoundationTheme.horizontalPadding)
-                    .padding(.bottom, 24)
+                    Button("Scan chip", action: scanPassport)
+                        .buttonStyle(FoundationPrimaryButtonStyle())
+                        .padding(.horizontal, FoundationTheme.horizontalPadding)
+                        .padding(.bottom, 24)
+                } else {
+                    // No scan to offer: Back (header) leaves the step.
+                    NFCUnavailableCard()
+                        .padding(.horizontal, FoundationTheme.horizontalPadding)
+
+                    Spacer()
+                }
             }
         }
         .onAppear {
-            guard startsScanOnAppear, !hasAutoStarted else { return }
+            guard isNFCAvailable, startsScanOnAppear, !hasAutoStarted else { return }
             hasAutoStarted = true
             // Let the screen slide in before the system NFC sheet covers it.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -60,6 +72,11 @@ struct ReadPassportNFCView: View {
     }
 
     private func scanPassport() {
+        guard NFCScanner.isReadingAvailable else {
+            isNFCAvailable = false
+            return
+        }
+
         NFCScanner.scanPassport(
             passportViewModel.mrzKey ?? "",
             userManager.userChallenge,
@@ -92,6 +109,9 @@ struct ReadPassportNFCView: View {
                 case .failure(let error):
                     LoggerUtil.common.error("failed to read passport data: \(error.localizedDescription, privacy: .public)")
                     switch error {
+                    case NFCScannerError.nfcNotAvailable:
+                        // Not a failed read: say so on this screen.
+                        isNFCAvailable = false
                     case NFCPassportReaderError.Unknown:
                         if useExtendedMode {
                             onBack()
