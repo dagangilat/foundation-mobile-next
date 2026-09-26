@@ -1,13 +1,16 @@
 package com.rarilabs.rarime.foundation
 
+import android.content.Context
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.util.ErrorHandler
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -83,11 +86,31 @@ class FoundationVerificationManager internal constructor(
      * the card itself only says the last try didn't finish.
      */
     private val onFailed: (String) -> Unit = {},
-    /** Told when the flow reaches `Verified`. */
+    /**
+     * Told when the flow reaches `Verified` - the live flow only. A `Verified`
+     * that [refreshFromServer] re-learns, or the cache restores, does not call
+     * it: the member got the "You're verified" bell entry when it happened, and
+     * one per app launch would be noise.
+     */
     private val onVerified: () -> Unit = {},
+    /**
+     * `getMyFounderProfile`, for [refreshFromServer]. The default throws, which
+     * [refreshFromServer] treats like any network error (silent, state kept) -
+     * so a test that does not care about refresh never needs to stub it.
+     */
+    private val fetchFounderProfile: suspend () -> FounderProfileResult = {
+        throw IllegalStateException("getMyFounderProfile is not wired")
+    },
+    /**
+     * Where "this uid is a verified person" is kept between launches. Null
+     * means no persistence at all: production's Hilt constructor passes the
+     * SharedPreferences one, tests pass a fake or nothing.
+     */
+    private val verifiedCache: VerifiedMemberCache? = null,
 ) {
     @Inject
     constructor(
+        @ApplicationContext context: Context,
         functionsService: FoundationFunctionsService,
         authManager: FoundationAuthManager,
         identityManager: IdentityManager,
@@ -106,19 +129,70 @@ class FoundationVerificationManager internal constructor(
             )
         },
         onVerified = { notificationStore.postVerified() },
+        fetchFounderProfile = { functionsService.getMyFounderProfile() },
+        verifiedCache = SharedPrefsVerifiedMemberCache(context),
     )
 
     private val _state = MutableStateFlow<VerificationState>(VerificationState.Idle)
     val state: StateFlow<VerificationState> = _state.asStateFlow()
+
+    /**
+     * Guards [reset] against [refreshFromServer]'s commit. Everything else in
+     * this class runs on the main thread, but `reset()` is also reached from
+     * [FoundationAccountDeletionManager], and the check-then-write at the end
+     * of a refresh has to be one step with respect to it.
+     */
+    private val lock = Any()
+
+    /**
+     * True while `state` is a `Verified` that came out of [verifiedCache] and
+     * the server has not yet confirmed this process. It is the one `Verified`
+     * that [refreshFromServer] may still take back: a `Verified` reached
+     * through the live flow, or already confirmed by a refresh, is final, as it
+     * always was. Without it a cached answer could only ever be cleared by
+     * signing out - a member deleted on the web would stay "verified" on this
+     * phone forever, because the refresh that should notice would see
+     * `Verified` and stand down.
+     */
+    @Volatile
+    private var isVerifiedUnconfirmed = false
+
+    /**
+     * Bumped by every [reset]. [refreshFromServer] captures it before its
+     * network call and refuses to write if it moved: a sign-out or account
+     * deletion landing during the call must win, even when the SAME uid signs
+     * straight back in before the answer arrives - a uid comparison alone
+     * cannot see that.
+     */
+    private var resetGeneration = 0
+
+    /** One refresh at a time: a resume and a recomposition can fire together. */
+    private val isRefreshing = AtomicBoolean(false)
+
+    init {
+        // Home says "verified" on its very first frame of a cold launch,
+        // offline included, instead of flashing "Finish verification" until a
+        // round trip lands. FirebaseAuth restores `currentUser` synchronously
+        // from its own SharedPreferences, so `uidProvider()` is already the
+        // signed-in member here.
+        restoreFromCacheIfIdle()
+    }
 
     private fun fail(message: String) {
         _state.value = VerificationState.Failed(message)
         onFailed(message)
     }
 
-    private fun verified(memberNumber: Int?) {
+    /**
+     * Every transition INTO `Verified` goes through here, so every one is
+     * cached for the next launch. `notify` is true only for the live flow's
+     * two endings (a finished poll, the `already_verified_l2` short-circuit).
+     */
+    private fun verified(memberNumber: Int?, notify: Boolean = true) {
         _state.value = VerificationState.Verified(memberNumber)
-        onVerified()
+        isVerifiedUnconfirmed = false
+        uidProvider()?.let { uid -> verifiedCache?.write(VerifiedMemberCache.Entry(uid, memberNumber)) }
+        if (notify) onVerified()
     }
 
     /**
@@ -199,7 +273,104 @@ class FoundationVerificationManager internal constructor(
      * they never earned.
      */
     fun reset() {
-        _state.value = VerificationState.Idle
+        synchronized(lock) {
+            _state.value = VerificationState.Idle
+            isVerifiedUnconfirmed = false
+            resetGeneration++
+            // The persisted answer describes the departing member too. It is
+            // uid-keyed and would never be RESTORED for another uid anyway (see
+            // restoreFromCacheIfIdle), but a departed member's uid and number
+            // have no business staying on disk.
+            verifiedCache?.clear()
+        }
+    }
+
+    /**
+     * Ask the backend, without side effects, whether this member is already
+     * verified, and let Home say so.
+     *
+     * Why this exists: `state` lives in memory only, and `Verified` used to be
+     * reachable only through the live flow. So every cold start began at
+     * `Idle`, and a member who finished verifying last night found Home back
+     * at "Passport checked - Finish verification" the next morning. Called
+     * from Home's verify card on every ON_RESUME, which covers both Home
+     * appearing and the app returning to the foreground.
+     *
+     * What it may touch, and what it may not:
+     *   - `Idle`, `Failed` and a cache-restored `Verified` only. `Failed` is
+     *     terminal - nothing runs behind it - so a server that says "verified"
+     *     simply outranks a try that didn't finish.
+     *   - Never `Starting`/`AwaitingProof`/`Polling`: a flow in progress owns
+     *     its own ending. Nor `NotRegistered`, which only a tap produces.
+     *   - Verified: `Verified(memberNumber)`, cached, WITHOUT [onVerified]'s
+     *     bell entry.
+     *   - Not verified (`not_a_member` included): the cache is dropped, and a
+     *     cache-restored `Verified` goes back to `Idle`; `Idle`/`Failed` stay.
+     *   - Any error: silent (logged only), state kept.
+     *
+     * Uses `getMyFounderProfile`, never `startL2Verification`: for anyone not
+     * yet l3 the latter CREATES a verification request and resets the verifier
+     * row - a side effect no resume may have.
+     */
+    suspend fun refreshFromServer() {
+        restoreFromCacheIfIdle()
+        if (!isRefreshable()) return
+        val uid = uidProvider() ?: return
+        if (!isRefreshing.compareAndSet(false, true)) return
+        try {
+            val generation = synchronized(lock) { resetGeneration }
+            val profile = try {
+                fetchFounderProfile()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logError("getMyFounderProfile failed; keeping the current state", e)
+                return
+            }
+            synchronized(lock) {
+                // Anything may have moved during the call: a reset (caught by
+                // the generation even if the same uid signed back in), another
+                // member signed in (the uid), or a flow the member started by
+                // tapping Finish (the state). Any of them makes this answer
+                // stale, so it is dropped, not merged.
+                if (generation != resetGeneration || uidProvider() != uid || !isRefreshable()) return
+                if (profile.isVerifiedPerson) {
+                    verified(profile.memberNumber, notify = false)
+                } else {
+                    verifiedCache?.clear()
+                    if (_state.value is VerificationState.Verified && isVerifiedUnconfirmed) {
+                        _state.value = VerificationState.Idle
+                        isVerifiedUnconfirmed = false
+                    }
+                }
+            }
+        } finally {
+            isRefreshing.set(false)
+        }
+    }
+
+    /** The states [refreshFromServer] may overwrite; see there. */
+    private fun isRefreshable(): Boolean = when (_state.value) {
+        VerificationState.Idle, is VerificationState.Failed -> true
+        is VerificationState.Verified -> isVerifiedUnconfirmed
+        else -> false
+    }
+
+    /**
+     * `Idle` -> `Verified` from [verifiedCache], but only when the entry names
+     * the uid signed in RIGHT NOW. A mismatch (another member on this device,
+     * or no one signed in) restores nothing and leaves the entry alone - only a
+     * server answer or [reset] may drop it.
+     */
+    private fun restoreFromCacheIfIdle() {
+        synchronized(lock) {
+            if (_state.value != VerificationState.Idle) return
+            val entry = verifiedCache?.read() ?: return
+            val uid = uidProvider() ?: return
+            if (entry.uid != uid) return
+            _state.value = VerificationState.Verified(entry.memberNumber)
+            isVerifiedUnconfirmed = true
+        }
     }
 
     /**
@@ -288,6 +459,57 @@ class FoundationVerificationManager internal constructor(
         const val MESSAGE_PROOF_FAILED = "We couldn't complete the passport check. Please try again."
         const val MESSAGE_TIMED_OUT =
             "The check is taking longer than expected. Please try again."
+    }
+}
+
+/**
+ * "This Firebase uid is a verified person" (and its member number), kept
+ * between launches so Home can say so on a cold start before - or without - a
+ * network round trip. Mirrors iOS's `VerifiedMemberCache`.
+ *
+ * A uid and an optional Int; nothing about the passport. It is a display hint,
+ * never an authority: [FoundationVerificationManager] restores an entry only
+ * for the uid signed in at that moment, drops it on `reset()` (sign-out,
+ * account deletion) and the first time the server disagrees, and every
+ * Foundation callable re-checks the member server-side regardless.
+ */
+interface VerifiedMemberCache {
+    data class Entry(val uid: String, val memberNumber: Int?)
+
+    fun read(): Entry?
+    fun write(entry: Entry)
+    fun clear()
+}
+
+private class SharedPrefsVerifiedMemberCache(context: Context) : VerifiedMemberCache {
+    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    override fun read(): VerifiedMemberCache.Entry? {
+        val uid = prefs.getString(KEY_UID, null)?.takeIf { it.isNotEmpty() } ?: return null
+        val memberNumber = if (prefs.contains(KEY_MEMBER_NUMBER)) prefs.getInt(KEY_MEMBER_NUMBER, 0) else null
+        return VerifiedMemberCache.Entry(uid, memberNumber)
+    }
+
+    override fun write(entry: VerifiedMemberCache.Entry) {
+        prefs.edit().apply {
+            putString(KEY_UID, entry.uid)
+            if (entry.memberNumber == null) remove(KEY_MEMBER_NUMBER) else putInt(KEY_MEMBER_NUMBER, entry.memberNumber)
+        }.apply()
+    }
+
+    // commit, not apply: account deletion restarts the process right after
+    // reset(), and an apply() could still be in flight - the same reason
+    // AppNotificationStore's storage commits. Skipped when there is nothing to
+    // clear, because an unverified member's every resume lands here.
+    override fun clear() {
+        if (prefs.all.isEmpty()) return
+        prefs.edit().clear().commit()
+    }
+
+    companion object {
+        private const val PREFS_NAME = "foundation_verified_member"
+        private const val KEY_UID = "uid"
+        private const val KEY_MEMBER_NUMBER = "memberNumber"
     }
 }
 

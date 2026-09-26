@@ -16,6 +16,7 @@ import com.rarilabs.rarime.foundation.AppNotificationStore
 import com.rarilabs.rarime.foundation.DeletionOutcome
 import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
 import com.rarilabs.rarime.foundation.FoundationAuthManager
+import com.rarilabs.rarime.foundation.FoundationVerificationManager
 import com.rarilabs.rarime.manager.DriveBackupManager
 import com.rarilabs.rarime.manager.IdentityManager
 import com.rarilabs.rarime.manager.PassportManager
@@ -45,6 +46,7 @@ class ProfileViewModel @Inject constructor(
     private val accountDeletionManager: FoundationAccountDeletionManager,
     private val authManager: FoundationAuthManager,
     private val notificationStore: AppNotificationStore,
+    private val verificationManager: FoundationVerificationManager,
 ) : ViewModel() {
 
     /** Shown as "Signed in as"; null hides that card. */
@@ -57,6 +59,12 @@ class ProfileViewModel @Inject constructor(
      */
     fun signOut() {
         authManager.signOut()
+        // The verification state - and its persisted "verified" answer -
+        // describe the departing member too. Home's card also resets on a null
+        // uid, but only while its ViewModel is alive, and leaving Home for
+        // Profile can pop it (navigateWithPopUp); this is the reset that always
+        // runs, matching iOS's signOutOfFoundation().
+        verificationManager.reset()
         // The bell's list describes the departing member too.
         notificationStore.clear()
     }

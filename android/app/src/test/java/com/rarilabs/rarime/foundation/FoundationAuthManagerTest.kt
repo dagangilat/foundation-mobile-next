@@ -16,6 +16,7 @@ class FoundationAuthManagerTest {
         assertEquals("startL2Verification", FoundationCallables.START_L2_VERIFICATION)
         assertEquals("getL2VerificationStatus", FoundationCallables.GET_L2_VERIFICATION_STATUS)
         assertEquals("deleteMyAccount", FoundationCallables.DELETE_MY_ACCOUNT)
+        assertEquals("getMyFounderProfile", FoundationCallables.GET_MY_FOUNDER_PROFILE)
     }
 
     @Test

@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,7 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewModelScope
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.api.ext_integrator.ext_int_action_preview.handlers.ext_int_query_proof_handler.ExtIntQueryProofHandler
@@ -47,7 +51,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FoundationVerifyCardViewModel @Inject constructor(
     private val verificationManager: FoundationVerificationManager,
-    authManager: FoundationAuthManager,
+    private val authManager: FoundationAuthManager,
     identityManager: IdentityManager,
     notificationStore: AppNotificationStore,
 ) : ViewModel() {
@@ -99,6 +103,21 @@ class FoundationVerifyCardViewModel @Inject constructor(
     }
 
     /**
+     * Ask Foundation whether this member is already verified, so a finished
+     * verification still reads as one after a relaunch - the manager's state is
+     * in memory only, and without this every cold start showed "Passport
+     * checked - Finish verification" to a member who had finished yesterday.
+     *
+     * Only while signed in (the manager also returns early without a uid). The
+     * manager decides which states it may touch - never a flow in progress -
+     * and never re-posts the "You're verified" bell entry from here.
+     */
+    fun refreshFromServer() {
+        if (authManager.uid.value == null) return
+        viewModelScope.launch { verificationManager.refreshFromServer() }
+    }
+
+    /**
      * Claims the success synchronously before launching the poller -
      * `proofRequestSucceeded()` is what tells a real success apart from an
      * abandoned sheet, and it must not lose that race to a dismissal.
@@ -143,6 +162,20 @@ fun FoundationVerifyCard(
     val state by viewModel.state.collectAsState()
     val registrationProof by viewModel.registrationProof.collectAsState()
     val notifications by viewModel.notifications.collectAsState()
+
+    // Re-read the verified state from Foundation on every ON_RESUME. An
+    // observer added to an already-resumed lifecycle is replayed up to
+    // ON_RESUME, so this one hook covers both "Home appeared" (including a
+    // cold start) and "the app came back to the foreground" - the member may
+    // have finished verifying elsewhere while it sat in the background.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) viewModel.refreshFromServer()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     FoundationVerifyCardContent(
         state = state,
