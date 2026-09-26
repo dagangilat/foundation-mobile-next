@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -204,6 +207,7 @@ fun FoundationVerifyCard(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FoundationVerifyCardContent(
     state: VerificationState,
@@ -258,9 +262,14 @@ private fun FoundationVerifyCardContent(
                 color = FoundationBrand.Muted,
             )
             when {
-                isVerified -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CheckChip("Passport chip")
-                    CheckChip("Unique person")
+                // FlowRow: on a narrow phone (or with large text) the second
+                // chip moves to its own line whole instead of wrapping its label.
+                isVerified -> FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    CheckChip("Passport chip", icon = R.drawable.ic_fnd_chip)
+                    CheckChip("Unique person", icon = R.drawable.ic_fnd_user_check)
                 }
 
                 // Same action as the state's own button, worded as a retry:
@@ -327,9 +336,17 @@ private fun CheckChip(label: String, @DrawableRes icon: Int = R.drawable.ic_fnd_
             painter = painterResource(icon),
             contentDescription = null,
             tint = FoundationBrand.Accent,
-            modifier = Modifier.size(14.dp),
+            modifier = Modifier.size(16.dp),
         )
-        Text(text = label, style = FoundationType.callout, color = FoundationBrand.Text)
+        // 14sp on one line, as on iOS: at callout's 15sp the second chip ran
+        // out of width on a 360dp phone and wrapped "Unique person".
+        Text(
+            text = label,
+            style = FoundationType.callout.copy(fontSize = 14.sp, lineHeight = 20.sp),
+            color = FoundationBrand.Text,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }
 
