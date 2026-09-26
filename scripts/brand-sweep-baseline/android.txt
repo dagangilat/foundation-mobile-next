@@ -958,6 +958,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.k
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.DeletionOutcome
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.FoundationAccountDeletionManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.FoundationAuthManager
+android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.foundation.FoundationVerificationManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.manager.DriveBackupManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.manager.IdentityManager
 android/app/src/main/java/com/rarilabs/rarime/modules/profile/ProfileViewModel.kt:import com.rarilabs.rarime.manager.PassportManager

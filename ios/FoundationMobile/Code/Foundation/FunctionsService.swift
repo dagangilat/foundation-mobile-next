@@ -70,6 +70,72 @@ struct L2VerificationStatusResult: Decodable, Sendable {
     let memberNumber: Int?
 }
 
+/// The slice of `getMyFounderProfile`'s reply that says whether this member
+/// is already a verified person.
+///
+/// The callable (foundation-next `functions/founders/members.js`) is the
+/// member dashboard's one-round-trip read: identity, wallet, standing,
+/// academy progress and the earn catalogue. Read-only, no side effects -
+/// which is the whole reason it is used here rather than
+/// `startL2Verification`, whose `already_verified_l2` short-circuit also
+/// answers the question but, for anyone NOT yet l3, creates a fresh
+/// verification request and resets the verifier row as a side effect.
+///
+/// Replies: `{ status: "not_a_member" }` when there is no member doc, else
+/// `{ status: "ok", memberNumber, verificationLevel, verified,
+/// passportVerified, passports, wallet, ... }`. Only the four fields below
+/// are decoded; everything else is ignored so the dashboard's shape can grow
+/// without breaking this client.
+///
+/// Every field is optional AND decoded with `try?`, one by one: this answer
+/// only ever upgrades Home to "verified" or leaves it alone, so a field that
+/// drifts type server-side must degrade to "unknown" for that field, never
+/// throw the whole reply away (which the caller would treat as a network
+/// error and silently ignore - the exact "stuck on Finish verification" bug
+/// this read exists to fix).
+struct FounderProfileResult: Decodable, Sendable {
+    var status: String?
+    var memberNumber: Int?
+    var verificationLevel: String?
+    var passportVerified: Bool?
+
+    init(status: String? = nil, memberNumber: Int? = nil, verificationLevel: String? = nil, passportVerified: Bool? = nil) {
+        self.status = status
+        self.memberNumber = memberNumber
+        self.verificationLevel = verificationLevel
+        self.passportVerified = passportVerified
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case status, memberNumber, verificationLevel, passportVerified
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        // `try?` on an `Optional`-returning call flattens (SE-0230): absent,
+        // null and wrong-typed all land as nil.
+        status = try? c.decodeIfPresent(String.self, forKey: .status)
+        memberNumber = try? c.decodeIfPresent(Int.self, forKey: .memberNumber)
+        verificationLevel = try? c.decodeIfPresent(String.self, forKey: .verificationLevel)
+        passportVerified = try? c.decodeIfPresent(Bool.self, forKey: .passportVerified)
+    }
+
+    /// Whether Home may say "You're a verified person".
+    ///
+    /// `passportVerified` is the server's DERIVED answer (an active,
+    /// non-synthetic passport exists); `verificationLevel == "l3"` is the
+    /// stored label that `startL2Verification`'s own short-circuit keys on
+    /// (`functions/founders/passport.js`, `already_verified_l2`). Either is
+    /// enough: the second keeps this in lockstep with what the proof flow
+    /// itself would have answered, so the card never disagrees with the button
+    /// it replaces. The broader `verified` field is deliberately NOT used - an
+    /// admin-attested member is `verified` without any passport, and this card
+    /// claims a passport ("Passport chip", "Unique person").
+    var isVerifiedPerson: Bool {
+        status == "ok" && (passportVerified == true || verificationLevel == "l3")
+    }
+}
+
 /// `deleteMyAccount`'s real reply shape.
 ///
 /// The callable (`foundation-next/functions/account-deletion.js`) returns
@@ -250,6 +316,16 @@ actor FunctionsService {
     func getL2VerificationStatus() async throws -> L2VerificationStatusResult {
         let result = try await functions.httpsCallable("getL2VerificationStatus").call([:])
         return try decode(L2VerificationStatusResult.self, from: result.data)
+    }
+
+    /// Read-only: whether this member is already verified, for Home's card on
+    /// launch / foreground. See `FounderProfileResult` for why this and not
+    /// `startL2Verification`. Like `getL2VerificationStatus` it is a read, so
+    /// it skips `refreshIDTokenIfStale()`: the SDK's own token is enough, and
+    /// the caller re-checks the uid after the await anyway.
+    func getMyFounderProfile() async throws -> FounderProfileResult {
+        let result = try await functions.httpsCallable("getMyFounderProfile").call([:])
+        return try decode(FounderProfileResult.self, from: result.data)
     }
 
     /// Force the next mutating callable to refresh the ID token, regardless

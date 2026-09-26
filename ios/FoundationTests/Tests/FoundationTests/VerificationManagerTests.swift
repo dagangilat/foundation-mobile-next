@@ -244,6 +244,256 @@ final class VerificationManagerTests: XCTestCase {
         }
     }
 
+    // MARK: - refreshFromServer / the verified cache
+    //
+    // The bug these pin: `state` was in memory only, so a member who finished
+    // verifying saw Home back at "Passport checked - Finish verification" on
+    // the next launch. Every test below runs against a throwaway UserDefaults
+    // suite, a fixed uid and a canned getMyFounderProfile answer - never
+    // Firebase, never `.standard`.
+
+    private func makeCache() -> VerifiedMemberCache {
+        let suite = "VerificationManagerTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defaults.removePersistentDomain(forName: suite)
+        return VerifiedMemberCache(defaults: defaults)
+    }
+
+    private static let verifiedProfile = FounderProfileResult(
+        status: "ok", memberNumber: 42, verificationLevel: "l3", passportVerified: true
+    )
+
+    private struct Offline: Error {}
+
+    /// A reference cell, so a `@Sendable` `MainActor.run` body can change what
+    /// the manager's injected closures see (a captured `var` cannot be).
+    private final class Box<Value> {
+        var value: Value
+        init(_ value: Value) { self.value = value }
+    }
+
+    @MainActor
+    func testRefreshUpgradesIdleToVerifiedAndCachesIt() async {
+        let cache = makeCache()
+        let m = FoundationVerificationManager(
+            cache: cache, currentUid: { "uid-a" }, fetchProfile: { Self.verifiedProfile }
+        )
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .verified(memberNumber: 42))
+        XCTAssertEqual(cache.read(), VerifiedMemberCache.Entry(uid: "uid-a", memberNumber: 42))
+    }
+
+    /// The member got "You're verified" in the bell when it happened; a launch
+    /// that merely re-learns it must not post it again.
+    @MainActor
+    func testRefreshDoesNotRepostTheVerifiedNotification() async {
+        let before = AppNotificationStore.shared.entries.count
+        let m = FoundationVerificationManager(
+            cache: makeCache(), currentUid: { "uid-a" }, fetchProfile: { Self.verifiedProfile }
+        )
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .verified(memberNumber: 42))
+        XCTAssertEqual(AppNotificationStore.shared.entries.count, before)
+    }
+
+    @MainActor
+    func testRefreshUpgradesAFailedTry() async {
+        let m = FoundationVerificationManager(
+            state: .failed("nope"), cache: makeCache(),
+            currentUid: { "uid-a" }, fetchProfile: { Self.verifiedProfile }
+        )
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .verified(memberNumber: 42))
+    }
+
+    /// A flow in progress owns the state; a background read must not stamp
+    /// over it, and must not even ask.
+    @MainActor
+    func testRefreshNeverTouchesAFlowInProgress() async {
+        for state: VerificationState in [.notRegistered, .starting, .awaitingProof, .polling] {
+            var asked = false
+            let m = FoundationVerificationManager(
+                state: state, cache: makeCache(), currentUid: { "uid-a" },
+                fetchProfile: { asked = true; return Self.verifiedProfile }
+            )
+            await m.refreshFromServer()
+            XCTAssertEqual(m.state, state, "refreshFromServer must not touch \(state)")
+            XCTAssertFalse(asked, "refreshFromServer must not call the server from \(state)")
+        }
+    }
+
+    @MainActor
+    func testRefreshErrorKeepsTheStateAndTheCache() async {
+        let cache = makeCache()
+        cache.write(.init(uid: "uid-a", memberNumber: 7))
+        let m = FoundationVerificationManager(
+            cache: cache, currentUid: { "uid-a" }, fetchProfile: { throw Offline() }
+        )
+        XCTAssertEqual(m.state, .verified(memberNumber: 7), "the cache is restored at init")
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .verified(memberNumber: 7))
+        XCTAssertEqual(cache.read(), VerifiedMemberCache.Entry(uid: "uid-a", memberNumber: 7))
+
+        let failed = FoundationVerificationManager(
+            state: .failed("nope"), cache: makeCache(),
+            currentUid: { "uid-a" }, fetchProfile: { throw Offline() }
+        )
+        await failed.refreshFromServer()
+        XCTAssertEqual(failed.state, .failed("nope"))
+    }
+
+    @MainActor
+    func testNotVerifiedLeavesIdleAndFailedAndClearsTheCache() async {
+        let notMember = FounderProfileResult(status: "not_a_member")
+        for state: VerificationState in [.idle, .failed("nope")] {
+            let cache = makeCache()
+            // Another uid's entry, so init does not restore it.
+            cache.write(.init(uid: "uid-other", memberNumber: 1))
+            let m = FoundationVerificationManager(
+                state: state, cache: cache, currentUid: { "uid-a" }, fetchProfile: { notMember }
+            )
+            await m.refreshFromServer()
+            XCTAssertEqual(m.state, state)
+            XCTAssertNil(cache.read())
+        }
+    }
+
+    /// A cached `.verified` is a hint until the server confirms it: a member
+    /// deleted on the web must not stay "verified" on this phone forever.
+    @MainActor
+    func testNotVerifiedTakesBackACacheRestoredVerified() async {
+        let cache = makeCache()
+        cache.write(.init(uid: "uid-a", memberNumber: 7))
+        let m = FoundationVerificationManager(
+            cache: cache, currentUid: { "uid-a" },
+            fetchProfile: { FounderProfileResult(status: "ok", memberNumber: 7, verificationLevel: "l1", passportVerified: false) }
+        )
+        XCTAssertEqual(m.state, .verified(memberNumber: 7))
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .idle)
+        XCTAssertNil(cache.read())
+    }
+
+    /// A `.verified` this session reached itself is final, as before.
+    @MainActor
+    func testNotVerifiedLeavesALiveVerifiedAlone() async {
+        let m = FoundationVerificationManager(
+            state: .verified(memberNumber: 3), cache: makeCache(), currentUid: { "uid-a" },
+            fetchProfile: { FounderProfileResult(status: "not_a_member") }
+        )
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .verified(memberNumber: 3))
+    }
+
+    /// The cache must never cross accounts: another uid's entry, or no one
+    /// signed in, restores nothing.
+    @MainActor
+    func testCacheIsRestoredOnlyForTheSameUid() {
+        let cache = makeCache()
+        cache.write(.init(uid: "uid-a", memberNumber: 7))
+
+        XCTAssertEqual(
+            FoundationVerificationManager(cache: cache, currentUid: { "uid-a" }).state,
+            .verified(memberNumber: 7)
+        )
+        XCTAssertEqual(FoundationVerificationManager(cache: cache, currentUid: { "uid-b" }).state, .idle)
+        XCTAssertEqual(FoundationVerificationManager(cache: cache, currentUid: { nil }).state, .idle)
+    }
+
+    @MainActor
+    func testResetClearsTheCache() {
+        let cache = makeCache()
+        cache.write(.init(uid: "uid-a", memberNumber: 7))
+        let m = FoundationVerificationManager(cache: cache, currentUid: { "uid-a" })
+        m.reset()
+        XCTAssertEqual(m.state, .idle)
+        XCTAssertNil(cache.read())
+    }
+
+    /// Sign-out (reset) landing while the profile read is in flight must win,
+    /// even though the same uid is still reported afterwards.
+    @MainActor
+    func testResetDuringTheAwaitDropsTheAnswer() async {
+        let cache = makeCache()
+        let holder = Box<FoundationVerificationManager?>(nil)
+        let m = FoundationVerificationManager(
+            cache: cache, currentUid: { "uid-a" },
+            fetchProfile: {
+                await MainActor.run { holder.value?.reset() }
+                return Self.verifiedProfile
+            }
+        )
+        holder.value = m
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .idle)
+        XCTAssertNil(cache.read())
+    }
+
+    /// A different member signed in during the await: the answer was about
+    /// the previous one and must be dropped.
+    @MainActor
+    func testUidChangeDuringTheAwaitDropsTheAnswer() async {
+        let cache = makeCache()
+        let uid = Box("uid-a")
+        let m = FoundationVerificationManager(
+            cache: cache, currentUid: { uid.value },
+            fetchProfile: {
+                await MainActor.run { uid.value = "uid-b" }
+                return Self.verifiedProfile
+            }
+        )
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .idle)
+        XCTAssertNil(cache.read())
+    }
+
+    @MainActor
+    func testRefreshWithoutASignedInUidDoesNothing() async {
+        var asked = false
+        let m = FoundationVerificationManager(
+            cache: makeCache(), currentUid: { nil },
+            fetchProfile: { asked = true; return Self.verifiedProfile }
+        )
+        await m.refreshFromServer()
+        XCTAssertEqual(m.state, .idle)
+        XCTAssertFalse(asked)
+    }
+
+    // MARK: - FounderProfileResult: which answers mean "verified person"
+
+    func testProfileVerifiedPersonRule() {
+        XCTAssertTrue(FounderProfileResult(status: "ok", passportVerified: true).isVerifiedPerson)
+        XCTAssertTrue(FounderProfileResult(status: "ok", verificationLevel: "l3").isVerifiedPerson)
+        XCTAssertTrue(FounderProfileResult(status: "ok", verificationLevel: "l3", passportVerified: false).isVerifiedPerson)
+        XCTAssertFalse(FounderProfileResult(status: "ok", verificationLevel: "l1", passportVerified: false).isVerifiedPerson)
+        XCTAssertFalse(FounderProfileResult(status: "ok").isVerifiedPerson)
+        XCTAssertFalse(FounderProfileResult(status: "not_a_member").isVerifiedPerson)
+        XCTAssertFalse(FounderProfileResult(status: nil, verificationLevel: "l3", passportVerified: true).isVerifiedPerson)
+    }
+
+    /// The real reply carries a whole dashboard; only four fields are read,
+    /// and a field that drifts type must not sink the rest.
+    func testProfileDecodesTheRealShapeAndToleratesDrift() throws {
+        let json = """
+        {"status":"ok","memberNumber":1234,"foundingCohort":"alpha","verificationLevel":"l3",
+         "verified":true,"passportVerified":true,"passports":[{"ref":"ab12","status":"active","addedAt":null}],
+         "wallet":{"balance":0}}
+        """
+        let full = try JSONDecoder().decode(FounderProfileResult.self, from: Data(json.utf8))
+        XCTAssertEqual(full.memberNumber, 1234)
+        XCTAssertTrue(full.isVerifiedPerson)
+
+        let notMember = try JSONDecoder().decode(FounderProfileResult.self, from: Data(#"{"status":"not_a_member"}"#.utf8))
+        XCTAssertFalse(notMember.isVerifiedPerson)
+
+        let drifted = try JSONDecoder().decode(
+            FounderProfileResult.self,
+            from: Data(#"{"status":"ok","memberNumber":"1234","passportVerified":true}"#.utf8)
+        )
+        XCTAssertNil(drifted.memberNumber)
+        XCTAssertTrue(drifted.isVerifiedPerson)
+    }
+
     private static let allStates: [VerificationState] = [
         .idle, .notRegistered, .starting, .awaitingProof, .polling,
         .verified(memberNumber: 42), .failed("nope"),

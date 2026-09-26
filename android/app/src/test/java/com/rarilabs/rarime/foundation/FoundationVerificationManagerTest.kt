@@ -32,14 +32,35 @@ class FoundationVerificationManagerTest {
         registrationProof: Any? = Any(),
         terminalFailureMessage: (Throwable) -> String? = { null },
         pollLimit: Int = FoundationVerificationManager.POLL_LIMIT,
+        onVerified: () -> Unit = {},
+        fetchProfile: suspend () -> FounderProfileResult = { throw IllegalStateException("offline") },
+        cache: VerifiedMemberCache? = null,
+        uidProvider: (() -> String?)? = null,
     ) = FoundationVerificationManager(
         startL2Verification = start,
         fetchL2VerificationStatus = status,
-        uidProvider = { uid },
+        uidProvider = uidProvider ?: { uid },
         registrationProofProvider = { registrationProof },
         terminalFailureMessage = terminalFailureMessage,
         pollLimit = pollLimit,
+        onVerified = onVerified,
+        fetchFounderProfile = fetchProfile,
+        verifiedCache = cache,
     )
+
+    /** SharedPreferences stand-in: the same read/write/clear contract, in memory. */
+    private class FakeVerifiedMemberCache(var entry: VerifiedMemberCache.Entry? = null) : VerifiedMemberCache {
+        override fun read() = entry
+        override fun write(entry: VerifiedMemberCache.Entry) {
+            this.entry = entry
+        }
+        override fun clear() {
+            entry = null
+        }
+    }
+
+    private val verifiedProfile =
+        FounderProfileResult(status = "ok", memberNumber = 42, verificationLevel = "l3", passportVerified = true)
 
     /** Drives a manager to `Polling`, the way the card does. */
     private suspend fun pollingManager(
@@ -382,5 +403,215 @@ class FoundationVerificationManagerTest {
             FoundationVerificationManager.TERMINAL_SUCCESS_STATUSES
                 .containsAll(listOf("member_created", "member_upgraded")),
         )
+    }
+
+    // --- refreshFromServer / the verified cache ------------------------------
+    //
+    // The bug these pin: `state` was in memory only, so a member who finished
+    // verifying saw Home back at "Passport checked - Finish verification" on
+    // the next cold start.
+
+    @Test
+    fun refreshUpgradesIdleToVerifiedCachesItAndDoesNotNotify() = runTest {
+        val cache = FakeVerifiedMemberCache()
+        var notified = 0
+        val m = manager(fetchProfile = { verifiedProfile }, cache = cache, onVerified = { notified++ })
+        m.refreshFromServer()
+        assertEquals(VerificationState.Verified(42), m.state.value)
+        assertEquals(VerifiedMemberCache.Entry("uid-1", 42), cache.entry)
+        // The member got "You're verified" when it happened; re-learning it on
+        // a launch must not post it again.
+        assertEquals(0, notified)
+    }
+
+    @Test
+    fun theLiveFlowStillNotifiesAndCaches() = runTest {
+        val cache = FakeVerifiedMemberCache()
+        var notified = 0
+        val m = manager(
+            start = { StartL2VerificationResult("already_verified_l2", null, null, 7) },
+            cache = cache,
+            onVerified = { notified++ },
+        )
+        m.beginVerification()
+        assertEquals(VerificationState.Verified(7), m.state.value)
+        assertEquals(1, notified)
+        assertEquals(VerifiedMemberCache.Entry("uid-1", 7), cache.entry)
+    }
+
+    @Test
+    fun refreshUpgradesAFailedTry() = runTest {
+        val m = manager(start = { throw IllegalStateException("down") }, fetchProfile = { verifiedProfile })
+        m.beginVerification()
+        assertTrue(m.state.value is VerificationState.Failed)
+        m.refreshFromServer()
+        assertEquals(VerificationState.Verified(42), m.state.value)
+    }
+
+    @Test
+    fun refreshNeverTouchesAFlowInProgressNorAsks() = runTest {
+        var asked = 0
+        val fetch: suspend () -> FounderProfileResult = { asked++; verifiedProfile }
+
+        val awaiting = manager(fetchProfile = fetch)
+        awaiting.beginVerification()
+        awaiting.refreshFromServer()
+        assertEquals(VerificationState.AwaitingProof(proofParamsUrl), awaiting.state.value)
+
+        val polling = manager(fetchProfile = fetch)
+        polling.beginVerification()
+        assertTrue(polling.proofRequestSucceeded())
+        polling.refreshFromServer()
+        assertEquals(VerificationState.Polling, polling.state.value)
+
+        val notRegistered = manager(fetchProfile = fetch, registrationProof = null)
+        notRegistered.beginVerification()
+        notRegistered.refreshFromServer()
+        assertEquals(VerificationState.NotRegistered, notRegistered.state.value)
+
+        assertEquals(0, asked)
+    }
+
+    @Test
+    fun refreshErrorIsSilentAndKeepsStateAndCache() = runTest {
+        val cache = FakeVerifiedMemberCache(VerifiedMemberCache.Entry("uid-1", 7))
+        val m = manager(fetchProfile = { throw IllegalStateException("offline") }, cache = cache)
+        assertEquals(VerificationState.Verified(7), m.state.value)
+        m.refreshFromServer()
+        assertEquals(VerificationState.Verified(7), m.state.value)
+        assertEquals(VerifiedMemberCache.Entry("uid-1", 7), cache.entry)
+
+        val idle = manager(fetchProfile = { throw IllegalStateException("offline") })
+        idle.refreshFromServer()
+        assertEquals(VerificationState.Idle, idle.state.value)
+    }
+
+    @Test
+    fun notVerifiedLeavesIdleAndClearsTheCache() = runTest {
+        // Another uid's entry, so it is not restored at construction.
+        val cache = FakeVerifiedMemberCache(VerifiedMemberCache.Entry("uid-other", 1))
+        val m = manager(fetchProfile = { FounderProfileResult(status = "not_a_member") }, cache = cache)
+        m.refreshFromServer()
+        assertEquals(VerificationState.Idle, m.state.value)
+        assertNull(cache.entry)
+    }
+
+    @Test
+    fun notVerifiedTakesBackACacheRestoredVerified() = runTest {
+        // A member deleted on the web must not stay "verified" on this phone.
+        val cache = FakeVerifiedMemberCache(VerifiedMemberCache.Entry("uid-1", 7))
+        val m = manager(
+            fetchProfile = { FounderProfileResult(status = "ok", verificationLevel = "l1", passportVerified = false) },
+            cache = cache,
+        )
+        assertEquals(VerificationState.Verified(7), m.state.value)
+        m.refreshFromServer()
+        assertEquals(VerificationState.Idle, m.state.value)
+        assertNull(cache.entry)
+    }
+
+    @Test
+    fun notVerifiedLeavesALiveVerifiedAlone() = runTest {
+        val m = manager(
+            start = { StartL2VerificationResult("already_verified_l2", null, null, 3) },
+            fetchProfile = { FounderProfileResult(status = "not_a_member") },
+        )
+        m.beginVerification()
+        m.refreshFromServer()
+        assertEquals(VerificationState.Verified(3), m.state.value)
+    }
+
+    @Test
+    fun cacheIsRestoredOnlyForTheSignedInUid() {
+        val cache = FakeVerifiedMemberCache(VerifiedMemberCache.Entry("uid-1", 7))
+        assertEquals(VerificationState.Verified(7), manager(cache = cache).state.value)
+        assertEquals(VerificationState.Idle, manager(cache = cache, uid = "uid-2").state.value)
+        assertEquals(VerificationState.Idle, manager(cache = cache, uid = null).state.value)
+        // A mismatch restores nothing but leaves the entry for its own member.
+        assertEquals(VerifiedMemberCache.Entry("uid-1", 7), cache.entry)
+    }
+
+    @Test
+    fun resetClearsTheCache() {
+        val cache = FakeVerifiedMemberCache(VerifiedMemberCache.Entry("uid-1", 7))
+        val m = manager(cache = cache)
+        m.reset()
+        assertEquals(VerificationState.Idle, m.state.value)
+        assertNull(cache.entry)
+    }
+
+    @Test
+    fun aResetDuringTheCallDropsTheAnswer() = runTest {
+        // Sign-out landing while the profile read is in flight must win, even
+        // though the same uid is still reported afterwards.
+        val cache = FakeVerifiedMemberCache()
+        lateinit var m: FoundationVerificationManager
+        m = manager(fetchProfile = { m.reset(); verifiedProfile }, cache = cache)
+        m.refreshFromServer()
+        assertEquals(VerificationState.Idle, m.state.value)
+        assertNull(cache.entry)
+    }
+
+    @Test
+    fun aUidChangeDuringTheCallDropsTheAnswer() = runTest {
+        val cache = FakeVerifiedMemberCache()
+        var uid: String? = "uid-1"
+        val m = manager(
+            fetchProfile = { uid = "uid-2"; verifiedProfile },
+            cache = cache,
+            uidProvider = { uid },
+        )
+        m.refreshFromServer()
+        assertEquals(VerificationState.Idle, m.state.value)
+        assertNull(cache.entry)
+    }
+
+    @Test
+    fun refreshWithoutASignedInUidDoesNothing() = runTest {
+        var asked = 0
+        val m = manager(uid = null, fetchProfile = { asked++; verifiedProfile })
+        m.refreshFromServer()
+        assertEquals(VerificationState.Idle, m.state.value)
+        assertEquals(0, asked)
+    }
+
+    @Test
+    fun verifiedPersonRuleMatchesTheBackendShortCircuit() {
+        assertTrue(FounderProfileResult(status = "ok", passportVerified = true).isVerifiedPerson)
+        assertTrue(FounderProfileResult(status = "ok", verificationLevel = "l3").isVerifiedPerson)
+        assertTrue(
+            FounderProfileResult(status = "ok", verificationLevel = "l3", passportVerified = false).isVerifiedPerson,
+        )
+        assertFalse(
+            FounderProfileResult(status = "ok", verificationLevel = "l1", passportVerified = false).isVerifiedPerson,
+        )
+        assertFalse(FounderProfileResult(status = "ok").isVerifiedPerson)
+        assertFalse(FounderProfileResult(status = "not_a_member").isVerifiedPerson)
+    }
+
+    @Test
+    fun profileDecodeReadsTheRealShapeAndToleratesDrift() {
+        val full = founderProfileResultFrom(
+            mapOf(
+                "status" to "ok",
+                "memberNumber" to 1234L,
+                "foundingCohort" to "alpha",
+                "verificationLevel" to "l3",
+                "verified" to true,
+                "passportVerified" to true,
+                "passports" to listOf(mapOf("ref" to "ab12", "status" to "active")),
+            ),
+        )
+        assertEquals(1234, full.memberNumber)
+        assertTrue(full.isVerifiedPerson)
+
+        assertFalse(founderProfileResultFrom(mapOf("status" to "not_a_member")).isVerifiedPerson)
+        assertFalse(founderProfileResultFrom(null).isVerifiedPerson)
+
+        val drifted = founderProfileResultFrom(
+            mapOf("status" to "ok", "memberNumber" to "1234", "passportVerified" to true),
+        )
+        assertNull(drifted.memberNumber)
+        assertTrue(drifted.isVerifiedPerson)
     }
 }

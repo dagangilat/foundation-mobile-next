@@ -19,6 +19,7 @@ object FoundationCallables {
     const val START_L2_VERIFICATION = "startL2Verification"
     const val GET_L2_VERIFICATION_STATUS = "getL2VerificationStatus"
     const val DELETE_MY_ACCOUNT = "deleteMyAccount"
+    const val GET_MY_FOUNDER_PROFILE = "getMyFounderProfile"
 }
 
 data class SignInCodeResult(val status: String, val sent: Boolean)
@@ -40,6 +41,63 @@ data class StartL2VerificationResult(
     val memberNumber: Int?,
 )
 data class L2VerificationStatusResult(val status: String, val memberNumber: Int?)
+
+/**
+ * The slice of `getMyFounderProfile`'s reply that says whether this member is
+ * already a verified person. Mirrors iOS's `FounderProfileResult`.
+ *
+ * The callable (foundation-next `functions/founders/members.js`) is the member
+ * dashboard's one-round-trip read - identity, wallet, standing, academy, earn
+ * catalogue - and is read-only. That is the whole reason it is used here
+ * rather than `startL2Verification`, whose `already_verified_l2` short-circuit
+ * answers the same question for an l3 member but, for anyone else, creates a
+ * fresh verification request and resets the verifier row as a side effect.
+ *
+ * Replies: `{ status: "not_a_member" }` with no member doc, else
+ * `{ status: "ok", memberNumber, verificationLevel, verified, passportVerified,
+ * passports, wallet, ... }`. Only these four fields are read; every one is
+ * nullable and read tolerantly (see [founderProfileResultFrom]), so the
+ * dashboard's shape can grow or drift without this client throwing the whole
+ * answer away - which the caller would treat as a network error and ignore,
+ * i.e. the exact "stuck on Finish verification" bug this read exists to fix.
+ */
+data class FounderProfileResult(
+    val status: String? = null,
+    val memberNumber: Int? = null,
+    val verificationLevel: String? = null,
+    val passportVerified: Boolean? = null,
+) {
+    /**
+     * Whether Home may say "You're a verified person".
+     *
+     * `passportVerified` is the server's DERIVED answer (an active,
+     * non-synthetic passport exists); `verificationLevel == "l3"` is the stored
+     * label `startL2Verification`'s own short-circuit keys on
+     * (`functions/founders/passport.js`, `already_verified_l2`). Either is
+     * enough: the second keeps the card in lockstep with what the proof flow
+     * itself would have answered. The broader `verified` field is deliberately
+     * NOT used - an admin-attested member is `verified` with no passport behind
+     * it, and this card claims a passport.
+     */
+    val isVerifiedPerson: Boolean
+        get() = status == "ok" && (passportVerified == true || verificationLevel == "l3")
+}
+
+/**
+ * Pure decode of `getMyFounderProfile`'s reply, outside the service so it is
+ * unit-testable without Firebase (the same reason as
+ * [deleteAccountResultOrThrow]). Each field is cast on its own: one that
+ * drifts type becomes null for that field only.
+ */
+internal fun founderProfileResultFrom(data: Map<*, *>?): FounderProfileResult {
+    val d = data ?: emptyMap<String, Any?>()
+    return FounderProfileResult(
+        status = d["status"] as? String,
+        memberNumber = (d["memberNumber"] as? Number)?.toInt(),
+        verificationLevel = d["verificationLevel"] as? String,
+        passportVerified = d["passportVerified"] as? Boolean,
+    )
+}
 
 /**
  * `deleteMyAccount`'s real reply shape. Mirrors iOS's `DeleteAccountResult`.
@@ -195,6 +253,14 @@ class FoundationFunctionsService @Inject constructor() {
      */
     suspend fun deleteMyAccount(): DeleteAccountResult =
         deleteAccountResultOrThrow(call(FoundationCallables.DELETE_MY_ACCOUNT, emptyMap()))
+
+    /**
+     * Read-only: whether this member is already verified, for Home's card on
+     * appear / resume. See [FounderProfileResult] for why this and not
+     * `startL2Verification`.
+     */
+    suspend fun getMyFounderProfile(): FounderProfileResult =
+        founderProfileResultFrom(call(FoundationCallables.GET_MY_FOUNDER_PROFILE, emptyMap()))
 
     suspend fun getL2VerificationStatus(): L2VerificationStatusResult {
         val d = call(FoundationCallables.GET_L2_VERIFICATION_STATUS, emptyMap())

@@ -70,8 +70,15 @@ struct HomeView: View {
             {
                 AppUserDefaults.shared.isRegistrationInterrupted = true
             }
+            // Back in the foreground: the member may have finished verifying
+            // elsewhere (the web, another device) while the app sat in the
+            // background. See `refreshVerificationFromServer()`.
+            if newPhase == .active {
+                refreshVerificationFromServer()
+            }
         }
         .onAppear {
+            refreshVerificationFromServer()
             if AppUserDefaults.shared.isRegistrationInterrupted
                 && passportViewModel.processingStatus != .failure
             {
@@ -86,6 +93,21 @@ struct HomeView: View {
                 notifications.postVerificationFailure(reason: reason, retry: .scanPassport)
             }
         }
+    }
+
+    /// Ask Foundation whether this member is already verified, so a finished
+    /// verification still reads as one after a relaunch. The manager's state is
+    /// in memory only; without this, every cold launch showed "Passport checked
+    /// - Finish verification" to a member who had finished yesterday.
+    ///
+    /// Only while signed in: AppView keeps Home unreachable while signed out,
+    /// but the scene can still go `.active` in the instant a sign-out is being
+    /// processed, and the manager itself also returns early without a uid. The
+    /// manager decides which states it may touch (never a flow in progress)
+    /// and never re-posts the "You're verified" bell entry from here.
+    private func refreshVerificationFromServer() {
+        guard AuthService.shared.isSignedIn else { return }
+        Task { await verification.refreshFromServer() }
     }
 
     private func runPendingRetry() {
