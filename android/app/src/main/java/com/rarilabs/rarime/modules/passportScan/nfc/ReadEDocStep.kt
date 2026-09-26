@@ -1,23 +1,28 @@
 package com.rarilabs.rarime.modules.passportScan.nfc
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -27,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.foundation.ui.FoundationButton
+import com.rarilabs.rarime.foundation.ui.FoundationButtonStyle
 import com.rarilabs.rarime.manager.NfcAvailability
 import com.rarilabs.rarime.manager.NfcDisabledException
 import com.rarilabs.rarime.manager.NfcNotSupportedException
@@ -34,6 +40,8 @@ import com.rarilabs.rarime.manager.ScanNFCState
 import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 import com.rarilabs.rarime.modules.passportScan.components.ScanGuidesTrigger
 import com.rarilabs.rarime.modules.passportScan.components.SpecificPassportGuide
+import com.rarilabs.rarime.modules.passportScan.guide.VerifyCard
+import com.rarilabs.rarime.modules.passportScan.guide.VerifyIcons
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ReadEDocStepViewModel
 import com.rarilabs.rarime.ui.base.ButtonSize
@@ -41,8 +49,9 @@ import com.rarilabs.rarime.ui.components.AppAnimation
 import com.rarilabs.rarime.ui.components.AppBottomSheet
 import com.rarilabs.rarime.ui.components.PrimaryButton
 import com.rarilabs.rarime.ui.components.rememberAppSheetState
+import com.rarilabs.rarime.ui.theme.FoundationBrand
 import com.rarilabs.rarime.ui.theme.FoundationTheme
-import okio.IOException
+import com.rarilabs.rarime.ui.theme.FoundationType
 import org.jmrtd.lds.icao.MRZInfo
 
 
@@ -54,20 +63,34 @@ import org.jmrtd.lds.icao.MRZInfo
  * Neither starts a scan unless NFC is usable: on a phone without NFC, or with
  * NFC off, the screen shows [NfcUnavailableCard] (and "Open NFC settings"
  * when it's only off) instead. NFC is re-checked on every ON_RESUME, so
- * coming back from settings with NFC on clears the message.
+ * coming back from settings with NFC on clears the message. That is not a
+ * failed read: it never reaches [onError].
+ *
+ * A failed read keeps the person on this step. [onError] reports it, and the
+ * caller passes it back as [chipFailure] (the caller owns it, so it can count
+ * attempts and record a failure only if the flow is left without a read).
+ * The screen then offers "Try again" ([onRetry], then the chip read alone,
+ * with fresh NFC state) and "Scan passport page again" ([onScanPageAgain]);
+ * when the chip refused the key made from the photo page
+ * ([ChipReadFailure.KEY_REJECTED]) the page comes first. [onGetInTouch],
+ * when set, adds a way to ask for help.
  */
 @Composable
 fun ReadEDocStep(
     mrzInfo: MRZInfo,
     onNext: (eDocument: EDocument) -> Unit,
     onClose: () -> Unit,
-    onError: (e: Exception) -> Unit,
+    onError: (e: Exception, failure: ChipReadFailure) -> Unit,
+    onScanPageAgain: () -> Unit,
+    chipFailure: ChipReadFailure? = null,
+    onRetry: () -> Unit = {},
+    onGetInTouch: (() -> Unit)? = null,
     readEDocStepViewModel: ReadEDocStepViewModel = hiltViewModel(),
     autoStartScan: Boolean = false,
 ) {
     val context = LocalContext.current
     val state by readEDocStepViewModel.state.collectAsState()
-    val scanExceptionInstance = readEDocStepViewModel.scanExceptionInstance.collectAsState()
+    val scanException by readEDocStepViewModel.scanExceptionInstance.collectAsState()
 
     val currentStep by readEDocStepViewModel.currentNfcScanStep.collectAsState()
     val nfcAvailability by readEDocStepViewModel.nfcAvailability.collectAsState()
@@ -93,11 +116,9 @@ fun ReadEDocStep(
         onNext(readEDocStepViewModel.eDocument)
     }
 
-    @Composable
-    fun handleScanPassportLayoutError() {
-        // Null until this attempt's exception arrives (startScanning clears
-        // the last one); reading it here recomposes once it does.
-        val exception = scanExceptionInstance.value ?: return
+    val currentOnError by rememberUpdatedState(onError)
+
+    fun handleScanPassportLayoutError(exception: Exception) {
         readEDocStepViewModel.resetState()
         readEDocStepViewModel.resetNfcScanStep()
 
@@ -105,36 +126,30 @@ fun ReadEDocStep(
             // No NFC, or NFC off: not a failed read. NfcManager has already
             // set nfcAvailability, so the screen now shows the matching
             // message ("This phone can't read passport chips" / "Turn on
-            // NFC"). No toast, and no onError: that would send the person
-            // into the failure flow for something a retry can't fix.
+            // NFC"). Not reported: it is no failed try, for the bell or the
+            // attempt count.
             is NfcNotSupportedException, is NfcDisabledException -> Unit
 
-            else -> {
-                val errorMessage = when (exception) {
-                    is IOException -> stringResource(id = R.string.nfc_error_interrupt)
-                    else -> stringResource(id = R.string.nfc_error_unknown)
-                }
+            // Anything else (tag lost, timeout, a refused key, NFC dispatch
+            // refused): the screen shows it and offers another try.
+            else -> currentOnError(exception, ChipReadFailure.from(exception))
+        }
+    }
 
-                Toast.makeText(
-                    context,
-                    errorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-                // IllegalStateException here is Android refusing to start
-                // NFC dispatch (e.g. the activity wasn't resumed yet): the
-                // chip was never touched, so "Try again" and the Scan button
-                // are enough - it isn't a failed read either.
-                if (exception !is IllegalStateException) {
-                    onError(exception)
-                }
-            }
+    // After composition, once per failure: ERROR can arrive a moment before
+    // its exception (a read error is reported from a background thread), so
+    // this waits for both. startScanning clears the last exception, so it
+    // is never the previous attempt's.
+    LaunchedEffect(state, scanException) {
+        val exception = scanException
+        if (state == ScanNFCState.ERROR && exception != null) {
+            handleScanPassportLayoutError(exception)
         }
     }
 
     ReadEDocStepContent(
         handleScanPassportLayoutClose = { handleScanPassportLayoutClose() },
         handleScanPassportLayoutScanned = { handleScanPassportLayoutScanned() },
-        handleScanPassportLayoutError = { handleScanPassportLayoutError() },
         state = state,
         startScanning = { readEDocStepViewModel.startScanning(mrzInfo) },
         stopScanning = { readEDocStepViewModel.resetState() },
@@ -145,6 +160,14 @@ fun ReadEDocStep(
         nfcAvailability = nfcAvailability,
         checkNfcAvailability = { readEDocStepViewModel.refreshNfcAvailability() },
         onOpenNfcSettings = { openNfcSettings(context) },
+        chipFailure = chipFailure,
+        onRetry = onRetry,
+        onScanPageAgain = {
+            readEDocStepViewModel.resetState()
+            readEDocStepViewModel.resetNfcScanStep()
+            onScanPageAgain()
+        },
+        onGetInTouch = onGetInTouch,
     )
 }
 
@@ -152,7 +175,6 @@ fun ReadEDocStep(
 private fun ReadEDocStepContent(
     handleScanPassportLayoutClose: () -> Unit,
     handleScanPassportLayoutScanned: () -> Unit,
-    handleScanPassportLayoutError: @Composable () -> Unit,
     currentNfcScanStep: NfcScanStep,
     startScanning: () -> Unit,
     stopScanning: () -> Unit,
@@ -163,6 +185,10 @@ private fun ReadEDocStepContent(
     nfcAvailability: NfcAvailability = NfcAvailability.READY,
     checkNfcAvailability: () -> NfcAvailability = { NfcAvailability.READY },
     onOpenNfcSettings: () -> Unit = {},
+    chipFailure: ChipReadFailure? = null,
+    onRetry: () -> Unit = {},
+    onScanPageAgain: () -> Unit = {},
+    onGetInTouch: (() -> Unit)? = null,
 ) {
     val scanSheetState = rememberAppSheetState(showSheet = false)
     val isNfcReady = nfcAvailability == NfcAvailability.READY
@@ -176,8 +202,17 @@ private fun ReadEDocStepContent(
         }
     }
 
+    // "Try again": the chip read only, from a clean NFC state; the photo
+    // page details (MRZ) stay as they are.
+    fun retryChipRead() {
+        onRetry()
+        stopScanning()
+        resetNFCScanState()
+        openScanSheet()
+    }
+
     LaunchedEffect(Unit) {
-        if (autoStartScan) {
+        if (autoStartScan && chipFailure == null) {
             openScanSheet()
         }
     }
@@ -223,24 +258,29 @@ private fun ReadEDocStepContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (isNfcReady) {
-                        AppAnimation(
+                    when {
+                        !isNfcReady -> NfcUnavailableCard(
+                            availability = nfcAvailability,
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                        )
+
+                        chipFailure != null -> ChipReadFailureCard(
+                            failure = chipFailure,
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                        )
+
+                        else -> AppAnimation(
                             modifier = Modifier
                                 .scale(1.4f)
                                 .size(240.dp),
                             id = R.raw.anim_passport_nfc,
                         )
-                    } else {
-                        NfcUnavailableCard(
-                            availability = nfcAvailability,
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                        )
                     }
 
-                    // Outside the NFC check on purpose: SCANNED and ERROR
+                    // Outside the checks above on purpose: SCANNED and ERROR
                     // must still be handled when NFC has just gone away.
                     when (state) {
-                        ScanNFCState.NOT_SCANNING -> if (isNfcReady) {
+                        ScanNFCState.NOT_SCANNING -> if (isNfcReady && chipFailure == null) {
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                             ) {
@@ -268,9 +308,10 @@ private fun ReadEDocStepContent(
                             handleScanPassportLayoutScanned()
                         }
 
+                        // The failure itself is handled once, after
+                        // composition (ReadEDocStep's LaunchedEffect).
                         ScanNFCState.ERROR -> {
                             scanSheetState.hide()
-                            handleScanPassportLayoutError()
                         }
                     }
 
@@ -283,9 +324,25 @@ private fun ReadEDocStepContent(
                         .padding(bottom = 20.dp)
                         .padding(horizontal = 20.dp)
                 ) {
+                    when {
+                        nfcAvailability == NfcAvailability.DISABLED -> FoundationButton(
+                            modifier = Modifier.padding(top = 24.dp),
+                            text = stringResource(R.string.nfc_open_settings),
+                            onClick = onOpenNfcSettings,
+                        )
 
-                    when (nfcAvailability) {
-                        NfcAvailability.READY -> {
+                        // No NFC: nothing to press here. The back chevron
+                        // leaves the flow.
+                        nfcAvailability == NfcAvailability.NOT_SUPPORTED -> Unit
+
+                        chipFailure != null -> ChipReadFailureActions(
+                            failure = chipFailure,
+                            onTryAgain = { retryChipRead() },
+                            onScanPageAgain = onScanPageAgain,
+                            onGetInTouch = onGetInTouch,
+                        )
+
+                        else -> {
                             ScanGuidesTrigger(
                                 type = hintType,
                             )
@@ -298,16 +355,6 @@ private fun ReadEDocStepContent(
                                 text = stringResource(R.string.scan)
                             )
                         }
-
-                        NfcAvailability.DISABLED -> FoundationButton(
-                            modifier = Modifier.padding(top = 24.dp),
-                            text = stringResource(R.string.nfc_open_settings),
-                            onClick = onOpenNfcSettings,
-                        )
-
-                        // No NFC: nothing to press here. The back chevron
-                        // leaves the flow.
-                        NfcAvailability.NOT_SUPPORTED -> Unit
                     }
                 }
             }
@@ -315,6 +362,97 @@ private fun ReadEDocStepContent(
 
     }
 
+}
+
+/** Why the last read failed, in the verify flow's card style. */
+@Composable
+private fun ChipReadFailureCard(failure: ChipReadFailure, modifier: Modifier = Modifier) {
+    val isKeyRejected = failure == ChipReadFailure.KEY_REJECTED
+    VerifyCard(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(FoundationBrand.DangerTint),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = VerifyIcons.Chip,
+                    contentDescription = null,
+                    tint = FoundationBrand.DangerIcon,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = stringResource(
+                        if (isKeyRejected) R.string.chip_key_rejected_title
+                        else R.string.chip_read_failed_title
+                    ),
+                    style = FoundationType.headline,
+                    color = FoundationBrand.Text,
+                )
+                Text(
+                    text = stringResource(
+                        if (isKeyRejected) R.string.chip_key_rejected_body
+                        else R.string.chip_read_failed_body
+                    ),
+                    style = FoundationType.callout,
+                    color = FoundationBrand.Muted,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * "Try again" and "Scan passport page again", the likelier fix first: the
+ * chip read again after a read failure, the photo page when the chip refused
+ * its details. The other one is the smaller text button.
+ */
+@Composable
+private fun ChipReadFailureActions(
+    failure: ChipReadFailure,
+    onTryAgain: () -> Unit,
+    onScanPageAgain: () -> Unit,
+    onGetInTouch: (() -> Unit)?,
+) {
+    val tryAgain = stringResource(R.string.chip_try_again)
+    val scanPageAgain = stringResource(R.string.chip_scan_page_again)
+    val pageFirst = failure == ChipReadFailure.KEY_REJECTED
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        FoundationButton(
+            text = if (pageFirst) scanPageAgain else tryAgain,
+            onClick = if (pageFirst) onScanPageAgain else onTryAgain,
+        )
+        FoundationButton(
+            text = if (pageFirst) tryAgain else scanPageAgain,
+            onClick = if (pageFirst) onTryAgain else onScanPageAgain,
+            style = FoundationButtonStyle.Text,
+        )
+        if (onGetInTouch != null) {
+            FoundationButton(
+                text = stringResource(R.string.chip_get_in_touch),
+                onClick = onGetInTouch,
+                style = FoundationButtonStyle.Text,
+            )
+        }
+    }
 }
 
 @Preview
@@ -326,12 +464,44 @@ private fun ReadEDocStepContentPreview() {
     ReadEDocStepContent(
         handleScanPassportLayoutClose = {},
         handleScanPassportLayoutScanned = {},
-        handleScanPassportLayoutError = {},
         state = ScanNFCState.NOT_SCANNING,
         currentNfcScanStep = NfcScanStep.PREPARING,
         stopScanning = {},
         startScanning = {},
         resetNFCScanState = {},
         hintType = SpecificPassportGuide.Other
+    )
+}
+
+@Preview
+@Composable
+private fun ReadEDocStepReadFailedPreview() {
+    ReadEDocStepContent(
+        handleScanPassportLayoutClose = {},
+        handleScanPassportLayoutScanned = {},
+        state = ScanNFCState.NOT_SCANNING,
+        currentNfcScanStep = NfcScanStep.PREPARING,
+        stopScanning = {},
+        startScanning = {},
+        resetNFCScanState = {},
+        hintType = SpecificPassportGuide.Other,
+        chipFailure = ChipReadFailure.READ_FAILED,
+        onGetInTouch = {},
+    )
+}
+
+@Preview
+@Composable
+private fun ReadEDocStepKeyRejectedPreview() {
+    ReadEDocStepContent(
+        handleScanPassportLayoutClose = {},
+        handleScanPassportLayoutScanned = {},
+        state = ScanNFCState.NOT_SCANNING,
+        currentNfcScanStep = NfcScanStep.PREPARING,
+        stopScanning = {},
+        startScanning = {},
+        resetNFCScanState = {},
+        hintType = SpecificPassportGuide.Other,
+        chipFailure = ChipReadFailure.KEY_REJECTED,
     )
 }

@@ -730,6 +730,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportL
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:import com.rarilabs.rarime.ui.theme.FoundationType
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportLayout.kt:package com.rarilabs.rarime.modules.passportScan
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.BuildConfig
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.manager.NfcAvailability
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.main.LocalMainViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.main.ScreenInsets
@@ -741,6 +742,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportS
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.guide.VerifyGuideScreen
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.models.EDocument
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.nfc.ChipReadFailure
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.nfc.OnResumeEffect
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/ScanPassportScreen.kt:import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
@@ -828,6 +830,8 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/Revoca
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/RevocationStepViewModel.kt:package com.rarilabs.rarime.modules.passportScan.models
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.api.registration.models.LightRegistrationData
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.data.enums.PassportStatus
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.foundation.AppNotification
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.foundation.AppNotificationStore
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.manager.IdentityManager
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.manager.NfcAvailability
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPassportScreenViewModel.kt:import com.rarilabs.rarime.manager.NfcManager
@@ -839,6 +843,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/ScanPa
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/WaitlistPassportScreenViewModel.kt:import com.rarilabs.rarime.manager.IdentityManager
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/WaitlistPassportScreenViewModel.kt:import com.rarilabs.rarime.store.SecureSharedPrefsManager
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/models/WaitlistPassportScreenViewModel.kt:package com.rarilabs.rarime.modules.passportScan.models
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ChipReadFailure.kt:package com.rarilabs.rarime.modules.passportScan.nfc
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/NfcScanBottomSheet.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/NfcScanBottomSheet.kt:import com.rarilabs.rarime.ui.base.ButtonSize
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/NfcScanBottomSheet.kt:import com.rarilabs.rarime.ui.components.AppAnimation
@@ -872,6 +877,7 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/NfcUseCas
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/NfcUseCase.kt:package com.rarilabs.rarime.modules.passportScan.nfc
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.foundation.ui.FoundationButton
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.foundation.ui.FoundationButtonStyle
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.manager.NfcAvailability
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.manager.NfcDisabledException
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.manager.NfcNotSupportedException
@@ -879,6 +885,8 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocS
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.ScanPassportLayout
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.components.ScanGuidesTrigger
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.components.SpecificPassportGuide
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.guide.VerifyCard
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.guide.VerifyIcons
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.models.EDocument
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.modules.passportScan.models.ReadEDocStepViewModel
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.base.ButtonSize
@@ -886,7 +894,9 @@ android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocS
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.components.AppBottomSheet
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.components.PrimaryButton
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.components.rememberAppSheetState
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.theme.FoundationBrand
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.theme.FoundationTheme
+android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:import com.rarilabs.rarime.ui.theme.FoundationType
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/ReadEDocStep.kt:package com.rarilabs.rarime.modules.passportScan.nfc
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/RevocationStep.kt:import com.rarilabs.rarime.R
 android/app/src/main/java/com/rarilabs/rarime/modules/passportScan/nfc/RevocationStep.kt:import com.rarilabs.rarime.manager.NfcAvailability
@@ -1579,3 +1589,4 @@ android/app/src/test/java/com/rarilabs/rarime/foundation/TextContrastTest.kt:imp
 android/app/src/test/java/com/rarilabs/rarime/foundation/TextContrastTest.kt:import com.rarilabs.rarime.ui.theme.lightColors
 android/app/src/test/java/com/rarilabs/rarime/foundation/TextContrastTest.kt:package com.rarilabs.rarime.foundation
 android/app/src/test/java/com/rarilabs/rarime/foundation/ui/SignInErrorMessageTest.kt:package com.rarilabs.rarime.foundation.ui
+android/app/src/test/java/com/rarilabs/rarime/modules/passportScan/nfc/ChipReadFailureTest.kt:package com.rarilabs.rarime.modules.passportScan.nfc

@@ -55,8 +55,6 @@
     <string name="nfc_reader_text">Hold your phone flat on the photo page until it buzzes. Most chips read in a few seconds.</string>
     <string name="nfc_reader_hint_1">Press Scan and place your passport cover to the back of your phone</string>
     <string name="nfc_reader_scanning">Scanning…</string>
-    <string name="nfc_error_interrupt">Scan interrupted, try again</string>
-    <string name="nfc_error_unknown">Try again</string>
 
     <string name="nfc_reader_revoke">Revoke</string>
     <string name="nfc_reader_error">Scan again</string>
@@ -436,6 +434,15 @@
     <string name="nfc_unavailable_disabled_body">NFC is off. Turn it on to read your passport chip.</string>
     <string name="nfc_open_settings">Open NFC settings</string>
 
+    <!-- A failed chip read keeps the person on the chip step (ReadEDocStep). -->
+    <string name="chip_read_failed_title">The chip read didn\'t finish</string>
+    <string name="chip_read_failed_body">Keep the back of your phone flat on the passport and hold still until it buzzes, then try again.</string>
+    <string name="chip_key_rejected_title">The chip didn\'t open</string>
+    <string name="chip_key_rejected_body">The chip didn\'t accept the details from the passport page. Scan the page again.</string>
+    <string name="chip_try_again">Try again</string>
+    <string name="chip_scan_page_again">Scan passport page again</string>
+    <string name="chip_get_in_touch">Still not working? Get in touch</string>
+
     <!-- Home's bell: the app's own notifications (errors no longer pop up over the screen). -->
     <string name="notifications_title">Notifications</string>
     <string name="notifications_unread_state">Unread</string>
@@ -454,6 +461,8 @@
     <string name="notification_reason_already_registered">This passport is already registered with a different key.</string>
     <string name="notification_reason_download_failed">Couldn\'t download the files needed to build your proof. Check your connection and try again.</string>
     <string name="notification_reason_registration_failed">We couldn\'t finish your proof.</string>
+    <string name="notification_reason_chip_read_failed">The passport chip couldn\'t be read.</string>
+    <string name="notification_reason_chip_key_rejected">The chip didn\'t accept the details from the passport page.</string>
     <string name="error_no_app_to_open_link">No app available to open this link.</string>
 
     <!-- Home's verify card after a failed try: calm copy; the details are behind the bell. -->
