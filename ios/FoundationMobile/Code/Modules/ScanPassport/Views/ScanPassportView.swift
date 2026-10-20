@@ -6,6 +6,9 @@ import SwiftUI
 /// "Chip read" → guide → "Build my proof", which closes the flow and starts
 /// registration exactly as a finished chip scan used to (progress and
 /// failures show on Home's status card).
+///
+/// A failed chip read stays on the chip step ("Try again", or "Scan passport
+/// page again" back to the camera), keeping the photo page details.
 private enum ScanPassportState {
     /// Development-only JSON import; no button leads here any more.
     case importJson
@@ -33,6 +36,10 @@ struct ScanPassportView: View {
     /// Whether the chip screen starts the NFC scan by itself (coming from the
     /// chip explainer) or waits for "Scan chip" (coming back to it).
     @State private var startsChipScan = false
+    /// A chip read that failed with no good read since. The chip step
+    /// retries in place, so this goes behind Home's bell only if the flow is
+    /// left without a read (`closeFlow()`), once, not per retry.
+    @State private var unrecoveredChipFailure: ChipReadFailure? = nil
 
     var body: some View {
         switch state {
@@ -47,7 +54,7 @@ struct ScanPassportView: View {
         case .guide(let stage):
             PassportVerifyGuideView(
                 stage: stage,
-                onBack: onClose,
+                onBack: closeFlow,
                 onContinue: { continueFromGuide(stage) }
             )
         case .photoExplainer:
@@ -63,7 +70,7 @@ struct ScanPassportView: View {
 
                         go(to: .photoConfirm)
                     },
-                    onClose: onClose,
+                    onClose: closeFlow,
                     onBack: { go(to: .photoExplainer) }
                 )
             }
@@ -91,12 +98,14 @@ struct ScanPassportView: View {
                     startsChipScan = false
                     go(to: .chipConfirm)
                 },
-                // A failed read goes back to the photo page, as before: a
-                // wrong MRZ is the usual reason the chip won't open.
-                onBack: { go(to: .scanMRZ) },
+                // "Scan passport page again", from the chip step's failure
+                // card. A failed read no longer comes here by itself.
+                onScanPageAgain: { go(to: .scanMRZ) },
                 onResponseError: { go(to: .chipError) },
-                onClose: onClose,
+                onClose: closeFlow,
                 onPrevious: { go(to: .chipExplainer) },
+                onChipReadFailed: { unrecoveredChipFailure = $0 },
+                onChipRead: { unrecoveredChipFailure = nil },
                 startsScanOnAppear: startsChipScan
             )
             .environmentObject(passportViewModel)
@@ -109,8 +118,18 @@ struct ScanPassportView: View {
                 onContinue: { go(to: .guide(.proof)) }
             )
         case .chipError:
-            PassportChipErrorView(onClose: onClose)
+            PassportChipErrorView(onClose: closeFlow)
         }
+    }
+
+    /// Every way out of the flow short of "Build my proof": records a chip
+    /// read that failed with no good read since, once, behind Home's bell.
+    private func closeFlow() {
+        if let failure = unrecoveredChipFailure {
+            unrecoveredChipFailure = nil
+            AppNotificationStore.shared.postVerificationFailure(reason: failure.reason, retry: .scanPassport)
+        }
+        onClose()
     }
 
     private func go(to newState: ScanPassportState) {

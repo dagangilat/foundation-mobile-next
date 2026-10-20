@@ -7,6 +7,10 @@ import SwiftUI
 struct PassportRevocationView: View {
     @EnvironmentObject var passportViewModel: PassportViewModel
 
+    /// False on a device that can't read NFC chips: the screen says so and
+    /// offers Close instead of a scan that could only fail.
+    var isNFCAvailable = NFCScanner.isReadingAvailable
+
     var body: some View {
         VStack(spacing: 28) {
             Spacer()
@@ -26,40 +30,62 @@ struct PassportRevocationView: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Spacer()
-            Button {
-                NFCScanner.scanPassport(
-                    passportViewModel.mrzKey ?? AppUserDefaults.shared.lastMRZKey,
-                    passportViewModel.revocationChallenge,
-                    false,
-                    onCompletion: { result in
-                        switch result {
-                        case .success(let passport):
-                            LoggerUtil.common.info("Revocation chip scan succeeded")
-
-                            passportViewModel.revocationPassportPublisher.send(passport)
-                            passportViewModel.isUserRevoking = false
-                        case .failure(let error):
-                            LoggerUtil.common.error("failed to read passport data: \(error.localizedDescription, privacy: .public)")
-
-                            passportViewModel.revocationPassportPublisher.send(completion: .failure(error))
-
-                            passportViewModel.isUserRevoking = false
-                        }
-                    }
-                )
-            } label: {
-                Label("Scan the chip", systemImage: "wave.3.right")
+            if !isNFCAvailable {
+                NFCUnavailableCard()
             }
-            .buttonStyle(FoundationPrimaryButtonStyle())
+            Spacer()
+            if isNFCAvailable {
+                scanButton
+            } else {
+                // The sheet can't be swiped away, so it needs a way out. The
+                // registration waiting on this scan then stops.
+                Button("Close") {
+                    passportViewModel.revocationPassportPublisher.send(completion: .failure(NFCScannerError.nfcNotAvailable))
+                    passportViewModel.isUserRevoking = false
+                }
+                .buttonStyle(FoundationSecondaryButtonStyle())
+            }
         }
         .padding(.horizontal, FoundationTheme.horizontalPadding)
         .padding(.vertical, 20)
         .background(FoundationTheme.bg.ignoresSafeArea())
     }
+
+    private var scanButton: some View {
+        Button {
+            NFCScanner.scanPassport(
+                passportViewModel.mrzKey ?? AppUserDefaults.shared.lastMRZKey,
+                passportViewModel.revocationChallenge,
+                false,
+                onCompletion: { result in
+                    switch result {
+                    case .success(let passport):
+                        LoggerUtil.common.info("Revocation chip scan succeeded")
+
+                        passportViewModel.revocationPassportPublisher.send(passport)
+                        passportViewModel.isUserRevoking = false
+                    case .failure(let error):
+                        LoggerUtil.common.error("failed to read passport data: \(error.localizedDescription, privacy: .public)")
+
+                        passportViewModel.revocationPassportPublisher.send(completion: .failure(error))
+
+                        passportViewModel.isUserRevoking = false
+                    }
+                }
+            )
+        } label: {
+            Label("Scan the chip", systemImage: "wave.3.right")
+        }
+        .buttonStyle(FoundationPrimaryButtonStyle())
+    }
 }
 
 #Preview {
     PassportRevocationView()
+        .environmentObject(PassportViewModel())
+}
+
+#Preview("No NFC") {
+    PassportRevocationView(isNFCAvailable: false)
         .environmentObject(PassportViewModel())
 }

@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import com.rarilabs.rarime.R
 import com.rarilabs.rarime.foundation.ui.FoundationButton
 import com.rarilabs.rarime.foundation.ui.FoundationButtonStyle
+import com.rarilabs.rarime.manager.NfcAvailability
+import com.rarilabs.rarime.modules.passportScan.nfc.NfcUnavailableCard
 import com.rarilabs.rarime.ui.theme.FoundationBrand
 import java.util.Calendar
 
@@ -254,21 +256,38 @@ private fun PhotoPageIllustration() {
 
 // ---- Chip ------------------------------------------------------------------
 
+/**
+ * "Now, the chip". When this phone can't read the chip right now
+ * ([nfcAvailability] not READY) it says so before the scan step instead of
+ * offering "Start chip scan": no NFC at all (no action; back leaves), or NFC
+ * switched off ("Open NFC settings", [onOpenNfcSettings]).
+ */
 @Composable
 fun ChipExplainerScreen(
     onBack: () -> Unit,
     onStartChipScan: () -> Unit,
     modifier: Modifier = Modifier,
+    nfcAvailability: NfcAvailability = NfcAvailability.READY,
+    onOpenNfcSettings: () -> Unit = {},
 ) {
     VerifyScreenFrame(
         onBack = onBack,
         modifier = modifier,
         actions = {
-            FoundationButton(
-                text = stringResource(R.string.verify_chip_start),
-                onClick = onStartChipScan,
-                leadingImage = VerifyIcons.Nfc,
-            )
+            when (nfcAvailability) {
+                NfcAvailability.READY -> FoundationButton(
+                    text = stringResource(R.string.verify_chip_start),
+                    onClick = onStartChipScan,
+                    leadingImage = VerifyIcons.Nfc,
+                )
+
+                NfcAvailability.DISABLED -> FoundationButton(
+                    text = stringResource(R.string.nfc_open_settings),
+                    onClick = onOpenNfcSettings,
+                )
+
+                NfcAvailability.NOT_SUPPORTED -> Unit
+            }
         },
     ) {
         VerifyStepper(currentStep = 2)
@@ -277,22 +296,26 @@ fun ChipExplainerScreen(
             title = stringResource(R.string.verify_chip_title),
             lead = stringResource(R.string.verify_chip_lead),
         )
-        VerifyCard {
-            VerifyTipRow(
-                icon = VerifyIcons.Smartphone,
-                title = stringResource(R.string.verify_chip_tip1_title),
-                body = stringResource(R.string.verify_chip_tip1_body),
-            )
-            VerifyTipRow(
-                icon = VerifyIcons.Chip,
-                title = stringResource(R.string.verify_chip_tip2_title),
-                body = stringResource(R.string.verify_chip_tip2_body),
-            )
-            VerifyTipRow(
-                icon = VerifyIcons.Plug,
-                title = stringResource(R.string.verify_chip_tip3_title),
-                body = stringResource(R.string.verify_chip_tip3_body),
-            )
+        NfcUnavailableCard(availability = nfcAvailability)
+        // Scanning tips are no use on a phone that can't scan at all.
+        if (nfcAvailability != NfcAvailability.NOT_SUPPORTED) {
+            VerifyCard {
+                VerifyTipRow(
+                    icon = VerifyIcons.Smartphone,
+                    title = stringResource(R.string.verify_chip_tip1_title),
+                    body = stringResource(R.string.verify_chip_tip1_body),
+                )
+                VerifyTipRow(
+                    icon = VerifyIcons.Chip,
+                    title = stringResource(R.string.verify_chip_tip2_title),
+                    body = stringResource(R.string.verify_chip_tip2_body),
+                )
+                VerifyTipRow(
+                    icon = VerifyIcons.Plug,
+                    title = stringResource(R.string.verify_chip_tip3_title),
+                    body = stringResource(R.string.verify_chip_tip3_body),
+                )
+            }
         }
     }
 }
@@ -444,6 +467,26 @@ private fun PhotoConfirmPreview() {
 @Composable
 private fun ChipExplainerPreview() {
     ChipExplainerScreen(onBack = {}, onStartChipScan = {})
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF6F9FC)
+@Composable
+private fun ChipExplainerNfcOffPreview() {
+    ChipExplainerScreen(
+        onBack = {},
+        onStartChipScan = {},
+        nfcAvailability = NfcAvailability.DISABLED,
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF6F9FC)
+@Composable
+private fun ChipExplainerNoNfcPreview() {
+    ChipExplainerScreen(
+        onBack = {},
+        onStartChipScan = {},
+        nfcAvailability = NfcAvailability.NOT_SUPPORTED,
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFF6F9FC)

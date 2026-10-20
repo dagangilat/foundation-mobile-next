@@ -19,10 +19,49 @@ enum class ScanNFCState {
     NOT_SCANNING, SCANNING, SCANNED, ERROR
 }
 
+/**
+ * Whether this phone can read a passport chip right now. The UI checks it
+ * before opening a scan, so a phone without NFC (or with NFC switched off)
+ * gets a clear message instead of a failed scan.
+ */
+enum class NfcAvailability {
+    /** No NFC hardware. Play hides the app from these phones (the manifest
+     *  requires android.hardware.nfc), but a USB install still gets here. */
+    NOT_SUPPORTED,
+
+    /** NFC hardware present but switched off in system settings. */
+    DISABLED,
+
+    READY;
+
+    companion object {
+        fun of(context: Context): NfcAvailability {
+            val adapter = try {
+                NfcAdapter.getDefaultAdapter(context)
+            } catch (e: UnsupportedOperationException) {
+                // Some builds throw instead of returning null without the feature.
+                null
+            } ?: return NOT_SUPPORTED
+            return if (adapter.isEnabled) READY else DISABLED
+        }
+    }
+}
+
+/** A chip read could not start: NFC can't be used on this phone right now. */
+sealed class NfcUnavailableException(message: String) : Exception(message)
+
+/** This phone has no NFC hardware. */
+class NfcNotSupportedException : NfcUnavailableException("NFC is not supported on this device.")
+
+/** NFC is switched off in system settings. */
+class NfcDisabledException : NfcUnavailableException("NFC is disabled.")
+
 class NfcManager @Inject constructor(
     private val context: Context
 ) {
-    private lateinit var adapter: NfcAdapter
+    /** Set once foreground dispatch has been enabled on it; null before that
+     *  and on a phone without NFC. */
+    private var adapter: NfcAdapter? = null
 
     lateinit var activity: Activity
 
@@ -33,6 +72,19 @@ class NfcManager @Inject constructor(
     val state: StateFlow<ScanNFCState>
         get() = _state.asStateFlow()
 
+    private val _availability = MutableStateFlow(NfcAvailability.of(context))
+
+    /** Last known [NfcAvailability]; screens re-check with [refreshAvailability]. */
+    val availabilityState: StateFlow<NfcAvailability>
+        get() = _availability.asStateFlow()
+
+    /** Checks NFC now, without changing [availabilityState]. */
+    fun availability(): NfcAvailability = NfcAvailability.of(context)
+
+    /** Checks NFC now and publishes the result on [availabilityState]. */
+    fun refreshAvailability(): NfcAvailability =
+        availability().also { _availability.value = it }
+
     fun resetState() {
         _state.value = ScanNFCState.NOT_SCANNING
         disableForegroundDispatch()
@@ -41,27 +93,37 @@ class NfcManager @Inject constructor(
     /* ENABLE SCANNING */
     private fun enableForegroundDispatch() {
         ErrorHandler.logDebug("NfcManager", "Enabling NFC foreground dispatch")
-        adapter = NfcAdapter.getDefaultAdapter(activity)
-        if (adapter == null) {
-            throw UnsupportedOperationException("NFC is not supported on this device.")
+        // Nullable on purpose: on a phone without NFC this is null, and the
+        // old lateinit non-null field threw a NullPointerException here
+        // before the null check could run.
+        val nfcAdapter: NfcAdapter = try {
+            NfcAdapter.getDefaultAdapter(activity)
+        } catch (e: UnsupportedOperationException) {
+            null
+        } ?: throw NfcNotSupportedException()
+        if (!nfcAdapter.isEnabled) {
+            throw NfcDisabledException()
         }
-        if (!adapter.isEnabled) {
-            throw IllegalStateException("NFC is disabled.")
-        }
+        adapter = nfcAdapter
         val intent = Intent(context, activity.javaClass)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingIntent =
             PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_MUTABLE)
         val filter = arrayOf(arrayOf("android.nfc.tech.IsoDep"))
-        adapter.enableForegroundDispatch(activity, pendingIntent, null, filter)
+        nfcAdapter.enableForegroundDispatch(activity, pendingIntent, null, filter)
     }
 
     /* DISABLE SCANNING */
     fun disableForegroundDispatch() {
         ErrorHandler.logDebug("NfcManager", "Disabling NFC foreground dispatch")
 
-        if (this::adapter.isInitialized) {
-            adapter.disableForegroundDispatch(activity)
+        val nfcAdapter = adapter ?: return
+        try {
+            nfcAdapter.disableForegroundDispatch(activity)
+        } catch (e: IllegalStateException) {
+            // Thrown when the activity is no longer resumed. The dispatch is
+            // cleared before that check, and Android also drops it on pause.
+            ErrorHandler.logDebug("NfcManager", "disableForegroundDispatch after pause: ${e.message}")
         }
     }
 
@@ -102,6 +164,12 @@ class NfcManager @Inject constructor(
             this.onError = onError
         } catch (e: Exception) {
             ErrorHandler.logError("NfcManager", "Error starting NFC scanning", e)
+            // Published before ERROR, so a screen reacting to ERROR already
+            // sees why and can show its NFC message instead of a failure.
+            when (e) {
+                is NfcNotSupportedException -> _availability.value = NfcAvailability.NOT_SUPPORTED
+                is NfcDisabledException -> _availability.value = NfcAvailability.DISABLED
+            }
             _state.value = ScanNFCState.ERROR
             onError(e)
             disableForegroundDispatch()

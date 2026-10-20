@@ -432,12 +432,33 @@ struct PassportPhotoExplainerView: View {
     }
 }
 
-/// "Now, the chip": shown before the NFC scan starts.
+/// "Now, the chip": shown before the NFC scan starts. On a device that can't
+/// read NFC chips it says so here, before the scan step, and offers no scan.
 struct PassportChipExplainerView: View {
     let onBack: () -> Void
     let onContinue: () -> Void
+    /// Read once: iOS has no NFC switch, so it can't change while this shows.
+    var isNFCAvailable = NFCScanner.isReadingAvailable
 
     var body: some View {
+        if isNFCAvailable {
+            availableBody
+        } else {
+            PassportVerifyScreen(onBack: onBack) {
+                PassportVerifyStepper(current: .chip)
+                PassportVerifyHeading(
+                    title: "Now, the chip",
+                    subtitle: "Your phone reads the chip inside your passport. It proves the passport is genuine."
+                )
+                NFCUnavailableCard()
+            } buttons: {
+                // Nothing to start here; Back leaves.
+                EmptyView()
+            }
+        }
+    }
+
+    private var availableBody: some View {
         PassportExplainerScreen(
             stage: .chip,
             title: "Now, the chip",
@@ -730,6 +751,10 @@ struct PassportChipConfirmView: View {
 
 #Preview("Chip explainer") {
     PassportChipExplainerView(onBack: {}, onContinue: {})
+}
+
+#Preview("Chip explainer, no NFC") {
+    PassportChipExplainerView(onBack: {}, onContinue: {}, isNFCAvailable: false)
 }
 
 #Preview("Photo confirm") {

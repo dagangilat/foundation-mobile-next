@@ -4,12 +4,15 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import androidx.lifecycle.ViewModel
 import com.rarilabs.rarime.manager.IdentityManager
+import com.rarilabs.rarime.manager.NfcAvailability
 import com.rarilabs.rarime.manager.NfcManager
+import com.rarilabs.rarime.manager.NfcUnavailableException
 import com.rarilabs.rarime.manager.ProofGenerationManager
 import com.rarilabs.rarime.manager.RegistrationManager
 import com.rarilabs.rarime.modules.passportScan.nfc.NfcUseCase
 import com.rarilabs.rarime.util.ErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import org.jmrtd.BACKey
 import org.jmrtd.lds.icao.MRZInfo
 import javax.inject.Inject
@@ -29,6 +32,11 @@ class RevocationStepViewModel @Inject constructor(
 
     val state = nfcManager.state
     val resetState = nfcManager::resetState
+
+    /** Whether this phone can read the chip; the screen shows why not instead of scanning. */
+    val nfcAvailability: StateFlow<NfcAvailability> = nfcManager.availabilityState
+
+    fun refreshNfcAvailability(): NfcAvailability = nfcManager.refreshAvailability()
 
     private fun handleScan(tag: Tag) {
         val birthDate = mrzInfo.dateOfBirth
@@ -76,6 +84,10 @@ class RevocationStepViewModel @Inject constructor(
 
     fun onError(e: Exception) {
         ErrorHandler.logError("RevocationStepViewModel", "Error: $e", e)
+
+        // No NFC, or NFC off: NfcManager has already published that on
+        // nfcAvailability, and the screen shows it. Not a failed revocation.
+        if (e is NfcUnavailableException) return
 
         throw e
     }

@@ -17,6 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rarilabs.rarime.BuildConfig
+import com.rarilabs.rarime.R
+import com.rarilabs.rarime.manager.NfcAvailability
 import com.rarilabs.rarime.modules.main.LocalMainViewModel
 import com.rarilabs.rarime.modules.main.ScreenInsets
 import com.rarilabs.rarime.modules.passportScan.camera.ScanMRZStep
@@ -27,8 +29,11 @@ import com.rarilabs.rarime.modules.passportScan.guide.PhotoExplainerScreen
 import com.rarilabs.rarime.modules.passportScan.guide.VerifyGuideScreen
 import com.rarilabs.rarime.modules.passportScan.models.EDocument
 import com.rarilabs.rarime.modules.passportScan.models.ScanPassportScreenViewModel
+import com.rarilabs.rarime.modules.passportScan.nfc.ChipReadFailure
+import com.rarilabs.rarime.modules.passportScan.nfc.OnResumeEffect
 import com.rarilabs.rarime.modules.passportScan.nfc.ReadEDocStep
 import com.rarilabs.rarime.modules.passportScan.nfc.RevocationStep
+import com.rarilabs.rarime.modules.passportScan.nfc.openNfcSettings
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.NotAllowedPassportScreen
 import com.rarilabs.rarime.modules.passportScan.unsupportedPassports.WaitlistPassportScreen
 import com.rarilabs.rarime.util.Constants.NOT_ALLOWED_COUNTRIES
@@ -41,6 +46,9 @@ import org.jmrtd.lds.icao.MRZInfo
  * -> CHIP_EXPLAINER -> READ_NFC -> CHIP_CONFIRM -> GUIDE_PROOF, whose
  * "Build my proof" saves the passport and so starts registration. The rest
  * are the inherited side paths.
+ *
+ * A failed chip read stays on READ_NFC ("Try again", or "Scan passport page
+ * again" back to SCAN_MRZ); the MRZ already read is kept for the retry.
  */
 enum class ScanPassportState {
     VERIFY_GUIDE, PHOTO_EXPLAINER, SCAN_MRZ, PHOTO_CONFIRM, GUIDE_CHIP, CHIP_EXPLAINER, READ_NFC,
@@ -66,6 +74,9 @@ internal fun verifyBackTarget(state: ScanPassportState): ScanPassportState? = wh
     else -> null
 }
 
+/** Failed chip reads before the chip step also offers "Get in touch". */
+private const val GET_IN_TOUCH_AFTER_ATTEMPTS = 3
+
 @Composable
 fun ScanPassportScreen(
     onClose: () -> Unit,
@@ -83,6 +94,18 @@ fun ScanPassportScreen(
 
     var nfcAttempts by remember { mutableStateOf(0) }
 
+    // Why the last chip read failed, shown on READ_NFC until the next try.
+    var chipFailure: ChipReadFailure? by remember { mutableStateOf(null) }
+
+    // Every way out of the flow goes through here, so a chip read that
+    // failed and was never followed by a good one is recorded once, behind
+    // Home's bell. (System back pops the route; the ViewModel's onCleared
+    // covers that.)
+    val leaveFlow: () -> Unit = {
+        scanPassportScreenViewModel.reportUnrecoveredChipFailure()
+        onClose()
+    }
+
     val eDoc by scanPassportScreenViewModel.eDocument.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -95,17 +118,23 @@ fun ScanPassportScreen(
         }
     }
 
-    fun handleNFCError(e: Exception) {
+    // A failed chip read: stay on the chip step (it shows why and offers
+    // another try). It used to restart the flow from the task guide, so the
+    // photo page had to be scanned again for any chip hiccup. After a few
+    // tries the step also offers "Get in touch", which this used to force.
+    fun handleNFCError(e: Exception, failure: ChipReadFailure) {
         ErrorHandler.logError("NFC error", e.toString(), e)
 
         nfcAttempts++
-
-        if (nfcAttempts >= 3) {
-            state = ScanPassportState.GET_IN_TOUCH
-        } else {
-            // Try again from the task guide (it used to reopen the camera).
-            state = ScanPassportState.VERIFY_GUIDE
-        }
+        chipFailure = failure
+        scanPassportScreenViewModel.onChipReadFailed(
+            context.getString(
+                when (failure) {
+                    ChipReadFailure.KEY_REJECTED -> R.string.notification_reason_chip_key_rejected
+                    ChipReadFailure.READ_FAILED -> R.string.notification_reason_chip_read_failed
+                }
+            )
+        )
     }
 
     val backTarget = verifyBackTarget(state)
@@ -127,7 +156,7 @@ fun ScanPassportScreen(
             ScanPassportState.VERIFY_GUIDE -> {
                 VerifyGuideScreen(
                     completedSteps = 0,
-                    onBack = onClose,
+                    onBack = leaveFlow,
                     onContinue = { state = ScanPassportState.PHOTO_EXPLAINER }
                 )
             }
@@ -168,21 +197,35 @@ fun ScanPassportScreen(
             ScanPassportState.GUIDE_CHIP -> {
                 VerifyGuideScreen(
                     completedSteps = 1,
-                    onBack = onClose,
+                    onBack = leaveFlow,
                     onContinue = { state = ScanPassportState.CHIP_EXPLAINER }
                 )
             }
 
             ScanPassportState.CHIP_EXPLAINER -> {
+                // Say "no NFC" / "NFC is off" here, before the scan step,
+                // and re-check when the person comes back from settings.
+                val nfcAvailability by scanPassportScreenViewModel.nfcAvailability.collectAsState()
+                OnResumeEffect { scanPassportScreenViewModel.refreshNfcAvailability() }
+
                 ChipExplainerScreen(
                     onBack = { state = ScanPassportState.GUIDE_CHIP },
-                    onStartChipScan = { state = ScanPassportState.READ_NFC }
+                    onStartChipScan = {
+                        if (scanPassportScreenViewModel.refreshNfcAvailability() == NfcAvailability.READY) {
+                            state = ScanPassportState.READ_NFC
+                        }
+                    },
+                    nfcAvailability = nfcAvailability,
+                    onOpenNfcSettings = { openNfcSettings(context) },
                 )
             }
 
             ScanPassportState.READ_NFC -> {
                 ReadEDocStep(
                     onNext = {
+                        chipFailure = null
+                        nfcAttempts = 0
+                        scanPassportScreenViewModel.onChipReadSucceeded()
                         // Held, not saved yet: saving the passport is what
                         // starts registration (ZkIdentityScreen swaps to
                         // ZkIdentityPassport, which runs it), and that now
@@ -191,10 +234,20 @@ fun ScanPassportScreen(
                         state = ScanPassportState.CHIP_CONFIRM
                     },
                     onClose = {
+                        chipFailure = null
                         state = ScanPassportState.CHIP_EXPLAINER
                     },
-                    onError = {
-                        handleNFCError(it)
+                    onError = { e, failure -> handleNFCError(e, failure) },
+                    onScanPageAgain = {
+                        chipFailure = null
+                        state = ScanPassportState.SCAN_MRZ
+                    },
+                    chipFailure = chipFailure,
+                    onRetry = { chipFailure = null },
+                    onGetInTouch = if (nfcAttempts >= GET_IN_TOUCH_AFTER_ATTEMPTS) {
+                        { state = ScanPassportState.GET_IN_TOUCH }
+                    } else {
+                        null
                     },
                     mrzInfo = mrzData!!,
                     autoStartScan = true
@@ -211,7 +264,7 @@ fun ScanPassportScreen(
             ScanPassportState.GUIDE_PROOF -> {
                 VerifyGuideScreen(
                     completedSteps = 2,
-                    onBack = onClose,
+                    onBack = leaveFlow,
                     onContinue = {
                         // Exactly what a successful chip read used to do.
                         scanPassportScreenViewModel.savePassport()
@@ -227,7 +280,7 @@ fun ScanPassportScreen(
 
                     },
                     onClose = {
-                        onClose()
+                        leaveFlow()
                         scanPassportScreenViewModel.resetPassportState()
                     },
                     eDocument = eDoc ?: throw IllegalStateException("No document")
@@ -239,7 +292,7 @@ fun ScanPassportScreen(
             ScanPassportState.NOT_ALLOWED_PASSPORT -> {
                 NotAllowedPassportScreen(
                     eDocument = eDoc ?: throw IllegalStateException("No Document"),
-                    onClose = onClose
+                    onClose = leaveFlow
                 ) {
                     state = ScanPassportState.GENERATE_PROOF
                 }
@@ -250,7 +303,7 @@ fun ScanPassportScreen(
                     eDocument = eDoc ?: throw IllegalStateException("No Document"),
                     onClose = {
                         scanPassportScreenViewModel.savePassport()
-                        onClose.invoke()
+                        leaveFlow()
                     }
                 )
             }
@@ -260,21 +313,21 @@ fun ScanPassportScreen(
                 // holders to the token-reservation screen. That programme and
                 // its screen are removed, so the flow always takes what was the
                 // no-balance path: persist the passport and close.
-                onClose.invoke()
+                leaveFlow()
                 scanPassportScreenViewModel.savePassport()
             }
 
             ScanPassportState.REVOCATION_PROCESS -> {
                 RevocationStep(mrzData = mrzData!!, onClose = {
                     scanPassportScreenViewModel.rejectRevocation()
-                    onClose.invoke()
+                    leaveFlow()
                 }, onNext = {
                     scanPassportScreenViewModel.finishRevocation()
 
                     if (!NOT_ALLOWED_COUNTRIES.contains(eDoc?.personDetails?.nationality)) {
                         state = ScanPassportState.FINISH_PASSPORT_FLOW
                     } else {
-                        onClose.invoke()
+                        leaveFlow()
                     }
                 }, onError = {
                     scanPassportScreenViewModel.finishRevocation()
@@ -287,11 +340,11 @@ fun ScanPassportScreen(
                     eDoc = eDoc,
                     onClose = {
                         scanPassportScreenViewModel.resetPassportState()
-                        onClose.invoke()
+                        leaveFlow()
                     },
                     onSent = {
                         scanPassportScreenViewModel.resetPassportState()
-                        onClose.invoke()
+                        leaveFlow()
                     }
                 )
             }

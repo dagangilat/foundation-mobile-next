@@ -294,6 +294,9 @@ class PassportViewModel: ObservableObject {
                     }
                     
                     passport = newPassport
+                } catch NFCScannerError.nfcNotAvailable {
+                    // Say why, rather than "try again": this device can't.
+                    throw Errors.unknown(NFCScannerError.nfcNotAvailable.localizedDescription)
                 } catch {
                     LoggerUtil.common.error("Revocation scan failed: \(error, privacy: .public)")
                     
