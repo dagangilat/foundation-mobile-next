@@ -23,6 +23,9 @@ ongoing.
 
 ## Quick start (macOS)
 
+Deploy with `scripts/deploy.sh` (no arguments = TestFlight + Play internal), run with `scripts/run.sh`
+(no arguments = iOS Simulator); see `--help` on either. Both wrap `scripts/mobile.sh`.
+
 `scripts/mobile.sh` does every scriptable step. Each command is safe to re-run.
 
     scripts/mobile.sh setup              # toolchains, Android SDK + emulator, fastlane
